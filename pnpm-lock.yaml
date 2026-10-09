@@ -185,6 +185,9 @@ catalogs:
     '@discordjs/rest':
       specifier: 2.6.3
       version: 2.6.3
+    '@distilled.cloud/aws':
+      specifier: 1.0.0-rc.13
+      version: 1.0.0-rc.13
     '@effect/platform-node':
       specifier: 4.0.0
       version: 4.0.0
@@ -450,6 +453,9 @@ importers:
       '@discordjs/rest':
         specifier: 'catalog:'
         version: 2.6.3
+      '@distilled.cloud/aws':
+        specifier: 'catalog:'
+        version: 1.0.0-rc.13(effect@4.0.0)
       '@effect/atom-react':
         specifier: catalog:stack
         version: 4.0.0(effect@4.0.0)(react@19.3.0)(scheduler@0.28.0)

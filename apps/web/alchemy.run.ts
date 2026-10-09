@@ -37,6 +37,15 @@ const discordEnv = Config.all({
   SUPPORT_OPERATOR_IDS: Config.String("SUPPORT_OPERATOR_IDS").pipe(Config.withDefault("")),
 });
 
+const kmsEnv = Config.option(
+  Config.all({
+    AWS_KMS_KEY_ID: Config.NonEmptyString("AWS_KMS_KEY_ID"),
+    AWS_REGION: Config.NonEmptyString("AWS_REGION"),
+    AWS_ACCESS_KEY_ID: Config.NonEmptyString("AWS_ACCESS_KEY_ID"),
+    AWS_SECRET_ACCESS_KEY: Config.schema(NonEmptySecret, "AWS_SECRET_ACCESS_KEY"),
+  }),
+).pipe(Config.map(Option.getOrElse(() => ({}))));
+
 const releaseVersion = Config.option(Config.NonEmptyString("GITHUB_SHA")).pipe(
   Config.map(
     Option.match({
@@ -68,7 +77,8 @@ const settings = Effect.gen(function* settings() {
   const otlp = yield* otlpEnv;
   const discord = yield* discordEnv;
   const release = yield* releaseVersion;
-  return { otlp, discord, release };
+  const kms = yield* kmsEnv;
+  return { otlp, discord, release, kms };
 });
 
 const web = Effect.gen(function* web() {
@@ -77,7 +87,7 @@ const web = Effect.gen(function* web() {
   const INGEST = yield* Queues.Queue("Ingest");
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* makeRandom("MasterKey");
-  const { otlp, discord, release } = yield* settings;
+  const { otlp, discord, release, kms } = yield* settings;
   const site = yield* Website.Vite("Web", {
     main: "src/app/server/index.ts",
     domain: SITE_HOST,
@@ -85,6 +95,7 @@ const web = Effect.gen(function* web() {
     env: {
       ...otlp,
       ...discord,
+      ...kms,
       BETTER_AUTH_SECRET,
       MASTER_KEY,
       DB,

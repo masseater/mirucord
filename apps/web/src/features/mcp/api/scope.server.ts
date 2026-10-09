@@ -1,12 +1,15 @@
 import { and, eq } from "drizzle-orm";
-import { Array, Effect, Option, Record } from "effect";
+import { Array, Boolean, Effect, Option, Record } from "effect";
 
+import { canManageGuild } from "#/features/mcp/model/permissions";
 import { visibleChannelIds } from "#/features/mcp/model/visibility";
 import type { GuildChannel, GuildSnapshot } from "#/features/mcp/model/visibility";
 import { account } from "#/shared/auth/index.server";
 import { channel, db, guild, role } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
+
+import { hasActiveGrant, isOperator } from "./support.server";
 
 const DISCORD_PROVIDER = "discord";
 
@@ -15,9 +18,12 @@ type StoredChannel = GuildChannel & Readonly<{ name: string }>;
 type StoredGuild = Omit<GuildSnapshot, "channels"> &
   Readonly<{ name: string; wrappedKey: string; channels: readonly StoredChannel[] }>;
 
+type GuildAccess = "manager" | "member" | "support";
+
 type GuildScope = Readonly<{
   guild: StoredGuild;
   visible: readonly string[];
+  access: GuildAccess;
 }>;
 
 const discordUserIdOf = (userId: string): Effect.Effect<Option.Option<string>> =>
@@ -80,18 +86,56 @@ const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =
     ),
   );
 
+const memberScope = (
+  stored: StoredGuild,
+  discordUserId: string,
+  roleIds: readonly string[],
+): GuildScope => ({
+  guild: stored,
+  visible: [...visibleChannelIds(stored, Option.some({ userId: discordUserId, roleIds }))],
+  access: Boolean.match(
+    canManageGuild({
+      guildId: stored.guildId,
+      ownerId: stored.ownerId,
+      userId: discordUserId,
+      memberRoleIds: roleIds,
+      rolePermissions: stored.rolePermissions,
+    }),
+    { onTrue: () => "manager", onFalse: () => "member" },
+  ),
+});
+
+const supportScope = (
+  stored: StoredGuild,
+  discordUserId: string,
+): Effect.Effect<Option.Option<GuildScope>> =>
+  Option.match(Option.liftPredicate(discordUserId, isOperator), {
+    onNone: () => Effect.succeedNone,
+    onSome: () =>
+      hasActiveGrant(stored.guildId).pipe(
+        Effect.map((granted) =>
+          Option.liftPredicate(
+            {
+              guild: stored,
+              visible: stored.channels.map(({ id }) => id),
+              access: "support" as const,
+            },
+            () => granted,
+          ),
+        ),
+      ),
+  });
+
 const scopeOf = (
   stored: StoredGuild,
   discordUserId: string,
 ): Effect.Effect<Option.Option<GuildScope>, DiscordRequestError> =>
   findMember(stored.guildId, discordUserId).pipe(
-    Effect.map(
-      Option.map(({ roles }) => ({
-        guild: stored,
-        visible: [
-          ...visibleChannelIds(stored, Option.some({ userId: discordUserId, roleIds: roles })),
-        ],
-      })),
+    Effect.flatMap(
+      Option.match({
+        onNone: () => supportScope(stored, discordUserId),
+        onSome: ({ roles }) => Effect.succeedSome(memberScope(stored, discordUserId, roles)),
+      }),
     ),
   );
 
@@ -112,4 +156,4 @@ const resolveScope = ({
   );
 
 export { discordUserIdOf, listGuildIds, resolveScope };
-export type { GuildScope, StoredChannel, StoredGuild };
+export type { GuildAccess, GuildScope, StoredChannel, StoredGuild };

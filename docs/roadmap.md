@@ -32,7 +32,7 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 今の状態
 
-スライス 1 から 5 までを書いた。
+スライス 1 から 6 までを書いた。
 
 | 場所                                   | 内容                                                                                        |
 | -------------------------------------- | ------------------------------------------------------------------------------------------- |
@@ -105,12 +105,14 @@ Worker のバージョンにはコミットの SHA を刻み、`/api/health` が
 | --------- | --------------------------------------------------------------------------------------------- |
 | Secrets   | `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID`・`DISCORD_CLIENT_SECRET`・`DISCORD_BOT_TOKEN` |
 | Secrets   | `OTEL_EXPORTER_OTLP_HEADERS`（任意）                                                          |
-| Variables | `DISCORD_CLIENT_ID`・`OTEL_EXPORTER_OTLP_ENDPOINT`（任意）                                    |
+| Variables | `DISCORD_CLIENT_ID`・`OTEL_EXPORTER_OTLP_ENDPOINT`（任意）・`SUPPORT_OPERATOR_IDS`（任意）    |
 
-### 6. 運営の閲覧を管理者の承認制にする
+### 6. 運営の閲覧を管理者の承認制にする（済）
 
-サーバー管理者が期限付きで許可した時だけ、運営がサポート用の endpoint で読めるようにする。
-その記録を管理者に見せる。
+運営は、`SUPPORT_OPERATOR_IDS` に Discord のユーザー ID を並べた人である。
+サーバー管理者（オーナー、管理者権限、サーバー管理権限のいずれか）が `grant_support_access` で時間（1〜72 時間）を決めて許可した間だけ、運営は同じ `/mcp` から保存済みの全チャンネルを読める。
+運営の読み出しはツールごとに `support_access` へ記録し、管理者は `list_support_access` で許可と読み出しの履歴を見られる。`revoke_support_access` で期限前に打ち切れる。
+別の endpoint を立てず `/mcp` に寄せたのは、権限の判定と記録を 1 か所に保つためである。
 
 ### 7. 公式版の鍵を外部 KMS に移す
 

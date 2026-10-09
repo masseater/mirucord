@@ -66,10 +66,15 @@ const canReadHistoryDataFirst = (
   Permissions.has(basePermissions(reader), "Administrator") ||
   Permissions.has(channelPermissions(reader, overwrites), READ_HISTORY);
 
+const canManageGuild = (reader: ReaderContext): boolean =>
+  reader.userId === reader.ownerId ||
+  Permissions.has(basePermissions(reader), "Administrator") ||
+  Permissions.has(basePermissions(reader), "ManageGuild");
+
 const canReadHistory: {
   (overwrites: readonly Overwrite[]): (reader: ReaderContext) => boolean;
   (reader: ReaderContext, overwrites: readonly Overwrite[]): boolean;
 } = Function.dual(DATA_FIRST_ARITY, canReadHistoryDataFirst);
 
-export { canReadHistory };
+export { canManageGuild, canReadHistory };
 export type { Overwrite, ReaderContext };

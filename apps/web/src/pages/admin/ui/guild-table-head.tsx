@@ -6,7 +6,7 @@ const GuildTableHead = (): ReactNode => (
   <thead>
     <tr>
       {COLUMNS.map((column) => (
-        <th key={column} className="p-2 text-left">
+        <th key={column} scope="col" className="p-2 text-left">
           {column}
         </th>
       ))}

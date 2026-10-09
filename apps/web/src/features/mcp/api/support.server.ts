@@ -3,7 +3,9 @@ import { and, desc, eq, gt, isNull } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { Array, DateTime, Effect } from "effect";
 
-import { db, supportAccess, supportGrant } from "#/shared/db/index.server";
+import { db } from "#/shared/db/index.server";
+
+import { supportAccess, supportGrant } from "./support.table";
 
 const HISTORY_LIMIT = 100;
 const FIRST_MATCH = 1;

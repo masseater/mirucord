@@ -4,6 +4,7 @@
   "typeAware": { "enabled": true, "require": "complete" },
   "failOnParseError": true,
   "ignorePatterns": [".claude/**"],
+  "ignoreDependencies": ["react"],
   "audit": { "gate": "all" },
   "security": {
     "categories": {

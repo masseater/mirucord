@@ -32,7 +32,7 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 今の状態
 
-スライス 1 から 3 までを書き、`vp check`・テスト・`db:check`・steiger は通る。
+スライス 1 から 3 までを書いた。
 
 | 場所                                   | 内容                                                                                        |
 | -------------------------------------- | ------------------------------------------------------------------------------------------- |
@@ -40,13 +40,12 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 | `apps/web/drizzle`                     | 最初のマイグレーション                                                                      |
 | `src/app/server/index.ts`              | TanStack Start の `fetch` と、`scheduled`・`queue` をまとめた Worker のエントリ             |
 | `src/features/ingest`                  | Cron での同期と、Queue でのメッセージ取り込み                                               |
-| `src/features/mcp`                     | 閲覧範囲の計算と 4 つのツール、`/mcp` の endpoint                                           |
+| `src/features/mcp`                     | 閲覧権限の計算、4 つのツール、`/mcp` の endpoint                                            |
 | `src/shared/crypto`                    | 鍵の包み直しと、メッセージの暗号化・復号                                                    |
-| `src/shared/discord`                   | Discord REST の呼び出しと、`@sapphire/bitfield` による閲覧権限の計算                        |
+| `src/shared/discord`                   | Discord REST の呼び出し                                                                     |
 | `patches/@better-auth__oauth-provider` | `exactOptionalPropertyTypes` の下で `mcp()` が `BetterAuthPlugin` に代入できない型の修正    |
 
-`vp run verify` のうち、次の検査はまだ通らない。
-fallow は、テンプレートから残る `shared/api`・`shared/auth/client.ts`・`shared/ui/button.tsx` を未使用と報告する。スライス 4 の画面で使うか消す。
+`vp run verify` は、クラウドで動かない jev-lint と actions-lint を除いて通る。
 `vp build` は `cloudflare:workers` を解決できずに失敗する。スライス 5 で Alchemy のビルドに合わせて直す。
 
 ## 残りのスライス
@@ -110,6 +109,11 @@ Worker のバージョンにコミットの SHA を刻む。
 `MASTER_KEY` を使う今の方式は、自前運用の既定として残す。
 
 ## 引き継ぎの注意
+
+`patches/@better-auth__oauth-provider` は、上流の issue #10213 の回避策である。
+修正の PR #10266 が取り込まれたら、パッチを消す。
+
+スライス 4 では、テンプレートから消した shadcn の `Button` と eden のクライアントを、使う時が来たら入れ直す。
 
 `auth:generate` は `mcp()` の起動処理が D1 を読むので、そのままでは失敗する。
 生成し直す時は、D1 を差し替えた一時設定を使う。

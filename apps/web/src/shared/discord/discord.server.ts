@@ -1,12 +1,13 @@
 import { DiscordAPIError, REST } from "@discordjs/rest";
 import { env } from "cloudflare:workers";
 import { OverwriteType, Routes } from "discord-api-types/v10";
-import { Data, Effect, Function, Option, Schema } from "effect";
+import { Array, Data, Effect, Function, Option, Schema } from "effect";
 
 const DATA_FIRST_ARITY = 2;
 
 const PAGE_SIZE = 100;
 const NOT_FOUND = 404;
+const WEBHOOK_PATH_PARTS = 2;
 
 const PermissionOverwrite = Schema.Struct({
   id: Schema.String,
@@ -86,6 +87,27 @@ const callDiscord = <Body extends Schema.Top>(
 
 const listBotGuilds = callDiscord(Schema.Array(PartialGuild), () => rest.get(Routes.userGuilds()));
 
+const leaveGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+  Effect.asVoid(callDiscord(Schema.Unknown, () => rest.delete(Routes.userGuild(guildId))));
+
+const postWebhookMessage = ({
+  webhookUrl,
+  content,
+}: Readonly<{ webhookUrl: string; content: string }>): Effect.Effect<void, DiscordRequestError> => {
+  const [webhookId = "", token = ""] = Array.takeRight(
+    new URL(webhookUrl).pathname.split("/"),
+    WEBHOOK_PATH_PARTS,
+  );
+  return Effect.asVoid(
+    callDiscord(Schema.Unknown, () =>
+      rest.post(Routes.webhook(webhookId, token), {
+        body: { content, allowed_mentions: { parse: [] } },
+        auth: false,
+      }),
+    ),
+  );
+};
+
 const getGuild = (guildId: string): Effect.Effect<DiscordGuild, DiscordRequestError> =>
   callDiscord(Guild, () => rest.get(Routes.guild(guildId)));
 
@@ -154,10 +176,12 @@ export {
   DiscordRequestError,
   findMember,
   getGuild,
+  leaveGuild,
   listActiveThreads,
   listBotGuilds,
   listGuildChannels,
   listMessages,
   PAGE_SIZE,
+  postWebhookMessage,
 };
 export type { DiscordChannel, DiscordGuild, DiscordMember, DiscordMessage, MessagePage };

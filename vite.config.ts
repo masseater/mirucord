@@ -112,7 +112,7 @@ export default defineConfig({
         {
           ignoreInferredTypes: true,
           allow: [
-            { from: "lib", name: ["Request", "CryptoKey", "Date"] },
+            { from: "lib", name: ["Request", "CryptoKey"] },
             { from: "package", package: "@tanstack/query-core", name: "QueryClient" },
             {
               from: "package",

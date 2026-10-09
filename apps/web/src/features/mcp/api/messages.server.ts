@@ -46,12 +46,18 @@ const MESSAGE_COLUMNS = {
   editedAt: message.editedAt,
 };
 
-const toStored = (rows: readonly MessageRow[]): readonly StoredMessage[] =>
-  rows.map(({ createdAt, editedAt, ...row }) => ({
-    ...row,
-    createdAt: DateTime.fromDateUnsafe(createdAt),
-    edited: Option.isSome(Option.fromNullOr(editedAt)),
-  }));
+const loadStored = (
+  load: () => Promise<readonly MessageRow[]>,
+): Effect.Effect<readonly StoredMessage[]> =>
+  Effect.promise(load).pipe(
+    Effect.map((rows) =>
+      rows.map(({ createdAt, editedAt, ...row }) => ({
+        ...row,
+        createdAt: DateTime.fromDateUnsafe(createdAt),
+        edited: Option.isSome(Option.fromNullOr(editedAt)),
+      })),
+    ),
+  );
 
 const openStored = (
   scope: GuildScope,
@@ -86,13 +92,12 @@ const openStored = (
   );
 
 const findStored = (ids: readonly string[]): Effect.Effect<readonly StoredMessage[]> =>
-  Effect.promise(() =>
+  loadStored(() =>
     db
       .select(MESSAGE_COLUMNS)
       .from(message)
       .where(inArray(message.id, [...ids])),
   ).pipe(
-    Effect.map(toStored),
     Effect.map((stored) =>
       ids.flatMap((id) => Option.toArray(Array.findFirst(stored, (row) => row.id === id))),
     ),
@@ -141,20 +146,18 @@ const createdAtOf = (
   channelId: string,
   messageId: string,
 ): Effect.Effect<Option.Option<DateTime.Utc>> =>
-  Effect.promise(() =>
+  loadStored(() =>
     db
       .select(MESSAGE_COLUMNS)
       .from(message)
       .where(and(eq(message.id, messageId), eq(message.channelId, channelId))),
-  ).pipe(
-    Effect.map((rows) => Option.map(Array.head(toStored(rows)), ({ createdAt }) => createdAt)),
-  );
+  ).pipe(Effect.map((rows) => Option.map(Array.head(rows), ({ createdAt }) => createdAt)));
 
 const readStored = (
   { channelId, limit }: ReadRequest,
   before: Option.Option<DateTime.Utc>,
 ): Effect.Effect<readonly StoredMessage[]> =>
-  Effect.promise(() =>
+  loadStored(() =>
     db
       .select(MESSAGE_COLUMNS)
       .from(message)
@@ -167,7 +170,7 @@ const readStored = (
       )
       .orderBy(desc(message.createdAt))
       .limit(limit),
-  ).pipe(Effect.map(toStored));
+  );
 
 const readMessages = (request: ReadRequest): Effect.Effect<readonly MessageView[]> =>
   Option.match(request.before, {

@@ -1,8 +1,11 @@
 import { waitUntil } from "cloudflare:workers";
 import { Effect, Layer, ManagedRuntime } from "effect";
-import { OtlpExporter } from "effect/observability";
+import { FetchHttpClient } from "effect/http";
+import { Otlp, OtlpExporter, OtlpSerialization } from "effect/observability";
 
-import { telemetryLive } from "#/shared/telemetry/index.server";
+const telemetryLive = Otlp.layerFromConfig({ resource: { serviceName: "web" } }).pipe(
+  Layer.provide([FetchHttpClient.layer, OtlpSerialization.layerJson]),
+);
 
 const runtime = ManagedRuntime.make(Layer.mergeAll(telemetryLive, OtlpExporter.layerFlusher));
 

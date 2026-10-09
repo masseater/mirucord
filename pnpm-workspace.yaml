@@ -40,6 +40,7 @@ catalog:
   "@sapphire/bitfield": 1.2.4
   discord-api-types: 0.38.56
   "@better-auth/mcp": 1.7.7
+  jose: 6.2.12
 catalogs:
   stack:
     "@effect/atom-react": 4.0.0

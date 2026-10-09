@@ -250,4 +250,4 @@ const syncGuilds: Effect.Effect<void, DiscordRequestError> = Effect.gen(function
   }
 });
 
-export { syncGuilds };
+export { guildLimit, syncGuilds };

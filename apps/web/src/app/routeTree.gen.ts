@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ConsentRouteImport } from './routes/consent'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as SignInRouteImport } from './routes/sign-in'
@@ -19,6 +20,11 @@ import { Route as ApiSplatRouteImport } from './routes/api.$'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConsentRoute = ConsentRouteImport.update({
@@ -49,6 +55,7 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/consent': typeof ConsentRoute
   '/mcp': typeof McpRoute
   '/sign-in': typeof SignInRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/consent': typeof ConsentRoute
   '/mcp': typeof McpRoute
   '/sign-in': typeof SignInRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/consent': typeof ConsentRoute
   '/mcp': typeof McpRoute
   '/sign-in': typeof SignInRoute
@@ -75,12 +84,26 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/consent' | '/mcp' | '/sign-in' | '/.well-known/$' | '/api/$'
+    | '/'
+    | '/admin'
+    | '/consent'
+    | '/mcp'
+    | '/sign-in'
+    | '/.well-known/$'
+    | '/api/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/consent' | '/mcp' | '/sign-in' | '/.well-known/$' | '/api/$'
+  to:
+    | '/'
+    | '/admin'
+    | '/consent'
+    | '/mcp'
+    | '/sign-in'
+    | '/.well-known/$'
+    | '/api/$'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/consent'
     | '/mcp'
     | '/sign-in'
@@ -90,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   ConsentRoute: typeof ConsentRoute
   McpRoute: typeof McpRoute
   SignInRoute: typeof SignInRoute
@@ -104,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/consent': {
@@ -146,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   ConsentRoute: ConsentRoute,
   McpRoute: McpRoute,
   SignInRoute: SignInRoute,

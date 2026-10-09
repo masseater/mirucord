@@ -10,7 +10,7 @@ Bot をサーバーに招待すると、メッセージが事前に保存され�
 デプロイは main の CI からだけ行う。
 
 メッセージ本文と投稿者名は、ギルドごとのデータ鍵で AES-GCM により暗号化して D1 に保存する。
-データ鍵は `MASTER_KEY` から HKDF で導いた鍵で AES-KW により包む。
+データ鍵は `MASTER_KEY` から HKDF で導いた鍵で AES-KW により包む。AWS KMS を設定した公式版では、データ鍵を KMS で作って包む。
 Vectorize に置くのはベクトルと `guildId`・`channelId` だけで、本文は置かない。
 メッセージ本文と検索クエリを、ログ・span の属性・エラーメッセージに出さない。
 Bot がサーバーから外れたら、そのサーバーの行とベクトルを消す。
@@ -99,13 +99,7 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 `verify.yml` の `deploy` ジョブが、main の verify が通った後に `alchemy deploy --stage prod` を動かす。
 Worker のバージョンにはコミットの SHA を刻み、`/api/health` がそれを返す。
 
-デプロイジョブは、リポジトリに次の設定があることを前提にする。
-
-| 種類      | 名前                                                                                          |
-| --------- | --------------------------------------------------------------------------------------------- |
-| Secrets   | `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID`・`DISCORD_CLIENT_SECRET`・`DISCORD_BOT_TOKEN` |
-| Secrets   | `OTEL_EXPORTER_OTLP_HEADERS`（任意）                                                          |
-| Variables | `DISCORD_CLIENT_ID`・`OTEL_EXPORTER_OTLP_ENDPOINT`（任意）・`SUPPORT_OPERATOR_IDS`（任意）    |
+デプロイに要る設定と運用の手順は [runbook.md](runbook.md) にまとめた。
 
 ### 6. 運営の閲覧を管理者の承認制にする（済）
 
@@ -122,7 +116,7 @@ Worker のバージョンにはコミットの SHA を刻み、`/api/health` が
 `MASTER_KEY` を使う方式は、自前運用の既定として残す。
 AWS の呼び出しには、Alchemy と同じ作者の `@distilled.cloud/aws` を使う。Effect で書かれ、Workers 向けの export を持つためである。
 
-デプロイジョブは Variables の `AWS_KMS_KEY_ID`・`AWS_REGION`・`AWS_ACCESS_KEY_ID` と、Secrets の `AWS_SECRET_ACCESS_KEY` を渡す。IAM ユーザーには、その鍵への `kms:GenerateDataKeyWithoutPlaintext` と `kms:Decrypt` だけを許す。
+IAM ユーザーには、その鍵への `kms:GenerateDataKeyWithoutPlaintext` と `kms:Decrypt` だけを許す。
 
 ## 引き継ぎの注意
 

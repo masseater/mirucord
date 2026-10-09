@@ -57,4 +57,6 @@ Bot をサーバーに招待すると、メッセージが事前に保存され�
 - `auth:generate` は `mcp()` の起動処理が D1 を読むので、そのままでは失敗する。生成し直す時は、D1 を差し替えた一時設定を使う。
 - `better-call` は zod 3 と zod 4 の 2 種類に解決されやすい。`apps/web` に `zod@4.6.5` を入れて 1 つにそろえている。
 - secret は `DISCORD_BOT_TOKEN`・`DISCORD_CLIENT_SECRET`・`CLOUDFLARE_API_TOKEN`・`OPENROUTER_API_KEY` を使う。GitHub には `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID`・`OPENROUTER_API_KEY`・`CLAUDE_CODE_OAUTH_TOKEN` の secret と、`DISCORD_CLIENT_ID` の variable を入れてある。
+- クラウドのセッションには `MIRUCORD_CLOUDFLARE_API_TOKEN`・`MIRUCORD_CLOUDFLARE_ACCOUNT_ID`・`DISCORD_CLIENT_ID` を渡してある。`apps/web/.env` では、前の 2 つを `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID` の名前で書く。
+- `DISCORD_BOT_TOKEN` と `DISCORD_CLIENT_SECRET` は、まだどこにも入っていない。ユーザーが Mac の `~/.config/fish/secrets.fish` に追記したら、`ssh mac` で読み出して GitHub の secret とクラウド環境に入れる。
 - Alchemy の state store Worker は、実行の記録を Alchemy の集計先へ送る。この送信はオフにできない。

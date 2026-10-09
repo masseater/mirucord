@@ -73,6 +73,17 @@ Vectorize には戻す仕組みがない。D1 を戻した後は、各チャン�
 | Guild sync could not list servers from Discord | Bot のトークンが無効か、Discord が落ちている                  |
 | Channel ingest gave up after retries           | あるチャンネルの取り込みが 5 回続けて失敗し、Queue から捨てた |
 
+通知の送り方は、次の順に既存の手段を調べてから決めた。
+
+| 調べた手段                                     | 合わなかった理由                                                                                                     |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Cloudflare Notifications                       | Workers のエラーを知らせる通知の種類がない                                                                           |
+| Workers Observability の Issues と Automations | 公式で本命だが、Alchemy 2.0.0-beta.81 とその API クライアントが `observability.issues` を持たず IaC で有効にできない |
+| Sentry の `@sentry/cloudflare`                 | 外部サービスの契約と DSN が増え、OTLP と別の送信経路を持つことになる                                                 |
+
+そのため、既に使っている Discord REST クライアントで Webhook へ送っている。
+通知と同じ内容はエラーログにも出している。Alchemy が `observability.issues` を扱えるようになれば、Issues へ切り替えられる。
+
 ログは Cloudflare のダッシュボードの Workers Logs で読む。手元で流して見るときは次を使う。
 
 ```sh

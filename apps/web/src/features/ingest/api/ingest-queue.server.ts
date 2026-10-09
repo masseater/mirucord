@@ -1,12 +1,28 @@
-import { Effect, Exit, Schema } from "effect";
+import { Effect, Exit, Option, Schema } from "effect";
 
-import { IngestJobSchema } from "#/features/ingest/model/ingest-job";
+import { INGEST_MAX_RETRIES, IngestJobSchema } from "#/features/ingest/model/ingest-job";
+import { alertOperators } from "#/shared/alert/index.server";
 
 import { ingestChannel } from "./ingest-channel.server";
 
-type QueueDelivery = Readonly<{ body: unknown; ack: () => void; retry: () => void }>;
+type QueueDelivery = Readonly<{
+  body: unknown;
+  attempts: number;
+  ack: () => void;
+  retry: () => void;
+}>;
 
 const decodeJob = Schema.decodeUnknownEffect(IngestJobSchema);
+
+const giveUpOrRetry = (delivery: QueueDelivery): Effect.Effect<void> =>
+  Option.match(
+    Option.liftPredicate(delivery, ({ attempts }) => attempts > INGEST_MAX_RETRIES),
+    {
+      onNone: () => Effect.logWarning("Channel ingest failed; retrying"),
+      onSome: ({ body }) =>
+        alertOperators(`Channel ingest gave up after retries: ${JSON.stringify(body)}`),
+    },
+  );
 
 const processDelivery = (delivery: QueueDelivery): Effect.Effect<void> =>
   decodeJob(delivery.body).pipe(
@@ -19,7 +35,7 @@ const processDelivery = (delivery: QueueDelivery): Effect.Effect<void> =>
             delivery.ack();
           }),
         onFailure: () =>
-          Effect.logWarning("Channel ingest failed; retrying").pipe(
+          giveUpOrRetry(delivery).pipe(
             Effect.andThen(
               Effect.sync(() => {
                 delivery.retry();
@@ -30,8 +46,8 @@ const processDelivery = (delivery: QueueDelivery): Effect.Effect<void> =>
     ),
   );
 
-const ingestDeliveries = (
-  deliveries: readonly Readonly<{ body: unknown; ack: () => void; retry: () => void }>[],
-): Effect.Effect<void> => Effect.forEach(deliveries, processDelivery, { discard: true });
+const ingestDeliveries = (deliveries: readonly QueueDelivery[]): Effect.Effect<void> =>
+  Effect.forEach(deliveries, processDelivery, { discard: true });
 
 export { ingestDeliveries };
+export type { QueueDelivery };

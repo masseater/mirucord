@@ -2,13 +2,14 @@ import { OpenFeature, TypedInMemoryProvider } from "@openfeature/server-sdk";
 import { env } from "cloudflare:workers";
 import { ChannelType } from "discord-api-types/v10";
 import { eq, inArray } from "drizzle-orm";
-import { Array, DateTime, Effect, Option, pipe } from "effect";
+import { Array, Config, ConfigProvider, DateTime, Effect, Option, pipe } from "effect";
 
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, message, role } from "#/shared/db/index.server";
 import {
   getGuild,
+  leaveGuild,
   listActiveThreads,
   listBotGuilds,
   listGuildChannels,
@@ -37,6 +38,7 @@ const ingestEnabled: Effect.Effect<boolean> = Effect.promise(() =>
   Effect.andThen(Effect.promise(() => OpenFeature.getClient().getBooleanValue(INGEST_FLAG, false))),
 );
 const QUEUE_BATCH_LIMIT = 100;
+const DEFAULT_GUILD_LIMIT = 100;
 const ID_CHUNK = 50;
 
 type ChannelRow = typeof channel.$inferInsert;
@@ -62,6 +64,40 @@ const forgetMessagesOf = (
   selectIds(() =>
     db.select({ id: message.id }).from(message).where(eq(MESSAGE_OWNER[owner], ownerId)),
   ).pipe(Effect.flatMap(deleteVectors));
+
+const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =>
+  Effect.logWarning("Discord request failed").pipe(
+    Effect.annotateLogs({ status: Option.getOrElse(status, () => "network") }),
+  );
+
+const guildLimit: Effect.Effect<number> = Config.Int("MAX_GUILDS")
+  .pipe(Config.withDefault(DEFAULT_GUILD_LIMIT))
+  .parse(ConfigProvider.fromUnknown(env))
+  .pipe(Effect.orDie);
+
+const admitGuilds = (current: readonly string[]): Effect.Effect<readonly string[]> =>
+  Effect.all({
+    limit: guildLimit,
+    stored: selectIds(() => db.select({ id: guild.id }).from(guild)),
+  }).pipe(
+    Effect.map(({ limit, stored }) => {
+      const kept = current.filter((id) => stored.includes(id));
+      const fresh = current.filter((id) => !stored.includes(id));
+      return [...kept, ...Array.take(fresh, limit - kept.length)];
+    }),
+  );
+
+const leaveOverLimit = (rejected: readonly string[]): Effect.Effect<void> =>
+  Effect.forEach(
+    rejected,
+    (guildId) =>
+      leaveGuild(guildId).pipe(
+        Effect.andThen(Effect.logWarning("Left a server over the guild limit")),
+        Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),
+        Effect.annotateLogs({ guildId }),
+      ),
+    { discard: true },
+  );
 
 const removeDepartedGuilds = (current: readonly string[]): Effect.Effect<void> =>
   selectIds(() => db.select({ id: guild.id }).from(guild)).pipe(
@@ -189,17 +225,14 @@ const enqueue = (jobs: readonly IngestJob[]): Effect.Effect<void> =>
     { discard: true },
   );
 
-const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =>
-  Effect.logWarning("Discord request failed").pipe(
-    Effect.annotateLogs({ status: Option.getOrElse(status, () => "network") }),
-  );
-
 const syncAll: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* syncAll() {
-  const guilds = yield* listBotGuilds;
-  yield* removeDepartedGuilds(guilds.map(({ id }) => id));
+  const current = (yield* listBotGuilds).map(({ id }) => id);
+  const admitted = yield* admitGuilds(current);
+  yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));
+  yield* removeDepartedGuilds(admitted);
   const jobs = yield* pipe(
-    guilds,
-    Effect.forEach(({ id }) =>
+    admitted,
+    Effect.forEach((id) =>
       syncGuild(id).pipe(
         Effect.catchTag("DiscordRequestError", ({ status }) =>
           logDiscordFailure(status).pipe(Effect.as([])),
@@ -210,12 +243,10 @@ const syncAll: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* s
   yield* enqueue(jobs.flat());
 });
 
-const syncGuilds: Effect.Effect<void> = Effect.gen(function* syncGuilds() {
+const syncGuilds: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* syncGuilds() {
   const enabled = yield* ingestEnabled;
   if (enabled) {
-    yield* syncAll.pipe(
-      Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),
-    );
+    yield* syncAll;
   }
 });
 

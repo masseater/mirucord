@@ -3,6 +3,7 @@ import { D1, Queues, Vectorize, Website, Workers, providers, state } from "alche
 import type { InferEnv } from "alchemy/Cloudflare";
 import { Config, Effect, Option, Schema } from "effect";
 
+import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const OTLP = "otlp";
@@ -34,8 +35,21 @@ const discordEnv = Config.all({
   DISCORD_CLIENT_ID: Config.NonEmptyString("DISCORD_CLIENT_ID"),
   DISCORD_CLIENT_SECRET: Config.schema(NonEmptySecret, "DISCORD_CLIENT_SECRET"),
   DISCORD_BOT_TOKEN: Config.schema(NonEmptySecret, "DISCORD_BOT_TOKEN"),
-  SUPPORT_OPERATOR_IDS: Config.String("SUPPORT_OPERATOR_IDS").pipe(Config.withDefault("")),
 });
+
+const operationsEnv = Config.all({
+  SUPPORT_OPERATOR_IDS: Config.String("SUPPORT_OPERATOR_IDS").pipe(Config.withDefault("")),
+  MAX_GUILDS: Config.String("MAX_GUILDS").pipe(Config.withDefault("100")),
+  alertWebhook: Config.option(Config.schema(NonEmptySecret, "ALERT_WEBHOOK_URL")),
+}).pipe(
+  Config.map(({ alertWebhook, ...limits }) => ({
+    ...limits,
+    ...Option.match(alertWebhook, {
+      onNone: () => ({}),
+      onSome: (ALERT_WEBHOOK_URL) => ({ ALERT_WEBHOOK_URL }),
+    }),
+  })),
+);
 
 const kmsEnv = Config.option(
   Config.all({
@@ -78,7 +92,8 @@ const settings = Effect.gen(function* settings() {
   const discord = yield* discordEnv;
   const release = yield* releaseVersion;
   const kms = yield* kmsEnv;
-  return { otlp, discord, release, kms };
+  const operations = yield* operationsEnv;
+  return { otlp, discord, release, kms, operations };
 });
 
 const web = Effect.gen(function* web() {
@@ -87,7 +102,7 @@ const web = Effect.gen(function* web() {
   const INGEST = yield* Queues.Queue("Ingest");
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* makeRandom("MasterKey");
-  const { otlp, discord, release, kms } = yield* settings;
+  const { otlp, discord, release, kms, operations } = yield* settings;
   const site = yield* Website.Vite("Web", {
     main: "src/app/server/index.ts",
     domain: SITE_HOST,
@@ -96,6 +111,7 @@ const web = Effect.gen(function* web() {
       ...otlp,
       ...discord,
       ...kms,
+      ...operations,
       BETTER_AUTH_SECRET,
       MASTER_KEY,
       DB,
@@ -111,7 +127,7 @@ const web = Effect.gen(function* web() {
   yield* Queues.Consumer("IngestConsumer", {
     queueId: INGEST.queueId,
     scriptName: site.workerName,
-    settings: { batchSize: 10, maxRetries: 5 },
+    settings: { batchSize: 10, maxRetries: INGEST_MAX_RETRIES },
   });
   return site;
 });

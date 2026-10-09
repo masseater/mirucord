@@ -47,6 +47,19 @@ Bot をサーバーに招待すると、メッセージが事前に保存され�
 1. 土台の lint を通す。`vp check` の指摘を、設定を緩めずに直す。
 2. 取り込み。`src/features/ingest` に、Cron でギルド・ロール・チャンネルを同期して Queue に積む処理と、Queue でメッセージを取り込む処理を書く。取り込みでは、最新 100 件で編集と削除を突き合わせ、前回との隙間を埋め、過去分を遡る。`src/app/server/worker.ts` で TanStack Start の `fetch` と `scheduled`・`queue` をまとめて export する。最後に `vp run db:generate` で最初のマイグレーションを作る。
 3. MCP。`/mcp` を `requireMcpAuth` と `@modelcontextprotocol/server` の `createMcpHandler` で実装する。ツールは `list_servers`・`list_channels`・`search_messages`・`read_messages` の 4 つにする。`/.well-known/*` を `auth.handler` に通すルートも作る。
+   - どのツールも、呼ばれるたびに閲覧範囲を決め直す。決め方は次の手順にする。
+     1. アクセストークンの `sub` から、better-auth の `account` テーブルで Discord のユーザー ID を引く。
+     2. `findMember` でそのサーバーの参加者かどうかを Discord に問い合わせる。参加者でなければ、そのサーバーは存在しないものとして扱う。
+     3. 参加者なら、メンバーのロールと D1 のロール・チャンネルの権限上書きから `canReadHistory` で見られるチャンネルを決める。
+   - スレッドは親チャンネルの権限で判定し、非公開スレッドは対象にしない。
+   - `search_messages` では、Vectorize の filter で見られるチャンネルに絞る。さらに、D1 から行を読んだあとにもチャンネルを照合し、範囲外の行を捨てる。
+   - 範囲外のサーバーやチャンネルを指定されたら、存在しない場合と同じ応答を返し、存在するかどうかを漏らさない。
+   - 権限計算と閲覧範囲の決定には、テストを書く。少なくとも次を確かめる。
+     - 非参加者からは何も見えない。
+     - `@everyone` で拒否され、ロールで許可されたチャンネルは見える。
+     - メンバー単位の拒否はロールの許可より優先される。
+     - オーナーと管理者は全部見える。
+     - 親チャンネルを見られないスレッドは見えない。
 4. 画面。`/` には、サインイン・MCP の URL・Bot の招待 URL（権限値 `66560`）を出す。`/sign-in` は Discord でサインインする画面、`/consent` は OAuth の同意画面にする。
 5. デプロイと CI。`verify.yml` に `needs: verify` のデプロイジョブを足し、`alchemy deploy` を動かす。Worker のバージョンにコミットの SHA を刻む。
 6. 運営の閲覧を管理者の承認制にする。サーバー管理者が期限付きで許可した時だけ、運営がサポート用の endpoint で読めるようにし、その記録を管理者に見せる。

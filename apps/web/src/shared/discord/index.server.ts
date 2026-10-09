@@ -8,6 +8,4 @@ export {
   listMessages,
   PAGE_SIZE,
 } from "./discord.server";
-export type { DiscordChannel, DiscordGuild, DiscordMember, DiscordMessage } from "./discord.server";
-export { canReadHistory } from "./permissions";
-export type { ReaderContext } from "./permissions";
+export type { DiscordChannel, DiscordGuild, DiscordMessage, MessagePage } from "./discord.server";

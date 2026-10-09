@@ -1,1 +1,1 @@
-export { MCP_URL, SITE_HOST, SITE_ORIGIN } from "./site";
+export { MCP_URL, SITE_ORIGIN } from "./site";

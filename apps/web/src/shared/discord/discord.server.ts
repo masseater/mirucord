@@ -1,14 +1,16 @@
 import { DiscordAPIError, REST } from "@discordjs/rest";
 import { env } from "cloudflare:workers";
-import { Routes } from "discord-api-types/v10";
-import { Data, Effect, Option, Schema } from "effect";
+import { OverwriteType, Routes } from "discord-api-types/v10";
+import { Data, Effect, Function, Option, Schema } from "effect";
+
+const DATA_FIRST_ARITY = 2;
 
 const PAGE_SIZE = 100;
 const NOT_FOUND = 404;
 
 const PermissionOverwrite = Schema.Struct({
   id: Schema.String,
-  type: Schema.Finite,
+  type: Schema.Enum(OverwriteType),
   allow: Schema.String,
   deny: Schema.String,
 });
@@ -32,18 +34,22 @@ const Channel = Schema.Struct({
 
 const ThreadList = Schema.Struct({ threads: Schema.Array(Channel) });
 
+const Attachment = Schema.Struct({ filename: Schema.String, url: Schema.String });
+
+const Author = Schema.Struct({
+  id: Schema.String,
+  username: Schema.String,
+  global_name: Schema.optional(Schema.NullOr(Schema.String)),
+});
+
 const Message = Schema.Struct({
   id: Schema.String,
   type: Schema.Finite,
   content: Schema.String,
-  timestamp: Schema.String,
-  edited_timestamp: Schema.NullOr(Schema.String),
-  author: Schema.Struct({
-    id: Schema.String,
-    username: Schema.String,
-    global_name: Schema.optional(Schema.NullOr(Schema.String)),
-  }),
-  attachments: Schema.Array(Schema.Struct({ filename: Schema.String, url: Schema.String })),
+  timestamp: Schema.DateTimeUtcFromString,
+  edited_timestamp: Schema.NullOr(Schema.DateTimeUtcFromString),
+  author: Author,
+  attachments: Schema.Array(Attachment),
 });
 
 const Member = Schema.Struct({ roles: Schema.Array(Schema.String) });
@@ -54,21 +60,26 @@ type DiscordMessage = typeof Message.Type;
 type DiscordMember = typeof Member.Type;
 
 class DiscordRequestError extends Data.TaggedError("DiscordRequestError")<{
-  readonly status: number;
+  readonly status: Option.Option<number>;
   readonly cause: unknown;
 }> {}
 
+const isDiscordApiError = (cause: unknown): cause is DiscordAPIError =>
+  cause instanceof DiscordAPIError;
+
 const rest = new REST({ version: "10" }).setToken(env.DISCORD_BOT_TOKEN);
 
-const request = <S extends Schema.Top>(
-  schema: S,
+const request = <Body extends Schema.Top>(
+  schema: Body,
   load: () => Promise<unknown>,
-): Effect.Effect<S["Type"], DiscordRequestError, S["DecodingServices"]> =>
+): Effect.Effect<Body["Type"], DiscordRequestError, Body["DecodingServices"]> =>
   Effect.tryPromise({
     try: load,
     catch: (cause) =>
       new DiscordRequestError({
-        status: cause instanceof DiscordAPIError ? cause.status : 0,
+        status: Option.liftPredicate(cause, isDiscordApiError).pipe(
+          Option.map(({ status }) => status),
+        ),
         cause,
       }),
   }).pipe(Effect.flatMap((body) => Schema.decodeUnknownEffect(schema)(body).pipe(Effect.orDie)));
@@ -94,7 +105,7 @@ type MessagePage =
   | Readonly<{ direction: "latest" }>
   | Readonly<{ direction: "after" | "before"; cursor: string }>;
 
-const listMessages = (
+const listMessagesDataFirst = (
   channelId: string,
   page: MessagePage,
 ): Effect.Effect<readonly DiscordMessage[], DiscordRequestError> => {
@@ -107,17 +118,37 @@ const listMessages = (
   );
 };
 
-const findMember = (
+const listMessages: {
+  (
+    page: MessagePage,
+  ): (channelId: string) => Effect.Effect<readonly DiscordMessage[], DiscordRequestError>;
+  (
+    channelId: string,
+    page: MessagePage,
+  ): Effect.Effect<readonly DiscordMessage[], DiscordRequestError>;
+} = Function.dual(DATA_FIRST_ARITY, listMessagesDataFirst);
+
+const findMemberDataFirst = (
   guildId: string,
   userId: string,
 ): Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError> =>
   request(Member, () => rest.get(Routes.guildMember(guildId, userId))).pipe(
-    Effect.map(Option.some),
+    Effect.asSome,
     Effect.catchIf(
-      (error) => error.status === NOT_FOUND,
-      () => Effect.succeed(Option.none()),
+      (error) => Option.contains(error.status, NOT_FOUND),
+      () => Effect.succeedNone,
     ),
   );
+
+const findMember: {
+  (
+    userId: string,
+  ): (guildId: string) => Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError>;
+  (
+    guildId: string,
+    userId: string,
+  ): Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError>;
+} = Function.dual(DATA_FIRST_ARITY, findMemberDataFirst);
 
 export {
   DiscordRequestError,
@@ -129,4 +160,4 @@ export {
   listMessages,
   PAGE_SIZE,
 };
-export type { DiscordChannel, DiscordGuild, DiscordMember, DiscordMessage };
+export type { DiscordChannel, DiscordGuild, DiscordMember, DiscordMessage, MessagePage };

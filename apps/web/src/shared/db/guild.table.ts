@@ -1,13 +1,14 @@
+import type { OverwriteType } from "discord-api-types/v10";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 type PermissionOverwrite = Readonly<{
   id: string;
-  type: number;
+  type: OverwriteType;
   allow: string;
   deny: string;
 }>;
 
-export const guild = sqliteTable("guild", {
+const guild = sqliteTable("guild", {
   id: text().primaryKey(),
   name: text().notNull(),
   ownerId: text().notNull(),
@@ -15,7 +16,7 @@ export const guild = sqliteTable("guild", {
   joinedAt: integer({ mode: "timestamp_ms" }).notNull(),
 });
 
-export const role = sqliteTable(
+const role = sqliteTable(
   "role",
   {
     id: text().primaryKey(),
@@ -27,7 +28,7 @@ export const role = sqliteTable(
   (table) => [index("role_guild_id_idx").on(table.guildId)],
 );
 
-export const channel = sqliteTable(
+const channel = sqliteTable(
   "channel",
   {
     id: text().primaryKey(),
@@ -47,4 +48,5 @@ export const channel = sqliteTable(
   (table) => [index("channel_guild_id_idx").on(table.guildId)],
 );
 
+export { channel, guild, role };
 export type { PermissionOverwrite };

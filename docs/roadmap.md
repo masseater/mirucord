@@ -47,7 +47,6 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 `vp run verify` のうち、次の検査はまだ通らない。
 fallow は、テンプレートから残る `shared/api`・`shared/auth/client.ts`・`shared/ui/button.tsx` を未使用と報告する。スライス 4 の画面で使うか消す。
-syncpack は、`apps/web` の `zod` を禁止パッケージとして報告する。理由は引き継ぎの注意に書いた。
 `vp build` は `cloudflare:workers` を解決できずに失敗する。スライス 5 で Alchemy のビルドに合わせて直す。
 
 ## 残りのスライス
@@ -115,10 +114,9 @@ Worker のバージョンにコミットの SHA を刻む。
 `auth:generate` は `mcp()` の起動処理が D1 を読むので、そのままでは失敗する。
 生成し直す時は、D1 を差し替えた一時設定を使う。
 
-`better-call` は、`@better-auth/core` などの peer として zod 3 と zod 4 の 2 種類に解決されやすい。
-2 種類になると `better-call` が 2 つ読み込まれる。
-`apps/web` に `zod@4.6.5` を入れて 1 つにそろえているが、syncpack はこれを禁止パッケージとして報告する。
-pnpm の `overrides` で zod を 4 にそろえる方法は、syncpack が同じく報告し、steiger も zod 4 で動かないため使えない。
+`better-call` は、steiger が持ち込む zod 3 のせいで、peer の解決が 2 種類に分かれる。
+API エラーの判定は名前でも行われるので、2 つ読み込まれても動作は変わらない。
+zod は禁止パッケージなので、そろえるために足してはいけない。
 
 secret は `DISCORD_BOT_TOKEN`・`DISCORD_CLIENT_SECRET`・`CLOUDFLARE_API_TOKEN`・`OPENROUTER_API_KEY` を使う。
 GitHub には `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID`・`OPENROUTER_API_KEY`・`CLAUDE_CODE_OAUTH_TOKEN` の secret を入れてある。

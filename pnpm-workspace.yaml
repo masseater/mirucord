@@ -35,11 +35,16 @@ catalog:
   "@vitejs/plugin-rsc": 0.5.36
   skills: 1.7.1
   "@tanstack/intent": 0.5.5
+  "@discordjs/rest": 2.6.3
+  "@modelcontextprotocol/server": 2.3.1
+  "@sapphire/bitfield": 1.2.4
+  discord-api-types: 0.38.56
+  "@better-auth/mcp": 1.7.7
+  jose: 6.2.12
 catalogs:
   stack:
     "@effect/atom-react": 4.0.0
     "@effect/tsgo": 0.49.0
-    "@elysiajs/eden": 1.4.9
     "@openfeature/server-sdk": 1.23.0
     "@tanstack/react-query": 5.104.1
     "@tanstack/react-start": 1.168.60
@@ -47,11 +52,9 @@ catalogs:
     better-auth: 1.7.7
     drizzle-kit: 1.0.0-rc.5-ab785fc
     drizzle-orm: 1.0.0-rc.5-ab785fc
-    eden-tanstack-react-query: 0.5.0
     effect: 4.0.0
     elysia: 1.4.30
     fallow: 3.32.0
-    radix-ui: 1.7.0
     renovate: 44.145.3
     steiger: 0.7.0
     tailwindcss: 4.3.3
@@ -84,4 +87,5 @@ packageExtensions:
     dependencies:
       "@steiger/toolkit": 0.2.3
 patchedDependencies:
+  "@better-auth/oauth-provider@1.7.7": patches/@better-auth__oauth-provider@1.7.7.patch
   "@tanstack/eslint-plugin-start@0.1.0": patches/@tanstack__eslint-plugin-start@0.1.0.patch

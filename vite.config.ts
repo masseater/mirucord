@@ -112,7 +112,7 @@ export default defineConfig({
         {
           ignoreInferredTypes: true,
           allow: [
-            { from: "lib", name: "Request" },
+            { from: "lib", name: ["Request", "CryptoKey"] },
             { from: "package", package: "@tanstack/query-core", name: "QueryClient" },
             {
               from: "package",
@@ -123,7 +123,7 @@ export default defineConfig({
             {
               from: "package",
               package: "effect",
-              name: ["Cause", "Context", "Effect", "Exit", "Option"],
+              name: ["Cause", "Context", "DateTime", "Effect", "Exit", "Option", "Utc"],
             },
           ],
         },
@@ -137,7 +137,8 @@ export default defineConfig({
         "error",
         {
           capIsNewExceptions: ["Stack"],
-          capIsNewExceptionPattern: "^(Config|Context|Data|Schema|D1|Website)\\.",
+          capIsNewExceptionPattern:
+            "^(Config|Context|Data|Schema|D1|Queues|Vectorize|Website|Workers)\\.",
         },
       ],
       "typescript/no-empty-interface": ["error", { allowSingleExtends: true }],
@@ -147,7 +148,7 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: ["**/*.config.ts", "**/alchemy.run.ts"],
+        files: ["**/*.config.ts", "**/alchemy.run.ts", "**/src/app/server/index.ts"],
         rules: { "import/no-default-export": "off" },
       },
       {

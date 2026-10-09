@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { HomePage, loadHomePage } from "#/pages/home";
+import { HomePage } from "#/pages/home";
 
-const Route = createFileRoute("/")({
-  loader: ({ context }) => loadHomePage(context.queryClient),
-  component: HomePage,
-});
+const Route = createFileRoute("/")({ component: HomePage });
 
 export { Route };

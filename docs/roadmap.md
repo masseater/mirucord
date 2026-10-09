@@ -32,7 +32,7 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 今の状態
 
-スライス 1 から 6 までを書いた。
+スライス 1 から 7 までを書いた。
 
 | 場所                                   | 内容                                                                                        |
 | -------------------------------------- | ------------------------------------------------------------------------------------------- |
@@ -114,9 +114,15 @@ Worker のバージョンにはコミットの SHA を刻み、`/api/health` が
 運営の読み出しはツールごとに `support_access` へ記録し、管理者は `list_support_access` で許可と読み出しの履歴を見られる。`revoke_support_access` で期限前に打ち切れる。
 別の endpoint を立てず `/mcp` に寄せたのは、権限の判定と記録を 1 か所に保つためである。
 
-### 7. 公式版の鍵を外部 KMS に移す
+### 7. 公式版の鍵を外部 KMS に移す（済）
 
-`MASTER_KEY` を使う今の方式は、自前運用の既定として残す。
+`AWS_KMS_KEY_ID` などの AWS の設定がそろうと、新しいサーバーの鍵は AWS KMS で作る。
+保存する値には `aws-kms:` を頭に付ける。
+開くときは頭の印で方式を選ぶので、`MASTER_KEY` で包んだ既存の鍵もそのまま読める。
+`MASTER_KEY` を使う方式は、自前運用の既定として残す。
+AWS の呼び出しには、Alchemy と同じ作者の `@distilled.cloud/aws` を使う。Effect で書かれ、Workers 向けの export を持つためである。
+
+デプロイジョブは Variables の `AWS_KMS_KEY_ID`・`AWS_REGION`・`AWS_ACCESS_KEY_ID` と、Secrets の `AWS_SECRET_ACCESS_KEY` を渡す。IAM ユーザーには、その鍵への `kms:GenerateDataKeyWithoutPlaintext` と `kms:Decrypt` だけを許す。
 
 ## 引き継ぎの注意
 

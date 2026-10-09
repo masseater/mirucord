@@ -69,7 +69,7 @@ const isDiscordApiError = (cause: unknown): cause is DiscordAPIError =>
 
 const rest = new REST({ version: "10" }).setToken(env.DISCORD_BOT_TOKEN);
 
-const request = <Body extends Schema.Top>(
+const callDiscord = <Body extends Schema.Top>(
   schema: Body,
   load: () => Promise<unknown>,
 ): Effect.Effect<Body["Type"], DiscordRequestError, Body["DecodingServices"]> =>
@@ -84,20 +84,20 @@ const request = <Body extends Schema.Top>(
       }),
   }).pipe(Effect.flatMap((body) => Schema.decodeUnknownEffect(schema)(body).pipe(Effect.orDie)));
 
-const listBotGuilds = request(Schema.Array(PartialGuild), () => rest.get(Routes.userGuilds()));
+const listBotGuilds = callDiscord(Schema.Array(PartialGuild), () => rest.get(Routes.userGuilds()));
 
 const getGuild = (guildId: string): Effect.Effect<DiscordGuild, DiscordRequestError> =>
-  request(Guild, () => rest.get(Routes.guild(guildId)));
+  callDiscord(Guild, () => rest.get(Routes.guild(guildId)));
 
 const listGuildChannels = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
-  request(Schema.Array(Channel), () => rest.get(Routes.guildChannels(guildId)));
+  callDiscord(Schema.Array(Channel), () => rest.get(Routes.guildChannels(guildId)));
 
 const listActiveThreads = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
-  request(ThreadList, () => rest.get(Routes.guildActiveThreads(guildId))).pipe(
+  callDiscord(ThreadList, () => rest.get(Routes.guildActiveThreads(guildId))).pipe(
     Effect.map(({ threads }) => threads),
   );
 
@@ -113,7 +113,7 @@ const listMessagesDataFirst = (
   if (page.direction !== "latest") {
     query.set(page.direction, page.cursor);
   }
-  return request(Schema.Array(Message), () =>
+  return callDiscord(Schema.Array(Message), () =>
     rest.get(Routes.channelMessages(channelId), { query }),
   );
 };
@@ -132,7 +132,7 @@ const findMemberDataFirst = (
   guildId: string,
   userId: string,
 ): Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError> =>
-  request(Member, () => rest.get(Routes.guildMember(guildId, userId))).pipe(
+  callDiscord(Member, () => rest.get(Routes.guildMember(guildId, userId))).pipe(
     Effect.asSome,
     Effect.catchIf(
       (error) => Option.contains(error.status, NOT_FOUND),

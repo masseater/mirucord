@@ -29,7 +29,4 @@ const clientNameQuery = (
     queryFn: () => fetchClientName(clientId),
   });
 
-const answerConsent = (accept: boolean): Promise<unknown> =>
-  authClient.oauth2.consent({ accept, fetchOptions: { throw: true } });
-
-export { answerConsent, clientNameQuery, validateConsentSearch };
+export { clientNameQuery, validateConsentSearch };

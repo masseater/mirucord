@@ -1,13 +1,13 @@
 import { env } from "cloudflare:workers";
+import { OAuth2Routes, OAuth2Scopes, PermissionFlagsBits } from "discord-api-types/v10";
 
-const AUTHORIZE_URL = "https://discord.com/oauth2/authorize";
-const BOT_PERMISSIONS = "66560";
+const BOT_PERMISSIONS = PermissionFlagsBits.ViewChannel + PermissionFlagsBits.ReadMessageHistory;
 
 const inviteUrl = (): string => {
-  const url = new URL(AUTHORIZE_URL);
+  const url = new URL(OAuth2Routes.authorizationURL);
   url.searchParams.set("client_id", env.DISCORD_CLIENT_ID);
-  url.searchParams.set("scope", "bot");
-  url.searchParams.set("permissions", BOT_PERMISSIONS);
+  url.searchParams.set("scope", OAuth2Scopes.Bot);
+  url.searchParams.set("permissions", BOT_PERMISSIONS.toString());
   return url.href;
 };
 

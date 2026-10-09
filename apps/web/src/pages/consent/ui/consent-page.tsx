@@ -4,7 +4,8 @@ import { Option } from "effect";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
-import { answerConsent, clientNameQuery } from "#/pages/consent/api/consent";
+import { clientNameQuery } from "#/pages/consent/api/consent";
+import { authClient } from "#/shared/auth";
 
 const ALLOW = "Allow";
 const DENY = "Deny";
@@ -12,6 +13,9 @@ const FAILED = "Something went wrong. Please try again.";
 const SCOPE =
   "will be able to list and read messages in the Discord channels you can read. It cannot post or change anything.";
 const ASK = "Allow access for";
+
+const answerConsent = (accept: boolean): Promise<unknown> =>
+  authClient.oauth2.consent({ accept, fetchOptions: { throw: true } });
 
 const ConsentPage = (): ReactNode => {
   const { client_id: clientId } = useSearch({ from: "/consent" });

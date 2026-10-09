@@ -36,29 +36,34 @@ const discordEnv = Config.all({
   DISCORD_BOT_TOKEN: Config.schema(NonEmptySecret, "DISCORD_BOT_TOKEN"),
 });
 
-const web = Effect.gen(function* web() {
-  const DB = yield* D1.Database("DB", { migrations: "./drizzle" });
-  const MESSAGES = yield* Vectorize.Index("Messages", {
+const messagesIndex = Effect.gen(function* messagesIndex() {
+  const index = yield* Vectorize.Index("Messages", {
     dimensions: EMBEDDING_DIMENSIONS,
     metric: "cosine",
   });
   yield* Vectorize.MetadataIndex("MessagesGuildId", {
-    indexName: MESSAGES.indexName,
+    indexName: index.indexName,
     propertyName: "guildId",
     indexType: "string",
   });
   yield* Vectorize.MetadataIndex("MessagesChannelId", {
-    indexName: MESSAGES.indexName,
+    indexName: index.indexName,
     propertyName: "channelId",
     indexType: "string",
   });
+  return index;
+});
+
+const web = Effect.gen(function* web() {
+  const DB = yield* D1.Database("DB", { migrations: "./drizzle" });
+  const MESSAGES = yield* messagesIndex;
   const INGEST = yield* Queues.Queue("Ingest");
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* makeRandom("MasterKey");
   const otlp = yield* otlpEnv;
   const discord = yield* discordEnv;
   const site = yield* Website.Vite("Web", {
-    main: "src/app/server/worker.ts",
+    main: "src/app/server/index.ts",
     domain: SITE_HOST,
     crons: ["*/5 * * * *"],
     env: {

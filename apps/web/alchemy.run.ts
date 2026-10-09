@@ -34,6 +34,7 @@ const discordEnv = Config.all({
   DISCORD_CLIENT_ID: Config.NonEmptyString("DISCORD_CLIENT_ID"),
   DISCORD_CLIENT_SECRET: Config.schema(NonEmptySecret, "DISCORD_CLIENT_SECRET"),
   DISCORD_BOT_TOKEN: Config.schema(NonEmptySecret, "DISCORD_BOT_TOKEN"),
+  SUPPORT_OPERATOR_IDS: Config.String("SUPPORT_OPERATOR_IDS").pipe(Config.withDefault("")),
 });
 
 const releaseVersion = Config.option(Config.NonEmptyString("GITHUB_SHA")).pipe(

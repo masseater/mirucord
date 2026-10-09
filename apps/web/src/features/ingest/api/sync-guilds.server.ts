@@ -1,3 +1,4 @@
+import { OpenFeature, TypedInMemoryProvider } from "@openfeature/server-sdk";
 import { env } from "cloudflare:workers";
 import { ChannelType } from "discord-api-types/v10";
 import { eq, inArray } from "drizzle-orm";
@@ -17,11 +18,24 @@ import type {
   DiscordGuild,
   DiscordRequestError,
 } from "#/shared/discord/index.server";
-import { FeatureFlags } from "#/shared/flags/index.server";
 
 import { deleteVectors } from "./vectors.server";
 
 const INGEST_FLAG = "ingest-enabled";
+
+const flagConfiguration = {
+  [INGEST_FLAG]: {
+    variants: { on: true, off: false },
+    defaultVariant: "on",
+    disabled: false,
+  },
+} as const;
+
+const ingestEnabled: Effect.Effect<boolean> = Effect.promise(() =>
+  OpenFeature.setProviderAndWait(new TypedInMemoryProvider(flagConfiguration)),
+).pipe(
+  Effect.andThen(Effect.promise(() => OpenFeature.getClient().getBooleanValue(INGEST_FLAG, false))),
+);
 const QUEUE_BATCH_LIMIT = 100;
 const ID_CHUNK = 50;
 
@@ -196,9 +210,8 @@ const syncAll: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* s
   yield* enqueue(jobs.flat());
 });
 
-const syncGuilds: Effect.Effect<void, never, FeatureFlags> = Effect.gen(function* syncGuilds() {
-  const flags = yield* FeatureFlags;
-  const enabled = yield* flags.getBoolean(INGEST_FLAG, false);
+const syncGuilds: Effect.Effect<void> = Effect.gen(function* syncGuilds() {
+  const enabled = yield* ingestEnabled;
   if (enabled) {
     yield* syncAll.pipe(
       Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),

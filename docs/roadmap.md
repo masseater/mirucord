@@ -110,6 +110,12 @@ Worker のバージョンにコミットの SHA を刻む。
 
 ## 引き継ぎの注意
 
+チャンネル権限の計算（`features/mcp/model/permissions.ts`）は手で書いた。
+discord.js の `GuildChannel#permissionsFor` はログイン済みの Client のキャッシュを前提にしており、D1 に保存した REST の値からは使えない。
+`@discordjs/rest` と `discord-api-types` は通信と型だけで、権限の計算は持たない。
+npm でも、REST の値から権限を計算する保守されたパッケージは見つからなかった。
+計算の順序は、Discord 公式ドキュメント「Permissions」の「Permission Overwrites」の節に合わせている。
+
 `patches/@better-auth__oauth-provider` は、上流の issue #10213 の回避策である。
 修正の PR #10266 が取り込まれたら、パッチを消す。
 

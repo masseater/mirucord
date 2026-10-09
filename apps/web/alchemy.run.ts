@@ -36,6 +36,15 @@ const discordEnv = Config.all({
   DISCORD_BOT_TOKEN: Config.schema(NonEmptySecret, "DISCORD_BOT_TOKEN"),
 });
 
+const releaseVersion = Config.option(Config.NonEmptyString("GITHUB_SHA")).pipe(
+  Config.map(
+    Option.match({
+      onNone: () => ({}),
+      onSome: (tag) => ({ version: { tag, message: `Deploy ${tag}` } }),
+    }),
+  ),
+);
+
 const messagesIndex = Effect.gen(function* messagesIndex() {
   const index = yield* Vectorize.Index("Messages", {
     dimensions: EMBEDDING_DIMENSIONS,
@@ -54,14 +63,20 @@ const messagesIndex = Effect.gen(function* messagesIndex() {
   return index;
 });
 
+const settings = Effect.gen(function* settings() {
+  const otlp = yield* otlpEnv;
+  const discord = yield* discordEnv;
+  const release = yield* releaseVersion;
+  return { otlp, discord, release };
+});
+
 const web = Effect.gen(function* web() {
   const DB = yield* D1.Database("DB", { migrations: "./drizzle" });
   const MESSAGES = yield* messagesIndex;
   const INGEST = yield* Queues.Queue("Ingest");
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* makeRandom("MasterKey");
-  const otlp = yield* otlpEnv;
-  const discord = yield* discordEnv;
+  const { otlp, discord, release } = yield* settings;
   const site = yield* Website.Vite("Web", {
     main: "src/app/server/index.ts",
     domain: SITE_HOST,
@@ -75,9 +90,11 @@ const web = Effect.gen(function* web() {
       MESSAGES,
       INGEST,
       AI: Workers.AI(),
+      VERSION: Workers.VersionMetadata(),
     },
     observability: { enabled: true, traces: { enabled: true } },
     viteEnvironments: { entry: "ssr", children: ["rsc"] },
+    ...release,
   });
   yield* Queues.Consumer("IngestConsumer", {
     queueId: INGEST.queueId,

@@ -32,7 +32,7 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 今の状態
 
-スライス 1 から 4 までを書いた。
+スライス 1 から 5 までを書いた。
 
 | 場所                                   | 内容                                                                                        |
 | -------------------------------------- | ------------------------------------------------------------------------------------------- |
@@ -46,7 +46,7 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 | `patches/@better-auth__oauth-provider` | `exactOptionalPropertyTypes` の下で `mcp()` が `BetterAuthPlugin` に代入できない型の修正    |
 
 `vp run verify` は、クラウドで動かない jev-lint と actions-lint を除いて通る。
-`vp build` は `cloudflare:workers` を解決できずに失敗する。スライス 5 で Alchemy のビルドに合わせて直す。
+単体の `vp build` は `cloudflare:workers` を解決できずに失敗する。Cloudflare の Vite プラグインは `alchemy deploy` が差し込むので、ビルドはデプロイの中で行う。
 
 ## 残りのスライス
 
@@ -94,10 +94,18 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 `/` には、MCP の URL と Bot の招待 URL（権限値 `66560`）を出す。サインインへは MCP クライアントの認可の流れで案内される。
 `/sign-in` は Discord でサインインする画面、`/consent` は OAuth の同意画面にする。
 
-### 5. デプロイと CI
+### 5. デプロイと CI（済）
 
-`verify.yml` に `needs: verify` のデプロイジョブを足し、`alchemy deploy` を動かす。
-Worker のバージョンにコミットの SHA を刻む。
+`verify.yml` の `deploy` ジョブが、main の verify が通った後に `alchemy deploy --stage prod` を動かす。
+Worker のバージョンにはコミットの SHA を刻み、`/api/health` がそれを返す。
+
+デプロイジョブは、リポジトリに次の設定があることを前提にする。
+
+| 種類      | 名前                                                                                          |
+| --------- | --------------------------------------------------------------------------------------------- |
+| Secrets   | `CLOUDFLARE_API_TOKEN`・`CLOUDFLARE_ACCOUNT_ID`・`DISCORD_CLIENT_SECRET`・`DISCORD_BOT_TOKEN` |
+| Secrets   | `OTEL_EXPORTER_OTLP_HEADERS`（任意）                                                          |
+| Variables | `DISCORD_CLIENT_ID`・`OTEL_EXPORTER_OTLP_ENDPOINT`（任意）                                    |
 
 ### 6. 運営の閲覧を管理者の承認制にする
 

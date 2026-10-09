@@ -1,7 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import { Array, Boolean, DateTime, Effect, Number, Option, pipe } from "effect";
+import { Array, Boolean, DateTime, Effect, Number, Option, Order, pipe } from "effect";
 
-import { isNewerThan, newestId, oldestId } from "#/features/ingest/lib/snowflake";
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild } from "#/shared/db/index.server";
@@ -18,6 +17,22 @@ import type { StoreTarget } from "./store-messages.server";
 
 const MAX_PAGES_PER_RUN = 5;
 const LAST_PAGE = 1;
+
+const SnowflakeOrder: Order.Order<string> = Order.mapInput(Order.BigInt, BigInt);
+
+const newestId = (ids: readonly string[]): Option.Option<string> =>
+  Array.match(ids, {
+    onEmpty: () => Option.none(),
+    onNonEmpty: (nonEmpty) => Option.some(Array.max(nonEmpty, SnowflakeOrder)),
+  });
+
+const oldestId = (ids: readonly string[]): Option.Option<string> =>
+  Array.match(ids, {
+    onEmpty: () => Option.none(),
+    onNonEmpty: (nonEmpty) => Option.some(Array.min(nonEmpty, SnowflakeOrder)),
+  });
+
+const isNewerThan = Order.isGreaterThan(SnowflakeOrder);
 
 type Backfill = "pending" | "done";
 

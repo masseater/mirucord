@@ -1,5 +1,5 @@
 const flagConfiguration = {
-  "show-done-todos": {
+  "ingest-enabled": {
     variants: { on: true, off: false },
     defaultVariant: "on",
     disabled: false,

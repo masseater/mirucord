@@ -1,0 +1,50 @@
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+type PermissionOverwrite = Readonly<{
+  id: string;
+  type: number;
+  allow: string;
+  deny: string;
+}>;
+
+export const guild = sqliteTable("guild", {
+  id: text().primaryKey(),
+  name: text().notNull(),
+  ownerId: text().notNull(),
+  wrappedKey: text().notNull(),
+  joinedAt: integer({ mode: "timestamp_ms" }).notNull(),
+});
+
+export const role = sqliteTable(
+  "role",
+  {
+    id: text().primaryKey(),
+    guildId: text()
+      .notNull()
+      .references(() => guild.id, { onDelete: "cascade" }),
+    permissions: text().notNull(),
+  },
+  (table) => [index("role_guild_id_idx").on(table.guildId)],
+);
+
+export const channel = sqliteTable(
+  "channel",
+  {
+    id: text().primaryKey(),
+    guildId: text()
+      .notNull()
+      .references(() => guild.id, { onDelete: "cascade" }),
+    parentId: text(),
+    name: text().notNull(),
+    type: integer().notNull(),
+    permissionOverwrites: text({ mode: "json" }).$type<readonly PermissionOverwrite[]>().notNull(),
+    newestMessageId: text(),
+    oldestMessageId: text(),
+    backfill: text({ enum: ["pending", "done"] })
+      .notNull()
+      .default("pending"),
+  },
+  (table) => [index("channel_guild_id_idx").on(table.guildId)],
+);
+
+export type { PermissionOverwrite };

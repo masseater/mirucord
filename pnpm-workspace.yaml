@@ -35,6 +35,12 @@ catalog:
   "@vitejs/plugin-rsc": 0.5.36
   skills: 1.7.1
   "@tanstack/intent": 0.5.5
+  "@better-auth/oauth-provider": 1.7.7
+  "@discordjs/rest": 2.6.3
+  "@modelcontextprotocol/server": 2.3.1
+  discord-api-types: 0.38.56
+  "@better-auth/mcp": 1.7.7
+  zod: 4.6.5
 catalogs:
   stack:
     "@effect/atom-react": 4.0.0
@@ -84,4 +90,5 @@ packageExtensions:
     dependencies:
       "@steiger/toolkit": 0.2.3
 patchedDependencies:
+  "@better-auth/oauth-provider@1.7.7": patches/@better-auth__oauth-provider@1.7.7.patch
   "@tanstack/eslint-plugin-start@0.1.0": patches/@tanstack__eslint-plugin-start@0.1.0.patch

@@ -21,6 +21,7 @@
   "dependencies": {
     "@better-auth/drizzle-adapter": "1.7.7",
     "@better-auth/mcp": "catalog:",
+    "@better-auth/oauth-provider": "catalog:",
     "@discordjs/rest": "catalog:",
     "@effect/atom-react": "catalog:stack",
     "@modelcontextprotocol/server": "catalog:",

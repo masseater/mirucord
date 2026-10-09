@@ -10,7 +10,7 @@ const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
     meta: [
       { charSet: "utf8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "web" },
+      { title: "mirucord" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),

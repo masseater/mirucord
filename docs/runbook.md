@@ -59,6 +59,11 @@ vp exec wrangler d1 time-travel restore <データベース名> --timestamp=<RFC
 
 Vectorize には戻す仕組みがない。D1 を戻した後は、各チャンネルの取り込み位置も戻るので、次の Cron で取り込み直される。
 
+## 管理画面
+
+`/admin` に、登録済みのサーバーと取り込みの進み具合を出す。
+`SUPPORT_OPERATOR_IDS` に載っている人が Discord でサインインした時だけ見られる。メッセージの中身は出さない。
+
 ## 障害の気づき方
 
 次の場合に `ALERT_WEBHOOK_URL` へ通知する。同じ内容はエラーとして Workers Logs にも出る。

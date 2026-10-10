@@ -59,10 +59,9 @@ Discord と Claude のロゴの色は `discord` と `claude` を使う。
 
 | 部品           | 置き場所                      | 使いどころ               |
 | -------------- | ----------------------------- | ------------------------ |
-| `AppFrame`     | `shared/ui/app-frame.tsx`     | LP 以外のページの外枠    |
+| `AppFrame`     | `shared/ui/app-frame/`        | LP 以外のページの外枠    |
 | `Panel`        | `shared/ui/panel.tsx`         | 管理画面や規約のまとまり |
 | `PopButton`    | `shared/ui/pop-button.tsx`    | 画面内の操作             |
-| `PopLink`      | `shared/ui/pop-link.tsx`      | ボタンの見た目をした遷移 |
 | `SpeechBubble` | `shared/ui/speech-bubble.tsx` | ミルのセリフ             |
 | `MascotTip`    | `shared/ui/mascot-tip.tsx`    | ミルと吹き出しの組       |
 | `Mascot`       | `shared/brand/mascot.tsx`     | ミル本体                 |
@@ -70,6 +69,7 @@ Discord と Claude のロゴの色は `discord` と `claude` を使う。
 新しいページはまずこれらで組み、足りないときだけ部品を足す。
 部品を足したら、この表に追記する。
 LP だけの演出は `pages/home` に置き、ほかのページで使い始めたら `shared/ui` へ移す。
+LP のボタン型リンクもその1つで、見た目は `PopButton` と同じ `popButtonVariants` を使う。
 
 ## 言葉
 

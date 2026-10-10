@@ -28,9 +28,10 @@ type ConsentResult =
 type RevokeResult = Readonly<{ status: "revoked" }> | Readonly<{ status: "forbidden" }>;
 
 const NOTICE = [
-  "このサーバーの過去ログを mirucord が読み取ります。",
-  "対象は mirucord の Bot が見られるチャンネルです。",
-  `取り扱いについて: ${SITE_ORIGIN}${PRIVACY_PATH}`,
+  "はじめまして、ミルだよ！",
+  "このサーバーのみんなの思い出をさがせるように、過去ログを読ませてもらうね。",
+  "読むのは **ミルが見られるチャンネル** だけだよ。",
+  `読んだ内容の扱いはここを見てね → ${SITE_ORIGIN}${PRIVACY_PATH}`,
 ].join("\n");
 
 const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean =>

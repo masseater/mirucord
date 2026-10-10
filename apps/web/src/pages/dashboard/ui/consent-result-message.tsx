@@ -6,7 +6,7 @@ import type { ConsentResult } from "#/features/ingest/index.server";
 type MutationStatus = "idle" | "pending" | "success" | "error";
 
 const MESSAGES = {
-  saved: "保存しました。取り込みを始めています。",
+  saved: "取り込みを始めました。",
   forbidden: "このサーバーを管理する権限が確認できませんでした。",
   invalid: "お知らせを投稿するチャンネルを Bot が見られるチャンネルから選んでください。",
   noticeFailed:

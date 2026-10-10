@@ -1,19 +1,19 @@
 import type { ReactNode } from "react";
 
-import { CtaLink } from "#/pages/home/ui/common/cta-link";
-import { REPOSITORY_URL, SIGN_IN_PATH } from "#/shared/config";
+import { REPOSITORY_URL, DASHBOARD_PATH } from "#/shared/config";
+import { PopLink } from "#/shared/ui/pop-link";
 
 const START = "Discord でログインしてはじめる";
 const SOURCE = "GitHub を見る";
 
 const ClosingActions = (): ReactNode => (
   <div className="flex flex-wrap justify-center gap-4">
-    <CtaLink href={SIGN_IN_PATH} tone="blurple" size="xl">
+    <PopLink href={DASHBOARD_PATH} tone="blurple" size="lg">
       {START}
-    </CtaLink>
-    <CtaLink href={REPOSITORY_URL} tone="milk" size="xl">
+    </PopLink>
+    <PopLink href={REPOSITORY_URL} tone="milk" size="lg">
       {SOURCE}
-    </CtaLink>
+    </PopLink>
   </div>
 );
 

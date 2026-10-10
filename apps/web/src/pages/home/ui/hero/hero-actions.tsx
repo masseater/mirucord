@@ -1,19 +1,19 @@
 import type { ReactNode } from "react";
 
-import { CtaLink } from "#/pages/home/ui/common/cta-link";
-import { SIGN_IN_PATH } from "#/shared/config";
+import { DASHBOARD_PATH } from "#/shared/config";
+import { PopLink } from "#/shared/ui/pop-link";
 
 const START = "Discord でログインしてはじめる";
 const HOW = "しくみを見る";
 
 const HeroActions = (): ReactNode => (
   <div className="mt-2 flex flex-wrap gap-4">
-    <CtaLink href={SIGN_IN_PATH} tone="blurple" size="xl">
+    <PopLink href={DASHBOARD_PATH} tone="blurple" size="lg">
       {START}
-    </CtaLink>
-    <CtaLink href="#how" tone="milk" size="xl">
+    </PopLink>
+    <PopLink href="#how" tone="milk" size="lg">
       {HOW}
-    </CtaLink>
+    </PopLink>
   </div>
 );
 

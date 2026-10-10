@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-import { CtaLink } from "#/pages/home/ui/common/cta-link";
 import { Mascot } from "#/shared/brand";
-import { SIGN_IN_PATH } from "#/shared/config";
+import { DASHBOARD_PATH } from "#/shared/config";
+import { PopLink } from "#/shared/ui/pop-link";
 
 import { NavLinks } from "./nav-links";
 
@@ -16,9 +16,9 @@ const SiteNav = (): ReactNode => (
       {BRAND}
     </a>
     <NavLinks />
-    <CtaLink href={SIGN_IN_PATH} tone="blurple" size="sm">
+    <PopLink href={DASHBOARD_PATH} tone="blurple" size="sm">
       {SIGN_IN}
-    </CtaLink>
+    </PopLink>
   </header>
 );
 

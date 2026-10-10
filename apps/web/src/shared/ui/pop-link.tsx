@@ -2,27 +2,20 @@ import type { ReactNode } from "react";
 
 import { popButtonVariants } from "./pop-variants";
 
-const PopButton = ({
+const PopLink = ({
+  href,
   tone,
   size = "md",
-  disabled,
-  onClick,
   children,
 }: Readonly<{
+  href: string;
   tone: "blurple" | "milk" | "pink";
   size?: "sm" | "md" | "lg";
-  disabled: boolean;
-  onClick: () => void;
   children: ReactNode;
 }>): ReactNode => (
-  <button
-    type="button"
-    className={popButtonVariants({ tone, size })}
-    disabled={disabled}
-    onClick={onClick}
-  >
+  <a href={href} className={popButtonVariants({ tone, size })}>
     {children}
-  </button>
+  </a>
 );
 
-export { PopButton };
+export { PopLink };

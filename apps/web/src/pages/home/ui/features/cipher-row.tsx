@@ -6,7 +6,7 @@ const CipherRow = ({ before, after }: Readonly<{ before: string; after: string }
   <li className="flex flex-wrap items-center gap-2.5">
     <span>{before}</span>
     <span>{ARROW}</span>
-    <span className="bg-milk text-pink-deep rounded-full px-3 py-1 font-mono">{after}</span>
+    <span className="bg-milk text-ink rounded-full px-3 py-1 font-mono">{after}</span>
   </li>
 );
 

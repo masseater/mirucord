@@ -2,7 +2,7 @@ import { cva } from "class-variance-authority";
 import type { ReactNode } from "react";
 
 const ctaLinkVariants = cva(
-  "inline-flex shrink-0 items-center justify-center rounded-full border-2 border-ink font-bold whitespace-nowrap no-underline transition-all outline-none focus-visible:ring-4 focus-visible:ring-lavender-deep/50 hover:-translate-y-0.5 active:translate-y-1 active:shadow-none",
+  "inline-flex shrink-0 items-center justify-center rounded-full border-2 border-ink font-bold whitespace-nowrap no-underline outline-none focus-visible:ring-4 focus-visible:ring-lavender-deep/50 active:shadow-none motion-safe:transition motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-1",
   {
     variants: {
       tone: {

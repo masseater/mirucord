@@ -99,4 +99,4 @@ const enqueueInScope = (guildId: string): Effect.Effect<void> =>
 const refreshIngest = (guildId: string): Effect.Effect<void> =>
   purgeOutOfScope(guildId).pipe(Effect.andThen(enqueueInScope(guildId)));
 
-export { loadScope, refreshIngest };
+export { loadScope, purgeChannel, refreshIngest };

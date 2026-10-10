@@ -34,6 +34,7 @@ const Channel = Schema.Struct({
   type: Schema.Finite,
   name: Schema.optional(Schema.String),
   parent_id: Schema.optional(Schema.NullOr(Schema.String)),
+  position: Schema.optional(Schema.Finite),
   permission_overwrites: Schema.optional(Schema.Array(PermissionOverwrite)),
   thread_metadata: Schema.optional(Schema.Struct({ archive_timestamp: Schema.String })),
 });

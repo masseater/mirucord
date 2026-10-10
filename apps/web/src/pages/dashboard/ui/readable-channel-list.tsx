@@ -1,20 +1,16 @@
 import type { ReactNode } from "react";
 
-import type { SettingsChannel } from "#/features/ingest/index.server";
+import type { GuildSettings, SettingsChannel } from "#/features/ingest/index.server";
+import { groupByCategory } from "#/pages/dashboard/model/channel-groups";
 
-import { ChannelLabel } from "./channel-label";
-import { Pill } from "./pill";
+import { ReadableChannelGroup } from "./readable-channel-group";
 
 const ReadableChannelList = ({
+  settings,
   channels,
-}: Readonly<{ channels: readonly SettingsChannel[] }>): ReactNode => (
-  <p className="flex flex-wrap gap-2">
-    {channels.map((channel) => (
-      <Pill key={channel.id} tone="bg-lavender">
-        <ChannelLabel channel={channel} />
-      </Pill>
-    ))}
-  </p>
-);
+}: Readonly<{ settings: GuildSettings; channels: readonly SettingsChannel[] }>): ReactNode =>
+  groupByCategory(settings, channels).map((group) => (
+    <ReadableChannelGroup key={group.id} group={group} />
+  ));
 
 export { ReadableChannelList };

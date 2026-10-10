@@ -19,13 +19,7 @@ const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>):
     <h1 className="text-3xl font-black">{settings.name}</h1>
     <ConsentRecord consent={settings.consent} />
     {settings.consent.status === "awaiting" && <ConsentForm settings={settings} />}
-    {settings.consent.status === "granted" && (
-      <IngestStatus
-        guildId={settings.id}
-        channels={settings.channels}
-        storedMessages={settings.storedMessages}
-      />
-    )}
+    {settings.consent.status === "granted" && <IngestStatus settings={settings} />}
     {settings.consent.status === "granted" && <RevokePanel guildId={settings.id} />}
   </>
 );

@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import type { CallToolResult } from "@modelcontextprotocol/server";
+import { ChannelType } from "discord-api-types/v10";
 import { Array, Effect, Option, Schema, pipe } from "effect";
 
 import { readMessages, searchMessages } from "./messages.server";
@@ -30,6 +31,7 @@ const ReadMessagesInput = Schema.Struct({
   before: Schema.optionalKey(Schema.String),
   limit: Limit,
 });
+const CATEGORY_TYPES: ReadonlySet<number> = new Set([ChannelType.GuildCategory]);
 const textResult = (text: string, isError: boolean): CallToolResult => ({
   content: [{ type: "text", text }],
   isError,
@@ -106,7 +108,7 @@ const listServers = (discordUserId: string): Promise<CallToolResult> =>
 const visibleChannels = (scope: GuildScope): CallToolResult =>
   jsonResult(
     scope.guild.channels
-      .filter(({ id }) => scope.visible.includes(id))
+      .filter(({ id, type }) => scope.visible.includes(id) && !CATEGORY_TYPES.has(type))
       .map(({ id, name, type, parentId }) => ({
         id,
         name,
@@ -169,7 +171,7 @@ const buildServer = (discordUserId: string): McpServer => {
     "list_channels",
     {
       description:
-        "List the channels, forums and threads (including forum posts) you can read in a server.",
+        "List the text, voice, announcement, stage and forum channels and the threads (including forum posts) you can read in a server.",
       inputSchema: Schema.toStandardJSONSchemaV1(toolInput(ListChannelsInput)),
     },
     listChannels(discordUserId),

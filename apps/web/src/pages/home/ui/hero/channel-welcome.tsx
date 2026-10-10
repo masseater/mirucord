@@ -15,7 +15,7 @@ const ChannelWelcome = (): ReactNode => (
     </span>
     <h1 className="text-dc-bright font-maru text-4xl leading-tight font-black sm:text-5xl">
       <span className="block">{LEAD}</span>
-      <span className="text-lavender block">{FOCUS}</span>
+      <span className="text-accent-lavender block">{FOCUS}</span>
     </h1>
     <p className="text-dc-muted text-lg">{SUB}</p>
     <HeroActions />

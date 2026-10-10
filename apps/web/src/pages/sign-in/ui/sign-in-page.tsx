@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { Option } from "effect";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
@@ -14,8 +15,17 @@ const SUMMARY = "Discord のユーザー ID と名前だけを使います。";
 const SIGN_IN = "Discord でログイン";
 const FAILED = "ログインできませんでした。もう一度お試しください。";
 
+const DASHBOARD_PATH = "/dashboard";
+
+const callbackUrlOf = (search: string): string | undefined =>
+  Option.getOrUndefined(Option.liftPredicate(DASHBOARD_PATH, () => search === ""));
+
 const signInWithDiscord = (): Promise<unknown> =>
-  authClient.signIn.social({ provider: "discord", fetchOptions: { throw: true } });
+  authClient.signIn.social({
+    provider: "discord",
+    callbackURL: callbackUrlOf(globalThis.location.search),
+    fetchOptions: { throw: true },
+  });
 
 const SignInPage = (): ReactNode => {
   const { mutate, status } = useMutation({ mutationFn: signInWithDiscord });

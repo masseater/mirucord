@@ -21,7 +21,11 @@ const DiscordSignIn = ({
   }, [mutate]);
   return (
     <>
-      <PopButton tone="grape" disabled={status === "pending"} onClick={startSignIn}>
+      <PopButton
+        tone="grape"
+        disabled={status === "pending" || status === "success"}
+        onClick={startSignIn}
+      >
         {SIGN_IN}
       </PopButton>
       {status === "error" && (

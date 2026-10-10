@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { Captions } from "./captions";
+import { CutIn } from "./cut-in";
 import { Fragments } from "./fragments";
 import { SceneMiru } from "./scene-miru";
 
@@ -11,6 +12,7 @@ const ScatterScene = (): ReactNode => (
       <Captions />
       <SceneMiru />
     </div>
+    <CutIn />
   </div>
 );
 

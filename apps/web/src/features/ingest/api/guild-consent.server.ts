@@ -7,13 +7,13 @@ import { db, ingestConsent } from "#/shared/db/index.server";
 import { postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { refreshIngest, withdrawGuild } from "./consent-scope.server";
-import type { GuildDataRemainsError } from "./consent-scope.server";
+import { refreshIngest } from "./consent-scope.server";
 import { loadConsentedChannels } from "./guild-settings.server";
 import type { SettingsChannel } from "./guild-settings.server";
 import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
-import type { VectorizeError } from "./vectors.server";
+import { withdrawGuild } from "./withdraw-guild.server";
+import type { GuildDataRemainsError, VectorizeError } from "./withdraw-guild.server";
 
 type ConsentRequest = Readonly<{
   guildId: string;

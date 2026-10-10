@@ -8,7 +8,7 @@ import { beforeEach, expect, vi } from "vite-plus/test";
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent, message } from "#/shared/db/index.server";
 
-import { withdrawGuild } from "./consent-scope.server";
+import { withdrawGuild } from "./withdraw-guild.server";
 
 const OWNER = "901";
 const MAX_DELETE_IDS = 100;

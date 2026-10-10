@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { mascotSrc } from "#/shared/brand";
 
 import { AiNode } from "./ai-node";
+import { FlowCarry } from "./flow-carry";
 import { ServerNode } from "./server-node";
 
 const TITLE_ID = "flow-diagram-title";
@@ -29,6 +30,7 @@ const FlowDiagram = (): ReactNode => (
       strokeWidth="5"
       strokeLinecap="round"
     />
+    <FlowCarry />
     <ServerNode />
     <rect
       x="385"

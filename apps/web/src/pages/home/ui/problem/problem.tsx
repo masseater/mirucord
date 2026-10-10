@@ -8,7 +8,7 @@ import { ScatterScene } from "./scatter-scene";
 
 const LEAD = "楽しかった会話も";
 const TAIL = "あちこちに散らばっちゃう";
-const GUIDE = "あの話どこだっけ…";
+const GUIDE = "あの話どこだっけ…？";
 const CHANNEL = "思い出";
 const TIME = "今日 21:00";
 

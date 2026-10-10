@@ -12,7 +12,7 @@ const TOPIC = "Discord の思い出さがし";
 const DATE = "2024年8月12日";
 
 const Hero = (): ReactNode => (
-  <section id="top" className="pb-10">
+  <section id="top" className="ch-section pb-10">
     <ChannelHeader name={CHANNEL}>
       <ChannelTopic topic={TOPIC} />
     </ChannelHeader>
@@ -22,7 +22,7 @@ const Hero = (): ReactNode => (
       {DATE}
       <hr className="border-dc-line grow" />
     </div>
-    <div className="xl:grid xl:grid-cols-2 xl:items-center">
+    <div className="hero-scan xl:grid xl:grid-cols-2 xl:items-center">
       <ChatLog />
       <AnswerWindow />
     </div>

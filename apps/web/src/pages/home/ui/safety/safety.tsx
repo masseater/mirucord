@@ -9,8 +9,8 @@ import { SystemMessage } from "#/pages/home/ui/message/system-message";
 import { SpecList } from "./spec-list";
 
 const LEAD = "大事な思い出だから";
-const TAIL = "ていねいに預かります";
-const GUIDE = "大事にあずかるね";
+const TAIL = "ていねいに預かるよ";
+const GUIDE = "安心してね！";
 const CHANNEL = "あんしん";
 const TIME = "今日 21:04";
 const PINNED = "がメッセージをこのチャンネルにピン留めしました。";

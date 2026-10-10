@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { AnswerLinks } from "./answer-links";
+import { AnswerStatus } from "./answer-status";
 
 const QUESTION = "去年のキャンプでカレー焦がしたの誰だっけ？";
 const ANSWER_LEAD = "たなかさんです。その夜に「";
@@ -12,12 +13,15 @@ const AnswerBody = (): ReactNode => (
     <p className="bg-lavender ml-auto w-fit rounded-2xl rounded-br-sm px-3 py-1.5 text-sm font-bold">
       {QUESTION}
     </p>
-    <p className="text-sm leading-relaxed font-bold">
+    <AnswerStatus />
+    <p className="answer-reveal text-sm leading-relaxed font-bold">
       {ANSWER_LEAD}
       <span className="marker-butter">{DECISION}</span>
       {ANSWER_TAIL}
     </p>
-    <AnswerLinks />
+    <div className="answer-reveal">
+      <AnswerLinks />
+    </div>
   </div>
 );
 

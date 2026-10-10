@@ -9,6 +9,7 @@ import { MemberRow } from "./member-row";
 const LABEL = "メンバー";
 const BOTS = "BOT — 1";
 const ONLINE = "オンライン — 4";
+const ACTIVITY = "🔍 思い出をさがし中";
 
 const MemberList = (): ReactNode => (
   <aside
@@ -16,7 +17,7 @@ const MemberList = (): ReactNode => (
     className="bg-dc-sidebar sticky top-0 hidden h-dvh w-60 shrink-0 px-2 pt-2 xl:block"
   >
     <MemberGroup label={BOTS}>
-      <MemberRow author={BOT} />
+      <MemberRow author={BOT} activity={ACTIVITY} />
     </MemberGroup>
     <MemberGroup label={ONLINE}>
       {Object.values(MEMBERS).map((member) => (

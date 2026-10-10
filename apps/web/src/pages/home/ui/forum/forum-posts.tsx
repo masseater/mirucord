@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { MEMBERS } from "#/pages/home/ui/common/members";
+import { Mascot } from "#/shared/brand";
 
 import { ForumPost } from "./forum-post";
 
@@ -38,19 +39,24 @@ const POSTS = [
 ] as const;
 
 const ForumPosts = (): ReactNode => (
-  <ul className="mt-1 grid max-w-xl gap-2">
-    {POSTS.map((post) => (
-      <ForumPost
-        key={post.title}
-        tags={post.tags}
-        title={post.title}
-        member={post.member}
-        preview={post.preview}
-        replies={post.replies}
-        ago={post.ago}
-      />
-    ))}
-  </ul>
+  <div className="forum-scan relative mt-1 max-w-xl">
+    <ul className="grid gap-2">
+      {POSTS.map((post) => (
+        <ForumPost
+          key={post.title}
+          tags={post.tags}
+          title={post.title}
+          member={post.member}
+          preview={post.preview}
+          replies={post.replies}
+          ago={post.ago}
+        />
+      ))}
+    </ul>
+    <span aria-hidden="true" className="forum-track">
+      <Mascot className="forum-miru size-14" />
+    </span>
+  </div>
 );
 
 export { ForumPosts };

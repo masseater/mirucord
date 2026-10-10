@@ -8,7 +8,7 @@ import { FlowFigure } from "./flow-figure";
 
 const LEAD = "ミルが";
 const TAIL = "思い出をさがしてくる";
-const GUIDE = "まかせてね";
+const GUIDE = "まかせてね！";
 const CHANNEL = "しくみ";
 const TIME = "今日 21:01";
 

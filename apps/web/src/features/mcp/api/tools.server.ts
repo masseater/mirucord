@@ -1,7 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { ChannelType } from "discord-api-types/v10";
 import { Array, Effect, Option, Schema, pipe } from "effect";
+
+import { CATEGORY_TYPES } from "#/shared/discord";
 
 import { readMessages, searchMessages } from "./messages.server";
 import { listGuildIds, resolveScope } from "./scope.server";
@@ -31,7 +32,6 @@ const ReadMessagesInput = Schema.Struct({
   before: Schema.optionalKey(Schema.String),
   limit: Limit,
 });
-const CATEGORY_TYPES: ReadonlySet<number> = new Set([ChannelType.GuildCategory]);
 const textResult = (text: string, isError: boolean): CallToolResult => ({
   content: [{ type: "text", text }],
   isError,

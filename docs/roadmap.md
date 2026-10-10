@@ -18,15 +18,15 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 決めたこと
 
-| 項目       | 決定                                                                    |
-| ---------- | ----------------------------------------------------------------------- |
-| 公開 URL   | `https://mirucord.masseater.dev`（`src/shared/config/site.ts`）         |
-| MCP の認可 | better-auth の `@better-auth/mcp`（OAuth 2.1 と DCR）                   |
-| ログイン   | Discord の OAuth で、scope は `identify` だけ。メールアドレスは集めない |
-| embedding  | Workers AI の `@cf/baai/bge-m3`（1024 次元、cosine）                    |
-| 取り込み   | Gateway は使わず、5 分ごとの Cron と Queue で REST をポーリングする     |
-| 運営の閲覧 | サーバー管理者が `grant_support_access` で時間を決めて許可した間だけ    |
-| 公式版の鍵 | AWS KMS で作る。自前運用の既定は `MASTER_KEY`                           |
+| 項目       | 決定                                                                                |
+| ---------- | ----------------------------------------------------------------------------------- |
+| 公開 URL   | `https://mirucord.masseater.dev`（`src/shared/config/site.ts`）                     |
+| MCP の認可 | better-auth の `@better-auth/mcp`（OAuth 2.1 と DCR）                               |
+| ログイン   | Discord の OAuth で、scope は `identify` だけ。メールアドレスは集めない             |
+| embedding  | Workers AI の `@cf/baai/bge-m3`（1024 次元、cosine）                                |
+| 取り込み   | Gateway は使わず、5 分ごとの Cron と Queue で REST をポーリングする                 |
+| 運営の閲覧 | 持たない。運営もサーバーの中身は読めない                                            |
+| 鍵         | Alchemy が作って Worker の secret に入れる `MASTER_KEY` で包む。外部 KMS は使わない |
 
 ## 今の状態
 

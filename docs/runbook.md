@@ -17,20 +17,17 @@ vp run deploy:ci
 
 値を変えた後は、`ci` スタックを適用し、Actions から `verify` を手動で動かすとデプロイし直される。main への push でもよい。
 
-| 名前                                                | 種類      | 必須 | 内容                                                  |
-| --------------------------------------------------- | --------- | ---- | ----------------------------------------------------- |
-| `CLOUDFLARE_API_TOKEN`                              | Secrets   | 必須 | Alchemy がデプロイに使うトークン。`ci` スタックが作る |
-| `CLOUDFLARE_ACCOUNT_ID`                             | Secrets   | 必須 | デプロイ先のアカウント                                |
-| `DISCORD_CLIENT_ID`                                 | Variables | 必須 | Discord アプリの ID                                   |
-| `DISCORD_CLIENT_SECRET`                             | Secrets   | 必須 | Discord の OAuth で使う                               |
-| `DISCORD_BOT_TOKEN`                                 | Secrets   | 必須 | 取り込みと権限確認で使う Bot のトークン               |
-| `MAX_GUILDS`                                        | Variables | 任意 | 登録できるサーバー数の上限。既定は `100`              |
-| `SUPPORT_OPERATOR_IDS`                              | Variables | 任意 | 運営の Discord ユーザー ID をカンマ区切りで並べる     |
-| `ALERT_WEBHOOK_URL`                                 | Secrets   | 任意 | 障害を知らせる Discord の Webhook URL                 |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`                       | Variables | 任意 | OTLP の送り先。設定しなければ Workers Logs だけに出す |
-| `OTEL_EXPORTER_OTLP_HEADERS`                        | Secrets   | 任意 | OTLP の送り先の認証ヘッダー                           |
-| `AWS_KMS_KEY_ID`・`AWS_REGION`・`AWS_ACCESS_KEY_ID` | Variables | 任意 | 4 つそろうと、サーバーの鍵を AWS KMS で作る           |
-| `AWS_SECRET_ACCESS_KEY`                             | Secrets   | 任意 | 同上                                                  |
+| 名前                          | 種類      | 必須 | 内容                                                  |
+| ----------------------------- | --------- | ---- | ----------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`        | Secrets   | 必須 | Alchemy がデプロイに使うトークン。`ci` スタックが作る |
+| `CLOUDFLARE_ACCOUNT_ID`       | Secrets   | 必須 | デプロイ先のアカウント                                |
+| `DISCORD_CLIENT_ID`           | Variables | 必須 | Discord アプリの ID                                   |
+| `DISCORD_CLIENT_SECRET`       | Secrets   | 必須 | Discord の OAuth で使う                               |
+| `DISCORD_BOT_TOKEN`           | Secrets   | 必須 | 取り込みと権限確認で使う Bot のトークン               |
+| `MAX_GUILDS`                  | Variables | 任意 | 登録できるサーバー数の上限。既定は `100`              |
+| `ALERT_WEBHOOK_URL`           | Secrets   | 任意 | 障害を知らせる Discord の Webhook URL                 |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | Variables | 任意 | OTLP の送り先。設定しなければ Workers Logs だけに出す |
+| `OTEL_EXPORTER_OTLP_HEADERS`  | Secrets   | 任意 | OTLP の送り先の認証ヘッダー                           |
 
 `BETTER_AUTH_SECRET` と `MASTER_KEY` は Alchemy が初回に乱数で作り、状態に保存する。手で設定しない。
 
@@ -89,20 +86,12 @@ vp exec wrangler tail <Worker 名>
 上限に達している間は、トップページの招待リンクの代わりに、新しいサーバーには追加できない旨を表示する。
 上限を上げるときは Variables の `MAX_GUILDS` を変えてデプロイする。下げても、登録済みのサーバーは抜けない。
 
-## 運営による閲覧
-
-運営がサーバーの中身を見るには、そのサーバーの管理者に MCP の `grant_support_access` で時間を決めて許可してもらう。
-運営は `SUPPORT_OPERATOR_IDS` に自分の Discord ユーザー ID を入れておく。
-運営が呼んだツールは `support_access` に残り、管理者は `list_support_access` で見られる。
-
 ## 秘密の差し替え
 
-| 対象                    | 手順                                                                                      |
-| ----------------------- | ----------------------------------------------------------------------------------------- |
-| `DISCORD_BOT_TOKEN`     | Discord の Developer Portal で作り直し、`ci` スタックを適用してデプロイする               |
-| `DISCORD_CLIENT_SECRET` | 同上。差し替えた後は、利用者は Discord でサインインし直す                                 |
-| `ALERT_WEBHOOK_URL`     | Discord で Webhook を作り直し、Secrets を差し替えてデプロイする                           |
-| `AWS_SECRET_ACCESS_KEY` | IAM でアクセスキーを作り直し、Variables と Secrets を差し替えてデプロイし、古いキーを消す |
+| 対象                    | 手順                                                                        |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `DISCORD_BOT_TOKEN`     | Discord の Developer Portal で作り直し、`ci` スタックを適用してデプロイする |
+| `DISCORD_CLIENT_SECRET` | 同上。差し替えた後は、利用者は Discord でサインインし直す                   |
+| `ALERT_WEBHOOK_URL`     | Discord で Webhook を作り直し、Secrets を差し替えてデプロイする             |
 
 `MASTER_KEY` は差し替えない。保存済みの全サーバーの鍵がこれで包まれているため、変えると読めなくなる。
-公式版で `MASTER_KEY` を手放したいときは、AWS KMS を設定する。新しいサーバーの鍵から KMS で作られる。

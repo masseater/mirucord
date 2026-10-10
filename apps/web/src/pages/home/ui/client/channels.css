@@ -2,11 +2,21 @@
   display: none;
 }
 
+.composer-typing {
+  visibility: hidden;
+}
+
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .ch-scope {
       timeline-scope:
         --ch-top, --ch-why, --ch-forum, --ch-how, --ch-features, --ch-start, --ch-safety, --ch-faq;
+    }
+
+    .composer-typing {
+      animation: composer-typing linear;
+      animation-timeline: --ch-top;
+      animation-range: cover 0% cover 100%;
     }
 
     .ch-link {
@@ -75,5 +85,12 @@
   0%,
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes composer-typing {
+  0%,
+  100% {
+    visibility: visible;
   }
 }

@@ -6,7 +6,7 @@ import { PromptBox } from "./prompt-box";
 import { Step } from "./step";
 
 const INVITE = "Bot を招待";
-const REGISTER = "AI に登録";
+const REGISTER = "ミルを登録";
 const ASK = "話しかける";
 
 const StepList = (): ReactNode => (

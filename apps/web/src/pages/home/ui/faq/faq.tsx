@@ -11,8 +11,8 @@ const LABEL = "Q&A";
 const QUESTIONS = [
   { question: "料金はかかりますか", answer: "いまは無料で使えます。" },
   {
-    question: "どの AI で使えますか",
-    answer: "Claude をはじめ MCP に対応したクライアントで使えます。",
+    question: "どこからミルに聞けますか",
+    answer: "Claude をはじめ MCP に対応した AI クライアントから聞けます。",
   },
   {
     question: "管理者でなくても使えますか",

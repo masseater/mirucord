@@ -48,5 +48,15 @@ const channel = sqliteTable(
   (table) => [index("channel_guild_id_idx").on(table.guildId)],
 );
 
-export { channel, guild, role };
+const ingestConsent = sqliteTable("ingest_consent", {
+  guildId: text()
+    .primaryKey()
+    .references(() => guild.id, { onDelete: "cascade" }),
+  grantedBy: text().notNull(),
+  grantedAt: integer({ mode: "timestamp_ms" }).notNull(),
+  channelIds: text({ mode: "json" }).$type<readonly string[]>().notNull(),
+  noticeChannelId: text().notNull(),
+});
+
+export { channel, guild, ingestConsent, role };
 export type { PermissionOverwrite };

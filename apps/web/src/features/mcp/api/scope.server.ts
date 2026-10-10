@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
-import { Array, Effect, Option, Record } from "effect";
+import { Array, Effect, Option } from "effect";
 
 import { visibleChannelIds } from "#/features/mcp/model/visibility";
 import type { GuildChannel, GuildSnapshot } from "#/features/mcp/model/visibility";
-import { channel, db, guild, role } from "#/shared/db/index.server";
+import { channel, db, guild, loadRolePermissions } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
@@ -37,16 +37,6 @@ const loadChannels = (guildId: string): Effect.Effect<readonly StoredChannel[]> 
     Effect.map((rows) =>
       rows.map((row) => ({ ...row, parentId: Option.fromNullOr(row.parentId) })),
     ),
-  );
-
-const loadRolePermissions = (guildId: string): Effect.Effect<Readonly<Record<string, string>>> =>
-  Effect.promise(() =>
-    db
-      .select({ id: role.id, permissions: role.permissions })
-      .from(role)
-      .where(eq(role.guildId, guildId)),
-  ).pipe(
-    Effect.map((rows) => Record.fromEntries(rows.map(({ id, permissions }) => [id, permissions]))),
   );
 
 const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =>

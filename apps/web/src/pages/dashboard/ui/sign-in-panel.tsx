@@ -4,34 +4,38 @@ import type { ReactNode } from "react";
 
 import { authClient } from "#/shared/auth";
 
-const TITLE = "mirucord にログイン";
-const SUMMARY = "Discord からはユーザー ID と表示名だけを受け取ります。";
+const TITLE = "管理画面を開くにはログインしてください";
+const SUMMARY = "Discord のユーザー ID と表示名だけを使ってログインします。";
 const SIGN_IN = "Discord でログイン";
 const FAILED = "ログインできませんでした。もう一度お試しください。";
 
-const signInWithDiscord = (): Promise<unknown> =>
-  authClient.signIn.social({ provider: "discord", fetchOptions: { throw: true } });
-
-const SignInPage = (): ReactNode => {
-  const { mutate, status } = useMutation({ mutationFn: signInWithDiscord });
+const SignInPanel = ({ returnTo }: Readonly<{ returnTo: string }>): ReactNode => {
+  const { mutate, status } = useMutation({
+    mutationFn: () =>
+      authClient.signIn.social({
+        provider: "discord",
+        callbackURL: returnTo,
+        fetchOptions: { throw: true },
+      }),
+  });
   const startSignIn = useCallback(() => {
     mutate();
   }, [mutate]);
   return (
-    <main className="mx-auto flex max-w-xl flex-col gap-6 p-8">
+    <section className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">{TITLE}</h1>
       <p>{SUMMARY}</p>
       <button
         type="button"
-        className="bg-primary text-primary-foreground rounded px-4 py-2 disabled:opacity-50"
+        className="bg-primary text-primary-foreground self-start rounded px-4 py-2 disabled:opacity-50"
         disabled={status === "pending"}
         onClick={startSignIn}
       >
         {SIGN_IN}
       </button>
       {status === "error" && <p role="alert">{FAILED}</p>}
-    </main>
+    </section>
   );
 };
 
-export { SignInPage };
+export { SignInPanel };

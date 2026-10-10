@@ -1,19 +1,19 @@
 import type { ReactNode } from "react";
 
-import { Mascot } from "#/shared/brand";
+import { FinaleCard } from "./finale-card";
 
-const LEAD = ["ミルが", "ぜんぶ見つけてきたよ！"] as const;
-const COUNT = "キャンプの思い出 8 件";
+const SPARKS = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
+const SPARK = "✦";
 
 const GatherCard = (): ReactNode => (
-  <div className="scene-caption bg-milk text-ink grid justify-items-center gap-2 rounded-lg px-5 py-4">
-    <Mascot className="motion-safe:animate-float size-20" />
-    <p className="font-maru grid text-xl leading-snug font-black md:text-2xl">
-      {LEAD.map((line) => (
-        <span key={line}>{line}</span>
-      ))}
-    </p>
-    <p className="bg-mint rounded-full px-3 py-1 text-sm font-bold">{COUNT}</p>
+  <div className="scene-caption scene-finale grid justify-items-center">
+    <span aria-hidden="true" className="finale-burst" />
+    {SPARKS.map((spark) => (
+      <span key={spark} aria-hidden="true" className="finale-spark">
+        {SPARK}
+      </span>
+    ))}
+    <FinaleCard />
   </div>
 );
 

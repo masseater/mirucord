@@ -4,7 +4,7 @@ import { LegalDocument } from "./legal-document";
 
 const TITLE = "プライバシーポリシー";
 
-const TIP = "mirucord が預かる情報と、その扱いをまとめました。";
+const TIP = "読んでおいてね";
 
 const SECTIONS = [
   {

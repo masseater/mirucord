@@ -10,8 +10,7 @@ import { GuildSettingsView } from "./guild-settings-view";
 import { SignInPanel } from "./sign-in-panel";
 
 const BACK = "← サーバー一覧へ";
-const NOT_MANAGED =
-  "このサーバーの設定は開けません。Bot が入っていないか、あなたにサーバー管理の権限がないみたいです。";
+const NOT_MANAGED = "このサーバーの設定は開けません。";
 
 const GuildSettingsPage = (): ReactNode => {
   const { guildId } = useParams({ from: "/dashboard/$guildId" });

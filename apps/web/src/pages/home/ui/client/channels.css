@@ -16,19 +16,34 @@
     .composer-typing {
       animation: composer-typing linear;
       animation-timeline: --ch-top;
-      animation-range: cover 0% cover 100%;
+      animation-range: cover 0% contain calc(100% - 38dvh);
+    }
+
+    .ch-link,
+    .ch-miru {
+      animation-range: entry calc(100% - 38dvh) contain calc(100% - 38dvh);
     }
 
     .ch-link {
-      animation: ch-active linear;
-      animation-range: cover 0% cover 100%;
+      animation-name: ch-active;
+      animation-timing-function: linear;
     }
 
     .ch-miru {
       display: block;
       opacity: 0;
-      animation: ch-miru linear;
-      animation-range: cover 0% cover 100%;
+      animation-name: ch-miru;
+      animation-timing-function: linear;
+    }
+
+    .ch-link[href="#top"],
+    .ch-link[href="#top"] .ch-miru {
+      animation-range-start: cover 0%;
+    }
+
+    .ch-link[href="#faq"],
+    .ch-link[href="#faq"] .ch-miru {
+      animation-range-end: cover 100%;
     }
 
     .ch-link[href="#top"],

@@ -32,70 +32,51 @@
       view-timeline-name: --ch-faq, --pane;
     }
 
-    .ch-section {
+    .ch-section::before {
+      display: block;
+      height: 100dvh;
+      content: "";
+    }
+
+    .ch-section:not(:first-child) {
+      margin-top: -100dvh;
+    }
+
+    .ch-section:last-child::before {
+      height: 0;
+    }
+
+    .ch-pane {
+      position: sticky;
+      bottom: 0;
       min-height: 100dvh;
-      view-timeline-inset:
-        50% 49%,
-        0;
       animation:
-        ch-pane-in linear,
-        ch-pane-out linear;
+        ch-fade-in linear both,
+        ch-fade-out linear both;
       animation-timeline: --pane, --pane;
       animation-range:
-        entry 0% entry 100%,
-        exit 0% exit 100%;
+        entry calc(100% - 45dvh) entry 100%,
+        contain calc(100% - 65dvh) contain calc(100% - 30dvh);
     }
 
-    .ch-section:first-child {
-      animation-name: none, ch-pane-out;
+    .ch-section:first-child > .ch-pane {
+      animation-name: none, ch-fade-out;
     }
 
-    .ch-section:last-child {
-      animation-name: ch-pane-in, none;
-    }
-
-    .ch-header {
-      animation: ch-header-out linear;
-      animation-timeline: --pane;
-      animation-range: exit 0% exit 100%;
+    .ch-section:last-child > .ch-pane {
+      animation-name: ch-fade-in, none;
     }
   }
 }
 
-@keyframes ch-pane-in {
-  0% {
-    translate: 0 -100dvh;
-  }
-  0%,
-  60% {
+@keyframes ch-fade-in {
+  from {
     opacity: 0;
-    visibility: hidden;
-  }
-  85%,
-  100% {
-    opacity: 1;
-    visibility: visible;
   }
 }
 
-@keyframes ch-pane-out {
-  0%,
-  30% {
-    opacity: 1;
-    visibility: visible;
-  }
-  55%,
-  100% {
-    opacity: 0;
-    visibility: hidden;
-  }
-  100% {
-    translate: 0 100dvh;
-  }
-}
-
-@keyframes ch-header-out {
+@keyframes ch-fade-out {
   to {
-    translate: 0 -100dvh;
+    opacity: 0;
   }
 }

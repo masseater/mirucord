@@ -172,7 +172,7 @@ export default defineConfig({
     cache: true,
     tasks: {
       "jev-lint": {
-        command: "jev-lint check",
+        command: "jev-lint review --base origin/main",
         cache: {
           untrackedEnv: [
             "OPENROUTER_API_KEY",

@@ -50,6 +50,7 @@ catalogs:
   stack:
     "@effect/atom-react": 4.0.0
     "@effect/tsgo": 0.51.0
+    "@effect/vitest": 4.0.0
     "@openfeature/server-sdk": 1.23.0
     "@tanstack/react-query": 5.104.1
     "@tanstack/react-start": 1.168.60
@@ -71,7 +72,7 @@ overrides:
   "@effect/platform-node-shared": 4.0.0
   "@effect/sql-d1": 4.0.0
   "@effect/sql-sqlite-do": 4.0.0
-  "@effect/vitest": 4.0.0
+  "@effect/vitest": "catalog:stack"
   vite@*: "catalog:"
   eslint-plugin-react-hooks>zod-validation-error: ^5.0.0
 peerDependencyRules:

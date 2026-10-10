@@ -13,14 +13,13 @@ const GUIDE = "たった 3 つだよ";
 const CHANNEL = "はじめかた";
 const TIME = "今日 21:03";
 const JOINED = "がサーバーに参加しました。";
-const JOIN_TIME = "今日 21:03";
 
 const Steps = (): ReactNode => (
   <ChannelSection id="start" name={CHANNEL}>
     <Post time={TIME} guide={GUIDE} lead={LEAD} tail={TAIL}>
       <StepList />
     </Post>
-    <SystemMessage kind="join" actor={BOT} text={JOINED} time={JOIN_TIME} />
+    <SystemMessage kind="join" actor={BOT} text={JOINED} time={TIME} />
   </ChannelSection>
 );
 

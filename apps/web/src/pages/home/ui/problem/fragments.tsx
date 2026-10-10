@@ -16,7 +16,7 @@ const FRAGMENTS = [
     member: MEMBERS.tanaka,
     text: "次こそカレー焦がさないって誓う",
   },
-  { place: "# しゃしん", member: MEMBERS.miho, text: "［画像］こげこげカレー.jpg" },
+  { place: "フォーラム：キャンプ飯レシピ", member: MEMBERS.miho, text: "カレーは弱火でじっくり" },
   { place: "DM", member: MEMBERS.yui, text: "カレーのこと まだ気にしてる？笑" },
   { place: "VC の聞き専チャット", member: MEMBERS.kenta, text: "火力つよすぎでは" },
   { place: "# げーむ部", member: MEMBERS.tanaka, text: "キャンプ前に 1 戦だけやろ" },

@@ -4,6 +4,7 @@ import { ClientFrame } from "./client/client-frame";
 import { Faq } from "./faq/faq";
 import { Features } from "./features/features";
 import { Flow } from "./flow/flow";
+import { Forum } from "./forum/forum";
 import { Hero } from "./hero/hero";
 import { Problem } from "./problem/problem";
 import { Safety } from "./safety/safety";
@@ -13,6 +14,7 @@ const HomePage = (): ReactNode => (
   <ClientFrame>
     <Hero />
     <Problem />
+    <Forum />
     <Flow />
     <Features />
     <Steps />

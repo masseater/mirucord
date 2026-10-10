@@ -1,18 +1,21 @@
-import type { FetchStatus } from "@tanstack/react-query";
+import type { UseQueryResult } from "@tanstack/react-query";
+import { Option } from "effect";
 
 import type { RefreshOutcome } from "#/pages/dashboard/api/dashboard";
 
-type RefreshState = Readonly<{ fetchStatus: FetchStatus }> &
-  (
-    | Readonly<{ status: "pending" }>
-    | Readonly<{ status: "error" }>
-    | Readonly<{ status: "success"; data: RefreshOutcome }>
-  );
+type RefreshView =
+  | Readonly<{ status: "waiting" }>
+  | Readonly<{ status: "looking" }>
+  | Readonly<{ status: "failed" }>
+  | Readonly<{ status: "done"; outcome: RefreshOutcome }>;
 
-const LABEL: Readonly<Record<FetchStatus, string>> = {
-  idle: "更新",
-  paused: "更新",
-  fetching: "ミルが見てくるね",
+const IDLE_LABEL = "更新";
+
+const LABEL: Readonly<Record<RefreshView["status"], string>> = {
+  waiting: IDLE_LABEL,
+  looking: "ミルが見てくるね",
+  failed: IDLE_LABEL,
+  done: IDLE_LABEL,
 };
 
 const OUTCOME_NOTE: Readonly<Record<RefreshOutcome["status"], string>> = {
@@ -22,23 +25,38 @@ const OUTCOME_NOTE: Readonly<Record<RefreshOutcome["status"], string>> = {
   signedOut: "",
 };
 
-const FAILED = "更新できませんでした";
 const SILENT = "";
 
-const refreshLabel = ({ fetchStatus }: RefreshState): string => LABEL[fetchStatus];
+const refreshViewOf = ({
+  fetchStatus,
+  status,
+  data,
+}: Readonly<
+  Pick<UseQueryResult<RefreshOutcome>, "data" | "fetchStatus" | "status">
+>): RefreshView => {
+  if (fetchStatus === "fetching") {
+    return { status: "looking" };
+  }
+  if (status === "error") {
+    return { status: "failed" };
+  }
+  return Option.match(Option.fromUndefinedOr(data), {
+    onNone: (): RefreshView => ({ status: "waiting" }),
+    onSome: (outcome): RefreshView => ({ status: "done", outcome }),
+  });
+};
 
-const refreshNote = (state: RefreshState): string => {
-  if (state.fetchStatus === "fetching") {
-    return SILENT;
+const refreshLabel = (view: RefreshView): string => LABEL[view.status];
+
+const refreshNote = (view: RefreshView): string => {
+  if (view.status === "done") {
+    return OUTCOME_NOTE[view.outcome.status];
   }
-  if (state.status === "success") {
-    return OUTCOME_NOTE[state.data.status];
-  }
-  if (state.status === "error") {
-    return FAILED;
+  if (view.status === "failed") {
+    return "更新できませんでした";
   }
   return SILENT;
 };
 
-export { refreshLabel, refreshNote };
-export type { RefreshState };
+export { refreshLabel, refreshNote, refreshViewOf };
+export type { RefreshView };

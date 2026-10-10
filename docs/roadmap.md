@@ -34,10 +34,11 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 外すもの
 
-| 対象                                     | 外す条件                                                     |
-| ---------------------------------------- | ------------------------------------------------------------ |
-| `patches/@better-auth__oauth-provider`   | 上流の PR #10266（issue #10213）が取り込まれた版が出たとき   |
-| `patches/@tanstack__eslint-plugin-start` | `no-async-client-component` などの見逃しを直した版が出たとき |
+| 対象                                     | 外す条件                                                                                                                                |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `patches/@better-auth__oauth-provider`   | 上流の PR #10266（issue #10213）が取り込まれた版が出たとき                                                                              |
+| `patches/@tanstack__eslint-plugin-start` | `no-async-client-component` などの見逃しを直した版が出たとき                                                                            |
+| `ALERT_WEBHOOK_URL` への自作の通知       | Alchemy が `observability.issues` を扱えるようになったとき。Workers Observability の Issues に移す。調べた手段はコミット 56ccdc6 にある |
 
 ## 引き継ぎの注意
 

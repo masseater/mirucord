@@ -6,7 +6,6 @@ import { cn } from "#/shared/lib/utils";
 import type { Author } from "./author";
 
 const NAME = "ミル";
-const BADGE = "APP";
 
 const AuthorName = ({
   author,
@@ -15,15 +14,10 @@ const AuthorName = ({
   Match.value(author).pipe(
     Match.discriminatorsExhaustive("kind")({
       bot: () => (
-        <>
-          <span className="text-lavender-deep font-bold">
-            {mark}
-            {NAME}
-          </span>
-          <span className="bg-discord text-dc-bright rounded-sm px-1 text-xs leading-4 font-bold">
-            {BADGE}
-          </span>
-        </>
+        <span className="text-lavender-deep font-bold">
+          {mark}
+          {NAME}
+        </span>
       ),
       member: ({ member }) => (
         <span className={cn("font-bold", member.tone)}>

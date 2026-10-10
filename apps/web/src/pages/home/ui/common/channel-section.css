@@ -50,33 +50,8 @@
       position: sticky;
       bottom: 0;
       min-height: 100dvh;
-      animation:
-        ch-fade-in linear both,
-        ch-fade-out linear both;
-      animation-timeline: --pane, --pane;
-      animation-range:
-        entry calc(100% - 45dvh) entry 100%,
-        contain calc(100% - 65dvh) contain calc(100% - 30dvh);
+      border-top: 2px solid var(--color-dc-line);
+      background-color: var(--color-dc-chat);
     }
-
-    .ch-section:first-child > .ch-pane {
-      animation-name: none, ch-fade-out;
-    }
-
-    .ch-section:last-child > .ch-pane {
-      animation-name: ch-fade-in, none;
-    }
-  }
-}
-
-@keyframes ch-fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes ch-fade-out {
-  to {
-    opacity: 0;
   }
 }

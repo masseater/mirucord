@@ -171,6 +171,14 @@ export default defineConfig({
   run: {
     cache: true,
     tasks: {
+      actionlint: {
+        command: "uvx --from actionlint-py@1.7.12.25 actionlint",
+        cache: { untrackedEnv: ["SSL_CERT_FILE"] },
+      },
+      zizmor: {
+        command: "uvx zizmor@1.30.1 .github",
+        cache: { env: ["ZIZMOR_OFFLINE"], untrackedEnv: ["SSL_CERT_FILE"] },
+      },
       "jev-lint": {
         command: "jev-lint review --base origin/main",
         cache: false,

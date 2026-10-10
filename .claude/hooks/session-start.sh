@@ -11,5 +11,7 @@ if ! command -v vp >/dev/null 2>&1; then
   . "$HOME/.config/vite-plus/env"
 fi
 
+echo "export ZIZMOR_OFFLINE=true" >>"$CLAUDE_ENV_FILE"
+
 cd "$CLAUDE_PROJECT_DIR"
 vp install --frozen-lockfile >&2

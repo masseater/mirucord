@@ -45,6 +45,9 @@ catalog:
   simple-icons: 16.34.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
+  "@cloudflare/vitest-plugin": 1.4.0
+  msw: 3.0.2
+  "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
 catalogs:
   stack:

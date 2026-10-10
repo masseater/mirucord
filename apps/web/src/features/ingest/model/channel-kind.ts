@@ -1,9 +1,14 @@
 import { ChannelType } from "discord-api-types/v10";
-import { Boolean } from "effect";
+import { Match } from "effect";
 
-type ChannelKind = "text" | "forum";
+type ChannelKind = "text" | "announcement" | "voice" | "stage" | "forum";
 
 const FORUM_TYPES: ReadonlySet<number> = new Set([ChannelType.GuildForum, ChannelType.GuildMedia]);
+
+const VOICE_TYPES: ReadonlySet<number> = new Set([
+  ChannelType.GuildVoice,
+  ChannelType.GuildStageVoice,
+]);
 
 const THREAD_PARENT_TYPES: ReadonlySet<number> = new Set([
   ChannelType.GuildText,
@@ -11,17 +16,47 @@ const THREAD_PARENT_TYPES: ReadonlySet<number> = new Set([
   ...FORUM_TYPES,
 ]);
 
-const STORED_TYPES: ReadonlySet<number> = new Set([
-  ...THREAD_PARENT_TYPES,
+const LISTED_TYPES: ReadonlySet<number> = new Set([...THREAD_PARENT_TYPES, ...VOICE_TYPES]);
+
+const THREAD_TYPES: ReadonlySet<number> = new Set([
   ChannelType.AnnouncementThread,
   ChannelType.PublicThread,
 ]);
 
-const kindOf = (type: number): ChannelKind =>
-  Boolean.match(FORUM_TYPES.has(type), {
-    onTrue: (): ChannelKind => "forum",
-    onFalse: (): ChannelKind => "text",
-  });
+const MESSAGE_TYPES: ReadonlySet<number> = new Set([
+  ChannelType.GuildText,
+  ChannelType.GuildAnnouncement,
+  ...VOICE_TYPES,
+  ...THREAD_TYPES,
+]);
 
-export { FORUM_TYPES, kindOf, STORED_TYPES, THREAD_PARENT_TYPES };
+const CATEGORY_TYPES: ReadonlySet<number> = new Set([ChannelType.GuildCategory]);
+
+const STORED_TYPES: ReadonlySet<number> = new Set([
+  ...LISTED_TYPES,
+  ...THREAD_TYPES,
+  ...CATEGORY_TYPES,
+]);
+
+const kindOf = (type: number): ChannelKind =>
+  Match.value(type).pipe(
+    Match.when(ChannelType.GuildAnnouncement, (): ChannelKind => "announcement"),
+    Match.when(ChannelType.GuildVoice, (): ChannelKind => "voice"),
+    Match.when(ChannelType.GuildStageVoice, (): ChannelKind => "stage"),
+    Match.when(
+      (candidate: number) => FORUM_TYPES.has(candidate),
+      (): ChannelKind => "forum",
+    ),
+    Match.orElse((): ChannelKind => "text"),
+  );
+
+export {
+  CATEGORY_TYPES,
+  kindOf,
+  LISTED_TYPES,
+  MESSAGE_TYPES,
+  STORED_TYPES,
+  THREAD_PARENT_TYPES,
+  VOICE_TYPES,
+};
 export type { ChannelKind };

@@ -28,6 +28,8 @@ const role = sqliteTable(
   (table) => [index("role_guild_id_idx").on(table.guildId)],
 );
 
+const FIRST_POSITION = 0;
+
 const channel = sqliteTable(
   "channel",
   {
@@ -48,6 +50,7 @@ const channel = sqliteTable(
       .notNull()
       .default("readable"),
     hiddenAt: integer(),
+    position: integer().notNull().default(FIRST_POSITION),
     archive: text({ enum: ["open", "archived"] })
       .notNull()
       .default("open"),

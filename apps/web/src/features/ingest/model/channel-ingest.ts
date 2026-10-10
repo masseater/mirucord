@@ -67,10 +67,18 @@ const forumRowOf: {
   (forum: Pick<IngestRow, "botAccess">, posts: readonly IngestRow[]): IngestRow;
 } = Function.dual(DATA_FIRST_ARITY, forumRowOfDataFirst);
 
+const NOTICE_KINDS: ReadonlySet<string> = new Set(["text", "announcement"]);
+
+const isNoticeCandidate = ({
+  kind,
+  ingest,
+}: Readonly<{ kind: string; ingest: ChannelIngest }>): boolean =>
+  NOTICE_KINDS.has(kind) && ingest !== "unreadable";
+
 const ingestOf: {
   (row: IngestRow): (scope: ConsentScope) => ChannelIngest;
   (scope: ConsentScope, row: IngestRow): ChannelIngest;
 } = Function.dual(DATA_FIRST_ARITY, ingestOfDataFirst);
 
-export { forumRowOf, ingestOf };
+export { forumRowOf, ingestOf, isNoticeCandidate };
 export type { ChannelIngest, IngestRow };

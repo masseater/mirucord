@@ -1,5 +1,6 @@
 import { Array, Function, Option } from "effect";
 
+import { isNoticeCandidate } from "#/features/ingest";
 import type { GuildSettings } from "#/features/ingest/index.server";
 
 const DATA_FIRST_ARITY = 2;
@@ -15,7 +16,7 @@ const readableChannels = (settings: GuildSettings): GuildSettings["channels"] =>
   settings.channels.filter(({ ingest }) => ingest !== "unreadable");
 
 const noticeChannels = (settings: GuildSettings): GuildSettings["channels"] =>
-  readableChannels(settings).filter(({ kind }) => kind === "text");
+  settings.channels.filter(isNoticeCandidate);
 
 const noticeChannelOfDataFirst = (settings: GuildSettings, draft: ConsentDraft): string => {
   if (draft.status === "edited") {

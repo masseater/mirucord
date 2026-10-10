@@ -12,7 +12,8 @@ const MEMBER_ROLE = "400";
 const ADMIN_ROLE = "500";
 const NOTHING = "0";
 
-const READ = (PermissionFlagsBits.ViewChannel + PermissionFlagsBits.ReadMessageHistory).toString();
+const READ_BITS = PermissionFlagsBits.ViewChannel + PermissionFlagsBits.ReadMessageHistory;
+const READ = READ_BITS.toString();
 const VIEW = PermissionFlagsBits.ViewChannel.toString();
 const ADMINISTRATOR = PermissionFlagsBits.Administrator.toString();
 
@@ -25,6 +26,11 @@ const textChannel = (
   type: ChannelType.GuildText,
   permissionOverwrites,
 });
+
+const voiceChannel = (
+  id: string,
+  permissionOverwrites: GuildChannel["permissionOverwrites"],
+): GuildChannel => ({ ...textChannel(id, permissionOverwrites), type: ChannelType.GuildVoice });
 
 const snapshotOf = (channels: readonly GuildChannel[]): GuildSnapshot => ({
   guildId: GUILD,
@@ -119,4 +125,13 @@ it("shows the posts of a forum the reader can see", () => {
     },
   ]);
   expect([...visibleChannelIds(snapshot, member(USER, []))]).toStrictEqual(["1", "11"]);
+});
+
+it("needs connect to read the text chat of a voice channel", () => {
+  const CONNECT = (READ_BITS + PermissionFlagsBits.Connect).toString();
+  const snapshot = snapshotOf([
+    voiceChannel("1", [{ id: GUILD, type: OverwriteType.Role, allow: CONNECT, deny: NOTHING }]),
+    voiceChannel("2", []),
+  ]);
+  expect([...visibleChannelIds(snapshot, member(USER, []))]).toStrictEqual(["1"]);
 });

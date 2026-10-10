@@ -22,7 +22,7 @@ const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): React
   return (
     <Panel>
       <h2 className="text-xl font-black">{TITLE}</h2>
-      <ReadableChannelList channels={readable} />
+      <ReadableChannelList settings={settings} channels={readable} />
       {!Array.isReadonlyArrayNonEmpty(readable) && <p className="font-bold">{EMPTY}</p>}
       <NoticeChannelPicker
         channels={noticeChannels(settings)}

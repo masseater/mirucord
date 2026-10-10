@@ -13,6 +13,7 @@ import { settleStoredChannels } from "./settle-channels.server";
 
 type ChannelRow = typeof channel.$inferInsert;
 
+const FIRST_POSITION = 0;
 const READABLE: BotAccess = { status: "readable" };
 
 const toChannelRow = (
@@ -24,6 +25,7 @@ const toChannelRow = (
   parentId: Option.getOrNull(Option.fromNullishOr(discordChannel.parent_id)),
   name: Option.getOrElse(Option.fromNullishOr(discordChannel.name), () => discordChannel.id),
   type: discordChannel.type,
+  position: Option.getOrElse(Option.fromUndefinedOr(discordChannel.position), () => FIRST_POSITION),
   permissionOverwrites: Option.getOrElse(
     Option.fromNullishOr(discordChannel.permission_overwrites),
     Array.empty,
@@ -53,6 +55,7 @@ const upsertChannel = (row: ChannelRow): Effect.Effect<void> =>
           set: {
             parentId: row.parentId,
             name: row.name,
+            position: row.position,
             permissionOverwrites: row.permissionOverwrites,
             botAccess: row.botAccess,
             hiddenAt: row.hiddenAt,

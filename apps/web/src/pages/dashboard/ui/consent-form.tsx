@@ -1,48 +1,46 @@
-import { Option } from "effect";
+import { Array, Option } from "effect";
 import type { ReactNode } from "react";
 
 import type { GuildSettings } from "#/features/ingest/index.server";
+import { readableChannels } from "#/pages/dashboard/model/consent-draft";
 import { useConsentForm } from "#/pages/dashboard/model/use-consent-form";
 import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { ChannelOption } from "./channel-option";
 import { ConsentResultMessage } from "./consent-result-message";
 import { NoticeChannelPicker } from "./notice-channel-picker";
 
-const TITLE = "読み取ってよいチャンネル";
-const SUBMIT = { awaiting: "同意して取り込みを始める", granted: "読み取る範囲を保存する" } as const;
-const NOTE = {
-  awaiting:
-    "同意すると、Bot が下で選んだチャンネルに「このサーバーの過去ログを mirucord が読み取ります」というお知らせを 1 回投稿します。",
-  granted: "外したチャンネルは読み取りを止め、そのチャンネルの保存済みデータを削除します。",
-} as const;
+const TITLE = "Bot が見られるチャンネル";
+const SCOPE =
+  "同意すると、下のチャンネルとそのスレッドを読み取ります。範囲を変えたいときは、Discord のチャンネル権限で mirucord の Bot の「チャンネルを見る」をオンかオフにしてください。管理画面での選び直しは要りません。";
+const EMPTY =
+  "Bot が見られるチャンネルがまだありません。Discord のチャンネル権限で Bot に閲覧を許可してください。";
+const NOTE =
+  "同意すると、Bot が選んだチャンネルに「このサーバーの過去ログを mirucord が読み取ります」というお知らせを 1 回投稿します。";
+const SUBMIT = "同意して取り込みを始める";
 
 const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => {
-  const { selection, canSubmit, toggle, pickNotice, submit, mutation } = useConsentForm(settings);
+  const { noticeChannelId, canSubmit, pickNotice, submit, mutation } = useConsentForm(settings);
+  const readable = readableChannels(settings);
   return (
     <Panel>
       <h2 className="text-xl font-black">{TITLE}</h2>
-      <ul className="grid gap-2 sm:grid-cols-2">
-        {settings.channels.map((channel) => (
-          <ChannelOption
+      <p className="text-ink-soft text-sm leading-relaxed">{SCOPE}</p>
+      <ul className="flex flex-wrap gap-2">
+        {readable.map((channel) => (
+          <li
             key={channel.id}
-            channel={channel}
-            checked={selection.channelIds.includes(channel.id)}
-            onToggle={toggle}
-          />
+            className="border-ink bg-lavender rounded-full border-2 px-3 py-1 font-bold"
+          >
+            {`#${channel.name}`}
+          </li>
         ))}
       </ul>
-      {settings.consent.status === "awaiting" && (
-        <NoticeChannelPicker
-          channels={settings.channels}
-          value={selection.noticeChannelId}
-          onChoose={pickNotice}
-        />
-      )}
-      <p className="text-ink-soft text-sm">{NOTE[settings.consent.status]}</p>
+      {!Array.isReadonlyArrayNonEmpty(readable) && <p className="font-bold">{EMPTY}</p>}
+      <NoticeChannelPicker channels={readable} value={noticeChannelId} onChoose={pickNotice} />
+      <p className="text-ink-soft text-sm">{NOTE}</p>
       <PopButton tone="blurple" disabled={!canSubmit} onClick={submit}>
-        {SUBMIT[settings.consent.status]}
+        {SUBMIT}
       </PopButton>
       <ConsentResultMessage
         status={mutation.status}

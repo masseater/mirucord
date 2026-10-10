@@ -1,7 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { Array, Boolean, DateTime, Effect, Number, Option, Order, pipe } from "effect";
 
-import { isInScope } from "#/features/ingest/model/consent-scope";
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
@@ -72,8 +71,6 @@ const loadProgress = (job: IngestJob): Effect.Effect<Option.Option<ChannelProgre
         newest: channel.newestMessageId,
         oldest: channel.oldestMessageId,
         backfill: channel.backfill,
-        parentId: channel.parentId,
-        channelIds: ingestConsent.channelIds,
       })
       .from(channel)
       .innerJoin(guild, eq(channel.guildId, guild.id))
@@ -85,15 +82,7 @@ const loadProgress = (job: IngestJob): Effect.Effect<Option.Option<ChannelProgre
           eq(channel.botAccess, "readable"),
         ),
       ),
-  ).pipe(
-    Effect.map((rows) =>
-      Array.head(rows).pipe(
-        Option.filter(({ parentId, channelIds }) =>
-          isInScope({ status: "granted", channelIds }, { id: job.channelId, parentId }),
-        ),
-      ),
-    ),
-  );
+  ).pipe(Effect.map(Array.head));
 
 const oldestTimestamp = (page: readonly DiscordMessage[]): Option.Option<DateTime.DateTime> =>
   Array.match(page, {

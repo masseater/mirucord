@@ -1,0 +1,1 @@
+ALTER TABLE `ingest_consent` DROP COLUMN `channelIds`;

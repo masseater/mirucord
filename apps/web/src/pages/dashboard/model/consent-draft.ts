@@ -1,4 +1,4 @@
-import { Array, Boolean, Function, Option } from "effect";
+import { Array, Function, Option } from "effect";
 import { Atom } from "effect/reactivity";
 
 import type { GuildSettings } from "#/features/ingest/index.server";
@@ -6,11 +6,9 @@ import type { GuildSettings } from "#/features/ingest/index.server";
 const DATA_FIRST_ARITY = 2;
 const NO_CHANNEL = "";
 
-type ConsentSelection = Readonly<{ channelIds: readonly string[]; noticeChannelId: string }>;
-
 type ConsentDraft =
   | Readonly<{ status: "untouched" }>
-  | (Readonly<{ status: "edited" }> & ConsentSelection);
+  | Readonly<{ status: "edited"; noticeChannelId: string }>;
 
 const UNTOUCHED: ConsentDraft = { status: "untouched" };
 
@@ -18,56 +16,23 @@ const consentDraftAtom = Atom.family((guildId: string) =>
   Atom.make<ConsentDraft>(UNTOUCHED).pipe(Atom.withLabel(`consent-draft:${guildId}`)),
 );
 
-const initialSelection = (settings: GuildSettings): ConsentSelection => {
-  if (settings.consent.status === "granted") {
-    return settings.consent;
+const readableChannels = (settings: GuildSettings): GuildSettings["channels"] =>
+  settings.channels.filter(({ ingest }) => ingest !== "unreadable");
+
+const noticeChannelOfDataFirst = (settings: GuildSettings, draft: ConsentDraft): string => {
+  if (draft.status === "edited") {
+    return draft.noticeChannelId;
   }
-  const readable = settings.channels.filter(({ ingest }) => ingest !== "unreadable");
-  return {
-    channelIds: readable.map(({ id }) => id),
-    noticeChannelId: Option.getOrElse(
-      Option.map(Array.head(readable), ({ id }) => id),
-      () => NO_CHANNEL,
-    ),
-  };
+  return Array.head(readableChannels(settings)).pipe(
+    Option.map(({ id }) => id),
+    Option.getOrElse(() => NO_CHANNEL),
+  );
 };
 
-const selectionOf: {
-  (draft: ConsentDraft): (settings: GuildSettings) => ConsentSelection;
-  (settings: GuildSettings, draft: ConsentDraft): ConsentSelection;
-} = Function.dual(DATA_FIRST_ARITY, (settings: GuildSettings, draft: ConsentDraft) => {
-  if (draft.status === "edited") {
-    return draft;
-  }
-  return initialSelection(settings);
-});
+const noticeChannelOf: {
+  (draft: ConsentDraft): (settings: GuildSettings) => string;
+  (settings: GuildSettings, draft: ConsentDraft): string;
+} = Function.dual(DATA_FIRST_ARITY, noticeChannelOfDataFirst);
 
-const toggleChannel: {
-  (channelId: string): (selection: ConsentSelection) => ConsentDraft;
-  (selection: ConsentSelection, channelId: string): ConsentDraft;
-} = Function.dual(
-  DATA_FIRST_ARITY,
-  (selection: ConsentSelection, channelId: string): ConsentDraft => ({
-    status: "edited",
-    noticeChannelId: selection.noticeChannelId,
-    channelIds: Boolean.match(selection.channelIds.includes(channelId), {
-      onTrue: () => selection.channelIds.filter((id) => id !== channelId),
-      onFalse: () => [...selection.channelIds, channelId],
-    }),
-  }),
-);
-
-const chooseNotice: {
-  (noticeChannelId: string): (selection: ConsentSelection) => ConsentDraft;
-  (selection: ConsentSelection, noticeChannelId: string): ConsentDraft;
-} = Function.dual(
-  DATA_FIRST_ARITY,
-  (selection: ConsentSelection, noticeChannelId: string): ConsentDraft => ({
-    status: "edited",
-    channelIds: selection.channelIds,
-    noticeChannelId,
-  }),
-);
-
-export { chooseNotice, consentDraftAtom, selectionOf, toggleChannel, UNTOUCHED };
-export type { ConsentDraft, ConsentSelection };
+export { consentDraftAtom, NO_CHANNEL, noticeChannelOf, readableChannels, UNTOUCHED };
+export type { ConsentDraft };

@@ -7,7 +7,7 @@ import { PurgeChannelButton } from "./purge-channel-button";
 
 const INGEST = {
   unreadable: { label: "Bot が見られないチャンネル", tone: "bg-milk text-ink-soft" },
-  excluded: { label: "対象外", tone: "bg-milk text-ink-soft" },
+  awaiting: { label: "同意待ち", tone: "bg-milk text-ink-soft" },
   paused: { label: "Bot が見られないため停止中（30 日後に保存分を削除）", tone: "bg-pink" },
   cleared: { label: "Bot が見られないため停止中（保存分は削除済み）", tone: "bg-milk" },
   waiting: { label: "取り込み待ち", tone: "bg-butter" },
@@ -22,7 +22,9 @@ const IngestStatusRow = ({
   <li className="border-line flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b-2 border-dashed py-2">
     <span className="font-bold">{`#${channel.name}`}</span>
     <Pill tone={INGEST[channel.ingest].tone}>{INGEST[channel.ingest].label}</Pill>
-    {channel.ingest === "paused" && <PurgeChannelButton guildId={guildId} channelId={channel.id} />}
+    {channel.ingest === "paused" && (
+      <PurgeChannelButton guildId={guildId} channelId={channel.id} channelName={channel.name} />
+    )}
   </li>
 );
 

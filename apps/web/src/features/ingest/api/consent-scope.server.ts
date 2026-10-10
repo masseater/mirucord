@@ -2,7 +2,6 @@ import { and, eq } from "drizzle-orm";
 import { Array, DateTime, Effect, Option } from "effect";
 
 import { isPastRetention } from "#/features/ingest/model/bot-access";
-import { isInScope } from "#/features/ingest/model/consent-scope";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 
@@ -15,14 +14,14 @@ const CLEARED = Option.getOrNull(Option.none<string>());
 const loadScope = (guildId: string): Effect.Effect<ConsentScope> =>
   Effect.promise(() =>
     db
-      .select({ channelIds: ingestConsent.channelIds })
+      .select({ guildId: ingestConsent.guildId })
       .from(ingestConsent)
       .where(eq(ingestConsent.guildId, guildId)),
   ).pipe(
     Effect.map((rows) =>
       Option.match(Array.head(rows), {
         onNone: (): ConsentScope => ({ status: "awaiting" }),
-        onSome: ({ channelIds }): ConsentScope => ({ status: "granted", channelIds }),
+        onSome: (): ConsentScope => ({ status: "granted" }),
       }),
     ),
   );
@@ -59,7 +58,6 @@ const purgeOutOfScope = (guildId: string): Effect.Effect<void> =>
       db
         .select({
           id: channel.id,
-          parentId: channel.parentId,
           newest: channel.newestMessageId,
           botAccess: channel.botAccess,
           hiddenAt: channel.hiddenAt,
@@ -73,7 +71,7 @@ const purgeOutOfScope = (guildId: string): Effect.Effect<void> =>
       const withMessages = new Set(stored.map(({ id }) => id));
       return channels
         .filter((row) => Option.isSome(Option.fromNullOr(row.newest)) || withMessages.has(row.id))
-        .filter((row) => !isInScope(scope, row) || isPastRetention(accessOf(row), now))
+        .filter((row) => scope.status === "awaiting" || isPastRetention(accessOf(row), now))
         .map(({ id }) => id);
     }),
     Effect.flatMap((outOfScope) => Effect.forEach(outOfScope, purgeChannel, { discard: true })),
@@ -84,14 +82,14 @@ const enqueueInScope = (guildId: string): Effect.Effect<void> =>
     scope: loadScope(guildId),
     rows: Effect.promise(() =>
       db
-        .select({ id: channel.id, parentId: channel.parentId })
+        .select({ id: channel.id })
         .from(channel)
         .where(and(eq(channel.guildId, guildId), eq(channel.botAccess, "readable"))),
     ),
   }).pipe(
     Effect.flatMap(({ scope, rows }) =>
       enqueue(
-        rows.filter((row) => isInScope(scope, row)).map(({ id }) => ({ guildId, channelId: id })),
+        rows.filter(() => scope.status === "granted").map(({ id }) => ({ guildId, channelId: id })),
       ),
     ),
   );

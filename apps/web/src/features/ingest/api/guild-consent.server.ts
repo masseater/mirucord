@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
-import { Array, DateTime, Effect, Option } from "effect";
+import { DateTime, Effect, Option } from "effect";
 
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
-import { SITE_ORIGIN } from "#/shared/config";
+import { PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
 import { db, ingestConsent } from "#/shared/db/index.server";
 import { postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
@@ -16,7 +16,6 @@ import type { GuildMembership } from "./managed-guild.server";
 type ConsentRequest = Readonly<{
   guildId: string;
   userId: string;
-  channelIds: readonly string[];
   noticeChannelId: string;
 }>;
 
@@ -28,27 +27,14 @@ type ConsentResult =
 
 type RevokeResult = Readonly<{ status: "revoked" }> | Readonly<{ status: "forbidden" }>;
 
-const NOTICE_LEAD = "このサーバーの過去ログを mirucord が読み取ります。";
-const NOTICE_SCOPE = "対象のチャンネル:";
-const NOTICE_POLICY = `取り扱いについて: ${SITE_ORIGIN}/privacy`;
+const NOTICE = [
+  "このサーバーの過去ログを mirucord が読み取ります。",
+  "対象は mirucord の Bot が見られるチャンネルです。範囲は Discord のチャンネル権限で変えられます。",
+  `取り扱いについて: ${SITE_ORIGIN}${PRIVACY_PATH}`,
+].join("\n");
 
-const noticeOf = (channelIds: readonly string[]): string =>
-  [
-    NOTICE_LEAD,
-    `${NOTICE_SCOPE} ${channelIds.map((id) => `<#${id}>`).join(" ")}`,
-    NOTICE_POLICY,
-  ].join("\n");
-
-const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean => {
-  const selectable = new Set(
-    channels.filter(({ ingest }) => ingest !== "unreadable").map(({ id }) => id),
-  );
-  return (
-    Array.isReadonlyArrayNonEmpty(request.channelIds) &&
-    request.channelIds.every((id) => selectable.has(id)) &&
-    channels.some(({ id }) => id === request.noticeChannelId)
-  );
-};
+const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean =>
+  channels.some(({ id, ingest }) => id === request.noticeChannelId && ingest !== "unreadable");
 
 const postNoticeOnce = (request: ConsentRequest, scope: ConsentScope): Effect.Effect<boolean> => {
   if (scope.status === "granted") {
@@ -56,7 +42,7 @@ const postNoticeOnce = (request: ConsentRequest, scope: ConsentScope): Effect.Ef
   }
   return postChannelMessage({
     channelId: request.noticeChannelId,
-    content: noticeOf(request.channelIds),
+    content: NOTICE,
   }).pipe(
     Effect.as(true),
     Effect.catchTag("DiscordRequestError", ({ status }) =>
@@ -77,7 +63,6 @@ const saveConsent = (request: ConsentRequest): Effect.Effect<void> =>
       const values = {
         grantedBy: request.userId,
         grantedAt: DateTime.toDate(now),
-        channelIds: [...request.channelIds],
         noticeChannelId: request.noticeChannelId,
       };
       return Effect.promise(() =>

@@ -1,45 +1,39 @@
 import { Boolean, Function, Option } from "effect";
 
-import { isInScope } from "./consent-scope";
-import type { ConsentScope, ScopedChannel } from "./consent-scope";
+import type { ConsentScope } from "./consent-scope";
 
 const DATA_FIRST_ARITY = 2;
 const BACKFILL_INGEST = { pending: "backfilling", done: "done" } as const;
 const HIDDEN_INGEST = {
-  inScope: { stored: "paused", empty: "cleared" },
-  outOfScope: { stored: "unreadable", empty: "unreadable" },
+  granted: { stored: "paused", empty: "cleared" },
+  awaiting: { stored: "unreadable", empty: "unreadable" },
 } as const;
 
 type ChannelIngest =
   | "unreadable"
-  | "excluded"
+  | "awaiting"
   | "paused"
   | "cleared"
   | "waiting"
   | "backfilling"
   | "done";
 
-type IngestRow = ScopedChannel &
-  Readonly<{
-    newest: string | null;
-    backfill: "pending" | "done";
-    botAccess: "readable" | "hidden";
-  }>;
+type IngestRow = Readonly<{
+  newest: string | null;
+  backfill: "pending" | "done";
+  botAccess: "readable" | "hidden";
+}>;
 
 const ingestOfDataFirst = (scope: ConsentScope, row: IngestRow): ChannelIngest => {
-  const placement = Boolean.match(isInScope(scope, row), {
-    onTrue: () => "inScope" as const,
-    onFalse: () => "outOfScope" as const,
-  });
   const holding = Boolean.match(Option.isSome(Option.fromNullOr(row.newest)), {
     onTrue: () => "stored" as const,
     onFalse: () => "empty" as const,
   });
   if (row.botAccess === "hidden") {
-    return HIDDEN_INGEST[placement][holding];
+    return HIDDEN_INGEST[scope.status][holding];
   }
-  if (placement === "outOfScope") {
-    return "excluded";
+  if (scope.status === "awaiting") {
+    return "awaiting";
   }
   if (holding === "empty") {
     return "waiting";

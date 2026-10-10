@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
 import { MascotTip } from "#/shared/ui/mascot-tip";
+import { popButtonVariants } from "#/shared/ui/pop-variants";
 
 import { GuildCard } from "./guild-card";
-import { PopLink } from "./pop-link";
 
 const TIP = "サーバーを選んでね";
 const TITLE = "あなたが管理しているサーバー";
@@ -25,9 +25,9 @@ const GuildList = ({
         <GuildCard key={guild.id} guild={guild} />
       ))}
     </ul>
-    <PopLink href={inviteUrl} tone="milk">
+    <a href={inviteUrl} className={popButtonVariants({ tone: "milk", size: "md" })}>
       {INVITE}
-    </PopLink>
+    </a>
   </>
 );
 

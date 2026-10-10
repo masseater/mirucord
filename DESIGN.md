@@ -77,7 +77,6 @@ SVG の中に置くときは `mascotSrc` を `image` 要素に渡す。
 | `AppFrame`     | `shared/ui/app-frame/`        | LP 以外のページの外枠    |
 | `Panel`        | `shared/ui/panel.tsx`         | 管理画面や規約のまとまり |
 | `PopButton`    | `shared/ui/pop-button.tsx`    | 画面内の操作             |
-| `PopLink`      | `shared/ui/pop-link.tsx`      | ボタンの見た目をした遷移 |
 | `SpeechBubble` | `shared/ui/speech-bubble.tsx` | ミルのセリフ             |
 | `MascotTip`    | `shared/ui/mascot-tip.tsx`    | ミルと吹き出しの組       |
 | `Mascot`       | `shared/brand/mascot.tsx`     | ミル本体                 |

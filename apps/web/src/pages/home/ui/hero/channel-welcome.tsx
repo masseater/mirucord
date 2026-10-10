@@ -6,7 +6,6 @@ import { HeroActions } from "./hero-actions";
 
 const LEAD = "みんなの思い出を";
 const FOCUS = "ミルと見つけよう";
-const SUB = "あの夜の名場面もすぐに見つかります";
 
 const ChannelWelcome = (): ReactNode => (
   <div className="flex flex-col items-start gap-4 px-4 pt-6 pb-2">
@@ -17,7 +16,6 @@ const ChannelWelcome = (): ReactNode => (
       <span className="block">{LEAD}</span>
       <span className="text-lavender-deep block">{FOCUS}</span>
     </h1>
-    <p className="text-dc-muted text-lg">{SUB}</p>
     <HeroActions />
   </div>
 );

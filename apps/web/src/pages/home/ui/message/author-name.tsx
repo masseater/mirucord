@@ -19,7 +19,7 @@ const AuthorName = ({
     }),
   );
   return (
-    <span className={cn("font-bold", tone)}>
+    <span className={cn("font-bold whitespace-nowrap", tone)}>
       {mark}
       {name}
     </span>

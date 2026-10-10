@@ -2,6 +2,14 @@
   display: none;
 }
 
+.flow-row {
+  --carry: 135px 0;
+}
+
+.flow-column {
+  --carry: 0 100px;
+}
+
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .flow-figure {
@@ -43,6 +51,6 @@
   }
   100% {
     opacity: 0;
-    translate: 135px 0;
+    translate: var(--carry);
   }
 }

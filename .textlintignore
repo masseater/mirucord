@@ -1,4 +1,5 @@
 AGENTS.md
 .agents/skills/**
+.claude/skills/!(measure-dont-guess)/**
 .claude/worktrees/**
 CHANGELOG.md

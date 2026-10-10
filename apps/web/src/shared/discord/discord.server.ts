@@ -1,4 +1,5 @@
-import { DiscordAPIError, REST, RequestMethod } from "@discordjs/rest";
+import { createRestManager } from "@discordeno/rest";
+import type { RequestMethods } from "@discordeno/rest";
 import { env } from "cloudflare:workers";
 import { OverwriteType, Routes } from "discord-api-types/v10";
 import { Array, Data, Effect, Function, Option, Schema } from "effect";
@@ -65,12 +66,16 @@ class DiscordRequestError extends Data.TaggedError("DiscordRequestError")<{
   readonly cause: unknown;
 }> {}
 
-const isDiscordApiError = (cause: unknown): cause is DiscordAPIError =>
-  cause instanceof DiscordAPIError;
+const RequestFailure = Schema.Struct({ cause: Schema.Struct({ status: Schema.Finite }) });
+const decodeRequestFailure = Schema.decodeUnknownOption(RequestFailure);
 
-const rest = new REST({ version: "10", hashSweepInterval: 0, handlerSweepInterval: 0 }).setToken(
-  env.DISCORD_BOT_TOKEN,
-);
+const rest = createRestManager({ token: env.DISCORD_BOT_TOKEN });
+
+const send = (
+  method: RequestMethods,
+  route: string,
+  options?: Readonly<{ body: unknown; unauthorized: boolean }>,
+): Promise<unknown> => rest.makeRequest(method, route, { ...options, runThroughQueue: false });
 
 const callDiscord = <Body extends Schema.Top>(
   schema: Body,
@@ -80,21 +85,17 @@ const callDiscord = <Body extends Schema.Top>(
     try: load,
     catch: (cause) =>
       new DiscordRequestError({
-        status: Option.liftPredicate(cause, isDiscordApiError).pipe(
-          Option.map(({ status }) => status),
-        ),
+        status: decodeRequestFailure(cause).pipe(Option.map((failure) => failure.cause.status)),
         cause,
       }),
   }).pipe(Effect.flatMap((body) => Schema.decodeUnknownEffect(schema)(body).pipe(Effect.orDie)));
 
-const listBotGuilds = callDiscord(Schema.Array(PartialGuild), () => rest.get(Routes.userGuilds()));
+const listBotGuilds = callDiscord(Schema.Array(PartialGuild), () =>
+  send("GET", Routes.userGuilds()),
+);
 
 const leaveGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
-  Effect.asVoid(
-    callDiscord(Schema.Unknown, () =>
-      rest.request({ method: RequestMethod.Delete, fullRoute: Routes.userGuild(guildId) }),
-    ),
-  );
+  Effect.asVoid(callDiscord(Schema.Unknown, () => send("DELETE", Routes.userGuild(guildId))));
 
 const postWebhookMessage = ({
   webhookUrl,
@@ -106,26 +107,26 @@ const postWebhookMessage = ({
   );
   return Effect.asVoid(
     callDiscord(Schema.Unknown, () =>
-      rest.post(Routes.webhook(webhookId, token), {
+      send("POST", Routes.webhook(webhookId, token), {
         body: { content, allowed_mentions: { parse: [] } },
-        auth: false,
+        unauthorized: true,
       }),
     ),
   );
 };
 
 const getGuild = (guildId: string): Effect.Effect<DiscordGuild, DiscordRequestError> =>
-  callDiscord(Guild, () => rest.get(Routes.guild(guildId)));
+  callDiscord(Guild, () => send("GET", Routes.guild(guildId)));
 
 const listGuildChannels = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
-  callDiscord(Schema.Array(Channel), () => rest.get(Routes.guildChannels(guildId)));
+  callDiscord(Schema.Array(Channel), () => send("GET", Routes.guildChannels(guildId)));
 
 const listActiveThreads = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
-  callDiscord(ThreadList, () => rest.get(Routes.guildActiveThreads(guildId))).pipe(
+  callDiscord(ThreadList, () => send("GET", Routes.guildActiveThreads(guildId))).pipe(
     Effect.map(({ threads }) => threads),
   );
 
@@ -142,7 +143,7 @@ const listMessagesDataFirst = (
     query.set(page.direction, page.cursor);
   }
   return callDiscord(Schema.Array(Message), () =>
-    rest.get(Routes.channelMessages(channelId), { query }),
+    send("GET", `${Routes.channelMessages(channelId)}?${query.toString()}`),
   );
 };
 
@@ -160,7 +161,7 @@ const findMemberDataFirst = (
   guildId: string,
   userId: string,
 ): Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError> =>
-  callDiscord(Member, () => rest.get(Routes.guildMember(guildId, userId))).pipe(
+  callDiscord(Member, () => send("GET", Routes.guildMember(guildId, userId))).pipe(
     Effect.asSome,
     Effect.catchIf(
       (error) => Option.contains(error.status, NOT_FOUND),

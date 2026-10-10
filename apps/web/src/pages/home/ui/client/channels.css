@@ -1,4 +1,5 @@
-.ch-miru {
+.ch-miru,
+.ch-peek-miru {
   display: none;
 }
 
@@ -11,7 +12,8 @@
   @media (prefers-reduced-motion: no-preference) {
     .ch-scope {
       timeline-scope:
-        --ch-top, --ch-why, --ch-forum, --ch-how, --ch-features, --ch-start, --ch-safety, --ch-faq;
+        --ch-top, --ch-why, --ch-forum, --ch-how, --ch-features, --ch-start, --ch-safety, --ch-faq,
+        --scene;
     }
 
     .composer-typing {
@@ -91,6 +93,63 @@
       animation-timeline: --ch-faq;
       animation-range-end: cover 100%;
     }
+
+    .ch-link[href="#why"] .ch-miru {
+      animation-name: ch-miru, ch-miru-away;
+      animation-timeline: --ch-why, --scene;
+      animation-range:
+        entry calc(100% - 38dvh) contain calc(100% - 38dvh),
+        contain 74.5% contain 90.5%;
+    }
+
+    .ch-peek,
+    .ch-peek-miru {
+      animation-timing-function: linear;
+      animation-timeline: --scene;
+      animation-range: contain calc(var(--seen) + 0.1%) contain calc(var(--seen) + 1.9%);
+    }
+
+    .ch-peek {
+      animation-name: ch-peek;
+    }
+
+    .ch-peek-miru {
+      display: block;
+      opacity: 0;
+      animation-name: ch-peek-miru;
+    }
+
+    .ch-peek[data-peek="announce"] {
+      --seen: 75%;
+    }
+
+    .ch-peek[data-peek="game"] {
+      --seen: 76.91%;
+    }
+
+    .ch-peek[data-peek="campPlan"] {
+      --seen: 78.82%;
+    }
+
+    .ch-peek[data-peek="recipe"] {
+      --seen: 80.73%;
+    }
+
+    .ch-peek[data-peek="hansei"] {
+      --seen: 82.64%;
+    }
+
+    .ch-peek[data-peek="kansou"] {
+      --seen: 84.55%;
+    }
+
+    .ch-peek[data-peek="photo"] {
+      --seen: 86.46%;
+    }
+
+    .ch-peek[data-peek="hitori"] {
+      --seen: 88.37%;
+    }
   }
 }
 
@@ -120,5 +179,53 @@
   0%,
   100% {
     visibility: visible;
+  }
+}
+
+@keyframes ch-miru-away {
+  0%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes ch-peek {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  15%,
+  85% {
+    background-color: var(--color-dc-highlight);
+    color: var(--color-dc-bright);
+  }
+}
+
+@keyframes ch-peek-miru {
+  0% {
+    opacity: 0;
+    translate: 0.75rem 0;
+    rotate: 0deg;
+    scale: 0.4;
+  }
+  20% {
+    opacity: 1;
+    translate: 0 0;
+    rotate: -18deg;
+    scale: 1.2;
+  }
+  50% {
+    rotate: 10deg;
+    scale: 1;
+  }
+  80% {
+    opacity: 1;
+    rotate: -8deg;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: -0.5rem 0;
+    scale: 0.6;
   }
 }

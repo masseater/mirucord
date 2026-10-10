@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 
 import { CtaLink } from "#/pages/home/ui/common/cta-link";
-import { REPOSITORY_URL } from "#/shared/config";
+import { REPOSITORY_URL, SIGN_IN_PATH } from "#/shared/config";
 
-const START = "無料ではじめる";
+const START = "Discord でログインしてはじめる";
 const SOURCE = "GitHub を見る";
 
 const ClosingActions = (): ReactNode => (
   <div className="flex flex-wrap justify-center gap-4">
-    <CtaLink href="#start" tone="blurple" size="xl">
+    <CtaLink href={SIGN_IN_PATH} tone="blurple" size="xl">
       {START}
     </CtaLink>
     <CtaLink href={REPOSITORY_URL} tone="milk" size="xl">

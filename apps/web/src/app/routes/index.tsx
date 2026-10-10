@@ -3,9 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HomePage, loadHomePage } from "#/pages/home";
 import { SITE_ORIGIN } from "#/shared/config";
 
-const TITLE = "mirucord | Discord を読む MCP サーバー";
+const TITLE = "mirucord | Discord の思い出を AI と掘り起こそう";
 const DESCRIPTION =
-  "Discord サーバーの過去の会話を AI から探せる読み取り専用の MCP サーバーです。Bot を招待するだけで使えます。";
+  "Discord サーバーの昔の会話や名場面を AI と一緒に探せます。Bot を招待するだけで使えます。";
 const FONTS_ORIGIN = "https://fonts.googleapis.com";
 const FONTS_STATIC_ORIGIN = "https://fonts.gstatic.com";
 const FONTS_URL = `${FONTS_ORIGIN}/css2?family=JetBrains+Mono:wght@400;500&family=Zen+Maru+Gothic:wght@500;700;900&display=swap`;

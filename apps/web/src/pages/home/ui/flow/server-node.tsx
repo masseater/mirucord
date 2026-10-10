@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { DiscordMark } from "#/pages/home/ui/common/discord-mark";
 
-const TITLE = "あなたのサーバー";
+const TITLE = "みんなのサーバー";
 const CAPTION = "Bot を招待するだけ";
 
 const ServerNode = (): ReactNode => (

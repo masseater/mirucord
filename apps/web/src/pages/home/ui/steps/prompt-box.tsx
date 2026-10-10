@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-const PROMPT = "先月の議論をまとめて";
+const PROMPT = "去年の夏の思い出を教えて";
 const ENTER = "↵";
 
 const PromptBox = (): ReactNode => (

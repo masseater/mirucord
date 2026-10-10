@@ -2,40 +2,40 @@ import type { ReactNode } from "react";
 
 import { ChatMessage } from "./chat-message";
 
-const CHANNEL = "# 開発";
-const DATE = "3月12日";
+const CHANNEL = "# ざつだん";
+const DATE = "2024年8月12日";
 
 const MESSAGES = [
   {
-    initial: "佐",
+    initial: "ゆ",
     avatar: "bg-pink-deep",
-    name: "佐藤ゆい",
-    time: "21:04",
-    body: "決済まわりの不具合がまだ残ってます",
+    name: "ゆい",
+    time: "22:02",
+    body: "今日の星空やばかったね",
     marked: false,
   },
   {
-    initial: "健",
+    initial: "け",
     avatar: "bg-mint-deep",
     name: "kenta",
-    time: "21:06",
-    body: "今の状態で出すのは怖いですね",
+    time: "22:05",
+    body: "来年もぜったいキャンプ行こう",
     marked: false,
   },
   {
-    initial: "田",
+    initial: "た",
     avatar: "bg-sky-deep",
-    name: "田中",
-    time: "21:11",
-    body: "リリースは 3/21 に延期で確定します",
+    name: "たなか",
+    time: "22:14",
+    body: "次こそカレー焦がさないって誓う",
     marked: true,
   },
   {
-    initial: "美",
+    initial: "み",
     avatar: "bg-butter-deep",
     name: "みほ",
-    time: "21:12",
-    body: "了解です 告知文を直します",
+    time: "22:15",
+    body: "焦げたのもおいしかったよ笑",
     marked: false,
   },
 ] as const;

@@ -1,1 +1,8 @@
-export { MCP_URL, REPOSITORY_URL, SITE_HOST, SITE_ORIGIN } from "./site";
+export {
+  MCP_URL,
+  PRIVACY_PATH,
+  REPOSITORY_URL,
+  SIGN_IN_PATH,
+  SITE_HOST,
+  SITE_ORIGIN,
+} from "./site";

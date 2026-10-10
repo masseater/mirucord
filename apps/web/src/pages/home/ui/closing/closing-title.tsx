@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 const LEAD = "さっそく";
-const TAIL = "AI に聞いてみよう";
+const TAIL = "思い出を掘り起こそう";
 
 const ClosingTitle = (): ReactNode => (
   <h2 className="text-4xl leading-snug font-black md:text-6xl">

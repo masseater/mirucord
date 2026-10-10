@@ -2,11 +2,12 @@ import type { ReactNode } from "react";
 
 import { CtaLink } from "#/pages/home/ui/common/cta-link";
 import { Mascot } from "#/pages/home/ui/common/mascot";
+import { SIGN_IN_PATH } from "#/shared/config";
 
 import { NavLinks } from "./nav-links";
 
 const BRAND = "mirucord";
-const START = "無料ではじめる";
+const SIGN_IN = "ログイン";
 
 const SiteNav = (): ReactNode => (
   <header className="relative z-10 mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-5">
@@ -15,8 +16,8 @@ const SiteNav = (): ReactNode => (
       {BRAND}
     </a>
     <NavLinks />
-    <CtaLink href="#start" tone="blurple" size="sm">
-      {START}
+    <CtaLink href={SIGN_IN_PATH} tone="blurple" size="sm">
+      {SIGN_IN}
     </CtaLink>
   </header>
 );

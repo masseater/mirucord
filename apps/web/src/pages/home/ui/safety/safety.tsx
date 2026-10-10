@@ -4,7 +4,7 @@ import { SectionHead } from "#/pages/home/ui/common/section-head";
 
 import { SpecList } from "./spec-list";
 
-const LEAD = "大事な会話だから";
+const LEAD = "大事な思い出だから";
 const TAIL = "ていねいに預かります";
 const GUIDE = "大事にあずかるね";
 const LABEL = "あんしん";

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-const DECISION = "3/21 への延期";
-const SOURCE = "#開発 21:11";
+const DECISION = "次こそカレー焦がさない";
+const SOURCE = "#ざつだん 22:14";
 
 const AnswerSource = (): ReactNode => (
   <ruby className="marker-butter">

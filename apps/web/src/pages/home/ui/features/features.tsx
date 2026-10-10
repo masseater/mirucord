@@ -4,8 +4,8 @@ import { SectionHead } from "#/pages/home/ui/common/section-head";
 
 import { FeatureGrid } from "./feature-grid";
 
-const LEAD = "読むだけ";
-const TAIL = "見える範囲だけ";
+const LEAD = "ミルは見るだけ";
+const TAIL = "見ていい所だけ";
 const GUIDE = "読むだけだから安心してね";
 const LABEL = "とくちょう";
 

@@ -2,9 +2,10 @@ import type { ReactNode } from "react";
 
 import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
 
+import { AnswerWindow } from "./answer-window";
 import { ChannelTopic } from "./channel-topic";
 import { ChannelWelcome } from "./channel-welcome";
-import { HeroDemo } from "./hero-demo";
+import { ChatLog } from "./chat-log";
 
 const CHANNEL = "ざつだん";
 const TOPIC = "Discord の思い出さがし";
@@ -21,7 +22,10 @@ const Hero = (): ReactNode => (
       {DATE}
       <hr className="border-dc-line grow" />
     </div>
-    <HeroDemo />
+    <div className="xl:grid xl:grid-cols-2 xl:items-center">
+      <ChatLog />
+      <AnswerWindow />
+    </div>
   </section>
 );
 

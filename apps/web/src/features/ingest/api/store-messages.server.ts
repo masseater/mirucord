@@ -9,7 +9,7 @@ import type { DiscordMessage } from "#/shared/discord/index.server";
 
 import { findStored } from "./message-rows.server";
 import type { StoredMessage } from "./message-rows.server";
-import { deleteVectors, upsertVectors } from "./vectors.server";
+import { deleteVectors, indexedIds, upsertVectors } from "./vectors.server";
 import type { MessageVector } from "./vectors.server";
 
 const STORED_TYPES: ReadonlySet<MessageType> = new Set([MessageType.Default, MessageType.Reply]);
@@ -99,15 +99,30 @@ const writeVectors = (
   );
 };
 
+const withoutVectors = (
+  unchanged: readonly DiscordMessage[],
+): Effect.Effect<readonly DiscordMessage[]> => {
+  const indexable = unchanged.filter(({ content }) => String.isNonEmpty(content));
+  return indexedIds(indexable.map(({ id }) => id)).pipe(
+    Effect.map((indexed) => indexable.filter(({ id }) => !indexed.has(id))),
+  );
+};
+
 const storeMessages = ({
   page,
   ...target
 }: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<void> => {
   const kept = page.filter(({ type }) => STORED_TYPES.has(type));
   return findStored(kept.map(({ id }) => id)).pipe(
-    Effect.map((stored) => kept.filter((incoming) => isChanged(stored, incoming))),
-    Effect.tap((changed) => writeRows(target, changed)),
-    Effect.flatMap((changed) => writeVectors(target, changed)),
+    Effect.flatMap((stored) => {
+      const changed = kept.filter((incoming) => isChanged(stored, incoming));
+      const unchanged = kept.filter((incoming) => !isChanged(stored, incoming));
+      return withoutVectors(unchanged).pipe(
+        Effect.map((missing) => [...changed, ...missing]),
+        Effect.tap((stale) => writeVectors(target, stale)),
+        Effect.flatMap((stale) => writeRows(target, stale)),
+      );
+    }),
   );
 };
 

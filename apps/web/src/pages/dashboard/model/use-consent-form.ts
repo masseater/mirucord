@@ -1,13 +1,15 @@
 import { useAtom } from "@effect/atom-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UseMutationResult } from "@tanstack/react-query";
+import { Atom } from "effect/reactivity";
 import { useCallback } from "react";
 
 import type { ConsentResult, GuildSettings } from "#/features/ingest/index.server";
 import { dashboardQuery, saveConsent } from "#/pages/dashboard/api/dashboard";
 import type { ConsentInput } from "#/pages/dashboard/api/dashboard.server";
 
-import { consentDraftAtom, NO_CHANNEL, noticeChannelOf, UNTOUCHED } from "./consent-draft";
+import { NO_CHANNEL, noticeChannelOf, UNTOUCHED } from "./consent-draft";
+import type { ConsentDraft } from "./consent-draft";
 
 type ConsentForm = Readonly<{
   noticeChannelId: string;
@@ -20,6 +22,10 @@ type ConsentForm = Readonly<{
     ConsentInput
   >;
 }>;
+
+const consentDraftAtom = Atom.family((guildId: string) =>
+  Atom.make<ConsentDraft>(UNTOUCHED).pipe(Atom.withLabel(`consent-draft:${guildId}`)),
+);
 
 const useConsentForm = (settings: GuildSettings): ConsentForm => {
   const [draft, setDraft] = useAtom(consentDraftAtom(settings.id));

@@ -4,6 +4,7 @@ import { MEMBERS } from "#/pages/home/ui/common/members";
 import { PLACES } from "#/pages/home/ui/common/places";
 
 import { FragmentCard } from "./fragment-card";
+import { FragmentPlace } from "./fragment-place";
 
 const FRAGMENTS = [
   {
@@ -29,10 +30,12 @@ const Fragments = (): ReactNode => (
     {FRAGMENTS.map((fragment) => (
       <FragmentCard
         key={fragment.text}
-        place={fragment.place}
+        className="scene-frag"
         member={fragment.member}
         text={fragment.text}
-      />
+      >
+        <FragmentPlace place={fragment.place} />
+      </FragmentCard>
     ))}
   </ul>
 );

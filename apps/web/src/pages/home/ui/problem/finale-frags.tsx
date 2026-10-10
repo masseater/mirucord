@@ -1,19 +1,17 @@
 import type { ReactNode } from "react";
 
-import { cn } from "#/shared/lib/utils";
-
+import { FragmentCard } from "./fragment-card";
 import { FRAGMENTS } from "./fragments";
 
 const FinaleFrags = (): ReactNode => (
   <ul aria-hidden="true" className="finale-frags">
     {FRAGMENTS.map((fragment) => (
-      <li
+      <FragmentCard
         key={fragment.text}
-        className="finale-frag finale-part bg-dc-sidebar border-dc-line grid rounded-lg border px-3 py-2 text-sm"
-      >
-        <span className={cn("font-bold", fragment.member.tone)}>{fragment.member.name}</span>
-        <span className="text-dc-text">{fragment.text}</span>
-      </li>
+        className="finale-frag finale-part"
+        member={fragment.member}
+        text={fragment.text}
+      />
     ))}
   </ul>
 );

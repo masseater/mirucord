@@ -2,10 +2,10 @@ import { eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
-import { isGuildManager } from "#/features/ingest/model/guild-manager";
 import { db, guild, ingestConsent, loadRolePermissions } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
+import { isGuildManager } from "#/shared/permissions";
 
 const MEMBER_CONCURRENCY = 4;
 

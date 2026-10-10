@@ -26,7 +26,7 @@ const GuildList = ({
       ))}
     </ul>
     <a
-      className="border-ink bg-milk shadow-pop-sm inline-flex h-11 items-center self-start rounded-full border-2 px-6 font-bold no-underline transition-all hover:-translate-y-0.5"
+      className="border-ink bg-milk shadow-pop-sm inline-flex h-11 items-center self-start rounded-full border-2 px-6 font-bold no-underline motion-safe:transition motion-safe:hover:-translate-y-0.5"
       href={inviteUrl}
     >
       {INVITE}

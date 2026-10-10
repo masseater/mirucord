@@ -3,7 +3,8 @@ import { useMemo } from "react";
 import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
-import { cn } from "#/shared/lib/utils";
+
+import { Pill } from "./pill";
 
 const CONSENT = {
   awaiting: { label: "同意待ち", tone: "bg-butter" },
@@ -18,17 +19,10 @@ const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => {
       <Link
         to="/dashboard/$guildId"
         params={params}
-        className="border-ink bg-milk shadow-pop-sm flex items-center justify-between gap-4 rounded-3xl border-2 px-5 py-4 no-underline transition-all hover:-translate-y-0.5"
+        className="border-ink bg-milk shadow-pop-sm flex items-center justify-between gap-4 rounded-3xl border-2 px-5 py-4 no-underline motion-safe:transition motion-safe:hover:-translate-y-0.5"
       >
         <span className="text-lg font-black">{guild.name}</span>
-        <span
-          className={cn(
-            "border-ink rounded-full border-2 px-3 py-0.5 text-xs font-bold",
-            consent.tone,
-          )}
-        >
-          {consent.label}
-        </span>
+        <Pill tone={consent.tone}>{consent.label}</Pill>
       </Link>
     </li>
   );

@@ -39,7 +39,7 @@ const POSTS = [
 ] as const;
 
 const ForumPosts = (): ReactNode => (
-  <div className="forum-scan relative mt-1 max-w-xl">
+  <div className="relative mt-1 max-w-xl">
     <ul className="grid gap-2">
       {POSTS.map((post) => (
         <ForumPost

@@ -18,7 +18,7 @@ const Hero = (): ReactNode => (
       {DATE}
       <hr className="border-dc-line grow" />
     </div>
-    <div className="hero-scan xl:grid xl:grid-cols-2 xl:items-center">
+    <div className="xl:grid xl:grid-cols-2 xl:items-center">
       <ChatLog />
       <AnswerWindow />
     </div>

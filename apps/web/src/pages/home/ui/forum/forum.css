@@ -4,10 +4,6 @@
 
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
-    .forum-scan {
-      view-timeline: --forum block;
-    }
-
     .forum-track {
       position: absolute;
       inset-block: 0;
@@ -19,32 +15,35 @@
         right: -4.5rem;
       }
       animation: forum-track linear both;
-      animation-timeline: --forum;
-      animation-range: cover 30% cover 60%;
+      animation-timeline: --ch-forum;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.9) contain
+        calc(100% - 100dvh - var(--dwell) * 0.1);
     }
 
     .forum-miru {
       animation: forum-miru linear both;
-      animation-timeline: --forum;
-      animation-range: cover 25% cover 65%;
+      animation-timeline: --ch-forum;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * 1) contain
+        calc(100% - 100dvh - var(--dwell) * 0);
     }
 
     .forum-read {
       animation: pop-in linear both;
-      animation-timeline: --forum;
-      animation-range: cover var(--read) cover calc(var(--read) + 3%);
+      animation-timeline: --ch-forum;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * (1 - var(--read))) contain
+        calc(100% - 100dvh - var(--dwell) * (0.92 - var(--read)));
     }
 
     .forum-post:nth-child(1) .forum-read {
-      --read: 34%;
+      --read: 0.25;
     }
 
     .forum-post:nth-child(2) .forum-read {
-      --read: 44%;
+      --read: 0.5;
     }
 
     .forum-post:nth-child(3) .forum-read {
-      --read: 54%;
+      --read: 0.75;
     }
   }
 }

@@ -623,71 +623,71 @@
       translate: calc(-50% + var(--px)) calc(-50% + var(--py));
       animation: finale-spark linear both;
       animation-timeline: --scene;
-      animation-range: contain var(--at) contain calc(var(--at) + 3%);
+      animation-range: contain var(--at) contain calc(var(--at) + 1.8%);
     }
 
-    .finale-spark:nth-child(2) {
+    .finale-spark:nth-child(5) {
       --px: -30cqw;
       --py: -30cqh;
       --spark: var(--color-butter-deep);
       --size: 3rem;
-      --at: 95%;
+      --at: 93.5%;
     }
 
-    .finale-spark:nth-child(3) {
+    .finale-spark:nth-child(6) {
       --px: 30cqw;
       --py: -28cqh;
       --spark: var(--color-pink-deep);
       --size: 2.25rem;
-      --at: 95.6%;
+      --at: 94.1%;
     }
 
-    .finale-spark:nth-child(4) {
+    .finale-spark:nth-child(7) {
       --px: -38cqw;
       --py: 6cqh;
       --spark: var(--color-sky-deep);
       --size: 2rem;
-      --at: 96.2%;
+      --at: 94.7%;
     }
 
-    .finale-spark:nth-child(5) {
+    .finale-spark:nth-child(8) {
       --px: 38cqw;
       --py: 8cqh;
       --spark: var(--color-butter-deep);
       --size: 3.25rem;
-      --at: 96.8%;
+      --at: 95.3%;
     }
 
-    .finale-spark:nth-child(6) {
+    .finale-spark:nth-child(9) {
       --px: -24cqw;
       --py: 30cqh;
       --spark: var(--color-lavender-deep);
       --size: 2.5rem;
-      --at: 97.4%;
+      --at: 95.9%;
     }
 
-    .finale-spark:nth-child(7) {
+    .finale-spark:nth-child(10) {
       --px: 26cqw;
       --py: 30cqh;
       --spark: var(--color-sky-deep);
       --size: 2rem;
-      --at: 98%;
+      --at: 96.5%;
     }
 
-    .finale-spark:nth-child(8) {
+    .finale-spark:nth-child(11) {
       --px: 0cqw;
       --py: -38cqh;
       --spark: var(--color-pink-deep);
       --size: 2.5rem;
-      --at: 98.6%;
+      --at: 97.1%;
     }
 
-    .finale-spark:nth-child(9) {
+    .finale-spark:nth-child(12) {
       --px: 4cqw;
       --py: 38cqh;
       --spark: var(--color-butter-deep);
       --size: 2.25rem;
-      --at: 99.2%;
+      --at: 97.7%;
     }
   }
 }

@@ -1,12 +1,6 @@
-import type { OverwriteType } from "discord-api-types/v10";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-type PermissionOverwrite = Readonly<{
-  id: string;
-  type: OverwriteType;
-  allow: string;
-  deny: string;
-}>;
+import type { Overwrite } from "#/shared/permissions";
 
 const guild = sqliteTable("guild", {
   id: text().primaryKey(),
@@ -40,7 +34,7 @@ const channel = sqliteTable(
     parentId: text(),
     name: text().notNull(),
     type: integer().notNull(),
-    permissionOverwrites: text({ mode: "json" }).$type<readonly PermissionOverwrite[]>().notNull(),
+    permissionOverwrites: text({ mode: "json" }).$type<readonly Overwrite[]>().notNull(),
     newestMessageId: text(),
     oldestMessageId: text(),
     backfill: text({ enum: ["pending", "done"] })
@@ -68,4 +62,3 @@ const ingestConsent = sqliteTable("ingest_consent", {
 });
 
 export { channel, guild, ingestConsent, role };
-export type { PermissionOverwrite };

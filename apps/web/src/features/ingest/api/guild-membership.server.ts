@@ -2,18 +2,13 @@ import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { Array, Config, ConfigProvider, Effect, Option } from "effect";
 
-import { db, guild } from "#/shared/db/index.server";
+import { db, guild, listGuildIds } from "#/shared/db/index.server";
 import { getBotUserId, leaveGuild, listBotGuilds } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
 import { forgetGuildMessages } from "./message-rows.server";
 
 const DEFAULT_GUILD_LIMIT = 80;
-
-const selectIds = <Row extends Readonly<{ id: string }>>(
-  load: () => Promise<readonly Row[]>,
-): Effect.Effect<readonly string[]> =>
-  Effect.promise(load).pipe(Effect.map((rows) => rows.map(({ id }) => id)));
 
 const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =>
   Effect.logWarning("Discord request failed").pipe(
@@ -72,7 +67,7 @@ type Membership = Readonly<{
 const reconcileMembership: Effect.Effect<Membership, DiscordRequestError> = Effect.gen(
   function* reconcileMembership() {
     const current = (yield* listBotGuilds).map(({ id }) => id);
-    const stored = yield* selectIds(() => db.select({ id: guild.id }).from(guild));
+    const stored = yield* listGuildIds;
     const botUserId = yield* getBotUserId;
     const admitted = yield* admitGuilds(current, stored);
     yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));

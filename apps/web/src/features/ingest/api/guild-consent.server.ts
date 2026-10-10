@@ -7,9 +7,9 @@ import { db, ingestConsent } from "#/shared/db/index.server";
 import { postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { loadScope, refreshIngest, withdrawGuild } from "./consent-scope.server";
+import { refreshIngest, withdrawGuild } from "./consent-scope.server";
 import type { GuildDataRemainsError } from "./consent-scope.server";
-import { guildSettings } from "./guild-settings.server";
+import { loadConsentedChannels } from "./guild-settings.server";
 import type { SettingsChannel } from "./guild-settings.server";
 import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
@@ -80,13 +80,13 @@ const saveConsent = (request: ConsentRequest): Effect.Effect<void> =>
 
 const applyConsent = (
   request: ConsentRequest,
+  scope: ConsentScope,
   channels: readonly SettingsChannel[],
 ): Effect.Effect<ConsentResult> => {
   if (!isValidRequest(request, channels)) {
     return Effect.succeed({ status: "invalid" });
   }
-  return loadScope(request.guildId).pipe(
-    Effect.flatMap((scope) => postNoticeOnce(request, scope)),
+  return postNoticeOnce(request, scope).pipe(
     Effect.flatMap((posted) => {
       if (!posted) {
         return Effect.succeed<ConsentResult>({ status: "noticeFailed" });
@@ -100,11 +100,14 @@ const applyConsent = (
 };
 
 const grantConsent = (request: ConsentRequest): Effect.Effect<ConsentResult, DiscordRequestError> =>
-  guildSettings(request).pipe(
+  managedGuild(request).pipe(
     Effect.flatMap(
       Option.match({
         onNone: () => Effect.succeed<ConsentResult>({ status: "forbidden" }),
-        onSome: ({ channels }) => applyConsent(request, channels),
+        onSome: () =>
+          loadConsentedChannels(request.guildId).pipe(
+            Effect.flatMap(({ consent, channels }) => applyConsent(request, consent, channels)),
+          ),
       }),
     ),
   );

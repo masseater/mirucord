@@ -1,18 +1,17 @@
 import { eq, inArray } from "drizzle-orm";
-import { Array, DateTime, Effect, Option } from "effect";
+import { DateTime, Effect, Option } from "effect";
 
-import { channel, db } from "#/shared/db/index.server";
+import type { IngestRow } from "#/features/ingest/model/channel-ingest";
+import { channel, db, inIdChunks } from "#/shared/db/index.server";
 
 import { columnsOf } from "./bot-access.server";
 import type { ChannelSync } from "./channel-listing.server";
 import { forgetChannelMessages } from "./message-rows.server";
 
-const ID_CHUNK = 50;
-
 type StoredRow = Readonly<{
   id: string;
   parentId: string | null;
-  botAccess: "readable" | "hidden";
+  botAccess: IngestRow["botAccess"];
 }>;
 
 type Settlement = Readonly<{ departed: readonly string[]; orphaned: readonly string[] }>;
@@ -43,31 +42,25 @@ const loadStored = (guildId: string): Effect.Effect<readonly StoredRow[]> =>
       .where(eq(channel.guildId, guildId)),
   );
 
-const deleteRows = (chunk: readonly string[]): Effect.Effect<void> =>
-  Effect.asVoid(Effect.promise(() => db.delete(channel).where(inArray(channel.id, [...chunk]))));
-
-const removeChannels = (ids: readonly string[]): Effect.Effect<void> => {
-  const chunks = Array.chunksOf(ids, ID_CHUNK);
-  return Effect.forEach(ids, forgetChannelMessages, { discard: true }).pipe(
-    Effect.andThen(Effect.forEach(chunks, deleteRows, { discard: true })),
+const removeChannels = (ids: readonly string[]): Effect.Effect<void> =>
+  Effect.forEach(ids, forgetChannelMessages, { discard: true }).pipe(
+    Effect.andThen(
+      inIdChunks(ids, (chunk) => db.delete(channel).where(inArray(channel.id, [...chunk]))),
+    ),
+    Effect.asVoid,
   );
-};
 
 const pauseChannels = (ids: readonly string[]): Effect.Effect<void> =>
   DateTime.now.pipe(
     Effect.flatMap((now) =>
-      Effect.forEach(
-        Array.chunksOf(ids, ID_CHUNK),
-        (chunk) =>
-          Effect.promise(() =>
-            db
-              .update(channel)
-              .set(columnsOf({ status: "hidden", since: now }))
-              .where(inArray(channel.id, [...chunk])),
-          ),
-        { discard: true },
+      inIdChunks(ids, (chunk) =>
+        db
+          .update(channel)
+          .set(columnsOf({ status: "hidden", since: now }))
+          .where(inArray(channel.id, [...chunk])),
       ),
     ),
+    Effect.asVoid,
   );
 
 const settleStoredChannels = (sync: ChannelSync): Effect.Effect<void> =>

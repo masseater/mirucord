@@ -1,22 +1,18 @@
 import { and, eq, gte, inArray } from "drizzle-orm";
-import { Array, DateTime, Effect, Option } from "effect";
+import { DateTime, Effect, Option } from "effect";
 
-import { db, message } from "#/shared/db/index.server";
+import { db, inIdChunks, message } from "#/shared/db/index.server";
 
 import { deleteVectors } from "./vectors.server";
-
-const ID_CHUNK = 50;
 
 type StoredMessage = Readonly<{ id: string; editedAt: Option.Option<number> }>;
 
 const findStored = (ids: readonly string[]): Effect.Effect<readonly StoredMessage[]> =>
-  Effect.forEach(Array.chunksOf(ids, ID_CHUNK), (chunk) =>
-    Effect.promise(() =>
-      db
-        .select({ id: message.id, editedAt: message.editedAt })
-        .from(message)
-        .where(inArray(message.id, [...chunk])),
-    ),
+  inIdChunks(ids, (chunk) =>
+    db
+      .select({ id: message.id, editedAt: message.editedAt })
+      .from(message)
+      .where(inArray(message.id, [...chunk])),
   ).pipe(
     Effect.map((chunks) =>
       chunks.flat().map(({ id, editedAt }) => ({
@@ -62,15 +58,13 @@ const forgetGuildMessages = (guildId: string): Effect.Effect<void> =>
 const forgetChannelMessages = (channelId: string): Effect.Effect<void> =>
   forgetMessagesOf("channel", channelId);
 
-const deleteRows = (chunk: readonly string[]): Effect.Effect<void> =>
-  Effect.asVoid(Effect.promise(() => db.delete(message).where(inArray(message.id, [...chunk]))));
-
-const deleteMessages = (ids: readonly string[]): Effect.Effect<void> => {
-  const chunks = Array.chunksOf(ids, ID_CHUNK);
-  return deleteVectors(ids).pipe(
-    Effect.andThen(Effect.forEach(chunks, deleteRows, { discard: true })),
+const deleteMessages = (ids: readonly string[]): Effect.Effect<void> =>
+  deleteVectors(ids).pipe(
+    Effect.andThen(
+      inIdChunks(ids, (chunk) => db.delete(message).where(inArray(message.id, [...chunk]))),
+    ),
+    Effect.asVoid,
   );
-};
 
 export {
   channelMessagesSince,

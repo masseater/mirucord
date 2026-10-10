@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "../pages/home/ui/client/channels.css";
+@import "../pages/home/ui/common/channel-section.css";
 @import "../pages/home/ui/common/reveal.css";
 @import "../pages/home/ui/faq/faq.css";
 @import "../pages/home/ui/flow/flow.css";

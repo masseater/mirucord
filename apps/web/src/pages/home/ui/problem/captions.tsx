@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 
-import { GatherCard } from "./gather-card";
-
 const CAPTIONS = [
   ["あのキャンプの話", "どこだっけ…"],
   ["チャンネルに スレッドに フォーラム", "思い出はあちこちにバラバラ"],
@@ -20,7 +18,6 @@ const Captions = (): ReactNode => (
         ))}
       </p>
     ))}
-    <GatherCard />
   </div>
 );
 

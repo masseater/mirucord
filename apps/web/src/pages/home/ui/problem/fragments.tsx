@@ -37,4 +37,4 @@ const Fragments = (): ReactNode => (
   </ul>
 );
 
-export { Fragments };
+export { FRAGMENTS, Fragments };

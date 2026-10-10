@@ -6,7 +6,7 @@
     }
 
     .ch-section[id="why"] {
-      --dwell: 50dvh;
+      --dwell: 300dvh;
       view-timeline-name: --ch-why;
     }
 

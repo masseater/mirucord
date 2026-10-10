@@ -133,12 +133,6 @@
       --from: 23%;
       --to: 33.82%;
     }
-
-    .scene-caption:nth-child(4) {
-      --from: 94.44%;
-      --to: 110.42%;
-      animation-name: scene-finale-hold;
-    }
   }
 }
 
@@ -172,18 +166,6 @@
   100% {
     translate: calc(var(--x) * 1.1) calc(var(--y) * 1.1);
     rotate: 0deg;
-    scale: 1;
-  }
-}
-
-@keyframes scene-finale-hold {
-  0% {
-    opacity: 0;
-    scale: 0.92;
-  }
-  15%,
-  100% {
-    opacity: 1;
     scale: 1;
   }
 }
@@ -266,9 +248,12 @@
 
 .scene-miru,
 .scene-count,
+.finale-lines,
 .finale-burst,
 .finale-slab,
 .finale-stripe,
+.finale-ring,
+.finale-frags,
 .finale-miru,
 .finale-spark {
   display: none;
@@ -277,6 +262,7 @@
 .scene-finale {
   display: grid;
   gap: 1.5rem;
+  margin: 1rem;
   padding: 1.5rem;
   overflow: hidden;
   border-radius: var(--radius-lg);
@@ -365,9 +351,13 @@
     }
 
     .ch-section[id="why"] > .ch-pane {
-      animation: cutin-front linear;
-      animation-timeline: --scene;
-      animation-range: contain 33.82% contain 75%;
+      animation:
+        cutin-front linear,
+        cutin-front linear;
+      animation-timeline: --scene, --ch-why;
+      animation-range:
+        contain 33.82% contain 75%,
+        contain calc(100% - 100dvh - var(--dwell)) contain calc(100% - 100dvh);
     }
 
     .cutin {
@@ -498,107 +488,53 @@
       --sy: 13.8cqh;
       --sr: 14deg;
     }
+  }
+}
 
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
     .scene-finale {
-      top: 0;
-      left: 0;
-      width: 100cqw;
-      height: 100cqh;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
       align-content: center;
       justify-items: start;
-      padding: 6cqh 6cqw;
-      overflow: visible;
+      margin: 0;
+      padding: 6vh 6vw;
       border-radius: 0;
       background-color: transparent;
-      transform: none;
       text-align: left;
+      visibility: hidden;
+      pointer-events: none;
+      animation: finale-root linear;
+      animation-timeline: --ch-why;
+      animation-range: contain calc(100% - 100dvh - var(--dwell)) contain calc(100% - 100dvh);
     }
 
-    .finale-title,
-    .finale-count {
-      position: relative;
-      z-index: 3;
+    .finale-part {
+      animation-timing-function: linear;
+      animation-fill-mode: both, forwards;
+      animation-timeline: --ch-why, --ch-why;
+      animation-range:
+        contain calc(100% - 100dvh - var(--dwell) * var(--s)) contain
+          calc(100% - 100dvh - var(--dwell) * var(--e)),
+        contain calc(100% - 100dvh - var(--dwell) * 0.14) contain
+          calc(100% - 100dvh - var(--dwell) * 0.02);
     }
 
-    .finale-title {
-      font-size: clamp(1.5rem, 5.5cqw, 4.5rem);
-    }
-
-    .finale-slab {
+    .finale-lines {
       position: absolute;
-      inset: 0;
+      inset: -50%;
       display: block;
-      clip-path: polygon(0 0, 64% 0, 52% 22%, 60% 44%, 46% 66%, 56% 100%, 0 100%);
-      animation: finale-slab linear both;
-      animation-timeline: --scene;
-      animation-range: contain 94.44% contain 97%;
-    }
-
-    .finale-stripe {
-      position: absolute;
-      top: 70%;
-      left: -10%;
-      z-index: 1;
-      display: block;
-      width: 120%;
-      height: 11cqh;
-      clip-path: polygon(0 20%, 30% 0, 62% 30%, 100% 0, 100% 80%, 70% 100%, 38% 70%, 0 100%);
-      rotate: -9deg;
-      animation: finale-stripe linear both;
-      animation-timeline: --scene;
-      animation-range: contain 95% contain 97.6%;
-    }
-
-    .finale-miru {
-      position: absolute;
-      right: -4cqw;
-      bottom: -10cqh;
-      z-index: 2;
-      display: block;
-      width: auto;
-      height: min(96cqh, 58cqw);
-      rotate: 9deg;
-      animation: finale-miru linear both;
-      animation-timeline: --scene;
-      animation-range: contain 95.4% contain 98.4%;
-    }
-
-    @container (aspect-ratio < 1) {
-      .finale-miru {
-        height: 62cqh;
-      }
-    }
-
-    .finale-word {
-      animation: finale-word linear both;
-      animation-timeline: --scene;
-      animation-range: contain var(--at) contain calc(var(--at) + 1.4%);
-    }
-
-    .finale-word:nth-child(1) {
-      --at: 96.2%;
-    }
-
-    .finale-word:nth-child(2) {
-      --at: 96.8%;
-    }
-
-    .finale-word:nth-child(3) {
-      --at: 97.4%;
-    }
-
-    .finale-label {
-      animation: finale-word linear both;
-      animation-timeline: --scene;
-      animation-range: contain 98% contain 99.2%;
-    }
-
-    .finale-number {
-      display: inline-block;
-      font-size: clamp(7rem, 22cqw, 15rem);
-      animation: finale-number linear both;
-      animation-timeline: --scene;
-      animation-range: contain 98.6% contain 100.4%;
+      background-image: repeating-conic-gradient(
+        from 0deg,
+        color-mix(in oklch, var(--color-milk) 30%, transparent) 0deg 1.5deg,
+        transparent 1.5deg 8deg
+      );
+      mask-image: radial-gradient(circle, transparent 12%, black 45%);
+      --s: 1;
+      --e: 0.14;
+      animation-name: finale-spin, finale-fade-out;
     }
 
     .finale-burst {
@@ -606,7 +542,7 @@
       top: 50%;
       left: 50%;
       display: block;
-      width: 260cqmax;
+      width: 260vmax;
       aspect-ratio: 1;
       translate: -50% -50%;
       background-image:
@@ -625,9 +561,207 @@
           transparent 23deg 30deg
         );
       mask-image: radial-gradient(circle, black 8%, transparent 40%);
-      animation: finale-burst linear both;
-      animation-timeline: --scene;
-      animation-range: contain 94.44% contain 110.42%;
+      --s: 1;
+      --e: 0.14;
+      animation-name: finale-spin, finale-fade-out;
+    }
+
+    .finale-slab {
+      position: absolute;
+      inset: 0;
+      display: block;
+      clip-path: polygon(0 0, 64% 0, 52% 22%, 60% 44%, 46% 66%, 56% 100%, 0 100%);
+      --s: 0.98;
+      --e: 0.88;
+      --ox: -110%;
+      animation-name: finale-slide-left, finale-out;
+    }
+
+    .finale-stripe {
+      position: absolute;
+      top: 70%;
+      left: -10%;
+      z-index: 1;
+      display: block;
+      width: 120%;
+      height: 11vh;
+      clip-path: polygon(0 20%, 30% 0, 62% 30%, 100% 0, 100% 80%, 70% 100%, 38% 70%, 0 100%);
+      rotate: -9deg;
+      --s: 0.95;
+      --e: 0.85;
+      --ox: 110%;
+      animation-name: finale-slide-right, finale-out;
+    }
+
+    .finale-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      display: block;
+      width: 30vmin;
+      aspect-ratio: 1;
+      translate: -50% -50%;
+      border: 1.2vmin solid var(--color-butter-deep);
+      border-radius: 9999px;
+      --s: 0.5;
+      --e: 0.4;
+      animation-name: finale-ring, finale-fade-out;
+    }
+
+    .finale-frags {
+      --spread: 1;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: block;
+    }
+
+    .finale-frag {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(13rem, 34vw);
+      translate: calc(-50% + var(--fx) * var(--spread)) calc(-50% + var(--fy));
+      rotate: var(--fr);
+      --e: calc(var(--s) - 0.07);
+      animation-name: finale-frag, finale-pop-out;
+    }
+
+    .finale-frag:nth-child(1) {
+      --fx: -36vw;
+      --fy: -38vh;
+      --fr: -8deg;
+      --s: 0.46;
+    }
+
+    .finale-frag:nth-child(2) {
+      --fx: -8vw;
+      --fy: -41vh;
+      --fr: 5deg;
+      --s: 0.43;
+    }
+
+    .finale-frag:nth-child(3) {
+      --fx: 18vw;
+      --fy: -38vh;
+      --fr: -4deg;
+      --s: 0.4;
+    }
+
+    .finale-frag:nth-child(4) {
+      --fx: 38vw;
+      --fy: -32vh;
+      --fr: 9deg;
+      --s: 0.37;
+    }
+
+    .finale-frag:nth-child(5) {
+      --fx: 40vw;
+      --fy: -8vh;
+      --fr: -6deg;
+      --s: 0.34;
+    }
+
+    .finale-frag:nth-child(6) {
+      --fx: 20vw;
+      --fy: -16vh;
+      --fr: 7deg;
+      --s: 0.31;
+    }
+
+    .finale-frag:nth-child(7) {
+      --fx: -38vw;
+      --fy: 40vh;
+      --fr: 6deg;
+      --s: 0.28;
+    }
+
+    .finale-frag:nth-child(8) {
+      --fx: 4vw;
+      --fy: 42vh;
+      --fr: -7deg;
+      --s: 0.25;
+    }
+
+    .finale-miru {
+      position: absolute;
+      right: -4vw;
+      bottom: -10vh;
+      z-index: 2;
+      display: block;
+      width: auto;
+      height: min(96vh, 58vw);
+      rotate: 9deg;
+      --s: 0.9;
+      --e: 0.78;
+      --ox: 60vw;
+      animation-name: finale-miru, finale-out;
+    }
+
+    @media (aspect-ratio < 1) {
+      .finale-miru {
+        height: 62vh;
+      }
+
+      .finale-frags {
+        --spread: 0.7;
+      }
+    }
+
+    .finale-title,
+    .finale-count {
+      position: relative;
+      z-index: 3;
+    }
+
+    .finale-title {
+      font-size: clamp(2.25rem, 7vw, 6rem);
+      --s: 0.82;
+      --e: 0.6;
+      animation-name: finale-shake;
+    }
+
+    .finale-count {
+      --s: 0.5;
+      --e: 0.42;
+      animation-name: finale-shake;
+    }
+
+    .finale-word {
+      --ox: -80vw;
+      animation-name: finale-word, finale-out;
+    }
+
+    .finale-word:nth-child(1) {
+      --s: 0.82;
+      --e: 0.76;
+    }
+
+    .finale-word:nth-child(2) {
+      --s: 0.76;
+      --e: 0.7;
+    }
+
+    .finale-word:nth-child(3) {
+      --s: 0.7;
+      --e: 0.62;
+    }
+
+    .finale-label {
+      --s: 0.6;
+      --e: 0.55;
+      --ox: -80vw;
+      animation-name: finale-word, finale-out;
+    }
+
+    .finale-number {
+      display: inline-block;
+      font-size: clamp(8rem, 26vw, 18rem);
+      --s: 0.56;
+      --e: 0.48;
+      --ox: -80vw;
+      animation-name: finale-number, finale-out;
     }
 
     .finale-spark {
@@ -640,74 +774,258 @@
       font-size: var(--size);
       line-height: 1;
       translate: calc(-50% + var(--px)) calc(-50% + var(--py));
-      animation: finale-spark linear both;
-      animation-timeline: --scene;
-      animation-range: contain var(--at) contain calc(var(--at) + 1.8%);
+      --e: calc(var(--s) - 0.06);
+      animation-name: finale-spark, finale-pop-out;
     }
 
-    .finale-spark:nth-child(5) {
-      --px: -30cqw;
-      --py: -30cqh;
+    .finale-spark:nth-child(1 of .finale-spark) {
+      --px: -30vw;
+      --py: -30vh;
       --spark: var(--color-butter-deep);
       --size: 3rem;
-      --at: 93.5%;
+      --s: 0.7;
     }
 
-    .finale-spark:nth-child(6) {
-      --px: 30cqw;
-      --py: -28cqh;
+    .finale-spark:nth-child(2 of .finale-spark) {
+      --px: 30vw;
+      --py: -28vh;
       --spark: var(--color-pink-deep);
       --size: 2.25rem;
-      --at: 94.1%;
+      --s: 0.66;
     }
 
-    .finale-spark:nth-child(7) {
-      --px: -38cqw;
-      --py: 6cqh;
+    .finale-spark:nth-child(3 of .finale-spark) {
+      --px: -38vw;
+      --py: 6vh;
       --spark: var(--color-sky-deep);
       --size: 2rem;
-      --at: 94.7%;
+      --s: 0.62;
     }
 
-    .finale-spark:nth-child(8) {
-      --px: 38cqw;
-      --py: 8cqh;
+    .finale-spark:nth-child(4 of .finale-spark) {
+      --px: 38vw;
+      --py: 8vh;
       --spark: var(--color-butter-deep);
       --size: 3.25rem;
-      --at: 95.3%;
+      --s: 0.58;
     }
 
-    .finale-spark:nth-child(9) {
-      --px: -24cqw;
-      --py: 30cqh;
+    .finale-spark:nth-child(5 of .finale-spark) {
+      --px: -24vw;
+      --py: 30vh;
       --spark: var(--color-lavender-deep);
       --size: 2.5rem;
-      --at: 95.9%;
+      --s: 0.5;
     }
 
-    .finale-spark:nth-child(10) {
-      --px: 26cqw;
-      --py: 30cqh;
+    .finale-spark:nth-child(6 of .finale-spark) {
+      --px: 26vw;
+      --py: 30vh;
       --spark: var(--color-sky-deep);
       --size: 2rem;
-      --at: 96.5%;
+      --s: 0.47;
     }
 
-    .finale-spark:nth-child(11) {
-      --px: 0cqw;
-      --py: -38cqh;
+    .finale-spark:nth-child(7 of .finale-spark) {
+      --px: 0vw;
+      --py: -38vh;
       --spark: var(--color-pink-deep);
       --size: 2.5rem;
-      --at: 97.1%;
+      --s: 0.44;
     }
 
-    .finale-spark:nth-child(12) {
-      --px: 4cqw;
-      --py: 38cqh;
+    .finale-spark:nth-child(8 of .finale-spark) {
+      --px: 4vw;
+      --py: 38vh;
       --spark: var(--color-butter-deep);
       --size: 2.25rem;
-      --at: 97.7%;
+      --s: 0.41;
     }
+  }
+}
+
+@keyframes finale-root {
+  0% {
+    visibility: visible;
+    background-color: transparent;
+  }
+  6%,
+  86% {
+    visibility: visible;
+    background-color: color-mix(in oklch, var(--color-ink) 92%, transparent);
+  }
+  100% {
+    visibility: visible;
+    background-color: transparent;
+  }
+}
+
+@keyframes finale-spin {
+  0% {
+    opacity: 0;
+    scale: 1.4;
+    rotate: 0deg;
+  }
+  12% {
+    opacity: 1;
+    scale: 1;
+  }
+  100% {
+    opacity: 1;
+    scale: 1.05;
+    rotate: 30deg;
+  }
+}
+
+@keyframes finale-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes finale-out {
+  to {
+    opacity: 0;
+    translate: var(--ox) 0;
+  }
+}
+
+@keyframes finale-pop-out {
+  to {
+    opacity: 0;
+    scale: 0;
+  }
+}
+
+@keyframes finale-slide-left {
+  from {
+    translate: -110% 0;
+  }
+}
+
+@keyframes finale-slide-right {
+  from {
+    translate: 110% 0;
+  }
+}
+
+@keyframes finale-ring {
+  0% {
+    opacity: 0;
+    scale: 0.2;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 6;
+  }
+}
+
+@keyframes finale-frag {
+  0% {
+    opacity: 0;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 0.2;
+  }
+  70% {
+    opacity: 1;
+    translate: calc(-50% + var(--fx) * var(--spread) * 1.08) calc(-50% + var(--fy) * 1.08);
+    rotate: calc(var(--fr) + 360deg);
+    scale: 1.1;
+  }
+  100% {
+    opacity: 1;
+    translate: calc(-50% + var(--fx) * var(--spread)) calc(-50% + var(--fy));
+    rotate: calc(var(--fr) + 360deg);
+    scale: 1;
+  }
+}
+
+@keyframes finale-miru {
+  from {
+    opacity: 0;
+    translate: 50vw 8vh;
+    rotate: 24deg;
+    scale: 0.8;
+  }
+}
+
+@keyframes finale-word {
+  0% {
+    opacity: 0;
+    translate: -40vw 0;
+    scale: 1.6;
+  }
+  70% {
+    opacity: 1;
+    translate: 1vw 0;
+    scale: 0.95;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes finale-number {
+  0% {
+    opacity: 0;
+    scale: 4;
+  }
+  60% {
+    opacity: 1;
+    scale: 0.85;
+  }
+  80% {
+    scale: 1.08;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes finale-shake {
+  0%,
+  40%,
+  75%,
+  100% {
+    translate: 0 0;
+  }
+  10% {
+    translate: -1.2vw 0.8vh;
+  }
+  20% {
+    translate: 1vw -0.6vh;
+  }
+  30% {
+    translate: -0.6vw 0.4vh;
+  }
+  55% {
+    translate: 0.8vw 0.5vh;
+  }
+  65% {
+    translate: -0.6vw -0.4vh;
+  }
+}
+
+@keyframes finale-spark {
+  0% {
+    opacity: 0;
+    scale: 0;
+    rotate: -45deg;
+  }
+  60% {
+    opacity: 1;
+    scale: 1.4;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
   }
 }
 
@@ -1010,79 +1328,6 @@
   100% {
     opacity: 0;
     --found: 8;
-  }
-}
-
-@keyframes finale-burst {
-  0% {
-    rotate: 0deg;
-    scale: 0.6;
-  }
-  20% {
-    scale: 1;
-  }
-  100% {
-    rotate: 40deg;
-    scale: 1.1;
-  }
-}
-
-@keyframes finale-spark {
-  0% {
-    opacity: 0;
-    scale: 0;
-    rotate: -45deg;
-  }
-  60% {
-    opacity: 1;
-    scale: 1.4;
-  }
-  100% {
-    opacity: 1;
-    scale: 1;
-    rotate: 0deg;
-  }
-}
-
-@keyframes finale-slab {
-  from {
-    translate: -100% 0;
-  }
-}
-
-@keyframes finale-stripe {
-  from {
-    translate: 100% 0;
-  }
-}
-
-@keyframes finale-miru {
-  from {
-    opacity: 0;
-    translate: 40cqw 6cqh;
-    rotate: 20deg;
-  }
-}
-
-@keyframes finale-word {
-  from {
-    opacity: 0;
-    translate: -30cqw 0;
-    scale: 1.4;
-  }
-}
-
-@keyframes finale-number {
-  0% {
-    opacity: 0;
-    scale: 3;
-  }
-  70% {
-    opacity: 1;
-    scale: 0.9;
-  }
-  100% {
-    scale: 1;
   }
 }
 

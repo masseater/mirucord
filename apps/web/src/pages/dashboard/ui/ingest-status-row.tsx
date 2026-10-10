@@ -22,7 +22,9 @@ const IngestStatusRow = ({
   <li className="border-line flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b-2 border-dashed py-2">
     <span className="font-bold">{`#${channel.name}`}</span>
     <Pill tone={INGEST[channel.ingest].tone}>{INGEST[channel.ingest].label}</Pill>
-    {channel.ingest === "paused" && <PurgeChannelButton guildId={guildId} channelId={channel.id} />}
+    {channel.ingest === "paused" && (
+      <PurgeChannelButton guildId={guildId} channelId={channel.id} channelName={channel.name} />
+    )}
   </li>
 );
 

@@ -34,6 +34,7 @@
 ## デプロイ
 
 main に入ったコミットは、`verify` が通った後に `deploy` ジョブが本番へ出す。手元からはデプロイしない。
+main を出し直すときは `gh workflow run verify -R masseater/mirucord --ref main` で同じジョブを動かす。
 D1 のマイグレーションは `apps/web/drizzle` にあり、デプロイのたびに Alchemy が未適用のものを当てる。
 
 動いているコミットは `/api/health` で確かめる。

@@ -68,7 +68,9 @@ class DiscordRequestError extends Data.TaggedError("DiscordRequestError")<{
 const isDiscordApiError = (cause: unknown): cause is DiscordAPIError =>
   cause instanceof DiscordAPIError;
 
-const rest = new REST({ version: "10" }).setToken(env.DISCORD_BOT_TOKEN);
+const rest = new REST({ version: "10", hashSweepInterval: 0, handlerSweepInterval: 0 }).setToken(
+  env.DISCORD_BOT_TOKEN,
+);
 
 const callDiscord = <Body extends Schema.Top>(
   schema: Body,

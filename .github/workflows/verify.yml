@@ -125,7 +125,7 @@ jobs:
 
   deploy:
     needs: verify
-    if: github.event_name == 'push' && github.repository == 'masseater/mirucord'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && github.repository == 'masseater/mirucord'
     runs-on: ubuntu-latest
     permissions:
       contents: read

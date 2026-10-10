@@ -2,10 +2,11 @@ import { eq, inArray } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
 
 import type { IngestRow } from "#/features/ingest/model/channel-ingest";
-import { channel, db, inIdChunks } from "#/shared/db/index.server";
+import { channel, db } from "#/shared/db/index.server";
 
 import { columnsOf } from "./bot-access.server";
 import type { ChannelSync } from "./channel-listing.server";
+import { inIdChunks } from "./id-chunks.server";
 import { forgetChannelMessages } from "./message-rows.server";
 import type { VectorizeError } from "./message-rows.server";
 
@@ -46,7 +47,10 @@ const loadStored = (guildId: string): Effect.Effect<readonly StoredRow[]> =>
 const removeChannels = (ids: readonly string[]): Effect.Effect<void, VectorizeError> =>
   Effect.forEach(ids, forgetChannelMessages, { discard: true }).pipe(
     Effect.andThen(
-      inIdChunks(ids, (chunk) => db.delete(channel).where(inArray(channel.id, [...chunk]))),
+      inIdChunks({
+        ids,
+        run: (chunk) => db.delete(channel).where(inArray(channel.id, [...chunk])),
+      }),
     ),
     Effect.asVoid,
   );
@@ -54,12 +58,14 @@ const removeChannels = (ids: readonly string[]): Effect.Effect<void, VectorizeEr
 const pauseChannels = (ids: readonly string[]): Effect.Effect<void> =>
   DateTime.now.pipe(
     Effect.flatMap((now) =>
-      inIdChunks(ids, (chunk) =>
-        db
-          .update(channel)
-          .set(columnsOf({ status: "hidden", since: now }))
-          .where(inArray(channel.id, [...chunk])),
-      ),
+      inIdChunks({
+        ids,
+        run: (chunk) =>
+          db
+            .update(channel)
+            .set(columnsOf({ status: "hidden", since: now }))
+            .where(inArray(channel.id, [...chunk])),
+      }),
     ),
     Effect.asVoid,
   );

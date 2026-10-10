@@ -1,4 +1,4 @@
-import { DiscordAPIError, REST } from "@discordjs/rest";
+import { DiscordAPIError, REST, RequestMethod } from "@discordjs/rest";
 import { env } from "cloudflare:workers";
 import { OverwriteType, Routes } from "discord-api-types/v10";
 import { Array, Data, Effect, Function, Option, Schema } from "effect";
@@ -88,7 +88,11 @@ const callDiscord = <Body extends Schema.Top>(
 const listBotGuilds = callDiscord(Schema.Array(PartialGuild), () => rest.get(Routes.userGuilds()));
 
 const leaveGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
-  Effect.asVoid(callDiscord(Schema.Unknown, () => rest.delete(Routes.userGuild(guildId))));
+  Effect.asVoid(
+    callDiscord(Schema.Unknown, () =>
+      rest.request({ method: RequestMethod.Delete, fullRoute: Routes.userGuild(guildId) }),
+    ),
+  );
 
 const postWebhookMessage = ({
   webhookUrl,

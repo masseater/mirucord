@@ -152,10 +152,6 @@ export default defineConfig({
         rules: { "import/no-default-export": "off" },
       },
       {
-        files: ["**/shared/discord/discord.server.ts"],
-        rules: { "drizzle/enforce-delete-with-where": ["error", { drizzleObjectName: ["db"] }] },
-      },
-      {
         files: ["**/shared/ui/**"],
         rules: { "shadcn/no-restyle": "off", "react/jsx-props-no-spreading": "off" },
       },

@@ -5,11 +5,21 @@
 ## 設定
 
 設定はすべて GitHub の Secrets と Variables に置き、main の CI の `deploy` ジョブが Alchemy に渡す。
-値を変えた後は、Actions から `verify` を手動で動かすとデプロイし直される。main への push でもよい。
+必須のものとデプロイ用の Cloudflare トークンは `apps/web/alchemy.ci.ts` の `ci` スタックが作って書き込む。手で設定しない。
+`ci` スタックは、トークンを発行できる Cloudflare の Global API Key と、Secrets を書ける GitHub トークンで適用する。
+
+```sh
+cd apps/web
+CLOUDFLARE_API_KEY=... CLOUDFLARE_EMAIL=... CLOUDFLARE_ACCOUNT_ID=... GITHUB_TOKEN=... \
+DISCORD_CLIENT_ID=... DISCORD_CLIENT_SECRET=... DISCORD_BOT_TOKEN=... OPENROUTER_API_KEY=... \
+vp run deploy:ci
+```
+
+値を変えた後は、`ci` スタックを適用し、Actions から `verify` を手動で動かすとデプロイし直される。main への push でもよい。
 
 | 名前                                                | 種類      | 必須 | 内容                                                  |
 | --------------------------------------------------- | --------- | ---- | ----------------------------------------------------- |
-| `CLOUDFLARE_API_TOKEN`                              | Secrets   | 必須 | Alchemy がデプロイに使うトークン。権限は下の表を参照  |
+| `CLOUDFLARE_API_TOKEN`                              | Secrets   | 必須 | Alchemy がデプロイに使うトークン。`ci` スタックが作る |
 | `CLOUDFLARE_ACCOUNT_ID`                             | Secrets   | 必須 | デプロイ先のアカウント                                |
 | `DISCORD_CLIENT_ID`                                 | Variables | 必須 | Discord アプリの ID                                   |
 | `DISCORD_CLIENT_SECRET`                             | Secrets   | 必須 | Discord の OAuth で使う                               |
@@ -23,13 +33,6 @@
 | `AWS_SECRET_ACCESS_KEY`                             | Secrets   | 任意 | 同上                                                  |
 
 `BETTER_AUTH_SECRET` と `MASTER_KEY` は Alchemy が初回に乱数で作り、状態に保存する。手で設定しない。
-
-`CLOUDFLARE_API_TOKEN` には次の権限を付ける。
-
-| 範囲       | 権限                                                                                                                           |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| アカウント | Workers Scripts・Secrets Store・D1・Vectorize・Queues・Workers Observability の編集と、Workers AI・Account Settings の読み取り |
-| ゾーン     | 公開 URL のゾーンの Workers Routes と DNS の編集、Zone の読み取り                                                              |
 
 ## デプロイ
 
@@ -107,9 +110,8 @@ vp exec wrangler tail <Worker 名>
 
 | 対象                    | 手順                                                                                      |
 | ----------------------- | ----------------------------------------------------------------------------------------- |
-| `DISCORD_BOT_TOKEN`     | Discord の Developer Portal で作り直し、Secrets を差し替えてデプロイする                  |
+| `DISCORD_BOT_TOKEN`     | Discord の Developer Portal で作り直し、`ci` スタックを適用してデプロイする               |
 | `DISCORD_CLIENT_SECRET` | 同上。差し替えた後は、利用者は Discord でサインインし直す                                 |
-| `CLOUDFLARE_API_TOKEN`  | 新しいトークンを作って Secrets を差し替え、古いトークンを Cloudflare で無効にする         |
 | `ALERT_WEBHOOK_URL`     | Discord で Webhook を作り直し、Secrets を差し替えてデプロイする                           |
 | `AWS_SECRET_ACCESS_KEY` | IAM でアクセスキーを作り直し、Variables と Secrets を差し替えてデプロイし、古いキーを消す |
 

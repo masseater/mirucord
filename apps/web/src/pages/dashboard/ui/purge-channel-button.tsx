@@ -20,15 +20,21 @@ const PurgeChannelButton = ({
     mutate({ guildId, channelId });
   }, [channelId, guildId, mutate]);
   return (
-    <button
-      type="button"
-      className="border-ink bg-milk rounded-full border-2 px-3 py-0.5 text-xs font-bold disabled:opacity-50"
-      disabled={status === "pending"}
-      onClick={purge}
-    >
-      {status === "error" && FAILED}
-      {status !== "error" && LABEL}
-    </button>
+    <>
+      <button
+        type="button"
+        className="border-ink bg-milk rounded-full border-2 px-3 py-0.5 text-xs font-bold disabled:opacity-50"
+        disabled={status === "pending"}
+        onClick={purge}
+      >
+        {LABEL}
+      </button>
+      {status === "error" && (
+        <span role="alert" className="text-xs font-bold">
+          {FAILED}
+        </span>
+      )}
+    </>
   );
 };
 

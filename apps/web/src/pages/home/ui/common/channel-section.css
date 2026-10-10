@@ -1,35 +1,35 @@
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .ch-section[id="top"] {
-      view-timeline-name: --ch-top, --pane;
+      view-timeline-name: --ch-top;
     }
 
     .ch-section[id="why"] {
-      view-timeline-name: --ch-why, --pane;
+      view-timeline-name: --ch-why;
     }
 
     .ch-section[id="forum"] {
-      view-timeline-name: --ch-forum, --pane;
+      view-timeline-name: --ch-forum;
     }
 
     .ch-section[id="how"] {
-      view-timeline-name: --ch-how, --pane;
+      view-timeline-name: --ch-how;
     }
 
     .ch-section[id="features"] {
-      view-timeline-name: --ch-features, --pane;
+      view-timeline-name: --ch-features;
     }
 
     .ch-section[id="start"] {
-      view-timeline-name: --ch-start, --pane;
+      view-timeline-name: --ch-start;
     }
 
     .ch-section[id="safety"] {
-      view-timeline-name: --ch-safety, --pane;
+      view-timeline-name: --ch-safety;
     }
 
     .ch-section[id="faq"] {
-      view-timeline-name: --ch-faq, --pane;
+      view-timeline-name: --ch-faq;
     }
 
     .ch-section::before {

@@ -23,43 +23,30 @@
     .ch-link,
     .ch-miru,
     .composer-hint {
+      animation-timing-function: linear;
       animation-range: entry calc(100% - 38dvh) contain calc(100% - 38dvh);
     }
 
     .ch-link {
       animation-name: ch-active;
-      animation-timing-function: linear;
     }
 
     .composer-hint {
       visibility: hidden;
       animation-name: composer-hint;
-      animation-timing-function: linear;
     }
 
     .ch-miru {
       display: block;
       opacity: 0;
       animation-name: ch-miru;
-      animation-timing-function: linear;
-    }
-
-    .ch-link[href="#top"],
-    .ch-link[href="#top"] .ch-miru,
-    .composer-hint[data-channel="top"] {
-      animation-range-start: cover 0%;
-    }
-
-    .ch-link[href="#faq"],
-    .ch-link[href="#faq"] .ch-miru,
-    .composer-hint[data-channel="faq"] {
-      animation-range-end: cover 100%;
     }
 
     .ch-link[href="#top"],
     .ch-link[href="#top"] .ch-miru,
     .composer-hint[data-channel="top"] {
       animation-timeline: --ch-top;
+      animation-range-start: cover 0%;
     }
 
     .ch-link[href="#why"],
@@ -102,6 +89,7 @@
     .ch-link[href="#faq"] .ch-miru,
     .composer-hint[data-channel="faq"] {
       animation-timeline: --ch-faq;
+      animation-range-end: cover 100%;
     }
   }
 }

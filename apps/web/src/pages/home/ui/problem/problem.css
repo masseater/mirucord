@@ -248,8 +248,72 @@
 }
 
 .scene-miru,
-.scene-count {
+.scene-count,
+.finale-burst,
+.finale-slab,
+.finale-stripe,
+.finale-miru,
+.finale-spark {
   display: none;
+}
+
+.scene-finale {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-ink);
+}
+
+.finale-title {
+  font-size: clamp(1.5rem, 4.5vw, 3.25rem);
+  line-height: 1.1;
+}
+
+.finale-word {
+  padding: 0.05em 0.35em;
+  background-color: var(--color-milk);
+  color: var(--color-ink);
+  rotate: -4deg;
+}
+
+.finale-word:nth-child(2) {
+  margin-left: 0.8em;
+  background-color: var(--color-ink);
+  color: var(--color-milk);
+  font-size: 1.3em;
+  outline: 0.08em solid var(--color-milk);
+  rotate: 3deg;
+}
+
+.finale-word:nth-child(3) {
+  margin-left: 0.3em;
+  background-color: var(--color-butter-deep);
+  rotate: -2deg;
+}
+
+.finale-count {
+  line-height: 0.9;
+}
+
+.finale-label {
+  padding: 0.2em 0.9em;
+  font-size: clamp(0.9rem, 2vw, 1.25rem);
+  clip-path: polygon(0 8%, 100% 0, 96% 100%, 3% 88%);
+  rotate: -5deg;
+}
+
+.finale-number {
+  margin-left: 0.15em;
+  font-size: clamp(5rem, 16vw, 11rem);
+  text-shadow: 0.06em 0.06em 0 var(--color-grape);
+  rotate: -7deg;
+}
+
+.finale-unit {
+  margin-left: 0.1em;
+  font-size: 0.32em;
 }
 
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
@@ -349,50 +413,268 @@
 
     .scene-frag:nth-child(1) {
       --seen: 75%;
-      --sx: -24.5cqw;
-      --sr: -14deg;
+      --sx: -35.1cqw;
+      --sy: -13.8cqh;
+      --sr: -16deg;
     }
 
     .scene-frag:nth-child(7) {
       --seen: 76.91%;
-      --sx: -17.5cqw;
-      --sr: -10deg;
+      --sx: -14.6cqw;
+      --sy: -33.3cqh;
+      --sr: -6deg;
     }
 
     .scene-frag:nth-child(2) {
       --seen: 78.82%;
-      --sx: -10.5cqw;
-      --sr: -6deg;
+      --sx: 14.6cqw;
+      --sy: -33.3cqh;
+      --sr: 6deg;
     }
 
     .scene-frag:nth-child(4) {
       --seen: 80.73%;
-      --sx: -3.5cqw;
-      --sr: -2deg;
+      --sx: 35.1cqw;
+      --sy: -13.8cqh;
+      --sr: 16deg;
     }
 
     .scene-frag:nth-child(6) {
       --seen: 82.64%;
-      --sx: 3.5cqw;
-      --sr: 2deg;
+      --sx: 35.1cqw;
+      --sy: 13.8cqh;
+      --sr: -14deg;
     }
 
     .scene-frag:nth-child(8) {
       --seen: 84.55%;
-      --sx: 10.5cqw;
-      --sr: 6deg;
+      --sx: 14.6cqw;
+      --sy: 33.3cqh;
+      --sr: -6deg;
     }
 
     .scene-frag:nth-child(5) {
       --seen: 86.46%;
-      --sx: 17.5cqw;
-      --sr: 10deg;
+      --sx: -14.6cqw;
+      --sy: 33.3cqh;
+      --sr: 6deg;
     }
 
     .scene-frag:nth-child(3) {
       --seen: 88.37%;
-      --sx: 24.5cqw;
+      --sx: -35.1cqw;
+      --sy: 13.8cqh;
       --sr: 14deg;
+    }
+
+    .scene-finale {
+      top: 0;
+      left: 0;
+      width: 100cqw;
+      height: 100cqh;
+      align-content: center;
+      justify-items: start;
+      padding: 6cqh 6cqw;
+      overflow: visible;
+      border-radius: 0;
+      background-color: transparent;
+      transform: none;
+      text-align: left;
+    }
+
+    .finale-title,
+    .finale-count {
+      position: relative;
+      z-index: 3;
+    }
+
+    .finale-title {
+      font-size: clamp(1.5rem, 5.5cqw, 4.5rem);
+    }
+
+    .finale-slab {
+      position: absolute;
+      inset: 0;
+      display: block;
+      clip-path: polygon(0 0, 64% 0, 52% 22%, 60% 44%, 46% 66%, 56% 100%, 0 100%);
+      animation: finale-slab linear both;
+      animation-timeline: --scene;
+      animation-range: contain 94.44% contain 97%;
+    }
+
+    .finale-stripe {
+      position: absolute;
+      top: 70%;
+      left: -10%;
+      z-index: 1;
+      display: block;
+      width: 120%;
+      height: 11cqh;
+      clip-path: polygon(0 20%, 30% 0, 62% 30%, 100% 0, 100% 80%, 70% 100%, 38% 70%, 0 100%);
+      rotate: -9deg;
+      animation: finale-stripe linear both;
+      animation-timeline: --scene;
+      animation-range: contain 95% contain 97.6%;
+    }
+
+    .finale-miru {
+      position: absolute;
+      right: -4cqw;
+      bottom: -10cqh;
+      z-index: 2;
+      display: block;
+      width: auto;
+      height: min(96cqh, 58cqw);
+      rotate: 9deg;
+      animation: finale-miru linear both;
+      animation-timeline: --scene;
+      animation-range: contain 95.4% contain 98.4%;
+    }
+
+    @container (aspect-ratio < 1) {
+      .finale-miru {
+        height: 62cqh;
+      }
+    }
+
+    .finale-word {
+      animation: finale-word linear both;
+      animation-timeline: --scene;
+      animation-range: contain var(--at) contain calc(var(--at) + 1.4%);
+    }
+
+    .finale-word:nth-child(1) {
+      --at: 96.2%;
+    }
+
+    .finale-word:nth-child(2) {
+      --at: 96.8%;
+    }
+
+    .finale-word:nth-child(3) {
+      --at: 97.4%;
+    }
+
+    .finale-label {
+      animation: finale-word linear both;
+      animation-timeline: --scene;
+      animation-range: contain 98% contain 99.2%;
+    }
+
+    .finale-number {
+      display: inline-block;
+      font-size: clamp(7rem, 22cqw, 15rem);
+      animation: finale-number linear both;
+      animation-timeline: --scene;
+      animation-range: contain 98.6% contain 100.4%;
+    }
+
+    .finale-burst {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      width: 260cqmax;
+      aspect-ratio: 1;
+      translate: -50% -50%;
+      background-image:
+        radial-gradient(
+          circle,
+          color-mix(in oklch, var(--color-lavender-deep) 55%, transparent) 0%,
+          transparent 22%
+        ),
+        repeating-conic-gradient(
+          from 0deg,
+          color-mix(in oklch, var(--color-butter-deep) 55%, transparent) 0deg 3deg,
+          transparent 3deg 10deg,
+          color-mix(in oklch, var(--color-lavender-deep) 45%, transparent) 10deg 13deg,
+          transparent 13deg 20deg,
+          color-mix(in oklch, var(--color-sky-deep) 45%, transparent) 20deg 23deg,
+          transparent 23deg 30deg
+        );
+      mask-image: radial-gradient(circle, black 8%, transparent 40%);
+      animation: finale-burst linear both;
+      animation-timeline: --scene;
+      animation-range: contain 94.44% contain 110.42%;
+    }
+
+    .finale-spark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 2;
+      display: block;
+      color: var(--spark);
+      font-size: var(--size);
+      line-height: 1;
+      translate: calc(-50% + var(--px)) calc(-50% + var(--py));
+      animation: finale-spark linear both;
+      animation-timeline: --scene;
+      animation-range: contain var(--at) contain calc(var(--at) + 3%);
+    }
+
+    .finale-spark:nth-child(2) {
+      --px: -30cqw;
+      --py: -30cqh;
+      --spark: var(--color-butter-deep);
+      --size: 3rem;
+      --at: 95%;
+    }
+
+    .finale-spark:nth-child(3) {
+      --px: 30cqw;
+      --py: -28cqh;
+      --spark: var(--color-pink-deep);
+      --size: 2.25rem;
+      --at: 95.6%;
+    }
+
+    .finale-spark:nth-child(4) {
+      --px: -38cqw;
+      --py: 6cqh;
+      --spark: var(--color-sky-deep);
+      --size: 2rem;
+      --at: 96.2%;
+    }
+
+    .finale-spark:nth-child(5) {
+      --px: 38cqw;
+      --py: 8cqh;
+      --spark: var(--color-butter-deep);
+      --size: 3.25rem;
+      --at: 96.8%;
+    }
+
+    .finale-spark:nth-child(6) {
+      --px: -24cqw;
+      --py: 30cqh;
+      --spark: var(--color-lavender-deep);
+      --size: 2.5rem;
+      --at: 97.4%;
+    }
+
+    .finale-spark:nth-child(7) {
+      --px: 26cqw;
+      --py: 30cqh;
+      --spark: var(--color-sky-deep);
+      --size: 2rem;
+      --at: 98%;
+    }
+
+    .finale-spark:nth-child(8) {
+      --px: 0cqw;
+      --py: -38cqh;
+      --spark: var(--color-pink-deep);
+      --size: 2.5rem;
+      --at: 98.6%;
+    }
+
+    .finale-spark:nth-child(9) {
+      --px: 4cqw;
+      --py: 38cqh;
+      --spark: var(--color-butter-deep);
+      --size: 2.25rem;
+      --at: 99.2%;
     }
   }
 }
@@ -660,9 +942,9 @@
     scale: 0.7;
   }
   100% {
-    translate: var(--sx) 27cqh;
+    translate: var(--sx) var(--sy);
     rotate: var(--sr);
-    scale: 0.5;
+    scale: 0.6;
   }
 }
 
@@ -689,5 +971,78 @@
   100% {
     opacity: 0;
     --found: 8;
+  }
+}
+
+@keyframes finale-burst {
+  0% {
+    rotate: 0deg;
+    scale: 0.6;
+  }
+  20% {
+    scale: 1;
+  }
+  100% {
+    rotate: 40deg;
+    scale: 1.1;
+  }
+}
+
+@keyframes finale-spark {
+  0% {
+    opacity: 0;
+    scale: 0;
+    rotate: -45deg;
+  }
+  60% {
+    opacity: 1;
+    scale: 1.4;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+
+@keyframes finale-slab {
+  from {
+    translate: -100% 0;
+  }
+}
+
+@keyframes finale-stripe {
+  from {
+    translate: 100% 0;
+  }
+}
+
+@keyframes finale-miru {
+  from {
+    opacity: 0;
+    translate: 40cqw 6cqh;
+    rotate: 20deg;
+  }
+}
+
+@keyframes finale-word {
+  from {
+    opacity: 0;
+    translate: -30cqw 0;
+    scale: 1.4;
+  }
+}
+
+@keyframes finale-number {
+  0% {
+    opacity: 0;
+    scale: 3;
+  }
+  70% {
+    opacity: 1;
+    scale: 0.9;
+  }
+  100% {
+    scale: 1;
   }
 }

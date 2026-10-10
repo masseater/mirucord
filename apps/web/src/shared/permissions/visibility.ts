@@ -1,7 +1,7 @@
 import { ChannelType } from "discord-api-types/v10";
-import { Boolean, Function, Option } from "effect";
+import { Function, Option } from "effect";
 
-import { canReadHistory, canReadVoiceHistory } from "./permissions";
+import { canReadHistory } from "./permissions";
 import type { Overwrite } from "./permissions";
 
 type GuildChannel = Readonly<{
@@ -32,11 +32,6 @@ const THREAD_TYPES: ReadonlySet<number> = new Set([
   ChannelType.PrivateThread,
 ]);
 
-const VOICE_TYPES: ReadonlySet<number> = new Set([
-  ChannelType.GuildVoice,
-  ChannelType.GuildStageVoice,
-]);
-
 const isThread = ({ type }: GuildChannel): boolean => THREAD_TYPES.has(type);
 
 const readableChannels = (snapshot: GuildSnapshot, member: Member): ReadonlySet<string> => {
@@ -51,11 +46,7 @@ const readableChannels = (snapshot: GuildSnapshot, member: Member): ReadonlySet<
     snapshot.channels
       .filter(
         (guildChannel) =>
-          !isThread(guildChannel) &&
-          Boolean.match(VOICE_TYPES.has(guildChannel.type), {
-            onTrue: () => canReadVoiceHistory(reader, guildChannel.permissionOverwrites),
-            onFalse: () => canReadHistory(reader, guildChannel.permissionOverwrites),
-          }),
+          !isThread(guildChannel) && canReadHistory(reader, guildChannel.permissionOverwrites),
       )
       .map(({ id }) => id),
   );

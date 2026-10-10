@@ -1,4 +1,3 @@
-import { eq } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
 
 import { isNoticeCandidate } from "#/features/ingest/model/channel-ingest";
@@ -8,7 +7,8 @@ import { db, ingestConsent } from "#/shared/db/index.server";
 import { postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { loadScope, refreshIngest } from "./consent-scope.server";
+import { loadScope, refreshIngest, withdrawGuild } from "./consent-scope.server";
+import type { GuildDataRemainsError } from "./consent-scope.server";
 import { guildSettings } from "./guild-settings.server";
 import type { SettingsChannel } from "./guild-settings.server";
 import { managedGuild } from "./managed-guild.server";
@@ -32,6 +32,7 @@ const NOTICE = [
   "はじめまして、ミルだよ！",
   "このサーバーのみんなの思い出をさがせるように、過去ログを読ませてもらうね。",
   "読むのは **ミルが見られるチャンネル** だけだよ。",
+  `ミルの使い方はここを見てね → ${SITE_ORIGIN}/#start`,
   `読んだ内容の扱いはここを見てね → ${SITE_ORIGIN}${PRIVACY_PATH}`,
 ].join("\n");
 
@@ -110,18 +111,13 @@ const grantConsent = (request: ConsentRequest): Effect.Effect<ConsentResult, Dis
 
 const revokeConsent = (
   membership: GuildMembership,
-): Effect.Effect<RevokeResult, DiscordRequestError> =>
+): Effect.Effect<RevokeResult, DiscordRequestError | GuildDataRemainsError> =>
   managedGuild(membership).pipe(
     Effect.flatMap(
       Option.match({
         onNone: () => Effect.succeed<RevokeResult>({ status: "forbidden" }),
         onSome: () =>
-          Effect.promise(() =>
-            db.delete(ingestConsent).where(eq(ingestConsent.guildId, membership.guildId)),
-          ).pipe(
-            Effect.andThen(refreshIngest(membership.guildId)),
-            Effect.as<RevokeResult>({ status: "revoked" }),
-          ),
+          withdrawGuild(membership.guildId).pipe(Effect.as<RevokeResult>({ status: "revoked" })),
       }),
     ),
   );

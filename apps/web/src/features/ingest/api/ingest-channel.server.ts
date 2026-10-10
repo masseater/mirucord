@@ -12,6 +12,7 @@ import type {
 } from "#/shared/discord/index.server";
 
 import { columnsOf } from "./bot-access.server";
+import { loadScope } from "./consent-scope.server";
 import { channelMessagesSince, deleteMessages } from "./message-rows.server";
 import { storeMessages } from "./store-messages.server";
 import type { StoreTarget } from "./store-messages.server";
@@ -60,7 +61,16 @@ const fetchAndStore = (
   request: MessagePage,
 ): Effect.Effect<readonly DiscordMessage[], DiscordRequestError> =>
   listMessages(target.job.channelId, request).pipe(
-    Effect.tap((page) => storeMessages({ ...target, page })),
+    Effect.tap((page) =>
+      loadScope(target.job.guildId).pipe(
+        Effect.flatMap((scope) => {
+          if (scope.status === "awaiting") {
+            return Effect.void;
+          }
+          return storeMessages({ ...target, page });
+        }),
+      ),
+    ),
   );
 
 const loadProgress = (job: IngestJob): Effect.Effect<Option.Option<ChannelProgress>> =>

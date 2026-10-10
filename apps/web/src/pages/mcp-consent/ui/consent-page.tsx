@@ -4,21 +4,21 @@ import { Option } from "effect";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
-import { clientNameQuery } from "#/pages/consent/api/consent";
+import { clientNameQuery } from "#/pages/mcp-consent/api/consent";
 import { authClient } from "#/shared/auth";
 
-const ALLOW = "Allow";
-const DENY = "Deny";
-const FAILED = "Something went wrong. Please try again.";
+const ALLOW = "許可する";
+const DENY = "許可しない";
+const FAILED = "うまくいきませんでした。もう一度お試しください。";
 const SCOPE =
-  "will be able to list and read messages in the Discord channels you can read. It cannot post or change anything.";
-const ASK = "Allow access for";
+  "は、あなたが Discord で読めるチャンネルのメッセージを一覧して読めるようになります。投稿や変更はできません。";
+const ASK = "へのアクセスを許可しますか";
 
 const answerConsent = (accept: boolean): Promise<unknown> =>
   authClient.oauth2.consent({ accept, fetchOptions: { throw: true } });
 
 const ConsentPage = (): ReactNode => {
-  const { client_id: clientId } = useSearch({ from: "/consent" });
+  const { client_id: clientId } = useSearch({ from: "/mcp_/consent" });
   const client = useQuery(clientNameQuery(clientId));
   const clientName = Option.getOrElse(Option.fromUndefinedOr(client.data), () => clientId);
   const { mutate, status } = useMutation({ mutationFn: answerConsent });
@@ -31,10 +31,12 @@ const ConsentPage = (): ReactNode => {
   return (
     <main className="mx-auto flex max-w-xl flex-col gap-6 p-8">
       <h1 className="text-2xl font-bold">
-        {ASK} {clientName}
+        {clientName}
+        {ASK}
       </h1>
       <p>
-        {clientName} {SCOPE}
+        {clientName}
+        {SCOPE}
       </p>
       <div className="flex gap-4">
         <button

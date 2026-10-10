@@ -63,7 +63,7 @@ const auth = betterAuth({
     jwt(),
     mcp({
       loginPage: "/sign-in",
-      consentPage: "/consent",
+      consentPage: "/mcp/consent",
       resource: MCP_URL,
       scopes: ["openid", "profile", "offline_access"],
       allowDynamicClientRegistration: true,

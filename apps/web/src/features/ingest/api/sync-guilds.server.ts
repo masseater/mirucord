@@ -4,7 +4,6 @@ import { ChannelType } from "discord-api-types/v10";
 import { eq, inArray } from "drizzle-orm";
 import { Array, Config, ConfigProvider, DateTime, Effect, Option, pipe } from "effect";
 
-import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { createGuildKey, isRotating, rewrapGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, message, role } from "#/shared/db/index.server";
 import {
@@ -20,6 +19,7 @@ import type {
   DiscordRequestError,
 } from "#/shared/discord/index.server";
 
+import { refreshIngest } from "./consent-scope.server";
 import { deleteVectors } from "./vectors.server";
 
 const INGEST_FLAG = "ingest-enabled";
@@ -37,7 +37,6 @@ const ingestEnabled: Effect.Effect<boolean> = Effect.promise(() =>
 ).pipe(
   Effect.andThen(Effect.promise(() => OpenFeature.getClient().getBooleanValue(INGEST_FLAG, false))),
 );
-const QUEUE_BATCH_LIMIT = 100;
 const DEFAULT_GUILD_LIMIT = 80;
 const ID_CHUNK = 50;
 
@@ -202,7 +201,7 @@ const removeChannels = (guildId: string, current: readonly string[]): Effect.Eff
     ),
   );
 
-const syncGuild = (guildId: string): Effect.Effect<readonly IngestJob[], DiscordRequestError> =>
+const syncGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   Effect.gen(function* sync() {
     const [discordGuild, channels, threads] = yield* Effect.all([
       getGuild(guildId),
@@ -215,15 +214,8 @@ const syncGuild = (guildId: string): Effect.Effect<readonly IngestJob[], Discord
     yield* replaceRoles(discordGuild);
     yield* upsertChannels(guildId, ingested);
     yield* removeChannels(guildId, channelIds);
-    return channelIds.map((channelId) => ({ guildId, channelId }));
+    yield* refreshIngest(guildId);
   });
-
-const enqueue = (jobs: readonly IngestJob[]): Effect.Effect<void> =>
-  Effect.forEach(
-    Array.chunksOf(jobs, QUEUE_BATCH_LIMIT),
-    (chunk) => Effect.promise(() => env.INGEST.sendBatch(chunk.map((body) => ({ body })))),
-    { discard: true },
-  );
 
 const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
   db.select({ id: guild.id, wrappedKey: guild.wrappedKey }).from(guild),
@@ -262,17 +254,14 @@ const syncAll: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* s
   const admitted = yield* admitGuilds(current);
   yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));
   yield* removeDepartedGuilds(admitted);
-  const jobs = yield* pipe(
+  yield* Effect.forEach(
     admitted,
-    Effect.forEach((id) =>
+    (id) =>
       syncGuild(id).pipe(
-        Effect.catchTag("DiscordRequestError", ({ status }) =>
-          logDiscordFailure(status).pipe(Effect.as([])),
-        ),
+        Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),
       ),
-    ),
+    { discard: true },
   );
-  yield* enqueue(jobs.flat());
 });
 
 const syncGuilds: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* syncGuilds() {

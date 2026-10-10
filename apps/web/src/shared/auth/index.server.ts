@@ -1,2 +1,2 @@
 export { auth } from "./auth.server";
-export { account } from "./generated/auth.table";
+export { discordUserIdOf, signedInDiscordUser } from "./discord-user.server";

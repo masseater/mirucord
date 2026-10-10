@@ -115,6 +115,19 @@ const postWebhookMessage = ({
   );
 };
 
+const postChannelMessage = ({
+  channelId,
+  content,
+}: Readonly<{ channelId: string; content: string }>): Effect.Effect<void, DiscordRequestError> =>
+  Effect.asVoid(
+    callDiscord(Schema.Unknown, () =>
+      send("POST", Routes.channelMessages(channelId), {
+        body: { content, allowed_mentions: { parse: [] } },
+        unauthorized: false,
+      }),
+    ),
+  );
+
 const getGuild = (guildId: string): Effect.Effect<DiscordGuild, DiscordRequestError> =>
   callDiscord(Guild, () => send("GET", Routes.guild(guildId)));
 
@@ -189,6 +202,7 @@ export {
   listGuildChannels,
   listMessages,
   PAGE_SIZE,
+  postChannelMessage,
   postWebhookMessage,
 };
 export type { DiscordChannel, DiscordGuild, DiscordMember, DiscordMessage, MessagePage };

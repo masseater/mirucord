@@ -16,6 +16,7 @@ import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;
+const D1_PRIMARY_REGION = "aws:us-east-1";
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);
 
 const discordEnv = Config.all({
@@ -103,6 +104,7 @@ const web = Effect.gen(function* web() {
       VERSION: Workers.VersionMetadata(),
     },
     observability: { enabled: true, traces: { enabled: true } },
+    placement: { region: D1_PRIMARY_REGION },
     viteEnvironments: { entry: "ssr", children: ["rsc"] },
     ...release,
   });

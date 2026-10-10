@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { HASH } from "./channels";
+import { HASH } from "#/pages/home/ui/common/hash";
 
 const ChannelLink = ({ id, name }: Readonly<{ id: string; name: string }>): ReactNode => (
   <a

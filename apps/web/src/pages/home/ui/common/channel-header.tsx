@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { HASH } from "./channels";
+import { HASH } from "./hash";
 
 const ChannelHeader = ({
   name,

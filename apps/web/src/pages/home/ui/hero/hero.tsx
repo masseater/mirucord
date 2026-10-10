@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { ChannelHeader } from "#/pages/home/ui/client/channel-header";
 import { ChannelTopic } from "#/pages/home/ui/client/channel-topic";
+import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
 import { DateDivider } from "#/pages/home/ui/message/date-divider";
 
 import { AnswerWindow } from "./answer-window";

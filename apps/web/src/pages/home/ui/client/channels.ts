@@ -8,6 +8,4 @@ const CHANNELS = [
   { id: "faq", name: "よくある質問" },
 ] as const;
 
-const HASH = "#";
-
-export { CHANNELS, HASH };
+export { CHANNELS };

@@ -76,15 +76,9 @@
     opacity: 1;
     visibility: visible;
   }
-  100% {
-    translate: 0 0;
-  }
 }
 
 @keyframes ch-pane-out {
-  0% {
-    translate: 0 0;
-  }
   0%,
   30% {
     opacity: 1;

@@ -14,7 +14,7 @@ const Composer = (): ReactNode => (
       </span>
       <span className="truncate">{PLACEHOLDER}</span>
     </div>
-    <p className="text-dc-muted flex h-6 items-center gap-0.5 text-xs">
+    <p className="composer-typing text-dc-muted flex h-6 items-center gap-0.5 text-xs">
       {DOTS.map((dot) => (
         <span key={dot} className="bg-dc-text size-1.5 rounded-full motion-safe:animate-pulse" />
       ))}

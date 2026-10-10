@@ -22,6 +22,10 @@ it("pauses a chosen channel the bot can no longer see", () => {
   expect(ingestOf(GRANTED, row("hidden", CHANNEL))).toBe("paused");
 });
 
+it("tells a paused channel apart once its messages are gone", () => {
+  expect(ingestOf(GRANTED, row("hidden", NO_PARENT))).toBe("cleared");
+});
+
 it("marks a hidden channel nobody chose as unreadable", () => {
   expect(ingestOf(AWAITING, row("hidden", NO_PARENT))).toBe("unreadable");
 });

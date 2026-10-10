@@ -5,12 +5,14 @@ import {
   grantConsent,
   guildSettings,
   listManagedGuilds,
+  purgePausedChannel,
   revokeConsent,
 } from "#/features/ingest/index.server";
 import type {
   ConsentResult,
   GuildSettings,
   ManagedGuild,
+  PurgeResult,
   RevokeResult,
 } from "#/features/ingest/index.server";
 import { signedInDiscordUser } from "#/shared/auth/index.server";
@@ -73,5 +75,10 @@ const consentTo = (input: ConsentInput): Effect.Effect<ConsentResult | SignedOut
 const revokeFor = (guildId: string): Effect.Effect<RevokeResult | SignedOut> =>
   withSignedInUser((userId) => revokeConsent({ guildId, userId }).pipe(Effect.orDie));
 
-export { consentTo, loadDashboard, loadGuildPage, revokeFor };
+const purgeFor = (
+  input: Readonly<{ guildId: string; channelId: string }>,
+): Effect.Effect<PurgeResult | SignedOut> =>
+  withSignedInUser((userId) => purgePausedChannel({ ...input, userId }).pipe(Effect.orDie));
+
+export { consentTo, loadDashboard, loadGuildPage, purgeFor, revokeFor };
 export type { ConsentInput, Dashboard, GuildPage, SignedOut };

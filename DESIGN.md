@@ -23,6 +23,11 @@ UI は shadcn/ui の考え方で組み、共通部品は `apps/web/src/shared/ui
 `-deep` の上に `ink` 以外の小さな文字を載せない。
 主要な操作は Discord を思わせる `blurple` にする。
 危ない操作や取り消しは `pink` の面に `ink` の文字で示す。
+差し色はミルの服・虫めがねの枠・レンズから取った `accent-lavender`・`accent-butter`・`accent-sky` の3色にする。
+差し色は目を引きたい所だけに絞り、1画面で同じ差し色の面を何か所にも散らさない。
+`accent-lavender` はミルらしさを出す強調やフォーカスリング、`accent-butter` はマーカーやバッジ、`accent-sky` は情報ラベルや補助的な目印に使う。
+差し色の面は `cream` との差が小さいので、必ず `border-ink` の枠を付け、上の文字は `ink` にする。
+差し色を文字やリンクの色にするときは `-text` を使い、`cream` と `milk` の上で 4.5:1 を保つ。
 Discord と Claude のロゴの色は `discord` と `claude` を使う。
 
 ## 文字
@@ -62,6 +67,7 @@ Discord と Claude のロゴの色は `discord` と `claude` を使う。
 | `AppFrame`     | `shared/ui/app-frame/`        | LP 以外のページの外枠    |
 | `Panel`        | `shared/ui/panel.tsx`         | 管理画面や規約のまとまり |
 | `PopButton`    | `shared/ui/pop-button.tsx`    | 画面内の操作             |
+| `PopLink`      | `shared/ui/pop-link.tsx`      | ボタンの見た目をした遷移 |
 | `SpeechBubble` | `shared/ui/speech-bubble.tsx` | ミルのセリフ             |
 | `MascotTip`    | `shared/ui/mascot-tip.tsx`    | ミルと吹き出しの組       |
 | `Mascot`       | `shared/brand/mascot.tsx`     | ミル本体                 |
@@ -69,7 +75,6 @@ Discord と Claude のロゴの色は `discord` と `claude` を使う。
 新しいページはまずこれらで組み、足りないときだけ部品を足す。
 部品を足したら、この表に追記する。
 LP だけの演出は `pages/home` に置き、ほかのページで使い始めたら `shared/ui` へ移す。
-LP のボタン型リンクもその1つで、見た目は `PopButton` と同じ `popButtonVariants` を使う。
 
 ## 言葉
 

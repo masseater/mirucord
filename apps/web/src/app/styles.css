@@ -44,6 +44,12 @@
   --color-butter-deep: oklch(0.8 0.13 85);
   --color-sky: oklch(0.92 0.05 235);
   --color-sky-deep: oklch(0.7 0.11 240);
+  --color-accent-lavender: oklch(0.84 0.11 316);
+  --color-accent-lavender-text: oklch(0.54 0.17 311);
+  --color-accent-butter: oklch(0.87 0.11 90);
+  --color-accent-butter-text: oklch(0.54 0.1 86);
+  --color-accent-sky: oklch(0.86 0.065 218);
+  --color-accent-sky-text: oklch(0.54 0.09 222);
   --color-claude: oklch(0.67 0.13 40);
   --color-discord: oklch(0.59 0.2 275);
   --shadow-pop: 0 6px 0 0 var(--color-ink);

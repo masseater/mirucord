@@ -4,8 +4,6 @@ import { LegalDocument } from "./legal-document";
 
 const TITLE = "利用規約";
 
-const TIP = "読んでおいてね";
-
 const SECTIONS = [
   {
     heading: "この規約について",
@@ -56,6 +54,6 @@ const SECTIONS = [
   },
 ] as const;
 
-const TermsPage = (): ReactNode => <LegalDocument title={TITLE} tip={TIP} sections={SECTIONS} />;
+const TermsPage = (): ReactNode => <LegalDocument title={TITLE} sections={SECTIONS} />;
 
 export { TermsPage };

@@ -7,7 +7,7 @@ import { PopLink } from "#/shared/ui/pop-link";
 
 import { GuildCard } from "./guild-card";
 
-const TIP = "サーバーを選んでね";
+const TIP = "同意するまで過去ログは読みません。";
 const TITLE = "あなたが管理しているサーバー";
 const EMPTY = "mirucord の Bot が入っていて、あなたが管理権限を持つサーバーはまだありません。";
 const INVITE = "Bot をサーバーに招待する";

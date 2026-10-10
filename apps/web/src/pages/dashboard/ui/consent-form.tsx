@@ -12,10 +12,8 @@ import { NoticeChannelPicker } from "./notice-channel-picker";
 import { Pill } from "./pill";
 
 const TITLE = "Bot が見られるチャンネル";
-const SCOPE =
-  "下のチャンネルとそのスレッドを読み取ります。範囲は Discord で Bot の「チャンネルを見る」権限を切り替えて変えます。";
-const EMPTY = "Bot が見られるチャンネルがまだありません。Discord で Bot に閲覧を許可してください。";
-const NOTE = "同意すると選んだチャンネルにお知らせを 1 回投稿します。";
+const EMPTY = "Bot が見られるチャンネルがまだありません。";
+const NOTE = "同意すると、選んだチャンネルにお知らせを 1 回投稿します。";
 const SUBMIT = "同意して取り込みを始める";
 
 const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => {
@@ -24,7 +22,6 @@ const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): React
   return (
     <Panel>
       <h2 className="text-xl font-black">{TITLE}</h2>
-      <p className="text-ink-soft text-sm leading-relaxed">{SCOPE}</p>
       <p className="flex flex-wrap gap-2">
         {readable.map((channel) => (
           <Pill key={channel.id} tone="bg-lavender">{`#${channel.name}`}</Pill>

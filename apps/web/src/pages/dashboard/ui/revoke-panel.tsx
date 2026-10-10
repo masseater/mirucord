@@ -12,7 +12,7 @@ const MESSAGES = {
   idle: "",
   pending: "",
   success: "同意を取り消し、保存していたデータを削除しました。",
-  error: "取り消せませんでした。もう一度お試しください。",
+  error: "取り消せませんでした。",
 } as const;
 
 const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {

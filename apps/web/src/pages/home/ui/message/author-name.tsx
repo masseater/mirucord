@@ -6,26 +6,24 @@ import { cn } from "#/shared/lib/utils";
 import type { Author } from "./author";
 
 const NAME = "ミル";
+const BOT_TONE = "text-lavender-deep";
 
 const AuthorName = ({
   author,
   mark = "",
-}: Readonly<{ author: Author; mark?: string }>): ReactNode =>
-  Match.value(author).pipe(
+}: Readonly<{ author: Author; mark?: string }>): ReactNode => {
+  const { name, tone } = Match.value(author).pipe(
     Match.discriminatorsExhaustive("kind")({
-      bot: () => (
-        <span className="text-lavender-deep font-bold">
-          {mark}
-          {NAME}
-        </span>
-      ),
-      member: ({ member }) => (
-        <span className={cn("font-bold", member.tone)}>
-          {mark}
-          {member.name}
-        </span>
-      ),
+      bot: () => ({ name: NAME, tone: BOT_TONE }),
+      member: ({ member }) => ({ name: member.name, tone: member.tone }),
     }),
   );
+  return (
+    <span className={cn("font-bold", tone)}>
+      {mark}
+      {name}
+    </span>
+  );
+};
 
 export { AuthorName };

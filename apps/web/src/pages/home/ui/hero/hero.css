@@ -42,10 +42,6 @@
 
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
-    .hero-scan {
-      view-timeline: --hero block;
-    }
-
     .seek .seek-flash,
     .seek .seek-miru {
       display: flex;
@@ -53,34 +49,39 @@
 
     .seek-flash {
       animation: seek-flash linear both;
-      animation-timeline: --hero;
-      animation-range: cover calc(30% + var(--seek) * 8%) cover calc(38% + var(--seek) * 8%);
+      animation-timeline: --ch-top;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
+        calc(100% - 100dvh - var(--dwell) * (0.69 - var(--seek) * 0.31));
     }
 
     .seek[data-kind="pass"] .seek-miru {
       animation: seek-pass linear both;
-      animation-timeline: --hero;
-      animation-range: cover calc(30% + var(--seek) * 8%) cover calc(38% + var(--seek) * 8%);
+      animation-timeline: --ch-top;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
+        calc(100% - 100dvh - var(--dwell) * (0.69 - var(--seek) * 0.31));
     }
 
     .seek[data-kind="found"] .seek-miru {
       animation: seek-found linear both;
-      animation-timeline: --hero;
-      animation-range: cover calc(30% + var(--seek) * 8%) cover calc(36% + var(--seek) * 8%);
+      animation-timeline: --ch-top;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
+        calc(100% - 100dvh - var(--dwell) * (0.77 - var(--seek) * 0.31));
     }
 
     .answer-searching {
       opacity: 1;
       animation: fade-hide linear both;
-      animation-timeline: --hero;
-      animation-range: cover 50% cover 52%;
+      animation-timeline: --ch-top;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.23) contain
+        calc(100% - 100dvh - var(--dwell) * 0.15);
     }
 
     .answer-done,
     .answer-reveal {
       animation: fade-show linear both;
-      animation-timeline: --hero;
-      animation-range: cover 52% cover 56%;
+      animation-timeline: --ch-top;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.15) contain
+        calc(100% - 100dvh - var(--dwell) * 0);
     }
   }
 }

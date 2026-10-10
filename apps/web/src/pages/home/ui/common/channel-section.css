@@ -1,18 +1,22 @@
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .ch-section[id="top"] {
+      --dwell: 100dvh;
       view-timeline-name: --ch-top;
     }
 
     .ch-section[id="why"] {
+      --dwell: 50dvh;
       view-timeline-name: --ch-why;
     }
 
     .ch-section[id="forum"] {
+      --dwell: 100dvh;
       view-timeline-name: --ch-forum;
     }
 
     .ch-section[id="how"] {
+      --dwell: 100dvh;
       view-timeline-name: --ch-how;
     }
 
@@ -32,9 +36,13 @@
       view-timeline-name: --ch-faq;
     }
 
+    .ch-section {
+      --dwell: 0dvh;
+    }
+
     .ch-section::before {
       display: block;
-      height: 100dvh;
+      height: calc(100dvh + var(--dwell));
       content: "";
     }
 

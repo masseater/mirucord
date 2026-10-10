@@ -12,30 +12,30 @@
 
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
-    .flow-figure {
-      view-timeline: --flow block;
-    }
-
     .flow-carry {
       display: inline;
       animation: flow-carry linear both;
-      animation-timeline: --flow;
+      animation-timeline: --ch-how;
     }
 
     .flow-carry[data-carry="a"] {
-      animation-range: cover 20% cover 40%;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * 1) contain
+        calc(100% - 100dvh - var(--dwell) * 0.62);
     }
 
     .flow-carry[data-carry="b"] {
-      animation-range: cover 28% cover 48%;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.85) contain
+        calc(100% - 100dvh - var(--dwell) * 0.46);
     }
 
     .flow-carry[data-carry="c"] {
-      animation-range: cover 36% cover 56%;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.69) contain
+        calc(100% - 100dvh - var(--dwell) * 0.31);
     }
 
     .flow-carry[data-carry="d"] {
-      animation-range: cover 52% cover 72%;
+      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.38) contain
+        calc(100% - 100dvh - var(--dwell) * 0);
     }
   }
 }

@@ -43,9 +43,8 @@ const purgeChannel = (channelId: string): Effect.Effect<void> =>
     Effect.asVoid,
   );
 
-const purgeOutOfScope = (guildId: string): Effect.Effect<void> =>
+const purgeOutOfScope = (guildId: string, scope: ConsentScope): Effect.Effect<void> =>
   Effect.all({
-    scope: loadScope(guildId),
     stored: Effect.promise(() =>
       db
         .selectDistinct({ id: message.channelId })
@@ -65,7 +64,7 @@ const purgeOutOfScope = (guildId: string): Effect.Effect<void> =>
     ),
     now: DateTime.now,
   }).pipe(
-    Effect.map(({ scope, stored, channels, now }) => {
+    Effect.map(({ stored, channels, now }) => {
       const withMessages = new Set(stored.map(({ id }) => id));
       return channels
         .filter((row) => Option.isSome(Option.fromNullOr(row.newest)) || withMessages.has(row.id))
@@ -89,17 +88,17 @@ const enqueueReadable = (guildId: string): Effect.Effect<void> =>
       .where(and(eq(channel.guildId, guildId), NEEDS_INGEST)),
   ).pipe(Effect.flatMap((rows) => enqueue(rows.map(({ id }) => ({ guildId, channelId: id })))));
 
-const enqueueInScope = (guildId: string): Effect.Effect<void> =>
-  loadScope(guildId).pipe(
-    Effect.flatMap((scope) => {
-      if (scope.status === "awaiting") {
-        return Effect.void;
-      }
-      return enqueueReadable(guildId);
-    }),
-  );
+const enqueueInScope = (guildId: string, scope: ConsentScope): Effect.Effect<void> => {
+  if (scope.status === "awaiting") {
+    return Effect.void;
+  }
+  return enqueueReadable(guildId);
+};
 
 const refreshIngest = (guildId: string): Effect.Effect<void> =>
-  purgeOutOfScope(guildId).pipe(Effect.andThen(enqueueInScope(guildId)));
+  loadScope(guildId).pipe(
+    Effect.tap((scope) => purgeOutOfScope(guildId, scope)),
+    Effect.flatMap((scope) => enqueueInScope(guildId, scope)),
+  );
 
-export { loadScope, purgeChannel, refreshIngest };
+export { purgeChannel, refreshIngest };

@@ -1,10 +1,10 @@
 import { OpenFeature, TypedInMemoryProvider } from "@openfeature/server-sdk";
 import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
-import { Array, Config, ConfigProvider, DateTime, Effect, Option, pipe } from "effect";
+import { Array, Boolean, Config, ConfigProvider, DateTime, Effect, Option, pipe } from "effect";
 
 import { createGuildKey, isRotating, rewrapGuildKey } from "#/shared/crypto/index.server";
-import { db, guild, role } from "#/shared/db/index.server";
+import { db, guild, listGuildIds, role } from "#/shared/db/index.server";
 import { getBotUserId, getGuild, leaveGuild, listBotGuilds } from "#/shared/discord/index.server";
 import type { DiscordGuild, DiscordRequestError } from "#/shared/discord/index.server";
 
@@ -29,11 +29,6 @@ const ingestEnabled: Effect.Effect<boolean> = Effect.promise(() =>
 );
 const DEFAULT_GUILD_LIMIT = 80;
 
-const selectIds = <Row extends Readonly<{ id: string }>>(
-  load: () => Promise<readonly Row[]>,
-): Effect.Effect<readonly string[]> =>
-  Effect.promise(load).pipe(Effect.map((rows) => rows.map(({ id }) => id)));
-
 const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =>
   Effect.logWarning("Discord request failed").pipe(
     Effect.annotateLogs({ status: Option.getOrElse(status, () => "network") }),
@@ -44,12 +39,12 @@ const guildLimit: Effect.Effect<number> = Config.Int("MAX_GUILDS")
   .parse(ConfigProvider.fromUnknown(env))
   .pipe(Effect.orDie);
 
-const admitGuilds = (current: readonly string[]): Effect.Effect<readonly string[]> =>
-  Effect.all({
-    limit: guildLimit,
-    stored: selectIds(() => db.select({ id: guild.id }).from(guild)),
-  }).pipe(
-    Effect.map(({ limit, stored }) => {
+const admitGuilds = (
+  current: readonly string[],
+  stored: readonly string[],
+): Effect.Effect<readonly string[]> =>
+  guildLimit.pipe(
+    Effect.map((limit) => {
       const kept = current.filter((id) => stored.includes(id));
       const fresh = current.filter((id) => !stored.includes(id));
       return [...kept, ...Array.take(fresh, limit - kept.length)];
@@ -68,22 +63,30 @@ const leaveOverLimit = (rejected: readonly string[]): Effect.Effect<void> =>
     { discard: true },
   );
 
-const removeDepartedGuilds = (current: readonly string[]): Effect.Effect<void> =>
-  selectIds(() => db.select({ id: guild.id }).from(guild)).pipe(
-    Effect.map((stored) => stored.filter((id) => !current.includes(id))),
-    Effect.flatMap((departed) =>
-      Effect.forEach(
-        departed,
-        (id) =>
-          forgetGuildMessages(id).pipe(
-            Effect.andThen(Effect.promise(() => db.delete(guild).where(eq(guild.id, id)))),
-          ),
-        { discard: true },
+const removeDepartedGuilds = (
+  stored: readonly string[],
+  admitted: readonly string[],
+): Effect.Effect<void> =>
+  Effect.forEach(
+    stored.filter((id) => !admitted.includes(id)),
+    (id) =>
+      forgetGuildMessages(id).pipe(
+        Effect.andThen(Effect.promise(() => db.delete(guild).where(eq(guild.id, id)))),
       ),
+    { discard: true },
+  );
+
+const updateGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
+  Effect.asVoid(
+    Effect.promise(() =>
+      db
+        .update(guild)
+        .set({ name: discordGuild.name, ownerId: discordGuild.owner_id })
+        .where(eq(guild.id, discordGuild.id)),
     ),
   );
 
-const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
+const insertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
   Effect.all({ wrappedKey: createGuildKey, now: DateTime.now }).pipe(
     Effect.flatMap(({ wrappedKey, now }) =>
       Effect.promise(() =>
@@ -117,11 +120,21 @@ const replaceRoles = (discordGuild: DiscordGuild): Effect.Effect<void> =>
     ),
   );
 
-const syncGuild = (botUserId: string, guildId: string): Effect.Effect<void, DiscordRequestError> =>
+const upsertGuild = (discordGuild: DiscordGuild, stored: readonly string[]): Effect.Effect<void> =>
+  Boolean.match(stored.includes(discordGuild.id), {
+    onTrue: () => updateGuild(discordGuild),
+    onFalse: () => insertGuild(discordGuild),
+  });
+
+const syncGuild = (
+  botUserId: string,
+  stored: readonly string[],
+  guildId: string,
+): Effect.Effect<void, DiscordRequestError> =>
   Effect.gen(function* sync() {
     const discordGuild = yield* getGuild(guildId);
     const listing = yield* listChannelsOf({ botUserId, discordGuild });
-    yield* upsertGuild(discordGuild);
+    yield* upsertGuild(discordGuild, stored);
     yield* replaceRoles(discordGuild);
     yield* syncChannels({ discordGuild, ...listing });
   });
@@ -161,13 +174,14 @@ const syncAll: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* s
   }
   const current = (yield* listBotGuilds).map(({ id }) => id);
   const botUserId = yield* getBotUserId;
-  const admitted = yield* admitGuilds(current);
+  const stored = yield* listGuildIds;
+  const admitted = yield* admitGuilds(current, stored);
   yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));
-  yield* removeDepartedGuilds(admitted);
+  yield* removeDepartedGuilds(stored, admitted);
   yield* Effect.forEach(
     admitted,
     (id) =>
-      syncGuild(botUserId, id).pipe(
+      syncGuild(botUserId, stored, id).pipe(
         Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),
       ),
     { discard: true },

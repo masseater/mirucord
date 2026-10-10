@@ -146,12 +146,16 @@ const createdAtOf = (
   channelId: string,
   messageId: string,
 ): Effect.Effect<Option.Option<DateTime.Utc>> =>
-  loadStored(() =>
+  Effect.promise(() =>
     db
-      .select(MESSAGE_COLUMNS)
+      .select({ createdAt: message.createdAt })
       .from(message)
       .where(and(eq(message.id, messageId), eq(message.channelId, channelId))),
-  ).pipe(Effect.map((rows) => Option.map(Array.head(rows), ({ createdAt }) => createdAt)));
+  ).pipe(
+    Effect.map((rows) =>
+      Option.map(Array.head(rows), ({ createdAt }) => DateTime.fromDateUnsafe(createdAt)),
+    ),
+  );
 
 const readStored = (
   { channelId, limit }: ReadRequest,

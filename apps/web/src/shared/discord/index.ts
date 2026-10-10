@@ -5,6 +5,7 @@ export {
   MESSAGE_TYPES,
   STORED_TYPES,
   THREAD_PARENT_TYPES,
+  THREAD_TYPES,
   VOICE_TYPES,
 } from "./channel-kind";
 export type { ChannelKind } from "./channel-kind";

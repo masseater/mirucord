@@ -4,7 +4,6 @@ import { Array, Effect, Option } from "effect";
 import { db, ingestConsent, message } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { loadScope } from "./consent-scope.server";
 import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 import { loadChannels } from "./settings-channels.server";
@@ -20,6 +19,12 @@ type Consent =
       grantedAt: number;
       noticeChannelId: string;
     }>;
+
+type ConsentedChannels = Readonly<{
+  categories: readonly SettingsCategory[];
+  channels: readonly SettingsChannel[];
+  consent: Consent;
+}>;
 
 type GuildSettings = Readonly<{
   id: string;
@@ -59,6 +64,15 @@ const countMessages = (guildId: string): Effect.Effect<number> =>
     ),
   );
 
+const loadConsentedChannels = (guildId: string): Effect.Effect<ConsentedChannels> =>
+  loadConsent(guildId).pipe(
+    Effect.flatMap((consent) =>
+      loadChannels({ guildId, scope: consent }).pipe(
+        Effect.map((listed) => ({ ...listed, consent })),
+      ),
+    ),
+  );
+
 const guildSettings = (
   membership: GuildMembership,
 ): Effect.Effect<Option.Option<GuildSettings>, DiscordRequestError> =>
@@ -67,22 +81,18 @@ const guildSettings = (
       Option.match({
         onNone: () => Effect.succeedNone,
         onSome: ({ name }) =>
-          loadScope(membership.guildId).pipe(
-            Effect.flatMap((scope) =>
-              Effect.all({
-                listed: loadChannels({ guildId: membership.guildId, scope }),
-                consent: loadConsent(membership.guildId),
-                storedMessages: countMessages(membership.guildId),
-              }),
-            ),
-            Effect.map(({ listed, ...parts }) =>
-              Option.some({ ...listed, ...parts, id: membership.guildId, name }),
+          Effect.all({
+            consented: loadConsentedChannels(membership.guildId),
+            storedMessages: countMessages(membership.guildId),
+          }).pipe(
+            Effect.map(({ consented, storedMessages }) =>
+              Option.some({ ...consented, storedMessages, id: membership.guildId, name }),
             ),
           ),
       }),
     ),
   );
 
-export { guildSettings };
-export type { Consent, GuildSettings };
+export { guildSettings, loadConsentedChannels };
+export type { Consent, ConsentedChannels, GuildSettings };
 export type { SettingsCategory, SettingsChannel } from "./settings-channels.server";

@@ -57,6 +57,7 @@ export {
   MESSAGE_TYPES,
   STORED_TYPES,
   THREAD_PARENT_TYPES,
+  THREAD_TYPES,
   VOICE_TYPES,
 };
 export type { ChannelKind };

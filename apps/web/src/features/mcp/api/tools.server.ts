@@ -2,10 +2,11 @@ import { McpServer } from "@modelcontextprotocol/server";
 import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, Effect, Option, Schema, pipe } from "effect";
 
+import { listGuildIds } from "#/shared/db/index.server";
 import { CATEGORY_TYPES } from "#/shared/discord";
 
 import { readMessages, searchMessages } from "./messages.server";
-import { listGuildIds, resolveScope } from "./scope.server";
+import { resolveScope } from "./scope.server";
 import type { GuildScope } from "./scope.server";
 
 const SERVER_INFO = { name: "mirucord", version: "0.0.0" };

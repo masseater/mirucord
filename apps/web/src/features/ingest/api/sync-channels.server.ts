@@ -44,47 +44,43 @@ const loadAccess = (guildId: string): Effect.Effect<ReadonlyMap<string, BotAcces
       .where(eq(channel.guildId, guildId)),
   ).pipe(Effect.map((rows) => new Map(rows.map((row) => [row.id, accessOf(row)]))));
 
-const upsertChannel = (row: ChannelRow): Effect.Effect<void> =>
-  Effect.asVoid(
-    Effect.promise(() =>
-      db
-        .insert(channel)
-        .values(row)
-        .onConflictDoUpdate({
-          target: channel.id,
-          set: {
-            parentId: row.parentId,
-            name: row.name,
-            position: row.position,
-            permissionOverwrites: row.permissionOverwrites,
-            botAccess: row.botAccess,
-            hiddenAt: row.hiddenAt,
-            archive: row.archive,
-          },
-        }),
-    ),
-  );
+const UPSERT_BATCH = 50;
 
 const upsertChannels = (sync: ChannelSync): Effect.Effect<void> =>
   Effect.all({
     previous: loadAccess(sync.discordGuild.id),
     now: DateTime.now,
   }).pipe(
-    Effect.flatMap(({ previous, now }) =>
+    Effect.map(({ previous, now }) =>
+      sync.stored.map((discordChannel) => {
+        const known = Option.fromUndefinedOr(previous.get(discordChannel.id));
+        const access = observeAccess({
+          readable: sync.readable.includes(discordChannel.id),
+          previous: Option.getOrElse(known, () => READABLE),
+          now,
+        });
+        const row = { ...toChannelRow(sync, discordChannel), ...columnsOf(access) };
+        return db
+          .insert(channel)
+          .values(row)
+          .onConflictDoUpdate({
+            target: channel.id,
+            set: {
+              parentId: row.parentId,
+              name: row.name,
+              position: row.position,
+              permissionOverwrites: row.permissionOverwrites,
+              botAccess: row.botAccess,
+              hiddenAt: row.hiddenAt,
+              archive: row.archive,
+            },
+          });
+      }),
+    ),
+    Effect.flatMap((statements) =>
       Effect.forEach(
-        sync.stored,
-        (discordChannel) => {
-          const known = Option.fromUndefinedOr(previous.get(discordChannel.id));
-          const access = observeAccess({
-            readable: sync.readable.includes(discordChannel.id),
-            previous: Option.getOrElse(known, () => READABLE),
-            now,
-          });
-          return upsertChannel({
-            ...toChannelRow(sync, discordChannel),
-            ...columnsOf(access),
-          });
-        },
+        Array.chunksOf(statements, UPSERT_BATCH),
+        (batch) => Effect.promise(() => db.batch(batch)),
         { discard: true },
       ),
     ),

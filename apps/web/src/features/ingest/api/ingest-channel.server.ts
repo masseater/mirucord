@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { Array, Boolean, DateTime, Effect, Number, Option, Order, pipe } from "effect";
 
+import type { IngestRow } from "#/features/ingest/model/channel-ingest";
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
@@ -35,7 +36,7 @@ const oldestId = (ids: readonly string[]): Option.Option<string> =>
 
 const isNewerThan = Order.isGreaterThan(SnowflakeOrder);
 
-type Backfill = "pending" | "done";
+type Backfill = IngestRow["backfill"];
 
 type History = Readonly<{ oldest: Option.Option<string>; backfill: Backfill }>;
 

@@ -96,6 +96,7 @@ const web = Effect.gen(function* web() {
     main: "src/app/server/index.ts",
     domain: SITE_HOST,
     crons: ["*/5 * * * *"],
+    compatibility: { flags: ["global_fetch_strictly_public"] },
     env: {
       ...discord,
       ...operations,

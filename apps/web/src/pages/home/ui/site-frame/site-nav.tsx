@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
+import { PopLink } from "#/pages/home/ui/common/pop-link";
 import { Mascot } from "#/shared/brand";
 import { DASHBOARD_PATH } from "#/shared/config";
-import { PopLink } from "#/shared/ui/pop-link";
 
 import { NavLinks } from "./nav-links";
 

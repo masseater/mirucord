@@ -7,7 +7,7 @@ import { MascotTip } from "#/shared/ui/mascot-tip";
 import { GuildCard } from "./guild-card";
 
 const TIP =
-  "Bot を入れただけでは過去ログは読みません。サーバーを選んで、読んでいいチャンネルを決めてね。";
+  "Bot を入れただけでは過去ログは読みません。サーバーを選んで、説明を読んでから同意してね。";
 const TITLE = "あなたが管理しているサーバー";
 const EMPTY = "mirucord の Bot が入っていて、あなたが管理権限を持つサーバーはまだありません。";
 const INVITE = "Bot をサーバーに招待する";

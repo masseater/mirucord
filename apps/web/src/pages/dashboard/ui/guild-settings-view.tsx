@@ -10,8 +10,9 @@ import { IngestStatus } from "./ingest-status";
 import { RevokePanel } from "./revoke-panel";
 
 const TIP = {
-  awaiting: "まだ何も読んでいません。下の説明を読んで、読んでいいチャンネルを選んでね。",
-  granted: "選んでもらったチャンネルを読んでいます。範囲はいつでも変えられます。",
+  awaiting: "まだ何も読んでいません。下の説明を読んで、よければ同意してね。",
+  granted:
+    "Bot が見られるチャンネルを読んでいます。範囲は Discord のチャンネル権限で変えられます。",
 } as const;
 
 const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (
@@ -20,7 +21,7 @@ const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>):
     <h1 className="text-3xl font-black">{settings.name}</h1>
     <ConsentRecord consent={settings.consent} />
     <ConsentExplainer />
-    <ConsentForm settings={settings} />
+    {settings.consent.status === "awaiting" && <ConsentForm settings={settings} />}
     {settings.consent.status === "granted" && (
       <IngestStatus
         guildId={settings.id}

@@ -26,7 +26,6 @@ type Consent =
       status: "granted";
       grantedBy: string;
       grantedAt: number;
-      channelIds: readonly string[];
       noticeChannelId: string;
     }>;
 
@@ -49,7 +48,6 @@ const loadConsent = (guildId: string): Effect.Effect<Consent> =>
           status: "granted",
           grantedBy: row.grantedBy,
           grantedAt: row.grantedAt.getTime(),
-          channelIds: row.channelIds,
           noticeChannelId: row.noticeChannelId,
         }),
       }),
@@ -65,7 +63,6 @@ const loadChannels = (
       .select({
         id: channel.id,
         name: channel.name,
-        parentId: channel.parentId,
         type: channel.type,
         newest: channel.newestMessageId,
         backfill: channel.backfill,

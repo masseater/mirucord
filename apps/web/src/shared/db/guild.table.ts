@@ -58,7 +58,6 @@ const ingestConsent = sqliteTable("ingest_consent", {
     .references(() => guild.id, { onDelete: "cascade" }),
   grantedBy: text().notNull(),
   grantedAt: integer({ mode: "timestamp_ms" }).notNull(),
-  channelIds: text({ mode: "json" }).$type<readonly string[]>().notNull(),
   noticeChannelId: text().notNull(),
 });
 

@@ -16,7 +16,6 @@ const ChannelInput = Schema.Struct({ guildId: Schema.String, channelId: Schema.S
 
 const ConsentInputSchema = Schema.Struct({
   guildId: Schema.String,
-  channelIds: Schema.Array(Schema.String),
   noticeChannelId: Schema.String,
 });
 

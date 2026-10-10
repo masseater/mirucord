@@ -31,7 +31,6 @@ type GuildPage =
 
 type ConsentInput = Readonly<{
   guildId: string;
-  channelIds: readonly string[];
   noticeChannelId: string;
 }>;
 

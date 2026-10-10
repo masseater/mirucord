@@ -1,26 +1,17 @@
 import { useAtom } from "@effect/atom-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UseMutationResult } from "@tanstack/react-query";
-import { Array } from "effect";
 import { useCallback } from "react";
 
 import type { ConsentResult, GuildSettings } from "#/features/ingest/index.server";
 import { dashboardQuery, saveConsent } from "#/pages/dashboard/api/dashboard";
 import type { ConsentInput } from "#/pages/dashboard/api/dashboard.server";
 
-import {
-  chooseNotice,
-  consentDraftAtom,
-  selectionOf,
-  toggleChannel,
-  UNTOUCHED,
-} from "./consent-draft";
-import type { ConsentSelection } from "./consent-draft";
+import { consentDraftAtom, NO_CHANNEL, noticeChannelOf, UNTOUCHED } from "./consent-draft";
 
 type ConsentForm = Readonly<{
-  selection: ConsentSelection;
+  noticeChannelId: string;
   canSubmit: boolean;
-  toggle: (channelId: string) => void;
   pickNotice: (channelId: string) => void;
   submit: () => void;
   mutation: UseMutationResult<
@@ -32,7 +23,7 @@ type ConsentForm = Readonly<{
 
 const useConsentForm = (settings: GuildSettings): ConsentForm => {
   const [draft, setDraft] = useAtom(consentDraftAtom(settings.id));
-  const selection = selectionOf(settings, draft);
+  const noticeChannelId = noticeChannelOf(settings, draft);
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: saveConsent,
@@ -44,25 +35,18 @@ const useConsentForm = (settings: GuildSettings): ConsentForm => {
     },
   });
   const { mutate } = mutation;
-  const toggle = useCallback(
-    (channelId: string) => {
-      setDraft(toggleChannel(selection, channelId));
-    },
-    [selection, setDraft],
-  );
   const pickNotice = useCallback(
     (channelId: string) => {
-      setDraft(chooseNotice(selection, channelId));
+      setDraft({ status: "edited", noticeChannelId: channelId });
     },
-    [selection, setDraft],
+    [setDraft],
   );
   const submit = useCallback(() => {
-    mutate({ guildId: settings.id, ...selection });
-  }, [mutate, selection, settings.id]);
+    mutate({ guildId: settings.id, noticeChannelId });
+  }, [mutate, noticeChannelId, settings.id]);
   return {
-    selection,
-    canSubmit: mutation.status !== "pending" && Array.isReadonlyArrayNonEmpty(selection.channelIds),
-    toggle,
+    noticeChannelId,
+    canSubmit: mutation.status !== "pending" && noticeChannelId !== NO_CHANNEL,
     pickNotice,
     submit,
     mutation,

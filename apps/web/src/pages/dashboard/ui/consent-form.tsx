@@ -11,8 +11,8 @@ import { ConsentResultMessage } from "./consent-result-message";
 import { NoticeChannelPicker } from "./notice-channel-picker";
 import { ReadableChannelList } from "./readable-channel-list";
 
-const TITLE = "Bot が見られるチャンネル";
-const EMPTY = "Bot が見られるチャンネルがまだありません。";
+const TITLE = "ミルが見られるチャンネル";
+const EMPTY = "ミルが見られるチャンネルがまだありません。";
 const NOTE = "同意すると、選んだチャンネルにお知らせを 1 回投稿します。";
 const SUBMIT = "同意して取り込みを始める";
 

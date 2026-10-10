@@ -7,10 +7,10 @@ import { Pill } from "./pill";
 import { PurgeChannelButton } from "./purge-channel-button";
 
 const INGEST = {
-  unreadable: { label: "Bot が見られないチャンネル", tone: "bg-milk text-ink-soft" },
+  unreadable: { label: "ミルが見られないチャンネル", tone: "bg-milk text-ink-soft" },
   awaiting: { label: "同意待ち", tone: "bg-milk text-ink-soft" },
-  paused: { label: "Bot が見られないため停止中（30 日後に保存分を削除）", tone: "bg-pink" },
-  cleared: { label: "Bot が見られないため停止中（保存分は削除済み）", tone: "bg-milk" },
+  paused: { label: "ミルが見られないため停止中（30 日後に保存分を削除）", tone: "bg-pink" },
+  cleared: { label: "ミルが見られないため停止中（保存分は削除済み）", tone: "bg-milk" },
   waiting: { label: "取り込み待ち", tone: "bg-butter" },
   backfilling: { label: "過去ログを取り込み中", tone: "bg-sky" },
   done: { label: "取り込み済み", tone: "bg-mint" },

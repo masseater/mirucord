@@ -137,6 +137,7 @@
     .scene-caption:nth-child(4) {
       --from: 94.44%;
       --to: 110.42%;
+      animation-name: scene-finale-hold;
     }
   }
 }
@@ -171,6 +172,18 @@
   100% {
     translate: calc(var(--x) * 1.1) calc(var(--y) * 1.1);
     rotate: 0deg;
+    scale: 1;
+  }
+}
+
+@keyframes scene-finale-hold {
+  0% {
+    opacity: 0;
+    scale: 0.92;
+  }
+  15%,
+  100% {
+    opacity: 1;
     scale: 1;
   }
 }

@@ -3,6 +3,7 @@ import { Array, DateTime, Effect, Equal, Option, String, pipe } from "effect";
 
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { embed } from "#/shared/ai/index.server";
+import type { EmbeddingError } from "#/shared/ai/index.server";
 import { sealMessage } from "#/shared/crypto/index.server";
 import { db, message } from "#/shared/db/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
@@ -10,9 +11,11 @@ import type { DiscordMessage } from "#/shared/discord/index.server";
 import { findStored } from "./message-rows.server";
 import type { StoredMessage } from "./message-rows.server";
 import { deleteVectors, indexedIds, upsertVectors } from "./vectors.server";
-import type { MessageVector } from "./vectors.server";
+import type { MessageVector, VectorizeError } from "./vectors.server";
 
 const STORED_TYPES: ReadonlySet<MessageType> = new Set([MessageType.Default, MessageType.Reply]);
+
+type StoreError = EmbeddingError | VectorizeError;
 
 type StoreTarget = Readonly<{ key: CryptoKey; job: IngestJob }>;
 
@@ -86,7 +89,7 @@ const toVector = (
 const writeVectors = (
   { job }: StoreTarget,
   changed: readonly DiscordMessage[],
-): Effect.Effect<void> => {
+): Effect.Effect<void, EmbeddingError | VectorizeError> => {
   const blank = changed.filter(({ content }) => String.isEmpty(content));
   const indexable = changed.filter(({ content }) => String.isNonEmpty(content));
   const texts = indexable.map(({ content }) => content);
@@ -101,7 +104,7 @@ const writeVectors = (
 
 const withoutVectors = (
   unchanged: readonly DiscordMessage[],
-): Effect.Effect<readonly DiscordMessage[]> => {
+): Effect.Effect<readonly DiscordMessage[], VectorizeError> => {
   const indexable = unchanged.filter(({ content }) => String.isNonEmpty(content));
   return indexedIds(indexable.map(({ id }) => id)).pipe(
     Effect.map((indexed) => indexable.filter(({ id }) => !indexed.has(id))),
@@ -111,7 +114,10 @@ const withoutVectors = (
 const storeMessages = ({
   page,
   ...target
-}: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<void> => {
+}: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<
+  void,
+  EmbeddingError | VectorizeError
+> => {
   const kept = page.filter(({ type }) => STORED_TYPES.has(type));
   return findStored(kept.map(({ id }) => id)).pipe(
     Effect.flatMap((stored) => {
@@ -127,4 +133,4 @@ const storeMessages = ({
 };
 
 export { storeMessages };
-export type { StoreTarget };
+export type { StoreError, StoreTarget };

@@ -53,6 +53,11 @@ const removeDepartedGuilds = (
     (id) =>
       forgetGuildMessages(id).pipe(
         Effect.andThen(Effect.promise(() => db.delete(guild).where(eq(guild.id, id)))),
+        Effect.catchTag("VectorizeError", ({ cause }) =>
+          Effect.logError("Could not remove vectors of a departed server").pipe(
+            Effect.annotateLogs({ guildId: id, cause: String(cause) }),
+          ),
+        ),
       ),
     { discard: true },
   );

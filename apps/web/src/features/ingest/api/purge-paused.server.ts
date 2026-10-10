@@ -7,6 +7,7 @@ import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { purgeChannel } from "./consent-scope.server";
 import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
+import type { VectorizeError } from "./vectors.server";
 
 type PurgeRequest = GuildMembership & Readonly<{ channelId: string }>;
 
@@ -29,7 +30,7 @@ const findHidden = ({ guildId, channelId }: PurgeRequest): Effect.Effect<boolean
       ),
   ).pipe(Effect.map(Array.isReadonlyArrayNonEmpty));
 
-const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult> =>
+const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult, VectorizeError> =>
   findHidden(request).pipe(
     Effect.flatMap((hidden) => {
       if (!hidden) {
@@ -57,7 +58,7 @@ const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult> =>
 
 const purgePausedChannel = (
   request: PurgeRequest,
-): Effect.Effect<PurgeResult, DiscordRequestError> =>
+): Effect.Effect<PurgeResult, DiscordRequestError | VectorizeError> =>
   managedGuild(request).pipe(
     Effect.flatMap(
       Option.match({

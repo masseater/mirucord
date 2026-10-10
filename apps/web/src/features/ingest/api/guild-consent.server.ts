@@ -13,6 +13,7 @@ import { loadConsentedChannels } from "./guild-settings.server";
 import type { SettingsChannel } from "./guild-settings.server";
 import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
+import type { VectorizeError } from "./vectors.server";
 
 type ConsentRequest = Readonly<{
   guildId: string;
@@ -82,7 +83,7 @@ const applyConsent = (
   request: ConsentRequest,
   scope: ConsentScope,
   channels: readonly SettingsChannel[],
-): Effect.Effect<ConsentResult> => {
+): Effect.Effect<ConsentResult, VectorizeError> => {
   if (!isValidRequest(request, channels)) {
     return Effect.succeed({ status: "invalid" });
   }
@@ -99,7 +100,9 @@ const applyConsent = (
   );
 };
 
-const grantConsent = (request: ConsentRequest): Effect.Effect<ConsentResult, DiscordRequestError> =>
+const grantConsent = (
+  request: ConsentRequest,
+): Effect.Effect<ConsentResult, DiscordRequestError | VectorizeError> =>
   managedGuild(request).pipe(
     Effect.flatMap(
       Option.match({
@@ -114,7 +117,7 @@ const grantConsent = (request: ConsentRequest): Effect.Effect<ConsentResult, Dis
 
 const revokeConsent = (
   membership: GuildMembership,
-): Effect.Effect<RevokeResult, DiscordRequestError | GuildDataRemainsError> =>
+): Effect.Effect<RevokeResult, DiscordRequestError | GuildDataRemainsError | VectorizeError> =>
   managedGuild(membership).pipe(
     Effect.flatMap(
       Option.match({

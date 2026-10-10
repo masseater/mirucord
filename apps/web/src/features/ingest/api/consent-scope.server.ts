@@ -9,6 +9,7 @@ import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 import { accessOf } from "./bot-access.server";
 import { enqueue } from "./enqueue.server";
 import { forgetChannelMessages } from "./message-rows.server";
+import type { VectorizeError } from "./vectors.server";
 
 const CLEARED = Option.getOrNull(Option.none<string>());
 
@@ -27,7 +28,7 @@ const loadScope = (guildId: string): Effect.Effect<ConsentScope> =>
     ),
   );
 
-const purgeChannel = (channelId: string): Effect.Effect<void> =>
+const purgeChannel = (channelId: string): Effect.Effect<void, VectorizeError> =>
   forgetChannelMessages(channelId).pipe(
     Effect.andThen(
       Effect.promise(() =>
@@ -62,7 +63,7 @@ const storedCount = (guildId: string): Effect.Effect<number> =>
     ),
   );
 
-const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError> =>
+const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError | VectorizeError> =>
   Effect.promise(() =>
     db.select({ id: channel.id }).from(channel).where(eq(channel.guildId, guildId)),
   ).pipe(
@@ -75,7 +76,9 @@ const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError>
     Effect.asVoid,
   );
 
-const withdrawGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError> =>
+const withdrawGuild = (
+  guildId: string,
+): Effect.Effect<void, GuildDataRemainsError | VectorizeError> =>
   purgeGuild(guildId).pipe(
     Effect.andThen(
       Effect.promise(() => db.delete(ingestConsent).where(eq(ingestConsent.guildId, guildId))),
@@ -83,7 +86,10 @@ const withdrawGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsErr
     Effect.andThen(purgeGuild(guildId)),
   );
 
-const purgeOutOfScope = (guildId: string, scope: ConsentScope): Effect.Effect<void> =>
+const purgeOutOfScope = (
+  guildId: string,
+  scope: ConsentScope,
+): Effect.Effect<void, VectorizeError> =>
   Effect.all({
     stored: Effect.promise(() =>
       db
@@ -135,7 +141,7 @@ const enqueueInScope = (guildId: string, scope: ConsentScope): Effect.Effect<voi
   return enqueueReadable(guildId);
 };
 
-const refreshIngest = (guildId: string): Effect.Effect<void> =>
+const refreshIngest = (guildId: string): Effect.Effect<void, VectorizeError> =>
   loadScope(guildId).pipe(
     Effect.tap((scope) => purgeOutOfScope(guildId, scope)),
     Effect.flatMap((scope) => enqueueInScope(guildId, scope)),

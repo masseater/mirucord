@@ -11,6 +11,7 @@ import { refreshIngest } from "./consent-scope.server";
 import { logDiscordFailure, reconcileMembership } from "./guild-membership.server";
 import { whenIngestEnabled } from "./ingest-flag.server";
 import { syncChannels } from "./sync-channels.server";
+import type { VectorizeError } from "./sync-channels.server";
 
 const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
   Effect.all({ wrappedKey: createGuildKey, now: DateTime.now }).pipe(
@@ -56,7 +57,9 @@ const replaceRoles = (discordGuild: DiscordGuild): Effect.Effect<void> =>
     ),
   );
 
-const syncGuild = (botUserId: string, guildId: string): Effect.Effect<void, DiscordRequestError> =>
+type GuildSyncError = DiscordRequestError | VectorizeError;
+
+const syncGuild = (botUserId: string, guildId: string): Effect.Effect<void, GuildSyncError> =>
   Effect.gen(function* sync() {
     const discordGuild = yield* getGuild(guildId);
     const listing = yield* listChannelsOf({ botUserId, discordGuild });
@@ -93,15 +96,23 @@ const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
   ),
 );
 
+const logVectorFailure = (cause: unknown): Effect.Effect<void> =>
+  Effect.logError("Could not remove vectors while syncing a server").pipe(
+    Effect.annotateLogs({ cause: String(cause) }),
+  );
+
 const eachGuild = (
   guildIds: readonly string[],
-  sync: (guildId: string) => Effect.Effect<void, DiscordRequestError>,
+  sync: (guildId: string) => Effect.Effect<void, GuildSyncError>,
 ): Effect.Effect<void> =>
   Effect.forEach(
     guildIds,
     (guildId) =>
       sync(guildId).pipe(
-        Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),
+        Effect.catchTags({
+          DiscordRequestError: ({ status }) => logDiscordFailure(status),
+          VectorizeError: ({ cause }) => logVectorFailure(cause),
+        }),
         Effect.annotateLogs({ guildId }),
       ),
     { discard: true },
@@ -111,7 +122,7 @@ const refreshGuild = (guildId: string): Effect.Effect<void, DiscordRequestError>
   getGuild(guildId).pipe(Effect.tap(updateGuild), Effect.flatMap(replaceRoles));
 
 const syncMembership = (
-  refreshKnown: (guildId: string) => Effect.Effect<void, DiscordRequestError>,
+  refreshKnown: (guildId: string) => Effect.Effect<void, GuildSyncError>,
 ): Effect.Effect<void, DiscordRequestError> =>
   Effect.gen(function* syncAdmitted() {
     const { botUserId, fresh, known } = yield* reconcileMembership;
@@ -145,7 +156,10 @@ const syncOneGuild = (guildId: string): Effect.Effect<void, DiscordRequestError>
   whenIngestEnabled(
     Effect.gen(function* syncNamedGuild() {
       const botUserId = yield* getBotUserId;
-      yield* syncGuild(botUserId, guildId);
+      yield* syncGuild(botUserId, guildId).pipe(
+        Effect.catchTag("VectorizeError", ({ cause }) => logVectorFailure(cause)),
+        Effect.annotateLogs({ guildId }),
+      );
     }),
   );
 

@@ -4,6 +4,7 @@ import { DateTime, Effect, Option } from "effect";
 import { db, inIdChunks, message } from "#/shared/db/index.server";
 
 import { deleteVectors } from "./vectors.server";
+import type { VectorizeError } from "./vectors.server";
 
 type StoredMessage = Readonly<{ id: string; editedAt: Option.Option<number> }>;
 
@@ -47,18 +48,18 @@ const MESSAGE_OWNER = { guild: message.guildId, channel: message.channelId } as 
 const forgetMessagesOf = (
   owner: keyof typeof MESSAGE_OWNER,
   ownerId: string,
-): Effect.Effect<void> =>
+): Effect.Effect<void, VectorizeError> =>
   Effect.promise(() =>
     db.select({ id: message.id }).from(message).where(eq(MESSAGE_OWNER[owner], ownerId)),
   ).pipe(Effect.flatMap((rows) => deleteVectors(rows.map(({ id }) => id))));
 
-const forgetGuildMessages = (guildId: string): Effect.Effect<void> =>
+const forgetGuildMessages = (guildId: string): Effect.Effect<void, VectorizeError> =>
   forgetMessagesOf("guild", guildId);
 
-const forgetChannelMessages = (channelId: string): Effect.Effect<void> =>
+const forgetChannelMessages = (channelId: string): Effect.Effect<void, VectorizeError> =>
   forgetMessagesOf("channel", channelId);
 
-const deleteMessages = (ids: readonly string[]): Effect.Effect<void> =>
+const deleteMessages = (ids: readonly string[]): Effect.Effect<void, VectorizeError> =>
   deleteVectors(ids).pipe(
     Effect.andThen(
       inIdChunks(ids, (chunk) => db.delete(message).where(inArray(message.id, [...chunk]))),
@@ -74,3 +75,4 @@ export {
   forgetGuildMessages,
 };
 export type { StoredMessage };
+export type { VectorizeError } from "./vectors.server";

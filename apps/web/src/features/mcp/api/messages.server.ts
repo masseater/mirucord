@@ -124,6 +124,7 @@ const queryVectors = (
 
 const searchMessages = (request: SearchRequest): Effect.Effect<readonly MessageView[]> =>
   embed([request.query]).pipe(
+    Effect.orDie,
     Effect.map(Array.head),
     Effect.flatMap(
       Option.match({

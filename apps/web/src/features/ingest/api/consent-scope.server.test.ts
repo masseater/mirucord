@@ -86,7 +86,7 @@ const seedConsents = (): Promise<unknown> =>
 const queuedBy = (guildId: string): Effect.Effect<readonly unknown[]> =>
   Effect.gen(function* queued() {
     const sendBatch = vi.spyOn(env.INGEST, "sendBatch");
-    yield* refreshIngest(guildId);
+    yield* refreshIngest(guildId).pipe(Effect.orDie);
     return sendBatch.mock.calls.flatMap(([messages]) =>
       Array.fromIterable(messages).map(({ body }) => body),
     );

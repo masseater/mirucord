@@ -40,17 +40,17 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 外すもの
 
-| 対象                                              | 外す条件                                                                                                                                                |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `patches/@better-auth__oauth-provider`            | 上流の PR #10266（issue #10213）が取り込まれた版が出たとき                                                                                              |
-| `patches/@tanstack__eslint-plugin-start`          | `no-async-client-component` などの見逃しを直した版が出たとき                                                                                            |
-| `alchemy.run.ts` の旧 D1（`usDb`、ENAM）          | APAC の D1 で困っていないと本番で確かめたとき。`usDb` と `clone` の指定を外して出す                                                                     |
-| テストの `env.MESSAGES` と `env.AI` の `vi.spyOn` | miniflare が Vectorize と Workers AI をローカルで動かせるようになったとき。D1・Queues・Discord は `@cloudflare/vitest-plugin` の実物と MSW で動いている |
-| `ALERT_WEBHOOK_URL` への自作の通知                | Alchemy が `observability.issues` を扱えるようになったとき。Workers Observability の Issues に移す。調べた手段はコミット 56ccdc6 にある                 |
+| 対象                                              | 外す条件                                                                                                                                                                                                                                                                      |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `patches/@better-auth__oauth-provider`            | 上流の PR #10266（issue #10213）が取り込まれた版が出たとき                                                                                                                                                                                                                    |
+| `patches/@tanstack__eslint-plugin-start`          | `no-async-client-component` などの見逃しを直した版が出たとき                                                                                                                                                                                                                  |
+| `alchemy.run.ts` の旧 D1（`usDb`、ENAM）          | APAC の D1 で困っていないと本番で確かめたとき。`usDb` と `clone` の指定を外して出す                                                                                                                                                                                           |
+| テストの `env.MESSAGES` と `env.AI` の `vi.spyOn` | miniflare が Vectorize と Workers AI をローカルで動かせるようになったとき。D1・Queues・Discord は `@cloudflare/vitest-plugin` の実物と MSW で動いている                                                                                                                       |
+| `ALERT_WEBHOOK_URL` への自作の通知                | Alchemy が `observability.issues` を扱えるようになったとき。Workers Observability の Issues に移す。alchemy 2.0.0-beta.81 の Worker の `observability` は logs と traces の設定だけで、`Alerting.NotificationPolicy` の `alertType` にも Workers のエラーを知らせる種類がない |
 
 ## 引き継ぎの注意
 
-チャンネル権限の計算（`features/mcp/model/permissions.ts`）は、REST の値から計算できる保守されたパッケージがないため手で書いた。順序は Discord 公式ドキュメント「Permission Overwrites」に合わせている。
+チャンネル権限の計算（`shared/permissions/permissions.ts`）は、REST の値から計算できる保守されたパッケージがないため手で書いた。discord.js の `permissionsFor` は Client が持つギルドとメンバーのキャッシュを前提にする。discord-api-types は型と定数だけで、`@discordeno/utils` 21.0.0 の `calculatePermissions` はビットと名前を変換するだけで、上書きを解決しない。順序は Discord 公式ドキュメント「Permission Overwrites」に合わせている。
 `auth:generate` は `mcp()` の起動処理が D1 を読むので、D1 を差し替えた一時設定で動かす。
 zod は禁止パッケージなので、`better-call` の peer をそろえるために足してはいけない。スキーマと検証は effect の Schema で書く。
 `/sign-in` は MCP の OAuth のログイン画面も兼ねるので、ログイン後の行き先を `/dashboard` に固定しない。

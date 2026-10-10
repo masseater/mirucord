@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { PopLink } from "#/pages/home/ui/common/pop-link";
 import { DASHBOARD_PATH } from "#/shared/config";
+import { PopLink } from "#/shared/ui/pop-link";
 
 const START = "Discord でログインしてはじめる";
 const HOW = "しくみを見る";

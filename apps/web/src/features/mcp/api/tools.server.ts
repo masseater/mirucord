@@ -68,7 +68,16 @@ const withChannel = (
         Option.liftPredicate(id, (candidate) => scope.visible.includes(candidate)),
         {
           onNone: () => Effect.succeed(errorResult(CHANNEL_NOT_FOUND)),
-          onSome: (visible) => withinChannels([visible]),
+          onSome: (visible) =>
+            withinChannels([
+              visible,
+              ...scope.guild.channels
+                .filter(
+                  ({ id: threadId, parentId }) =>
+                    Option.contains(parentId, visible) && scope.visible.includes(threadId),
+                )
+                .map(({ id: threadId }) => threadId),
+            ]),
         },
       ),
   });
@@ -159,7 +168,8 @@ const buildServer = (discordUserId: string): McpServer => {
   server.registerTool(
     "list_channels",
     {
-      description: "List the channels and threads you can read in a server.",
+      description:
+        "List the channels, forums and threads (including forum posts) you can read in a server.",
       inputSchema: Schema.toStandardJSONSchemaV1(toolInput(ListChannelsInput)),
     },
     listChannels(discordUserId),

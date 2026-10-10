@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest/index.server";
 
+import { ChannelLabel } from "./channel-label";
+
 const GROUP = "notice-channel";
 
 const NoticeChannelOption = ({
@@ -26,7 +28,7 @@ const NoticeChannelOption = ({
         checked={checked}
         onChange={choose}
       />
-      {`#${channel.name}`}
+      <ChannelLabel channel={channel} />
     </label>
   );
 };

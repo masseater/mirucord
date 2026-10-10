@@ -48,6 +48,9 @@ const channel = sqliteTable(
       .notNull()
       .default("readable"),
     hiddenAt: integer(),
+    archive: text({ enum: ["open", "archived"] })
+      .notNull()
+      .default("open"),
   },
   (table) => [index("channel_guild_id_idx").on(table.guildId)],
 );

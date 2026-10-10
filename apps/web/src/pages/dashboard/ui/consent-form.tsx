@@ -2,14 +2,14 @@ import { Array, Option } from "effect";
 import type { ReactNode } from "react";
 
 import type { GuildSettings } from "#/features/ingest/index.server";
-import { readableChannels } from "#/pages/dashboard/model/consent-draft";
+import { noticeChannels, readableChannels } from "#/pages/dashboard/model/consent-draft";
 import { useConsentForm } from "#/pages/dashboard/model/use-consent-form";
 import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
 import { ConsentResultMessage } from "./consent-result-message";
 import { NoticeChannelPicker } from "./notice-channel-picker";
-import { Pill } from "./pill";
+import { ReadableChannelList } from "./readable-channel-list";
 
 const TITLE = "Bot が見られるチャンネル";
 const EMPTY = "Bot が見られるチャンネルがまだありません。";
@@ -22,13 +22,13 @@ const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): React
   return (
     <Panel>
       <h2 className="text-xl font-black">{TITLE}</h2>
-      <p className="flex flex-wrap gap-2">
-        {readable.map((channel) => (
-          <Pill key={channel.id} tone="bg-lavender">{`#${channel.name}`}</Pill>
-        ))}
-      </p>
+      <ReadableChannelList channels={readable} />
       {!Array.isReadonlyArrayNonEmpty(readable) && <p className="font-bold">{EMPTY}</p>}
-      <NoticeChannelPicker channels={readable} value={noticeChannelId} onChoose={pickNotice} />
+      <NoticeChannelPicker
+        channels={noticeChannels(settings)}
+        value={noticeChannelId}
+        onChoose={pickNotice}
+      />
       <p className="text-ink-soft text-sm">{NOTE}</p>
       <PopButton tone="grape" disabled={!canSubmit} onClick={submit}>
         {SUBMIT}

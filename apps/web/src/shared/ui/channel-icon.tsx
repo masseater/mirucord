@@ -8,6 +8,7 @@ const HASH = "#";
 type ChannelKind = "text" | "forum";
 
 const SIZE = {
+  sm: { text: "text-[1em]", icon: "size-[1.15em]" },
   md: { text: "text-xl", icon: "size-5" },
   lg: { text: "text-2xl", icon: "size-6" },
 } as const;

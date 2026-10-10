@@ -35,7 +35,19 @@ const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult> =>
       if (!hidden) {
         return Effect.succeed<PurgeResult>({ status: "notPaused" });
       }
-      return purgeChannel(request.channelId).pipe(
+      return Effect.promise(() =>
+        db
+          .select({ id: channel.id })
+          .from(channel)
+          .where(
+            and(eq(channel.parentId, request.channelId), eq(channel.guildId, request.guildId)),
+          ),
+      ).pipe(
+        Effect.flatMap((threads) =>
+          Effect.forEach([request.channelId, ...threads.map(({ id }) => id)], purgeChannel, {
+            discard: true,
+          }),
+        ),
         Effect.andThen(Effect.logInfo("Purged a paused channel on request")),
         Effect.annotateLogs({ guildId: request.guildId, channelId: request.channelId }),
         Effect.as<PurgeResult>({ status: "purged" }),

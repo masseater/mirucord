@@ -46,6 +46,22 @@ const channelMessagesSince = ({
       ),
   ).pipe(Effect.map((rows) => rows.map(({ id }) => id)));
 
+const MESSAGE_OWNER = { guild: message.guildId, channel: message.channelId } as const;
+
+const forgetMessagesOf = (
+  owner: keyof typeof MESSAGE_OWNER,
+  ownerId: string,
+): Effect.Effect<void> =>
+  Effect.promise(() =>
+    db.select({ id: message.id }).from(message).where(eq(MESSAGE_OWNER[owner], ownerId)),
+  ).pipe(Effect.flatMap((rows) => deleteVectors(rows.map(({ id }) => id))));
+
+const forgetGuildMessages = (guildId: string): Effect.Effect<void> =>
+  forgetMessagesOf("guild", guildId);
+
+const forgetChannelMessages = (channelId: string): Effect.Effect<void> =>
+  forgetMessagesOf("channel", channelId);
+
 const deleteRows = (chunk: readonly string[]): Effect.Effect<void> =>
   Effect.asVoid(Effect.promise(() => db.delete(message).where(inArray(message.id, [...chunk]))));
 
@@ -56,5 +72,11 @@ const deleteMessages = (ids: readonly string[]): Effect.Effect<void> => {
   );
 };
 
-export { channelMessagesSince, deleteMessages, findStored };
+export {
+  channelMessagesSince,
+  deleteMessages,
+  findStored,
+  forgetChannelMessages,
+  forgetGuildMessages,
+};
 export type { StoredMessage };

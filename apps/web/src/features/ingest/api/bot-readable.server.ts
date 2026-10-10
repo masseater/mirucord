@@ -11,37 +11,39 @@ import { visibleChannelIds } from "#/shared/permissions";
 type BotView = Readonly<{
   botUserId: string;
   discordGuild: DiscordGuild;
-  channels: readonly DiscordChannel[];
 }>;
 
-const botReadableChannels = ({
+type BotReader = (channels: readonly DiscordChannel[]) => ReadonlySet<string>;
+
+const botReader = ({
   botUserId,
   discordGuild,
-  channels,
-}: BotView): Effect.Effect<ReadonlySet<string>, DiscordRequestError> =>
+}: BotView): Effect.Effect<BotReader, DiscordRequestError> =>
   findMember(discordGuild.id, botUserId).pipe(
-    Effect.map((member) =>
-      visibleChannelIds(
-        {
-          guildId: discordGuild.id,
-          ownerId: discordGuild.owner_id,
-          rolePermissions: Record.fromEntries(
-            discordGuild.roles.map(({ id, permissions }) => [id, permissions]),
+    Effect.map(
+      (member) =>
+        (channels: readonly DiscordChannel[]): ReadonlySet<string> =>
+          visibleChannelIds(
+            {
+              guildId: discordGuild.id,
+              ownerId: discordGuild.owner_id,
+              rolePermissions: Record.fromEntries(
+                discordGuild.roles.map(({ id, permissions }) => [id, permissions]),
+              ),
+              channels: channels.map((discordChannel) => ({
+                id: discordChannel.id,
+                parentId: Option.fromNullishOr(discordChannel.parent_id),
+                type: discordChannel.type,
+                permissionOverwrites: Option.getOrElse(
+                  Option.fromNullishOr(discordChannel.permission_overwrites),
+                  Array.empty,
+                ),
+              })),
+            },
+            member.pipe(Option.map(({ roles }) => ({ userId: botUserId, roleIds: roles }))),
           ),
-          channels: channels.map((discordChannel) => ({
-            id: discordChannel.id,
-            parentId: Option.fromNullishOr(discordChannel.parent_id),
-            type: discordChannel.type,
-            permissionOverwrites: Option.getOrElse(
-              Option.fromNullishOr(discordChannel.permission_overwrites),
-              Array.empty,
-            ),
-          })),
-        },
-        member.pipe(Option.map(({ roles }) => ({ userId: botUserId, roleIds: roles }))),
-      ),
     ),
   );
 
-export { botReadableChannels };
-export type { BotView };
+export { botReader };
+export type { BotReader, BotView };

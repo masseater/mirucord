@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
+import type { ChannelKind } from "#/shared/ui/channel-icon";
+
 import { ChannelHeader } from "./channel-header";
-import type { ChannelKind } from "./channel-icon";
 
 const ChannelSection = ({
   id,

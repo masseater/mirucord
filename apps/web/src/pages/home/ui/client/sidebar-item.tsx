@@ -7,18 +7,18 @@ import { ChannelLink } from "./channel-link";
 import { PlainRow } from "./plain-row";
 import type { SidebarRow } from "./sidebar-categories";
 
-const SidebarItem = ({ row }: Readonly<{ row: SidebarRow }>): ReactNode => {
-  if (row.type === "link") {
-    return <ChannelLink id={row.channel.id} name={row.channel.name} kind={row.channel.kind} />;
-  }
-  if (row.type === "peek") {
-    return (
+const SidebarItem = ({ row }: Readonly<{ row: SidebarRow }>): ReactNode => (
+  <li>
+    {row.type === "link" && (
+      <ChannelLink id={row.channel.id} name={row.channel.name} kind={row.channel.kind} />
+    )}
+    {row.type === "peek" && (
       <PlainRow place={PLACES[row.id]} activity={row.activity} peek={row.id} className="ch-peek">
         <Mascot className="ch-peek-miru absolute right-1 size-6" />
       </PlainRow>
-    );
-  }
-  return <PlainRow place={row.place} activity={row.activity} />;
-};
+    )}
+    {row.type === "idle" && <PlainRow place={row.place} activity={row.activity} />}
+  </li>
+);
 
 export { SidebarItem };

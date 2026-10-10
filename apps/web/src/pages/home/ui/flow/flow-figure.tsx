@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Figure } from "#/pages/home/ui/message/figure";
-
+import { Figure } from "./figure";
 import { FlowDiagram } from "./flow-diagram";
 
 const FlowFigure = (): ReactNode => (

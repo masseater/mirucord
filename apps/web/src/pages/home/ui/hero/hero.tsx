@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 
-import { ChannelTopic } from "#/pages/home/ui/client/channel-topic";
 import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
-import { DateDivider } from "#/pages/home/ui/message/date-divider";
 
 import { AnswerWindow } from "./answer-window";
+import { ChannelTopic } from "./channel-topic";
 import { ChannelWelcome } from "./channel-welcome";
 import { ChatLog } from "./chat-log";
+import { DateDivider } from "./date-divider";
 
 const CHANNEL = "ざつだん";
 const TOPIC = "Discord の思い出さがし";

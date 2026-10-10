@@ -1,0 +1,83 @@
+import type { ReactNode } from "react";
+
+import { PRIVACY_PATH, REPOSITORY_URL } from "#/shared/config";
+
+import { LegalSection } from "./legal-section";
+
+const TITLE = "利用規約";
+const REVISED = "2026 年 10 月 10 日 制定";
+const PRIVACY = "プライバシーポリシーを読む";
+const CONTACT = "問い合わせは GitHub の Issues で受け付けています。";
+const ISSUES_URL = `${REPOSITORY_URL}/issues`;
+
+const SECTIONS = [
+  {
+    heading: "この規約について",
+    paragraphs: [
+      "この規約は mirucord(以下「本サービス」)を使うときの決まりです。本サービスを使った時点で、この規約に同意したものとみなします。",
+      "本サービスは masseater が個人で開発し、無料で提供しています。",
+    ],
+  },
+  {
+    heading: "サービスの内容",
+    paragraphs: [
+      "本サービスは Discord サーバーの過去の会話を、MCP に対応した AI クライアントから検索できるようにする読み取り専用のサービスです。",
+      "メンバーが検索できるのは、その人が Discord で読めるチャンネルだけです。",
+    ],
+  },
+  {
+    heading: "Discord のデータ",
+    paragraphs: [
+      "Bot を招待したサーバーでは、サーバー管理者が管理画面で同意したチャンネルだけを読み取ります。サーバー管理者は、サーバーのメンバーに本サービスを使うことを知らせてください。",
+      "読み取ったデータの扱いはプライバシーポリシーに従います。",
+    ],
+  },
+  {
+    heading: "禁止事項",
+    paragraphs: [
+      "法令や Discord の利用規約・開発者ポリシーに反する使い方、他人の権利を侵害する使い方、本サービスや他の利用者に過大な負荷や損害を与える使い方を禁止します。",
+      "読む権限のない会話を本サービスを通じて手に入れようとすることも禁止します。",
+    ],
+  },
+  {
+    heading: "提供の停止と免責",
+    paragraphs: [
+      "本サービスは現状のまま提供します。予告なく内容を変えたり、提供を止めたりすることがあります。登録できるサーバーの数には上限があります。",
+      "本サービスを使ったこと、または使えなかったことで生じた損害について、提供者に故意または重大な過失がある場合を除き責任を負いません。",
+    ],
+  },
+  {
+    heading: "規約の変更",
+    paragraphs: [
+      "この規約は必要に応じて変更します。変更後の規約はこのページに載せた時点で効力を持ちます。",
+    ],
+  },
+  {
+    heading: "準拠法と管轄",
+    paragraphs: [
+      "この規約は日本法に従って解釈します。本サービスに関する紛争は、提供者の住所地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とします。",
+    ],
+  },
+] as const;
+
+const TermsPage = (): ReactNode => (
+  <main className="mx-auto flex max-w-3xl flex-col gap-8 p-8">
+    <h1 className="text-2xl font-bold">{TITLE}</h1>
+    <p>{REVISED}</p>
+    {SECTIONS.map((section) => (
+      <LegalSection
+        key={section.heading}
+        heading={section.heading}
+        paragraphs={section.paragraphs}
+      />
+    ))}
+    <a href={PRIVACY_PATH} className="self-start underline">
+      {PRIVACY}
+    </a>
+    <a href={ISSUES_URL} className="self-start underline">
+      {CONTACT}
+    </a>
+  </main>
+);
+
+export { TermsPage };

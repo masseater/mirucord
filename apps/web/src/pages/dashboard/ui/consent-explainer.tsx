@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { PRIVACY_PATH } from "#/shared/config";
+
 const TITLE = "mirucord が読み取るもの";
 const POLICY = "プライバシーポリシー";
 
@@ -44,7 +46,7 @@ const ConsentExplainer = (): ReactNode => (
         </dd>,
       ])}
     </dl>
-    <a href="/privacy" className="self-start underline">
+    <a href={PRIVACY_PATH} className="self-start underline">
       {POLICY}
     </a>
   </section>

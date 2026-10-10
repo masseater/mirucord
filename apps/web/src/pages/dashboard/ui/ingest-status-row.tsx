@@ -4,7 +4,7 @@ import type { SettingsChannel } from "#/features/ingest/index.server";
 import { cn } from "#/shared/lib/utils";
 
 const INGEST = {
-  excluded: { label: "対象外", tone: "bg-milk text-mist" },
+  excluded: { label: "対象外", tone: "bg-milk text-ink-soft" },
   waiting: { label: "取り込み待ち", tone: "bg-butter" },
   backfilling: { label: "過去ログを取り込み中", tone: "bg-sky" },
   done: { label: "取り込み済み", tone: "bg-mint" },

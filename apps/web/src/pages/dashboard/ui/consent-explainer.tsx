@@ -39,7 +39,7 @@ const ConsentExplainer = (): ReactNode => (
     <h2 className="text-xl font-black">{TITLE}</h2>
     <dl className="grid gap-3 leading-relaxed md:grid-cols-4">
       {ITEMS.map((item) => [
-        <dt key={`${item.term}-term`} className="text-blurple font-black md:col-span-1">
+        <dt key={`${item.term}-term`} className="font-black md:col-span-1">
           {item.term}
         </dt>,
         <dd key={`${item.term}-detail`} className="text-ink-soft md:col-span-3">

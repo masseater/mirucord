@@ -27,7 +27,7 @@ const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
   }, [guildId, mutate]);
   return (
     <details className="border-ink bg-milk rounded-3xl border-2 px-6 py-4">
-      <summary className="text-pink-deep cursor-pointer font-black">{SUMMARY}</summary>
+      <summary className="cursor-pointer font-black">{SUMMARY}</summary>
       <p className="text-ink-soft mt-3">{DETAIL}</p>
       <div className="mt-4">
         <PopButton tone="pink" disabled={status === "pending"} onClick={revoke}>

@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
 
+import type { ChannelKind } from "#/shared/discord";
 import { cn } from "#/shared/lib/utils";
 
 const HASH = "#";
-
-type ChannelKind = "text" | "announcement" | "voice" | "stage" | "forum";
 
 const SIZE = {
   sm: { text: "text-sm", icon: "size-4" },
@@ -53,4 +52,3 @@ const ChannelIcon = ({
 };
 
 export { ChannelIcon };
-export type { ChannelKind };

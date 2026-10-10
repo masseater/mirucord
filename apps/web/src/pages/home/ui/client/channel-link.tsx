@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
+import type { ChannelKind } from "#/shared/discord";
 import { ChannelIcon } from "#/shared/ui/channel-icon";
-import type { ChannelKind } from "#/shared/ui/channel-icon";
 
 const ChannelLink = ({
   id,

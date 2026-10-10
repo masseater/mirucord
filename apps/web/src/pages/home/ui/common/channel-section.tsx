@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { ChannelKind } from "#/shared/ui/channel-icon";
+import type { ChannelKind } from "#/shared/discord";
 
 import { ChannelHeader } from "./channel-header";
 

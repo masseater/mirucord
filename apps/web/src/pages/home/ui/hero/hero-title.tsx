@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 
 import { HeroActions } from "./hero-actions";
 
-const BADGE = "Discord × AI";
-const LEAD = "Discord の会話も";
-const FOCUS = "AI がすぐ見つける";
-const SUB = "Bot を招待するだけで Claude から過去のやりとりを探せます";
+const BADGE = "Discord の思い出さがし";
+const LEAD = "みんなの思い出を";
+const FOCUS = "AI と掘り起こそう";
+const SUB = "あの夜の名場面も ミルがさがしてきてくれます";
 
 const HeroTitle = (): ReactNode => (
   <div className="relative flex flex-col items-start gap-6">

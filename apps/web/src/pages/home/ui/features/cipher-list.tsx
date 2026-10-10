@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { CipherRow } from "./cipher-row";
 
 const ROWS = [
-  { before: "3/21 に延期で確定", after: "q7Vb2…Xe9=" },
+  { before: "カレー焦がさない", after: "q7Vb2…Xe9=" },
   { before: "Bot を外す", after: "ぜんぶ削除" },
 ] as const;
 

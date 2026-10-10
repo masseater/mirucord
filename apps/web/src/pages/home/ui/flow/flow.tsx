@@ -4,9 +4,9 @@ import { SectionHead } from "#/pages/home/ui/common/section-head";
 
 import { FlowDiagram } from "./flow-diagram";
 
-const LEAD = "mirucord が";
-const TAIL = "あいだを取りもちます";
-const GUIDE = "ミルがあいだに入るよ";
+const LEAD = "ミルが";
+const TAIL = "思い出をさがしてくる";
+const GUIDE = "まかせてね";
 const LABEL = "しくみ";
 
 const Flow = (): ReactNode => (

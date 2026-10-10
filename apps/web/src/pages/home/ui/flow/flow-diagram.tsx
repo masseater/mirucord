@@ -1,16 +1,16 @@
 import type { ReactNode } from "react";
 
-import { AiNode } from "#/pages/home/ui/common/ai-node";
 import { Mascot } from "#/pages/home/ui/common/mascot";
 
+import { AiNode } from "./ai-node";
 import { ServerNode } from "./server-node";
 
 const TITLE_ID = "flow-diagram-title";
-const LABEL = "Discord サーバーのメッセージを mirucord が預かって MCP で AI に渡す図";
+const LABEL = "みんなのサーバーの会話をミルが預かって AI に届ける図";
 const PROTOCOL = "MCP";
-const AI_CAPTION = "日本語で聞くだけ";
+const AI_CAPTION = "話しかけるだけ";
 const NAME = "mirucord";
-const CAPTION = "暗号化して預かる";
+const CAPTION = "鍵をかけてしまっておく";
 
 const FlowDiagram = (): ReactNode => (
   <svg viewBox="0 0 1000 320" aria-labelledby={TITLE_ID} className="block h-auto w-full min-w-180">

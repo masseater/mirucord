@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { ChannelRow } from "./channel-row";
 
 const CHANNELS = [
-  { name: "# 雑談", mark: "◎", visible: true },
-  { name: "# 開発", mark: "◎", visible: true },
+  { name: "# ざつだん", mark: "◎", visible: true },
+  { name: "# げーむ部", mark: "◎", visible: true },
   { name: "# 運営だけ", mark: "×", visible: false },
 ] as const;
 

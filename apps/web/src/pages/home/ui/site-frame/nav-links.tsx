@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 const LINKS = [
-  { href: "#why", label: "こまりごと" },
+  { href: "#why", label: "思い出" },
   { href: "#how", label: "しくみ" },
   { href: "#start", label: "はじめかた" },
   { href: "#safety", label: "あんしん" },

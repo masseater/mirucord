@@ -3,12 +3,12 @@ import type { ReactNode } from "react";
 import { MarqueeItem } from "./marquee-item";
 
 const QUESTIONS = [
-  "先月のリリースで決まったことは？",
-  "新メンバー向けのルールはどこに書いた？",
-  "去年のオフ会の店の名前は？",
-  "ビルドが落ちたときの対処法を教えて",
-  "A 案と B 案の議論をまとめて",
-  "イベントの集合時間っていつだっけ？",
+  "はじめてみんなで遊んだゲームってなに？",
+  "去年のオフ会のお店どこだっけ？",
+  "このサーバーができた日の会話を見せて",
+  "いちばん盛り上がった夜はいつ？",
+  "あのとき決めたチーム名なんだっけ？",
+  "みんなで笑った名言を集めて",
 ] as const;
 
 const TONES = ["bg-pink", "bg-mint", "bg-butter", "bg-sky", "bg-lavender", "bg-milk"] as const;

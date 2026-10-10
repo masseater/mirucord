@@ -1,11 +1,11 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
-import { visibleChannelIds } from "#/features/mcp/model/visibility";
-import type { GuildChannel, GuildSnapshot } from "#/features/mcp/model/visibility";
 import { channel, db, guild, loadRolePermissions } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
+import { visibleChannelIds } from "#/shared/permissions";
+import type { GuildChannel, GuildSnapshot } from "#/shared/permissions";
 
 type StoredChannel = GuildChannel & Readonly<{ name: string }>;
 
@@ -32,7 +32,7 @@ const loadChannels = (guildId: string): Effect.Effect<readonly StoredChannel[]> 
         permissionOverwrites: channel.permissionOverwrites,
       })
       .from(channel)
-      .where(eq(channel.guildId, guildId)),
+      .where(and(eq(channel.guildId, guildId), eq(channel.botAccess, "readable"))),
   ).pipe(
     Effect.map((rows) =>
       rows.map((row) => ({ ...row, parentId: Option.fromNullOr(row.parentId) })),

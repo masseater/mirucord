@@ -40,11 +40,13 @@ const noticeOf = (channelIds: readonly string[]): string =>
   ].join("\n");
 
 const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean => {
-  const selectable = new Set(channels.map(({ id }) => id));
+  const selectable = new Set(
+    channels.filter(({ ingest }) => ingest !== "unreadable").map(({ id }) => id),
+  );
   return (
     Array.isReadonlyArrayNonEmpty(request.channelIds) &&
     request.channelIds.every((id) => selectable.has(id)) &&
-    selectable.has(request.noticeChannelId)
+    channels.some(({ id }) => id === request.noticeChannelId)
   );
 };
 

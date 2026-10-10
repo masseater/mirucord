@@ -44,6 +44,10 @@ const channel = sqliteTable(
     backfill: text({ enum: ["pending", "done"] })
       .notNull()
       .default("pending"),
+    botAccess: text({ enum: ["readable", "hidden"] })
+      .notNull()
+      .default("readable"),
+    hiddenAt: integer(),
   },
   (table) => [index("channel_guild_id_idx").on(table.guildId)],
 );

@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest/index.server";
 
+const UNREADABLE_NOTE = "（Bot が見られません）";
+
 const ChannelOption = ({
   channel,
   checked,
@@ -18,8 +20,14 @@ const ChannelOption = ({
   return (
     <li>
       <label className="flex items-center gap-2 rounded border px-3 py-2">
-        <input type="checkbox" checked={checked} onChange={toggle} />
+        <input
+          type="checkbox"
+          checked={checked}
+          disabled={channel.ingest === "unreadable" && !checked}
+          onChange={toggle}
+        />
         {`#${channel.name}`}
+        {channel.ingest === "unreadable" && UNREADABLE_NOTE}
       </label>
     </li>
   );

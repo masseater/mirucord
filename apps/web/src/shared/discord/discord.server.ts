@@ -8,6 +8,7 @@ const DATA_FIRST_ARITY = 2;
 
 const PAGE_SIZE = 100;
 const NOT_FOUND = 404;
+const FORBIDDEN = 403;
 const WEBHOOK_PATH_PARTS = 2;
 
 const PermissionOverwrite = Schema.Struct({
@@ -25,6 +26,8 @@ const Guild = Schema.Struct({
 });
 
 const PartialGuild = Schema.Struct({ id: Schema.String });
+
+const User = Schema.Struct({ id: Schema.String });
 
 const Channel = Schema.Struct({
   id: Schema.String,
@@ -93,6 +96,10 @@ const callDiscord = <Body extends Schema.Top>(
 const listBotGuilds = callDiscord(Schema.Array(PartialGuild), () =>
   send("GET", Routes.userGuilds()),
 );
+
+const getBotUserId: Effect.Effect<string, DiscordRequestError> = callDiscord(User, () =>
+  send("GET", Routes.user()),
+).pipe(Effect.map(({ id }) => id));
 
 const leaveGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   Effect.asVoid(callDiscord(Schema.Unknown, () => send("DELETE", Routes.userGuild(guildId))));
@@ -194,7 +201,9 @@ const findMember: {
 
 export {
   DiscordRequestError,
+  FORBIDDEN,
   findMember,
+  getBotUserId,
   getGuild,
   leaveGuild,
   listActiveThreads,

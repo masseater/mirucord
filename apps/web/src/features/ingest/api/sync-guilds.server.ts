@@ -7,19 +7,16 @@ import { Array, Config, ConfigProvider, DateTime, Effect, Option, pipe } from "e
 import { createGuildKey, isRotating, rewrapGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, message, role } from "#/shared/db/index.server";
 import {
+  getBotUserId,
   getGuild,
   leaveGuild,
   listActiveThreads,
   listBotGuilds,
   listGuildChannels,
 } from "#/shared/discord/index.server";
-import type {
-  DiscordChannel,
-  DiscordGuild,
-  DiscordRequestError,
-} from "#/shared/discord/index.server";
+import type { DiscordGuild, DiscordRequestError } from "#/shared/discord/index.server";
 
-import { refreshIngest } from "./consent-scope.server";
+import { syncChannels } from "./sync-channels.server";
 import { deleteVectors } from "./vectors.server";
 
 const INGEST_FLAG = "ingest-enabled";
@@ -39,8 +36,6 @@ const ingestEnabled: Effect.Effect<boolean> = Effect.promise(() =>
 );
 const DEFAULT_GUILD_LIMIT = 80;
 const ID_CHUNK = 50;
-
-type ChannelRow = typeof channel.$inferInsert;
 
 const INGESTED_TYPES: ReadonlySet<number> = new Set([
   ChannelType.GuildText,
@@ -147,43 +142,6 @@ const replaceRoles = (discordGuild: DiscordGuild): Effect.Effect<void> =>
     ),
   );
 
-const toChannelRow = (guildId: string, discordChannel: DiscordChannel): ChannelRow => ({
-  id: discordChannel.id,
-  guildId,
-  parentId: Option.getOrNull(Option.fromNullishOr(discordChannel.parent_id)),
-  name: Option.getOrElse(Option.fromNullishOr(discordChannel.name), () => discordChannel.id),
-  type: discordChannel.type,
-  permissionOverwrites: Option.getOrElse(
-    Option.fromNullishOr(discordChannel.permission_overwrites),
-    Array.empty,
-  ),
-});
-
-const upsertChannels = (
-  guildId: string,
-  channels: readonly DiscordChannel[],
-): Effect.Effect<void> =>
-  Effect.forEach(
-    channels,
-    (discordChannel) => {
-      const row = toChannelRow(guildId, discordChannel);
-      return Effect.promise(() =>
-        db
-          .insert(channel)
-          .values(row)
-          .onConflictDoUpdate({
-            target: channel.id,
-            set: {
-              parentId: row.parentId,
-              name: row.name,
-              permissionOverwrites: row.permissionOverwrites,
-            },
-          }),
-      );
-    },
-    { discard: true },
-  );
-
 const removeChannels = (guildId: string, current: readonly string[]): Effect.Effect<void> =>
   selectIds(() =>
     db.select({ id: channel.id }).from(channel).where(eq(channel.guildId, guildId)),
@@ -201,20 +159,20 @@ const removeChannels = (guildId: string, current: readonly string[]): Effect.Eff
     ),
   );
 
-const syncGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+const syncGuild = (botUserId: string, guildId: string): Effect.Effect<void, DiscordRequestError> =>
   Effect.gen(function* sync() {
     const [discordGuild, channels, threads] = yield* Effect.all([
       getGuild(guildId),
       listGuildChannels(guildId),
       listActiveThreads(guildId),
     ]);
-    const ingested = [...channels, ...threads].filter(({ type }) => INGESTED_TYPES.has(type));
+    const everything = [...channels, ...threads];
+    const ingested = everything.filter(({ type }) => INGESTED_TYPES.has(type));
     const channelIds = ingested.map(({ id }) => id);
     yield* upsertGuild(discordGuild);
     yield* replaceRoles(discordGuild);
-    yield* upsertChannels(guildId, ingested);
     yield* removeChannels(guildId, channelIds);
-    yield* refreshIngest(guildId);
+    yield* syncChannels({ botUserId, discordGuild, channels: everything, ingested });
   });
 
 const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
@@ -251,13 +209,14 @@ const syncAll: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* s
     yield* rewrapGuildKeys;
   }
   const current = (yield* listBotGuilds).map(({ id }) => id);
+  const botUserId = yield* getBotUserId;
   const admitted = yield* admitGuilds(current);
   yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));
   yield* removeDepartedGuilds(admitted);
   yield* Effect.forEach(
     admitted,
     (id) =>
-      syncGuild(id).pipe(
+      syncGuild(botUserId, id).pipe(
         Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),
       ),
     { discard: true },

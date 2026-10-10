@@ -138,7 +138,7 @@ export default defineConfig({
         {
           capIsNewExceptions: ["Stack", "Secrets", "Variables"],
           capIsNewExceptionPattern:
-            "^(ApiToken|Config|Context|Data|Schema|D1|Queues|Vectorize|Website|Workers)\\.",
+            "^(ApiToken|Config|Context|Data|Schema|D1|Queues|SecretsStore|Vectorize|Website|Workers)\\.",
         },
       ],
       "typescript/no-empty-interface": ["error", { allowSingleExtends: true }],

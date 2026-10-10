@@ -30,6 +30,7 @@ vp run deploy:ci
 | `OTEL_EXPORTER_OTLP_HEADERS`  | Secrets   | 任意 | OTLP の送り先の認証ヘッダー                           |
 
 `BETTER_AUTH_SECRET` と `MASTER_KEY` は Alchemy が初回に乱数で作り、状態に保存する。手で設定しない。
+`MASTER_KEY` はアカウントの Secrets Store に `MIRUCORD_MASTER_KEY` として置かれ、Worker はバインディング経由で読む。
 
 ## デプロイ
 
@@ -94,4 +95,8 @@ vp exec wrangler tail <Worker 名>
 | `DISCORD_CLIENT_SECRET` | 同上。差し替えた後は、利用者は Discord でサインインし直す                   |
 | `ALERT_WEBHOOK_URL`     | Discord で Webhook を作り直し、Secrets を差し替えてデプロイする             |
 
-`MASTER_KEY` は差し替えない。保存済みの全サーバーの鍵がこれで包まれているため、変えると読めなくなる。
+`MASTER_KEY` はサーバーごとの鍵を包む鍵である。差し替えるときは次の順で行う。
+
+1. `apps/web/alchemy.run.ts` で、今の Secret を env の `MASTER_KEY_PREVIOUS` に移す。新しい `makeRandom` から作った Secret（名前は `MIRUCORD_MASTER_KEY_V2` など）を `MASTER_KEY` にしてデプロイする。
+2. 5 分ごとの Cron が、古い鍵で包まれたサーバーの鍵を新しい鍵で包み直す。Workers Logs の `Rewrapped guild keys` の `rewrapped` が 0 になるまで待つ。
+3. `MASTER_KEY_PREVIOUS` と古い Secret を消してデプロイする。

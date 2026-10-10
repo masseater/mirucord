@@ -1,8 +1,8 @@
 import { ChannelType } from "discord-api-types/v10";
 import { Function, Option } from "effect";
 
-import { canReadHistory } from "#/features/mcp/model/permissions";
-import type { Overwrite } from "#/features/mcp/model/permissions";
+import { canReadHistory } from "./permissions";
+import type { Overwrite } from "./permissions";
 
 type GuildChannel = Readonly<{
   id: string;

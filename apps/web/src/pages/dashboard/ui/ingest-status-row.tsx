@@ -4,7 +4,9 @@ import type { SettingsChannel } from "#/features/ingest/index.server";
 import { cn } from "#/shared/lib/utils";
 
 const INGEST = {
+  unreadable: { label: "Bot が見られないチャンネル", tone: "bg-milk text-ink-soft" },
   excluded: { label: "対象外", tone: "bg-milk text-ink-soft" },
+  paused: { label: "Bot が見られないため停止中（30 日後に保存分を削除）", tone: "bg-pink" },
   waiting: { label: "取り込み待ち", tone: "bg-butter" },
   backfilling: { label: "過去ログを取り込み中", tone: "bg-sky" },
   done: { label: "取り込み済み", tone: "bg-mint" },

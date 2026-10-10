@@ -1,10 +1,12 @@
-import { eq } from "drizzle-orm";
-import { Array, Effect, Option } from "effect";
+import { and, eq } from "drizzle-orm";
+import { Array, DateTime, Effect, Option } from "effect";
 
+import { isPastRetention } from "#/features/ingest/model/bot-access";
 import { isInScope } from "#/features/ingest/model/consent-scope";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 
+import { accessOf } from "./bot-access.server";
 import { enqueue } from "./enqueue.server";
 import { deleteVectors } from "./vectors.server";
 
@@ -55,16 +57,23 @@ const purgeOutOfScope = (guildId: string): Effect.Effect<void> =>
     ),
     channels: Effect.promise(() =>
       db
-        .select({ id: channel.id, parentId: channel.parentId, newest: channel.newestMessageId })
+        .select({
+          id: channel.id,
+          parentId: channel.parentId,
+          newest: channel.newestMessageId,
+          botAccess: channel.botAccess,
+          hiddenAt: channel.hiddenAt,
+        })
         .from(channel)
         .where(eq(channel.guildId, guildId)),
     ),
+    now: DateTime.now,
   }).pipe(
-    Effect.map(({ scope, stored, channels }) => {
+    Effect.map(({ scope, stored, channels, now }) => {
       const withMessages = new Set(stored.map(({ id }) => id));
       return channels
         .filter((row) => Option.isSome(Option.fromNullOr(row.newest)) || withMessages.has(row.id))
-        .filter((row) => !isInScope(scope, row))
+        .filter((row) => !isInScope(scope, row) || isPastRetention(accessOf(row), now))
         .map(({ id }) => id);
     }),
     Effect.flatMap((outOfScope) => Effect.forEach(outOfScope, purgeChannel, { discard: true })),
@@ -77,7 +86,7 @@ const enqueueInScope = (guildId: string): Effect.Effect<void> =>
       db
         .select({ id: channel.id, parentId: channel.parentId })
         .from(channel)
-        .where(eq(channel.guildId, guildId)),
+        .where(and(eq(channel.guildId, guildId), eq(channel.botAccess, "readable"))),
     ),
   }).pipe(
     Effect.flatMap(({ scope, rows }) =>

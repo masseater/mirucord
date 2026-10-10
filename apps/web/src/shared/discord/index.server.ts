@@ -1,6 +1,8 @@
 export {
   DiscordRequestError,
+  FORBIDDEN,
   findMember,
+  getBotUserId,
   getGuild,
   leaveGuild,
   listActiveThreads,

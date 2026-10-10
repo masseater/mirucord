@@ -18,14 +18,16 @@ const NoticeChannelPicker = ({
   <fieldset className="flex flex-col gap-2">
     <legend className="mb-2 font-black">{LEGEND}</legend>
     <div className="grid gap-2 sm:grid-cols-2">
-      {channels.map((channel) => (
-        <NoticeChannelOption
-          key={channel.id}
-          channel={channel}
-          checked={channel.id === value}
-          onChoose={onChoose}
-        />
-      ))}
+      {channels
+        .filter(({ ingest }) => ingest !== "unreadable")
+        .map((channel) => (
+          <NoticeChannelOption
+            key={channel.id}
+            channel={channel}
+            checked={channel.id === value}
+            onChoose={onChoose}
+          />
+        ))}
     </div>
   </fieldset>
 );

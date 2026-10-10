@@ -80,25 +80,18 @@ const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =
     ),
   );
 
-const memberScope = (
-  stored: StoredGuild,
-  discordUserId: string,
-  roleIds: readonly string[],
-): GuildScope => ({
-  guild: stored,
-  visible: [...visibleChannelIds(stored, Option.some({ userId: discordUserId, roleIds }))],
-});
-
 const scopeOf = (
   stored: StoredGuild,
   discordUserId: string,
 ): Effect.Effect<Option.Option<GuildScope>, DiscordRequestError> =>
   findMember(stored.guildId, discordUserId).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeedNone,
-        onSome: ({ roles }) => Effect.succeedSome(memberScope(stored, discordUserId, roles)),
-      }),
+    Effect.map(
+      Option.map(({ roles }) => ({
+        guild: stored,
+        visible: [
+          ...visibleChannelIds(stored, Option.some({ userId: discordUserId, roleIds: roles })),
+        ],
+      })),
     ),
   );
 

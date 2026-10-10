@@ -21,10 +21,9 @@ const jsonResult = (value: unknown): CallToolResult => textResult(JSON.stringify
 
 const errorResult = (text: string): CallToolResult => textResult(text, true);
 
-const scoped = (
-  request: ToolRequest,
-  withinScope: (scope: GuildScope) => Effect.Effect<CallToolResult>,
-): Effect.Effect<CallToolResult> =>
+type WithinScope = (scope: GuildScope) => Effect.Effect<CallToolResult>;
+
+const scoped = (request: ToolRequest, withinScope: WithinScope): Effect.Effect<CallToolResult> =>
   resolveScope(request).pipe(
     Effect.flatMap(
       Option.match({
@@ -34,8 +33,6 @@ const scoped = (
     ),
     Effect.orElseSucceed(() => errorResult(DISCORD_UNAVAILABLE)),
   );
-
-type WithinScope = (scope: GuildScope) => Effect.Effect<CallToolResult>;
 
 const withScope: {
   (withinScope: WithinScope): (request: ToolRequest) => Promise<CallToolResult>;

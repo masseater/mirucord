@@ -1,25 +1,26 @@
 import type { ReactNode } from "react";
 
-import { Ending } from "./ending/ending";
+import { Closing } from "./closing/closing";
+import { Faq } from "./faq/faq";
 import { Features } from "./features/features";
 import { Flow } from "./flow/flow";
-import { Opening } from "./opening/opening";
+import { Hero } from "./hero/hero";
 import { Problem } from "./problem/problem";
-import { SiteFooter } from "./site-footer";
-import { SiteNav } from "./site-nav/site-nav";
+import { Safety } from "./safety/safety";
+import { SiteFrame } from "./site-frame/site-frame";
+import { Steps } from "./steps/steps";
 
 const HomePage = (): ReactNode => (
-  <div className="bg-washi text-sumi min-h-dvh overflow-x-hidden font-sans antialiased scheme-light">
-    <SiteNav />
-    <main>
-      <Opening />
-      <Problem />
-      <Flow />
-      <Features />
-      <Ending />
-    </main>
-    <SiteFooter />
-  </div>
+  <SiteFrame>
+    <Hero />
+    <Problem />
+    <Flow />
+    <Features />
+    <Steps />
+    <Safety />
+    <Faq />
+    <Closing />
+  </SiteFrame>
 );
 
 export { HomePage };

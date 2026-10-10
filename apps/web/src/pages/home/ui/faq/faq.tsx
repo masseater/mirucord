@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 
-import { Closing } from "#/pages/home/ui/closing/closing";
 import { ChannelSection } from "#/pages/home/ui/common/channel-section";
 import { MEMBERS } from "#/pages/home/ui/common/members";
 import { memberAuthor } from "#/pages/home/ui/message/author";
 import { Post } from "#/pages/home/ui/message/post";
 
+import { Closing } from "./closing";
 import { FaqPair } from "./faq-pair";
 
 const LEAD = "よくある質問";

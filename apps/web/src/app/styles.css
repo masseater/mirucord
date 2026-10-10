@@ -637,35 +637,35 @@
     }
 
     .ch-section[id="top"] {
-      view-timeline: --ch-top block;
+      view-timeline-name: --ch-top;
     }
 
     .ch-section[id="why"] {
-      view-timeline: --ch-why block;
+      view-timeline-name: --ch-why;
     }
 
     .ch-section[id="forum"] {
-      view-timeline: --ch-forum block;
+      view-timeline-name: --ch-forum;
     }
 
     .ch-section[id="how"] {
-      view-timeline: --ch-how block;
+      view-timeline-name: --ch-how;
     }
 
     .ch-section[id="features"] {
-      view-timeline: --ch-features block;
+      view-timeline-name: --ch-features;
     }
 
     .ch-section[id="start"] {
-      view-timeline: --ch-start block;
+      view-timeline-name: --ch-start;
     }
 
     .ch-section[id="safety"] {
-      view-timeline: --ch-safety block;
+      view-timeline-name: --ch-safety;
     }
 
     .ch-section[id="faq"] {
-      view-timeline: --ch-faq block;
+      view-timeline-name: --ch-faq;
     }
 
     .ch-section {

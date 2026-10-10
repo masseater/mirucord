@@ -20,7 +20,7 @@ const Message = ({
   children,
 }: Readonly<{
   id?: string;
-  reply?: Reply;
+  reply?: Reply | undefined;
   author: Author;
   time: string;
   variant?: "plain" | "highlight";

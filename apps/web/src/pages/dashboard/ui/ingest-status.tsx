@@ -9,9 +9,14 @@ const STORED = "保存しているメッセージ";
 const UNIT = "件";
 
 const IngestStatus = ({
+  guildId,
   channels,
   storedMessages,
-}: Readonly<{ channels: readonly SettingsChannel[]; storedMessages: number }>): ReactNode => (
+}: Readonly<{
+  guildId: string;
+  channels: readonly SettingsChannel[];
+  storedMessages: number;
+}>): ReactNode => (
   <section className="flex flex-col gap-3">
     <h2 className="text-xl font-bold">{TITLE}</h2>
     <p>
@@ -19,7 +24,7 @@ const IngestStatus = ({
     </p>
     <ul className="flex flex-col gap-1">
       {channels.map((channel) => (
-        <IngestStatusRow key={channel.id} channel={channel} />
+        <IngestStatusRow key={channel.id} guildId={guildId} channel={channel} />
       ))}
     </ul>
   </section>

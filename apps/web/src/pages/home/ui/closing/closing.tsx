@@ -1,20 +1,20 @@
 import type { ReactNode } from "react";
 
-import { Post } from "#/pages/home/ui/message/post";
+import { BOT } from "#/pages/home/ui/message/author";
+import { Message } from "#/pages/home/ui/message/message";
 
 import { ClosingActions } from "./closing-actions";
 import { ProudMiru } from "./proud-miru";
 
 const GUIDE = "ミルにおまかせ！";
-const LEAD = "さっそく";
-const TAIL = "あの日を思い出そう";
 const TIME = "今日 21:10";
 
 const Closing = (): ReactNode => (
-  <Post time={TIME} guide={GUIDE} lead={LEAD} tail={TAIL}>
+  <Message author={BOT} time={TIME}>
+    <p>{GUIDE}</p>
     <ProudMiru />
     <ClosingActions />
-  </Post>
+  </Message>
 );
 
 export { Closing };

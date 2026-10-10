@@ -15,7 +15,7 @@ const FeatureGrid = (): ReactNode => (
     <TitledEmbed accent="border-lavender-deep" title={WRITE}>
       <OperationChips />
     </TitledEmbed>
-    <TitledEmbed accent="border-mint-deep" title={SCOPE}>
+    <TitledEmbed accent="border-mint" title={SCOPE}>
       <ChannelList />
     </TitledEmbed>
     <TitledEmbed accent="border-pink-deep" title={CIPHER}>

@@ -6,14 +6,13 @@ import { dashboardQuery, withdrawConsent } from "#/pages/dashboard/api/dashboard
 import { PopButton } from "#/shared/ui/pop-button";
 
 const SUMMARY = "同意を取り消す";
-const DETAIL =
-  "取り消すと読み取りを止め、このサーバーから保存したメッセージと検索用データをすべて削除します。削除したデータは元に戻せません。";
+const DETAIL = "保存したメッセージと検索用データをすべて削除します。元に戻せません。";
 const CONFIRM = "同意を取り消してデータを削除する";
 const MESSAGES = {
   idle: "",
   pending: "",
   success: "同意を取り消し、保存していたデータを削除しました。",
-  error: "取り消せませんでした。もう一度お試しください。",
+  error: "取り消せませんでした。",
 } as const;
 
 const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {

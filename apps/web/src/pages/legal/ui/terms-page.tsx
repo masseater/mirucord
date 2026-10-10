@@ -4,8 +4,6 @@ import { LegalDocument } from "./legal-document";
 
 const TITLE = "利用規約";
 
-const TIP = "mirucord を使うときの約束ごとです。";
-
 const SECTIONS = [
   {
     heading: "この規約について",
@@ -24,7 +22,7 @@ const SECTIONS = [
   {
     heading: "Discord のデータ",
     paragraphs: [
-      "Bot を招待したサーバーでは、サーバー管理者が管理画面で同意したチャンネルだけを読み取ります。サーバー管理者は、サーバーのメンバーに本サービスを使うことを知らせてください。",
+      "Bot を招待したサーバーでは、サーバー管理者が管理画面で同意した後に Bot が見られるチャンネルだけを読み取ります。サーバー管理者は、サーバーのメンバーに本サービスを使うことを知らせてください。",
       "読み取ったデータの扱いはプライバシーポリシーに従います。",
     ],
   },
@@ -56,6 +54,6 @@ const SECTIONS = [
   },
 ] as const;
 
-const TermsPage = (): ReactNode => <LegalDocument title={TITLE} tip={TIP} sections={SECTIONS} />;
+const TermsPage = (): ReactNode => <LegalDocument title={TITLE} sections={SECTIONS} />;
 
 export { TermsPage };

@@ -6,7 +6,7 @@ import { PromptBox } from "./prompt-box";
 import { StepItem } from "./step-item";
 
 const INVITE = "1. Bot を招待";
-const REGISTER = "2. AI に登録";
+const REGISTER = "2. ミルを登録";
 const ASK = "3. 話しかける";
 
 const StepList = (): ReactNode => (
@@ -14,7 +14,7 @@ const StepList = (): ReactNode => (
     <StepItem accent="border-lavender-deep" title={INVITE}>
       <InviteChip />
     </StepItem>
-    <StepItem accent="border-mint-deep" title={REGISTER}>
+    <StepItem accent="border-mint" title={REGISTER}>
       <CommandBox />
     </StepItem>
     <StepItem accent="border-pink-deep" title={ASK}>

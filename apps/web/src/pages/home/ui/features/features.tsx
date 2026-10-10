@@ -7,7 +7,7 @@ import { FeatureGrid } from "./feature-grid";
 
 const LEAD = "ミルは見るだけ";
 const TAIL = "見ていい所だけ";
-const GUIDE = "読むだけだから安心してね";
+const GUIDE = "チェックしてね";
 const CHANNEL = "とくちょう";
 const TIME = "今日 21:02";
 

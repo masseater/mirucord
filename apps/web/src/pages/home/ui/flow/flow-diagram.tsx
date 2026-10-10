@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Mascot } from "#/shared/brand";
+import { mascotSrc } from "#/shared/brand";
 
 import { AiNode } from "./ai-node";
 import { ServerNode } from "./server-node";
@@ -39,7 +39,15 @@ const FlowDiagram = (): ReactNode => (
       className="fill-pink stroke-ink"
       strokeWidth="3"
     />
-    <Mascot left="440" top="58" size="120" className="motion-safe:animate-wiggle origin-fill" />
+    <image
+      href={mascotSrc}
+      x="440"
+      y="58"
+      width="120"
+      height="120"
+      aria-hidden="true"
+      className="motion-safe:animate-wiggle origin-fill"
+    />
     <text x="500" y="222" textAnchor="middle" className="fill-ink text-xl font-black">
       {NAME}
     </text>

@@ -6,7 +6,7 @@ const dcButtonVariants = cva(
   {
     variants: {
       tone: {
-        primary: "bg-blurple hover:bg-discord",
+        primary: "bg-discord hover:bg-discord/85",
         secondary: "bg-dc-active hover:bg-dc-line",
       },
       size: {

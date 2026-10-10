@@ -29,7 +29,7 @@ type RevokeResult = Readonly<{ status: "revoked" }> | Readonly<{ status: "forbid
 
 const NOTICE = [
   "このサーバーの過去ログを mirucord が読み取ります。",
-  "対象は mirucord の Bot が見られるチャンネルです。範囲は Discord のチャンネル権限で変えられます。",
+  "対象は mirucord の Bot が見られるチャンネルです。",
   `取り扱いについて: ${SITE_ORIGIN}${PRIVACY_PATH}`,
 ].join("\n");
 

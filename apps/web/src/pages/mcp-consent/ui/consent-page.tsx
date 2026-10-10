@@ -12,10 +12,9 @@ import { Panel } from "#/shared/ui/panel";
 
 import { ConsentActions } from "./consent-actions";
 
-const TIP = "AI からこのサーバーの会話を探せるようにする確認です。";
-const FAILED = "うまくいきませんでした。もう一度お試しください。";
-const SCOPE =
-  "は、あなたが Discord で読めるチャンネルのメッセージを一覧して読めるようになります。投稿や変更はできません。";
+const TIP = "ミルとつなぐよ";
+const FAILED = "うまくいきませんでした。";
+const SCOPE = "は、あなたが Discord で読めるチャンネルのメッセージを読めるようになります。";
 const ASK = "へのアクセスを許可しますか";
 
 const answerConsent = (accept: boolean): Promise<unknown> =>

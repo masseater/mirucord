@@ -22,8 +22,8 @@ const QUESTIONS = [
   {
     member: MEMBERS.kenta,
     time: "今日 21:07",
-    question: "どの AI で使えますか",
-    answer: "Claude をはじめ MCP に対応したクライアントで使えます。",
+    question: "どこからミルに聞けますか",
+    answer: "Claude をはじめ MCP に対応した AI クライアントから聞けます。",
   },
   {
     member: MEMBERS.miho,

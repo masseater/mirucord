@@ -7,11 +7,10 @@ import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
-const TIP = "管理画面はサーバーの管理者さん向けです。まずは Discord でログインしてね。";
+const TIP = "サーバーの管理者さん向けだよ";
 const TITLE = "ログインして管理画面へ";
-const SUMMARY = "Discord からはユーザー ID と表示名だけを受け取ります。";
 const SIGN_IN = "Discord でログイン";
-const FAILED = "ログインできませんでした。もう一度お試しください。";
+const FAILED = "ログインできませんでした。";
 
 const SignInPanel = ({ returnTo }: Readonly<{ returnTo: string }>): ReactNode => {
   const { mutate, status } = useMutation({
@@ -30,8 +29,7 @@ const SignInPanel = ({ returnTo }: Readonly<{ returnTo: string }>): ReactNode =>
       <MascotTip>{TIP}</MascotTip>
       <Panel>
         <h1 className="text-2xl font-black">{TITLE}</h1>
-        <p className="text-ink-soft">{SUMMARY}</p>
-        <PopButton tone="blurple" disabled={status === "pending"} onClick={startSignIn}>
+        <PopButton tone="grape" disabled={status === "pending"} onClick={startSignIn}>
           {SIGN_IN}
         </PopButton>
         {status === "error" && <p role="alert">{FAILED}</p>}

@@ -14,7 +14,7 @@ const TitleBar = (): ReactNode => (
     </a>
     <a
       href={DASHBOARD_PATH}
-      className="bg-blurple hover:bg-discord text-dc-bright rounded-sm px-3 py-1 text-sm font-bold no-underline"
+      className="bg-discord hover:bg-discord/85 text-dc-bright rounded-sm px-3 py-1 text-sm font-bold no-underline"
     >
       {SIGN_IN}
     </a>

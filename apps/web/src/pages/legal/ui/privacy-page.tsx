@@ -4,14 +4,12 @@ import { LegalDocument } from "./legal-document";
 
 const TITLE = "プライバシーポリシー";
 
-const TIP = "mirucord が預かる情報と、その扱いをまとめました。";
-
 const SECTIONS = [
   {
     heading: "集める情報",
     paragraphs: [
       "ログインのときは Discord のユーザー ID と表示名だけを受け取ります。メールアドレスは受け取りません。",
-      "サーバー管理者が同意したサーバーでは、選ばれたチャンネルとそのスレッドについて、メッセージ本文、投稿者の ID と表示名、添付ファイルの名前と URL、投稿日時を読み取ります。権限の計算のため、チャンネル名とロールの権限設定も保存します。",
+      "サーバー管理者が同意したサーバーでは、Bot が見られるチャンネルとそのスレッドについて、メッセージ本文、投稿者の ID と表示名、添付ファイルの名前と URL、投稿日時を読み取ります。権限の計算のため、チャンネル名とロールの権限設定も保存します。",
       "Bot をサーバーに入れただけでは、メッセージを読み取りません。",
     ],
   },
@@ -38,6 +36,6 @@ const SECTIONS = [
   },
 ] as const;
 
-const PrivacyPage = (): ReactNode => <LegalDocument title={TITLE} tip={TIP} sections={SECTIONS} />;
+const PrivacyPage = (): ReactNode => <LegalDocument title={TITLE} sections={SECTIONS} />;
 
 export { PrivacyPage };

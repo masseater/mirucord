@@ -3,9 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HomePage, loadHomePage } from "#/pages/home";
 import { SITE_ORIGIN } from "#/shared/config";
 
-const TITLE = "mirucord | Discord の思い出を AI と見つけよう";
+const TITLE = "mirucord | Discord の思い出をミルと見つけよう";
 const DESCRIPTION =
-  "Discord サーバーの昔の会話や名場面を AI と一緒に探せます。Bot を招待するだけで使えます。";
+  "Discord サーバーの昔の会話や名場面をミルがさがしてきます。Bot を招待するだけで使えます。";
 
 const Route = createFileRoute("/")({
   loader: ({ context }) => loadHomePage(context.queryClient),

@@ -9,11 +9,10 @@ import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
-const TIP = "おかえり！ Discord でログインしたら思い出さがしをはじめよう";
+const TIP = "おかえり！";
 const TITLE = "mirucord にログイン";
-const SUMMARY = "Discord のユーザー ID と名前だけを使います。";
 const SIGN_IN = "Discord でログイン";
-const FAILED = "ログインできませんでした。もう一度お試しください。";
+const FAILED = "ログインできませんでした。";
 
 const DASHBOARD_PATH = "/dashboard";
 
@@ -37,8 +36,7 @@ const SignInPage = (): ReactNode => {
       <MascotTip>{TIP}</MascotTip>
       <Panel>
         <h1 className="text-3xl font-black">{TITLE}</h1>
-        <p className="text-ink-soft font-bold">{SUMMARY}</p>
-        <PopButton tone="blurple" disabled={status === "pending"} onClick={startSignIn}>
+        <PopButton tone="grape" disabled={status === "pending"} onClick={startSignIn}>
           {SIGN_IN}
         </PopButton>
         {status === "error" && (

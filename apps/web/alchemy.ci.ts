@@ -1,7 +1,9 @@
 import { Stack } from "alchemy";
+import type { CompiledStack } from "alchemy";
 import { ApiToken, CloudflareEnvironment, Zone, providers, state } from "alchemy/Cloudflare";
 import { Secrets, Variables, providers as gitHubProviders } from "alchemy/GitHub";
 import { Config, Effect, Layer, Schema } from "effect";
+import type { ConfigError } from "effect/Config";
 
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
@@ -43,7 +45,7 @@ const deployToken = Effect.gen(function* deployToken() {
   return { accountId, token };
 });
 
-export default Stack(
+const ci: Effect.Effect<CompiledStack, ConfigError> & Readonly<{ stackName: string }> = Stack(
   "ci",
   { providers: Layer.mergeAll(providers(), gitHubProviders()), state: state() },
   Effect.gen(function* stack() {
@@ -68,3 +70,5 @@ export default Stack(
     return { tokenId: token.tokenId };
   }),
 );
+
+export default ci;

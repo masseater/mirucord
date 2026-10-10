@@ -9,7 +9,7 @@ const AnswerLinks = (): ReactNode => (
   <p className="flex flex-wrap gap-2 text-xs font-bold">
     <a
       href={`#${MEMORY_ID}`}
-      className="bg-accent-sky text-ink border-ink rounded-full border-2 px-3 py-0.5 no-underline"
+      className="bg-sky text-ink border-ink rounded-full border-2 px-3 py-0.5 no-underline"
     >
       {SOURCE}
     </a>

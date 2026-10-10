@@ -7,7 +7,7 @@ import { DcLink } from "#/pages/home/ui/common/dc-link";
 import { DiscordMark } from "#/pages/home/ui/common/discord-mark";
 
 const LABEL = "サーバーに追加する";
-const FULL = "現在は登録できるサーバー数の上限に達しています。しばらくしてからお試しください。";
+const FULL = "登録できるサーバー数の上限に達しています。";
 
 const InviteChip = (): ReactNode => {
   const { data } = useSuspenseQuery(inviteQuery);

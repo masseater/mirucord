@@ -83,7 +83,7 @@ export default defineConfig({
     ],
     rules: {
       "vite-plus/prefer-vite-plus-imports": "error",
-      "no-comments/disallowComments": "error",
+      "no-comments/disallowComments": ["error", { allow: ["oxlint-disable", "eslint-disable"] }],
       ...allRulesOf("tanstack-query", tanstackQuery),
       ...allRulesOf("tanstack-router", tanstackRouter),
       "drizzle/enforce-delete-with-where": "error",
@@ -123,7 +123,7 @@ export default defineConfig({
             {
               from: "package",
               package: "effect",
-              name: ["Cause", "Context", "DateTime", "Effect", "Exit", "Option", "Utc"],
+              name: ["Cause", "Context", "DateTime", "Effect", "Exit", "Layer", "Option", "Utc"],
             },
           ],
         },
@@ -136,7 +136,7 @@ export default defineConfig({
       "eslint/new-cap": [
         "error",
         {
-          capIsNewExceptions: ["Stack", "Secrets", "Variables"],
+          capIsNewExceptions: ["CloudflareApiLive", "Stack", "Secrets", "Variables"],
           capIsNewExceptionPattern:
             "^(ApiToken|Config|Context|Data|Schema|D1|Queues|SecretsStore|Vectorize|Website|Workers)\\.",
         },
@@ -171,18 +171,24 @@ export default defineConfig({
   run: {
     cache: true,
     tasks: {
-      "jev-lint": {
-        command: "jev-lint review --base origin/main",
+      "actions-lint": {
+        command:
+          "uvx --from actionlint-py@1.7.12.25 actionlint && uvx zizmor@1.30.1 .github && ast-grep scan --rule .github/rules/no-full-history-checkout.yml .github/workflows",
         cache: {
           untrackedEnv: [
-            "OPENROUTER_API_KEY",
+            "GH_TOKEN",
+            "ZIZMOR_NO_ONLINE_AUDITS",
             "HTTPS_PROXY",
             "https_proxy",
             "NO_PROXY",
             "no_proxy",
-            "NODE_EXTRA_CA_CERTS",
+            "SSL_CERT_FILE",
           ],
         },
+      },
+      "jev-lint": {
+        command: "jev-lint review --base origin/main",
+        cache: false,
       },
     },
   },

@@ -5,8 +5,8 @@ const BADGE = "APP";
 
 const BotName = (): ReactNode => (
   <>
-    <span className="text-accent-lavender font-bold">{NAME}</span>
-    <span className="bg-blurple text-dc-bright rounded-sm px-1 text-xs leading-4 font-bold">
+    <span className="text-lavender-deep font-bold">{NAME}</span>
+    <span className="bg-discord text-dc-bright rounded-sm px-1 text-xs leading-4 font-bold">
       {BADGE}
     </span>
   </>

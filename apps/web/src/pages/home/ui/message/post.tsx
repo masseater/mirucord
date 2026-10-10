@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 
 import { BOT } from "./author";
 import { Message } from "./message";
-import { MessageHeading } from "./message-heading";
 
 const Post = ({
   time,
@@ -19,7 +18,10 @@ const Post = ({
 }>): ReactNode => (
   <Message author={BOT} time={time}>
     <p>{guide}</p>
-    <MessageHeading lead={lead} tail={tail} />
+    <h2 className="text-dc-bright font-maru my-1 text-2xl leading-snug font-black md:text-3xl">
+      <span className="block">{lead}</span>
+      <span className="block">{tail}</span>
+    </h2>
     {children}
   </Message>
 );

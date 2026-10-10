@@ -1,6 +1,6 @@
 import { Array, Order } from "effect";
 
-import { VOICE_TYPES } from "#/shared/discord";
+import { VOICE_TYPES } from "./channel-kind";
 
 type Positioned = Readonly<{ id: string; type: number; position: number }>;
 

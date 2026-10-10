@@ -17,14 +17,17 @@ const IngestStatus = ({ settings }: Readonly<{ settings: GuildSettings }>): Reac
     <p className="font-bold">
       {STORED} {settings.storedMessages.toLocaleString("ja-JP")} {UNIT}
     </p>
-    {groupByCategory(settings, settings.channels).flatMap((group) => [
-      <CategoryHeading key={`heading-${group.id}`} name={group.name} />,
-      <ul key={group.id} className="flex flex-col gap-1">
-        {group.channels.map((channel) => (
-          <IngestStatusRow key={channel.id} guildId={settings.id} channel={channel} />
-        ))}
-      </ul>,
-    ])}
+    {groupByCategory(settings, settings.channels).map((group) => {
+      const rows = group.channels.map((channel) => (
+        <IngestStatusRow key={channel.id} guildId={settings.id} channel={channel} />
+      ));
+      return (
+        <div key={group.id} className="flex flex-col gap-1">
+          <CategoryHeading name={group.name} />
+          <ul className="flex flex-col gap-1">{rows}</ul>
+        </div>
+      );
+    })}
   </Panel>
 );
 

@@ -1,6 +1,6 @@
 import { Effect, Option, pipe } from "effect";
 
-import { STORED_TYPES, THREAD_PARENT_TYPES } from "#/shared/discord";
+import { STORED_TYPES, THREAD_PARENT_TYPES } from "#/features/ingest/model/channel-kind";
 import {
   FORBIDDEN,
   listActiveThreads,

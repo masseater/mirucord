@@ -8,6 +8,7 @@ import type { Author } from "./author";
 
 const AVATAR_SIZE = {
   md: "size-10 text-sm",
+  xs: "size-4 text-[0.5rem]",
   sm: "size-8 text-xs",
 } as const;
 

@@ -6,9 +6,13 @@ import type { ReactNode } from "react";
 
 import { clientNameQuery } from "#/pages/mcp-consent/api/consent";
 import { authClient } from "#/shared/auth";
+import { AppFrame } from "#/shared/ui/app-frame";
+import { MascotTip } from "#/shared/ui/mascot-tip";
+import { Panel } from "#/shared/ui/panel";
 
-const ALLOW = "許可する";
-const DENY = "許可しない";
+import { ConsentActions } from "./consent-actions";
+
+const TIP = "AI からこのサーバーの会話を探せるようにする確認です。";
 const FAILED = "うまくいきませんでした。もう一度お試しください。";
 const SCOPE =
   "は、あなたが Discord で読めるチャンネルのメッセージを一覧して読めるようになります。投稿や変更はできません。";
@@ -29,35 +33,21 @@ const ConsentPage = (): ReactNode => {
     mutate(false);
   }, [mutate]);
   return (
-    <main className="mx-auto flex max-w-xl flex-col gap-6 p-8">
-      <h1 className="text-2xl font-bold">
-        {clientName}
-        {ASK}
-      </h1>
-      <p>
-        {clientName}
-        {SCOPE}
-      </p>
-      <div className="flex gap-4">
-        <button
-          type="button"
-          className="bg-primary text-primary-foreground rounded px-4 py-2 disabled:opacity-50"
-          disabled={status === "pending"}
-          onClick={allow}
-        >
-          {ALLOW}
-        </button>
-        <button
-          type="button"
-          className="rounded border px-4 py-2 disabled:opacity-50"
-          disabled={status === "pending"}
-          onClick={deny}
-        >
-          {DENY}
-        </button>
-      </div>
-      {status === "error" && <p role="alert">{FAILED}</p>}
-    </main>
+    <AppFrame>
+      <MascotTip>{TIP}</MascotTip>
+      <Panel>
+        <h1 className="text-2xl font-black">
+          {clientName}
+          {ASK}
+        </h1>
+        <p className="text-ink-soft leading-relaxed">
+          {clientName}
+          {SCOPE}
+        </p>
+        <ConsentActions pending={status === "pending"} onAllow={allow} onDeny={deny} />
+        {status === "error" && <p role="alert">{FAILED}</p>}
+      </Panel>
+    </AppFrame>
   );
 };
 

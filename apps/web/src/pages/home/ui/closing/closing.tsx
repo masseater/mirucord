@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Mascot } from "#/pages/home/ui/common/mascot";
+import { Mascot } from "#/shared/brand";
 
 import { ClosingActions } from "./closing-actions";
 import { ClosingTitle } from "./closing-title";

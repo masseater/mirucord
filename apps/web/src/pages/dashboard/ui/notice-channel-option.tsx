@@ -18,8 +18,14 @@ const NoticeChannelOption = ({
     onChoose(channel.id);
   }, [channel.id, onChoose]);
   return (
-    <label className="flex items-center gap-2 rounded border px-3 py-2">
-      <input type="radio" name={GROUP} checked={checked} onChange={choose} />
+    <label className="border-ink has-checked:bg-lavender flex cursor-pointer items-center gap-2 rounded-2xl border-2 px-3 py-2 font-bold">
+      <input
+        className="accent-blurple size-4"
+        type="radio"
+        name={GROUP}
+        checked={checked}
+        onChange={choose}
+      />
       {`#${channel.name}`}
     </label>
   );

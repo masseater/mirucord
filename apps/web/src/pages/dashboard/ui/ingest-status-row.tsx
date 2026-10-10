@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest/index.server";
-import { cn } from "#/shared/lib/utils";
+
+import { Pill } from "./pill";
 
 const INGEST = {
   unreadable: { label: "Bot が見られないチャンネル", tone: "bg-milk text-ink-soft" },
@@ -15,14 +16,7 @@ const INGEST = {
 const IngestStatusRow = ({ channel }: Readonly<{ channel: SettingsChannel }>): ReactNode => (
   <li className="border-line flex items-center justify-between gap-4 border-b-2 border-dashed py-2">
     <span className="font-bold">{`#${channel.name}`}</span>
-    <span
-      className={cn(
-        "border-ink rounded-full border-2 px-3 py-0.5 text-xs font-bold",
-        INGEST[channel.ingest].tone,
-      )}
-    >
-      {INGEST[channel.ingest].label}
-    </span>
+    <Pill tone={INGEST[channel.ingest].tone}>{INGEST[channel.ingest].label}</Pill>
   </li>
 );
 

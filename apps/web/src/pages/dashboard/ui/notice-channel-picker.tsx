@@ -16,7 +16,7 @@ const NoticeChannelPicker = ({
   onChoose: (channelId: string) => void;
 }>): ReactNode => (
   <fieldset className="flex flex-col gap-2">
-    <legend className="font-bold">{LEGEND}</legend>
+    <legend className="mb-2 font-black">{LEGEND}</legend>
     <div className="grid gap-2 sm:grid-cols-2">
       {channels
         .filter(({ ingest }) => ingest !== "unreadable")

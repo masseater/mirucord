@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest/index.server";
+import { Panel } from "#/shared/ui/panel";
 
 import { IngestStatusRow } from "./ingest-status-row";
 
@@ -17,9 +18,9 @@ const IngestStatus = ({
   channels: readonly SettingsChannel[];
   storedMessages: number;
 }>): ReactNode => (
-  <section className="flex flex-col gap-3">
-    <h2 className="text-xl font-bold">{TITLE}</h2>
-    <p>
+  <Panel>
+    <h2 className="text-xl font-black">{TITLE}</h2>
+    <p className="font-bold">
       {STORED} {storedMessages.toLocaleString("ja-JP")} {UNIT}
     </p>
     <ul className="flex flex-col gap-1">
@@ -27,7 +28,7 @@ const IngestStatus = ({
         <IngestStatusRow key={channel.id} guildId={guildId} channel={channel} />
       ))}
     </ul>
-  </section>
+  </Panel>
 );
 
 export { IngestStatus };

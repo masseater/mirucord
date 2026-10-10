@@ -1,13 +1,10 @@
 import type { ReactNode } from "react";
 
-import { REPOSITORY_URL } from "#/shared/config";
-
-import { LegalSection } from "./legal-section";
+import { LegalDocument } from "./legal-document";
 
 const TITLE = "プライバシーポリシー";
-const REVISED = "2026 年 10 月 10 日 制定";
-const CONTACT = "問い合わせは GitHub の Issues で受け付けています。";
-const ISSUES_URL = `${REPOSITORY_URL}/issues`;
+
+const TIP = "mirucord が預かる情報と、その扱いをまとめました。";
 
 const SECTIONS = [
   {
@@ -41,21 +38,6 @@ const SECTIONS = [
   },
 ] as const;
 
-const PrivacyPage = (): ReactNode => (
-  <main className="mx-auto flex max-w-3xl flex-col gap-8 p-8">
-    <h1 className="text-2xl font-bold">{TITLE}</h1>
-    <p>{REVISED}</p>
-    {SECTIONS.map((section) => (
-      <LegalSection
-        key={section.heading}
-        heading={section.heading}
-        paragraphs={section.paragraphs}
-      />
-    ))}
-    <a href={ISSUES_URL} className="self-start underline">
-      {CONTACT}
-    </a>
-  </main>
-);
+const PrivacyPage = (): ReactNode => <LegalDocument title={TITLE} tip={TIP} sections={SECTIONS} />;
 
 export { PrivacyPage };

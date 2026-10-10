@@ -22,7 +22,7 @@ const PurgeChannelButton = ({
   return (
     <button
       type="button"
-      className="border-pink-deep text-pink-deep rounded border px-2 text-sm disabled:opacity-50"
+      className="border-ink bg-milk rounded-full border-2 px-3 py-0.5 text-xs font-bold disabled:opacity-50"
       disabled={status === "pending"}
       onClick={purge}
     >

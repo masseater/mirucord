@@ -30,7 +30,7 @@ const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
       <p className="mt-3">{DETAIL}</p>
       <button
         type="button"
-        className="border-pink-deep bg-pink text-ink mt-3 rounded border px-4 py-2 disabled:opacity-50"
+        className="border-pink-deep text-pink-deep mt-3 rounded border px-4 py-2 disabled:opacity-50"
         disabled={status === "pending"}
         onClick={revoke}
       >

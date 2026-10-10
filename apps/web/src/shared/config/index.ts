@@ -5,4 +5,5 @@ export {
   SIGN_IN_PATH,
   SITE_HOST,
   SITE_ORIGIN,
+  TERMS_PATH,
 } from "./site";

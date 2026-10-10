@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 
 import { REPOSITORY_URL } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
-import { MascotTip } from "#/shared/ui/mascot-tip";
 
 import { LegalSection } from "./legal-section";
 
@@ -14,11 +13,9 @@ type Section = Readonly<{ heading: string; paragraphs: readonly string[] }>;
 
 const LegalDocument = ({
   title,
-  tip,
   sections,
-}: Readonly<{ title: string; tip: string; sections: readonly Section[] }>): ReactNode => (
+}: Readonly<{ title: string; sections: readonly Section[] }>): ReactNode => (
   <AppFrame>
-    <MascotTip>{tip}</MascotTip>
     <h1 className="text-3xl font-black">{title}</h1>
     <p className="text-ink-soft text-sm font-bold">{REVISED}</p>
     {sections.map((section) => (

@@ -4,8 +4,6 @@ import { LegalDocument } from "./legal-document";
 
 const TITLE = "プライバシーポリシー";
 
-const TIP = "読んでおいてね";
-
 const SECTIONS = [
   {
     heading: "集める情報",
@@ -38,6 +36,6 @@ const SECTIONS = [
   },
 ] as const;
 
-const PrivacyPage = (): ReactNode => <LegalDocument title={TITLE} tip={TIP} sections={SECTIONS} />;
+const PrivacyPage = (): ReactNode => <LegalDocument title={TITLE} sections={SECTIONS} />;
 
 export { PrivacyPage };

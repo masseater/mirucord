@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import type { GuildSettings } from "#/features/ingest/index.server";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 
-import { ConsentExplainer } from "./consent-explainer";
 import { ConsentForm } from "./consent-form";
 import { ConsentRecord } from "./consent-record";
 import { IngestStatus } from "./ingest-status";
@@ -19,7 +18,6 @@ const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>):
     <MascotTip>{TIP[settings.consent.status]}</MascotTip>
     <h1 className="text-3xl font-black">{settings.name}</h1>
     <ConsentRecord consent={settings.consent} />
-    <ConsentExplainer />
     {settings.consent.status === "awaiting" && <ConsentForm settings={settings} />}
     {settings.consent.status === "granted" && (
       <IngestStatus

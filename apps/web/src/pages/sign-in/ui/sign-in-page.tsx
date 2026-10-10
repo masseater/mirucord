@@ -12,7 +12,7 @@ import { PopButton } from "#/shared/ui/pop-button";
 const TIP = "おかえり！";
 const TITLE = "mirucord にログイン";
 const SIGN_IN = "Discord でログイン";
-const FAILED = "ログインできませんでした。もう一度お試しください。";
+const FAILED = "ログインできませんでした。";
 
 const DASHBOARD_PATH = "/dashboard";
 

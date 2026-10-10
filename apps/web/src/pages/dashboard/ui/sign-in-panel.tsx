@@ -10,7 +10,7 @@ import { PopButton } from "#/shared/ui/pop-button";
 const TIP = "サーバーの管理者さん向けだよ";
 const TITLE = "ログインして管理画面へ";
 const SIGN_IN = "Discord でログイン";
-const FAILED = "ログインできませんでした。もう一度お試しください。";
+const FAILED = "ログインできませんでした。";
 
 const SignInPanel = ({ returnTo }: Readonly<{ returnTo: string }>): ReactNode => {
   const { mutate, status } = useMutation({

@@ -13,7 +13,7 @@ import { Panel } from "#/shared/ui/panel";
 import { ConsentActions } from "./consent-actions";
 
 const TIP = "ミルとつなぐよ";
-const FAILED = "うまくいきませんでした。もう一度お試しください。";
+const FAILED = "うまくいきませんでした。";
 const SCOPE = "は、あなたが Discord で読めるチャンネルのメッセージを読めるようになります。";
 const ASK = "へのアクセスを許可しますか";
 

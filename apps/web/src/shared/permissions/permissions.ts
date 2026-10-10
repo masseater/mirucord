@@ -16,6 +16,7 @@ type ReaderContext = Readonly<{
 
 const Permissions = new BitField(PermissionFlagsBits);
 const READ_HISTORY = Permissions.union("ViewChannel", "ReadMessageHistory");
+const MANAGE = Permissions.union("Administrator", "ManageGuild");
 
 const applyOverwrite = (permissions: bigint, allow: bigint, deny: bigint): bigint =>
   Permissions.union(Permissions.difference(permissions, deny), allow);
@@ -66,10 +67,13 @@ const canReadHistoryDataFirst = (
   Permissions.has(basePermissions(reader), "Administrator") ||
   Permissions.has(channelPermissions(reader, overwrites), READ_HISTORY);
 
+const isGuildManager = (reader: ReaderContext): boolean =>
+  reader.userId === reader.ownerId || Permissions.any(basePermissions(reader), MANAGE);
+
 const canReadHistory: {
   (overwrites: readonly Overwrite[]): (reader: ReaderContext) => boolean;
   (reader: ReaderContext, overwrites: readonly Overwrite[]): boolean;
 } = Function.dual(DATA_FIRST_ARITY, canReadHistoryDataFirst);
 
-export { canReadHistory };
+export { canReadHistory, isGuildManager };
 export type { Overwrite, ReaderContext };

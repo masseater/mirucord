@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { REPOSITORY_URL } from "#/shared/config";
 
-import { PrivacySection } from "./privacy-section";
+import { LegalSection } from "./legal-section";
 
 const TITLE = "プライバシーポリシー";
 const REVISED = "2026 年 10 月 10 日 制定";
@@ -46,7 +46,7 @@ const PrivacyPage = (): ReactNode => (
     <h1 className="text-2xl font-bold">{TITLE}</h1>
     <p>{REVISED}</p>
     {SECTIONS.map((section) => (
-      <PrivacySection
+      <LegalSection
         key={section.heading}
         heading={section.heading}
         paragraphs={section.paragraphs}

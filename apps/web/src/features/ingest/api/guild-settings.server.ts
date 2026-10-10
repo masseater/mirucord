@@ -2,8 +2,9 @@ import { ChannelType } from "discord-api-types/v10";
 import { count, eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
-import { isInScope } from "#/features/ingest/model/consent-scope";
-import type { ConsentScope, ScopedChannel } from "#/features/ingest/model/consent-scope";
+import { ingestOf } from "#/features/ingest/model/channel-ingest";
+import type { ChannelIngest } from "#/features/ingest/model/channel-ingest";
+import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
@@ -16,9 +17,6 @@ const SELECTABLE_TYPES: ReadonlySet<number> = new Set([
   ChannelType.GuildText,
   ChannelType.GuildAnnouncement,
 ]);
-const BACKFILL_INGEST = { pending: "backfilling", done: "done" } as const;
-
-type ChannelIngest = "excluded" | "waiting" | "backfilling" | "done";
 
 type SettingsChannel = Readonly<{ id: string; name: string; ingest: ChannelIngest }>;
 
@@ -58,19 +56,6 @@ const loadConsent = (guildId: string): Effect.Effect<Consent> =>
     ),
   );
 
-const ingestOf = (
-  scope: ConsentScope,
-  row: ScopedChannel & Readonly<{ newest: string | null; backfill: "pending" | "done" }>,
-): ChannelIngest => {
-  if (!isInScope(scope, row)) {
-    return "excluded";
-  }
-  if (Option.isNone(Option.fromNullOr(row.newest))) {
-    return "waiting";
-  }
-  return BACKFILL_INGEST[row.backfill];
-};
-
 const loadChannels = (
   guildId: string,
   scope: ConsentScope,
@@ -84,6 +69,7 @@ const loadChannels = (
         type: channel.type,
         newest: channel.newestMessageId,
         backfill: channel.backfill,
+        botAccess: channel.botAccess,
       })
       .from(channel)
       .where(eq(channel.guildId, guildId)),
@@ -130,4 +116,4 @@ const guildSettings = (
   );
 
 export { guildSettings };
-export type { ChannelIngest, Consent, GuildSettings, SettingsChannel };
+export type { Consent, GuildSettings, SettingsChannel };

@@ -22,10 +22,11 @@ const initialSelection = (settings: GuildSettings): ConsentSelection => {
   if (settings.consent.status === "granted") {
     return settings.consent;
   }
+  const readable = settings.channels.filter(({ ingest }) => ingest !== "unreadable");
   return {
-    channelIds: settings.channels.map(({ id }) => id),
+    channelIds: readable.map(({ id }) => id),
     noticeChannelId: Option.getOrElse(
-      Option.map(Array.head(settings.channels), ({ id }) => id),
+      Option.map(Array.head(readable), ({ id }) => id),
       () => NO_CHANNEL,
     ),
   };

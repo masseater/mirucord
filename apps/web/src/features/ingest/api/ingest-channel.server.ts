@@ -5,13 +5,14 @@ import { isInScope } from "#/features/ingest/model/consent-scope";
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
-import { listMessages, PAGE_SIZE } from "#/shared/discord/index.server";
+import { FORBIDDEN, listMessages, PAGE_SIZE } from "#/shared/discord/index.server";
 import type {
   DiscordMessage,
   DiscordRequestError,
   MessagePage,
 } from "#/shared/discord/index.server";
 
+import { columnsOf } from "./bot-access.server";
 import { channelMessagesSince, deleteMessages } from "./message-rows.server";
 import { storeMessages } from "./store-messages.server";
 import type { StoreTarget } from "./store-messages.server";
@@ -77,7 +78,13 @@ const loadProgress = (job: IngestJob): Effect.Effect<Option.Option<ChannelProgre
       .from(channel)
       .innerJoin(guild, eq(channel.guildId, guild.id))
       .innerJoin(ingestConsent, eq(ingestConsent.guildId, guild.id))
-      .where(and(eq(channel.id, job.channelId), eq(channel.guildId, job.guildId))),
+      .where(
+        and(
+          eq(channel.id, job.channelId),
+          eq(channel.guildId, job.guildId),
+          eq(channel.botAccess, "readable"),
+        ),
+      ),
   ).pipe(
     Effect.map((rows) =>
       Array.head(rows).pipe(
@@ -226,6 +233,20 @@ const ingestWith = (
     yield* saveProgress(job, newest, history);
   });
 
+const pauseHidden = (job: IngestJob): Effect.Effect<void> =>
+  DateTime.now.pipe(
+    Effect.flatMap((now) =>
+      Effect.promise(() =>
+        db
+          .update(channel)
+          .set(columnsOf({ status: "hidden", since: now }))
+          .where(and(eq(channel.id, job.channelId), eq(channel.botAccess, "readable"))),
+      ),
+    ),
+    Effect.andThen(Effect.logWarning("Bot lost access to a channel; ingest paused")),
+    Effect.annotateLogs({ guildId: job.guildId, channelId: job.channelId }),
+  );
+
 const ingestChannel = (job: IngestJob): Effect.Effect<void, DiscordRequestError> =>
   loadProgress(job).pipe(
     Effect.flatMap(
@@ -233,6 +254,10 @@ const ingestChannel = (job: IngestJob): Effect.Effect<void, DiscordRequestError>
         onNone: () => Effect.void,
         onSome: (progress) => ingestWith(job, progress),
       }),
+    ),
+    Effect.catchIf(
+      ({ status }) => Option.contains(status, FORBIDDEN),
+      () => pauseHidden(job),
     ),
   );
 

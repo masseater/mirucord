@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
-const PLACEHOLDER = "#ざつだん へメッセージを送信";
+import { ComposerHint } from "./composer-hint";
+
 const PLUS = "+";
 const TYPER = "ゆい";
 const TYPING = "が入力中…";
@@ -12,7 +13,7 @@ const Composer = (): ReactNode => (
       <span className="bg-dc-muted text-dc-input grid size-6 shrink-0 place-items-center rounded-full font-bold">
         {PLUS}
       </span>
-      <span className="truncate">{PLACEHOLDER}</span>
+      <ComposerHint />
     </div>
     <p className="composer-typing text-dc-muted flex h-6 items-center gap-0.5 text-xs">
       {DOTS.map((dot) => (

@@ -2,7 +2,8 @@
   display: none;
 }
 
-.composer-typing {
+.composer-typing,
+.composer-hint:not(:first-child) {
   visibility: hidden;
 }
 
@@ -20,12 +21,19 @@
     }
 
     .ch-link,
-    .ch-miru {
+    .ch-miru,
+    .composer-hint {
       animation-range: entry calc(100% - 38dvh) contain calc(100% - 38dvh);
     }
 
     .ch-link {
       animation-name: ch-active;
+      animation-timing-function: linear;
+    }
+
+    .composer-hint {
+      visibility: hidden;
+      animation-name: composer-hint;
       animation-timing-function: linear;
     }
 
@@ -37,52 +45,62 @@
     }
 
     .ch-link[href="#top"],
-    .ch-link[href="#top"] .ch-miru {
+    .ch-link[href="#top"] .ch-miru,
+    .composer-hint[data-channel="top"] {
       animation-range-start: cover 0%;
     }
 
     .ch-link[href="#faq"],
-    .ch-link[href="#faq"] .ch-miru {
+    .ch-link[href="#faq"] .ch-miru,
+    .composer-hint[data-channel="faq"] {
       animation-range-end: cover 100%;
     }
 
     .ch-link[href="#top"],
-    .ch-link[href="#top"] .ch-miru {
+    .ch-link[href="#top"] .ch-miru,
+    .composer-hint[data-channel="top"] {
       animation-timeline: --ch-top;
     }
 
     .ch-link[href="#why"],
-    .ch-link[href="#why"] .ch-miru {
+    .ch-link[href="#why"] .ch-miru,
+    .composer-hint[data-channel="why"] {
       animation-timeline: --ch-why;
     }
 
     .ch-link[href="#forum"],
-    .ch-link[href="#forum"] .ch-miru {
+    .ch-link[href="#forum"] .ch-miru,
+    .composer-hint[data-channel="forum"] {
       animation-timeline: --ch-forum;
     }
 
     .ch-link[href="#how"],
-    .ch-link[href="#how"] .ch-miru {
+    .ch-link[href="#how"] .ch-miru,
+    .composer-hint[data-channel="how"] {
       animation-timeline: --ch-how;
     }
 
     .ch-link[href="#features"],
-    .ch-link[href="#features"] .ch-miru {
+    .ch-link[href="#features"] .ch-miru,
+    .composer-hint[data-channel="features"] {
       animation-timeline: --ch-features;
     }
 
     .ch-link[href="#start"],
-    .ch-link[href="#start"] .ch-miru {
+    .ch-link[href="#start"] .ch-miru,
+    .composer-hint[data-channel="start"] {
       animation-timeline: --ch-start;
     }
 
     .ch-link[href="#safety"],
-    .ch-link[href="#safety"] .ch-miru {
+    .ch-link[href="#safety"] .ch-miru,
+    .composer-hint[data-channel="safety"] {
       animation-timeline: --ch-safety;
     }
 
     .ch-link[href="#faq"],
-    .ch-link[href="#faq"] .ch-miru {
+    .ch-link[href="#faq"] .ch-miru,
+    .composer-hint[data-channel="faq"] {
       animation-timeline: --ch-faq;
     }
   }
@@ -104,6 +122,13 @@
 }
 
 @keyframes composer-typing {
+  0%,
+  100% {
+    visibility: visible;
+  }
+}
+
+@keyframes composer-hint {
   0%,
   100% {
     visibility: visible;

@@ -10,7 +10,7 @@ const ChannelHeader = ({
   kind,
   topic,
 }: Readonly<{ name: string; kind: ChannelKind; topic: string }>): ReactNode => (
-  <div className="bg-dc-chat border-dc-rail sticky top-0 z-10 flex h-12 items-center gap-2 border-b px-4">
+  <div className="ch-head bg-dc-chat border-dc-rail sticky top-0 z-10 flex h-12 items-center gap-2 border-b px-4">
     <span className="text-dc-muted">
       <ChannelIcon kind={kind} size="lg" />
     </span>

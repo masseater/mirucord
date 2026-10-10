@@ -3,7 +3,7 @@ import { Effect, Option, Schema } from "effect";
 
 import { authClient } from "#/shared/auth";
 
-const ConsentSearchSchema = Schema.Struct({ client_id: Schema.String });
+const ConsentSearchSchema = Schema.Struct({ client_id: Schema.optional(Schema.String) });
 
 const validateConsentSearch = Schema.toStandardSchemaV1(ConsentSearchSchema);
 

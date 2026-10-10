@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
 
+import { isNoticeCandidate } from "#/features/ingest/model/channel-ingest";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
 import { db, ingestConsent } from "#/shared/db/index.server";
@@ -35,7 +36,7 @@ const NOTICE = [
 ].join("\n");
 
 const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean =>
-  channels.some(({ id, ingest }) => id === request.noticeChannelId && ingest !== "unreadable");
+  channels.some((channel) => isNoticeCandidate(channel) && channel.id === request.noticeChannelId);
 
 const postNoticeOnce = (request: ConsentRequest, scope: ConsentScope): Effect.Effect<boolean> => {
   if (scope.status === "granted") {

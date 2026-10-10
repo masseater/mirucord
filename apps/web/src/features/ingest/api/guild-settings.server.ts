@@ -1,24 +1,16 @@
-import { ChannelType } from "discord-api-types/v10";
 import { count, eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
-import { ingestOf } from "#/features/ingest/model/channel-ingest";
-import type { ChannelIngest } from "#/features/ingest/model/channel-ingest";
-import type { ConsentScope } from "#/features/ingest/model/consent-scope";
-import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
+import { db, ingestConsent, message } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
 import { loadScope } from "./consent-scope.server";
 import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
+import { loadChannels } from "./settings-channels.server";
+import type { SettingsCategory, SettingsChannel } from "./settings-channels.server";
 
 const NO_MESSAGES = 0;
-const SELECTABLE_TYPES: ReadonlySet<number> = new Set([
-  ChannelType.GuildText,
-  ChannelType.GuildAnnouncement,
-]);
-
-type SettingsChannel = Readonly<{ id: string; name: string; ingest: ChannelIngest }>;
 
 type Consent =
   | Readonly<{ status: "awaiting" }>
@@ -32,6 +24,7 @@ type Consent =
 type GuildSettings = Readonly<{
   id: string;
   name: string;
+  categories: readonly SettingsCategory[];
   channels: readonly SettingsChannel[];
   consent: Consent;
   storedMessages: number;
@@ -51,30 +44,6 @@ const loadConsent = (guildId: string): Effect.Effect<Consent> =>
           noticeChannelId: row.noticeChannelId,
         }),
       }),
-    ),
-  );
-
-const loadChannels = (
-  guildId: string,
-  scope: ConsentScope,
-): Effect.Effect<readonly SettingsChannel[]> =>
-  Effect.promise(() =>
-    db
-      .select({
-        id: channel.id,
-        name: channel.name,
-        type: channel.type,
-        newest: channel.newestMessageId,
-        backfill: channel.backfill,
-        botAccess: channel.botAccess,
-      })
-      .from(channel)
-      .where(eq(channel.guildId, guildId)),
-  ).pipe(
-    Effect.map((rows) =>
-      rows
-        .filter(({ type }) => SELECTABLE_TYPES.has(type))
-        .map((row) => ({ id: row.id, name: row.name, ingest: ingestOf(scope, row) })),
     ),
   );
 
@@ -101,16 +70,19 @@ const guildSettings = (
           loadScope(membership.guildId).pipe(
             Effect.flatMap((scope) =>
               Effect.all({
-                channels: loadChannels(membership.guildId, scope),
+                listed: loadChannels({ guildId: membership.guildId, scope }),
                 consent: loadConsent(membership.guildId),
                 storedMessages: countMessages(membership.guildId),
               }),
             ),
-            Effect.map((parts) => Option.some({ ...parts, id: membership.guildId, name })),
+            Effect.map(({ listed, ...parts }) =>
+              Option.some({ ...listed, ...parts, id: membership.guildId, name }),
+            ),
           ),
       }),
     ),
   );
 
 export { guildSettings };
-export type { Consent, GuildSettings, SettingsChannel };
+export type { Consent, GuildSettings };
+export type { SettingsCategory, SettingsChannel } from "./settings-channels.server";

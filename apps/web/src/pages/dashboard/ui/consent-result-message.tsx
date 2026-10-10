@@ -8,7 +8,7 @@ type MutationStatus = "idle" | "pending" | "success" | "error";
 const MESSAGES = {
   saved: "取り込みを始めました。",
   forbidden: "このサーバーを管理する権限が確認できませんでした。",
-  invalid: "お知らせを投稿するチャンネルを Bot が見られるチャンネルから選んでください。",
+  invalid: "お知らせを投稿するチャンネルをミルが見られるチャンネルから選んでください。",
   noticeFailed: "お知らせを投稿できなかったので、同意はまだ記録していません。",
   signedOut: "ログインの期限が切れました。",
 } as const;

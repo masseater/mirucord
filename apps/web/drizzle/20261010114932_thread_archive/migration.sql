@@ -1,0 +1,1 @@
+ALTER TABLE `channel` ADD `archive` text DEFAULT 'open' NOT NULL;

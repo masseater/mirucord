@@ -1,4 +1,4 @@
-import { Effect, Exit, Option, Schema } from "effect";
+import { Cause, Effect, Exit, Option, Schema } from "effect";
 
 import { INGEST_MAX_RETRIES, IngestJobSchema } from "#/features/ingest/model/ingest-job";
 import { alertOperators } from "#/shared/alert/index.server";
@@ -14,7 +14,7 @@ type QueueDelivery = Readonly<{
 
 const decodeJob = Schema.decodeUnknownEffect(IngestJobSchema);
 
-const giveUpOrRetry = (delivery: QueueDelivery): Effect.Effect<void> =>
+const giveUpOrRetry = (delivery: QueueDelivery, cause: Cause.Cause<unknown>): Effect.Effect<void> =>
   Option.match(
     Option.liftPredicate(delivery, ({ attempts }) => attempts > INGEST_MAX_RETRIES),
     {
@@ -22,6 +22,12 @@ const giveUpOrRetry = (delivery: QueueDelivery): Effect.Effect<void> =>
       onSome: ({ body }) =>
         alertOperators(`Channel ingest gave up after retries: ${JSON.stringify(body)}`),
     },
+  ).pipe(
+    Effect.annotateLogs({
+      job: delivery.body,
+      attempts: delivery.attempts,
+      cause: Cause.pretty(cause),
+    }),
   );
 
 const processDelivery = (delivery: QueueDelivery): Effect.Effect<void> =>
@@ -34,8 +40,8 @@ const processDelivery = (delivery: QueueDelivery): Effect.Effect<void> =>
           Effect.sync(() => {
             delivery.ack();
           }),
-        onFailure: () =>
-          giveUpOrRetry(delivery).pipe(
+        onFailure: (cause) =>
+          giveUpOrRetry(delivery, cause).pipe(
             Effect.andThen(
               Effect.sync(() => {
                 delivery.retry();

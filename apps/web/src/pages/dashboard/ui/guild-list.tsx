@@ -9,7 +9,7 @@ import { GuildCard } from "./guild-card";
 
 const TIP = "サーバーを選んでね";
 const TITLE = "あなたが管理しているサーバー";
-const EMPTY = "mirucord の Bot が入っていて、あなたが管理権限を持つサーバーはまだありません。";
+const EMPTY = "ミルが入っていて、あなたが管理権限を持つサーバーはまだありません。";
 const INVITE = "Bot をサーバーに招待する";
 
 const GuildList = ({

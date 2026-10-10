@@ -2,7 +2,7 @@ import { requireMcpAuth } from "@better-auth/mcp";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { Effect, Option } from "effect";
 
-import { auth, discordUserIdOf } from "#/shared/auth/index.server";
+import { discordUserIdOf, makeAuth } from "#/shared/auth/index.server";
 import { MCP_URL } from "#/shared/config";
 
 import { buildServer } from "./tools.server";
@@ -24,15 +24,16 @@ const respond = (request: Request, discordUserId: Option.Option<string>): Effect
       Effect.promise(() => createMcpHandler(() => buildServer(linked)).fetch(request)),
   });
 
-const serveMcp = requireMcpAuth(
-  auth,
-  (request, claims) =>
-    Effect.runPromise(
-      linkedDiscordUser(Option.fromNullishOr(claims.sub)).pipe(
-        Effect.flatMap((discordUserId) => respond(request, discordUserId)),
+const serveMcp = (request: Request): Promise<Response> =>
+  requireMcpAuth(
+    makeAuth(),
+    (authorized, claims) =>
+      Effect.runPromise(
+        linkedDiscordUser(Option.fromNullishOr(claims.sub)).pipe(
+          Effect.flatMap((discordUserId) => respond(authorized, discordUserId)),
+        ),
       ),
-    ),
-  { resource: MCP_URL },
-);
+    { resource: MCP_URL },
+  )(request);
 
 export { serveMcp };

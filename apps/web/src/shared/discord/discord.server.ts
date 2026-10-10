@@ -34,10 +34,17 @@ const Channel = Schema.Struct({
   type: Schema.Finite,
   name: Schema.optional(Schema.String),
   parent_id: Schema.optional(Schema.NullOr(Schema.String)),
+  position: Schema.optional(Schema.Finite),
   permission_overwrites: Schema.optional(Schema.Array(PermissionOverwrite)),
+  thread_metadata: Schema.optional(Schema.Struct({ archive_timestamp: Schema.String })),
 });
 
 const ThreadList = Schema.Struct({ threads: Schema.Array(Channel) });
+
+const ArchivedThreadList = Schema.Struct({
+  threads: Schema.Array(Channel),
+  has_more: Schema.Boolean,
+});
 
 const Attachment = Schema.Struct({ filename: Schema.String, url: Schema.String });
 
@@ -150,6 +157,39 @@ const listActiveThreads = (
     Effect.map(({ threads }) => threads),
   );
 
+const listArchivedThreadsBefore = (
+  channelId: string,
+  before: Option.Option<string>,
+): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> => {
+  const query = new URLSearchParams({ limit: String(PAGE_SIZE) });
+  if (Option.isSome(before)) {
+    query.set("before", before.value);
+  }
+  return callDiscord(ArchivedThreadList, () =>
+    send("GET", `${Routes.channelThreads(channelId, "public")}?${query.toString()}`),
+  ).pipe(
+    Effect.flatMap(({ threads, has_more }) => {
+      const next = Array.last(threads).pipe(
+        Option.flatMap(({ thread_metadata }) => Option.fromUndefinedOr(thread_metadata)),
+        Option.map(({ archive_timestamp }) => archive_timestamp),
+        Option.filter(() => has_more),
+      );
+      return Option.match(next, {
+        onNone: () => Effect.succeed(threads),
+        onSome: (cursor) =>
+          listArchivedThreadsBefore(channelId, Option.some(cursor)).pipe(
+            Effect.map((older) => [...threads, ...older]),
+          ),
+      });
+    }),
+  );
+};
+
+const listArchivedThreads = (
+  channelId: string,
+): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
+  listArchivedThreadsBefore(channelId, Option.none());
+
 type MessagePage =
   | Readonly<{ direction: "latest" }>
   | Readonly<{ direction: "after" | "before"; cursor: string }>;
@@ -207,6 +247,7 @@ export {
   getGuild,
   leaveGuild,
   listActiveThreads,
+  listArchivedThreads,
   listBotGuilds,
   listGuildChannels,
   listMessages,

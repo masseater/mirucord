@@ -1,13 +1,14 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, or } from "drizzle-orm";
 import { Array, DateTime, Effect, Option } from "effect";
 
 import { isPastRetention } from "#/features/ingest/model/bot-access";
+import { MESSAGE_TYPES } from "#/features/ingest/model/channel-kind";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 
 import { accessOf } from "./bot-access.server";
 import { enqueue } from "./enqueue.server";
-import { deleteVectors } from "./vectors.server";
+import { forgetChannelMessages } from "./message-rows.server";
 
 const CLEARED = Option.getOrNull(Option.none<string>());
 
@@ -27,10 +28,7 @@ const loadScope = (guildId: string): Effect.Effect<ConsentScope> =>
   );
 
 const purgeChannel = (channelId: string): Effect.Effect<void> =>
-  Effect.promise(() =>
-    db.select({ id: message.id }).from(message).where(eq(message.channelId, channelId)),
-  ).pipe(
-    Effect.flatMap((rows) => deleteVectors(rows.map(({ id }) => id))),
+  forgetChannelMessages(channelId).pipe(
     Effect.andThen(
       Effect.promise(() =>
         db.batch([
@@ -77,12 +75,18 @@ const purgeOutOfScope = (guildId: string): Effect.Effect<void> =>
     Effect.flatMap((outOfScope) => Effect.forEach(outOfScope, purgeChannel, { discard: true })),
   );
 
+const NEEDS_INGEST = and(
+  eq(channel.botAccess, "readable"),
+  inArray(channel.type, [...MESSAGE_TYPES]),
+  or(eq(channel.archive, "open"), eq(channel.backfill, "pending")),
+);
+
 const enqueueReadable = (guildId: string): Effect.Effect<void> =>
   Effect.promise(() =>
     db
       .select({ id: channel.id })
       .from(channel)
-      .where(and(eq(channel.guildId, guildId), eq(channel.botAccess, "readable"))),
+      .where(and(eq(channel.guildId, guildId), NEEDS_INGEST)),
   ).pipe(Effect.flatMap((rows) => enqueue(rows.map(({ id }) => ({ guildId, channelId: id })))));
 
 const enqueueInScope = (guildId: string): Effect.Effect<void> =>

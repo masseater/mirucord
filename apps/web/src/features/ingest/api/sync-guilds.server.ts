@@ -1,23 +1,16 @@
 import { OpenFeature, TypedInMemoryProvider } from "@openfeature/server-sdk";
 import { env } from "cloudflare:workers";
-import { ChannelType } from "discord-api-types/v10";
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Array, Config, ConfigProvider, DateTime, Effect, Option, pipe } from "effect";
 
 import { createGuildKey, isRotating, rewrapGuildKey } from "#/shared/crypto/index.server";
-import { channel, db, guild, message, role } from "#/shared/db/index.server";
-import {
-  getBotUserId,
-  getGuild,
-  leaveGuild,
-  listActiveThreads,
-  listBotGuilds,
-  listGuildChannels,
-} from "#/shared/discord/index.server";
+import { db, guild, role } from "#/shared/db/index.server";
+import { getBotUserId, getGuild, leaveGuild, listBotGuilds } from "#/shared/discord/index.server";
 import type { DiscordGuild, DiscordRequestError } from "#/shared/discord/index.server";
 
+import { listChannelsOf } from "./channel-listing.server";
+import { forgetGuildMessages } from "./message-rows.server";
 import { syncChannels } from "./sync-channels.server";
-import { deleteVectors } from "./vectors.server";
 
 const INGEST_FLAG = "ingest-enabled";
 
@@ -35,29 +28,11 @@ const ingestEnabled: Effect.Effect<boolean> = Effect.promise(() =>
   Effect.andThen(Effect.promise(() => OpenFeature.getClient().getBooleanValue(INGEST_FLAG, false))),
 );
 const DEFAULT_GUILD_LIMIT = 80;
-const ID_CHUNK = 50;
-
-const INGESTED_TYPES: ReadonlySet<number> = new Set([
-  ChannelType.GuildText,
-  ChannelType.GuildAnnouncement,
-  ChannelType.AnnouncementThread,
-  ChannelType.PublicThread,
-]);
 
 const selectIds = <Row extends Readonly<{ id: string }>>(
   load: () => Promise<readonly Row[]>,
 ): Effect.Effect<readonly string[]> =>
   Effect.promise(load).pipe(Effect.map((rows) => rows.map(({ id }) => id)));
-
-const MESSAGE_OWNER = { guild: message.guildId, channel: message.channelId } as const;
-
-const forgetMessagesOf = (
-  owner: keyof typeof MESSAGE_OWNER,
-  ownerId: string,
-): Effect.Effect<void> =>
-  selectIds(() =>
-    db.select({ id: message.id }).from(message).where(eq(MESSAGE_OWNER[owner], ownerId)),
-  ).pipe(Effect.flatMap(deleteVectors));
 
 const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =>
   Effect.logWarning("Discord request failed").pipe(
@@ -100,7 +75,7 @@ const removeDepartedGuilds = (current: readonly string[]): Effect.Effect<void> =
       Effect.forEach(
         departed,
         (id) =>
-          forgetMessagesOf("guild", id).pipe(
+          forgetGuildMessages(id).pipe(
             Effect.andThen(Effect.promise(() => db.delete(guild).where(eq(guild.id, id)))),
           ),
         { discard: true },
@@ -142,37 +117,13 @@ const replaceRoles = (discordGuild: DiscordGuild): Effect.Effect<void> =>
     ),
   );
 
-const removeChannels = (guildId: string, current: readonly string[]): Effect.Effect<void> =>
-  selectIds(() =>
-    db.select({ id: channel.id }).from(channel).where(eq(channel.guildId, guildId)),
-  ).pipe(
-    Effect.map((stored) => stored.filter((id) => !current.includes(id))),
-    Effect.tap((removed) =>
-      Effect.forEach(removed, (id) => forgetMessagesOf("channel", id), { discard: true }),
-    ),
-    Effect.flatMap((removed) =>
-      Effect.forEach(
-        Array.chunksOf(removed, ID_CHUNK),
-        (chunk) => Effect.promise(() => db.delete(channel).where(inArray(channel.id, [...chunk]))),
-        { discard: true },
-      ),
-    ),
-  );
-
 const syncGuild = (botUserId: string, guildId: string): Effect.Effect<void, DiscordRequestError> =>
   Effect.gen(function* sync() {
-    const [discordGuild, channels, threads] = yield* Effect.all([
-      getGuild(guildId),
-      listGuildChannels(guildId),
-      listActiveThreads(guildId),
-    ]);
-    const everything = [...channels, ...threads];
-    const ingested = everything.filter(({ type }) => INGESTED_TYPES.has(type));
-    const channelIds = ingested.map(({ id }) => id);
+    const discordGuild = yield* getGuild(guildId);
+    const listing = yield* listChannelsOf({ botUserId, discordGuild });
     yield* upsertGuild(discordGuild);
     yield* replaceRoles(discordGuild);
-    yield* removeChannels(guildId, channelIds);
-    yield* syncChannels({ botUserId, discordGuild, channels: everything, ingested });
+    yield* syncChannels({ discordGuild, ...listing });
   });
 
 const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>

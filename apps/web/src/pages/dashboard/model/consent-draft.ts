@@ -1,5 +1,6 @@
 import { Array, Function, Option } from "effect";
 
+import { isNoticeCandidate } from "#/features/ingest";
 import type { GuildSettings } from "#/features/ingest/index.server";
 
 const DATA_FIRST_ARITY = 2;
@@ -14,11 +15,14 @@ const UNTOUCHED: ConsentDraft = { status: "untouched" };
 const readableChannels = (settings: GuildSettings): GuildSettings["channels"] =>
   settings.channels.filter(({ ingest }) => ingest !== "unreadable");
 
+const noticeChannels = (settings: GuildSettings): GuildSettings["channels"] =>
+  settings.channels.filter(isNoticeCandidate);
+
 const noticeChannelOfDataFirst = (settings: GuildSettings, draft: ConsentDraft): string => {
   if (draft.status === "edited") {
     return draft.noticeChannelId;
   }
-  return Array.head(readableChannels(settings)).pipe(
+  return Array.head(noticeChannels(settings)).pipe(
     Option.map(({ id }) => id),
     Option.getOrElse(() => NO_CHANNEL),
   );
@@ -29,5 +33,5 @@ const noticeChannelOf: {
   (settings: GuildSettings, draft: ConsentDraft): string;
 } = Function.dual(DATA_FIRST_ARITY, noticeChannelOfDataFirst);
 
-export { NO_CHANNEL, noticeChannelOf, readableChannels, UNTOUCHED };
+export { NO_CHANNEL, noticeChannelOf, noticeChannels, readableChannels, UNTOUCHED };
 export type { ConsentDraft };

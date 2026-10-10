@@ -1,0 +1,20 @@
+import type { ReactNode } from "react";
+
+import { SectionHead } from "#/pages/home/ui/common/section-head";
+
+import { FlowDiagram } from "./flow-diagram";
+
+const LEAD = "mirucord が";
+const TAIL = "あいだをつなぐ";
+const LABEL = "弐 仕組み";
+
+const Flow = (): ReactNode => (
+  <section id="how" className="mx-auto w-full max-w-6xl scroll-mt-8 px-5 py-24 md:py-32">
+    <SectionHead label={LABEL} lead={LEAD} tail={TAIL} />
+    <div className="border-kinu bg-paper overflow-x-auto rounded-2xl border p-4 md:p-12">
+      <FlowDiagram />
+    </div>
+  </section>
+);
+
+export { Flow };

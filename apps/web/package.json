@@ -37,6 +37,8 @@
     "@tanstack/react-router-ssr-query": "1.167.3",
     "@tanstack/react-start": "catalog:stack",
     "better-auth": "catalog:stack",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:",
     "discord-api-types": "catalog:",
     "drizzle-orm": "catalog:stack",
     "effect": "catalog:stack",
@@ -45,6 +47,8 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "scheduler": "0.28.0",
+    "simple-icons": "catalog:",
+    "tailwind-merge": "catalog:",
     "tailwindcss": "catalog:stack",
     "tw-animate-css": "1.4.0"
   },

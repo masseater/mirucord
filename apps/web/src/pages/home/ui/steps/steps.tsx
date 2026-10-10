@@ -17,6 +17,13 @@ const CHANNEL = "はじめかた";
 const TIME = "今日 21:03";
 const JOINED = "がサーバーに参加しました。";
 
+const REGISTERED: ChatLine = {
+  author: memberAuthor(MEMBERS.kenta),
+  time: "今日 21:03",
+  text: "登録したらすぐ使えた",
+  reactions: [{ emoji: "🎉", count: 3, by: "others" }],
+};
+
 const CHATTER: readonly ChatLine[] = [
   {
     author: memberAuthor(MEMBERS.miho),
@@ -24,17 +31,12 @@ const CHATTER: readonly ChatLine[] = [
     text: "招待するだけなら、わたしでもできそう",
     reactions: [],
   },
-  {
-    author: memberAuthor(MEMBERS.kenta),
-    time: "今日 21:03",
-    text: "登録したらすぐ使えた",
-    reactions: [{ emoji: "🎉", count: 3, by: "others" }],
-  },
+  REGISTERED,
   {
     author: BOT,
     time: "今日 21:03",
     text: "やったね！なんでも聞いてね",
-    reply: { author: memberAuthor(MEMBERS.kenta), text: "登録したらすぐ使えた" },
+    reply: REGISTERED,
     reactions: [{ emoji: "💜", count: 2, by: "me" }],
   },
 ];

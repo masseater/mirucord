@@ -1,18 +1,17 @@
 import { it } from "@effect/vitest";
+import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { Array, Effect } from "effect";
-import { afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
+import { Array, DateTime, Effect } from "effect";
+import { http, HttpResponse } from "msw";
+import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
-import type { IngestJob } from "#/features/ingest/model/ingest-job";
-import { answerAsDiscord, fetchedPaths, seedGuilds } from "#/shared/__mocks__";
-import type { SeedGuild } from "#/shared/__mocks__";
+import { createGuildKey } from "#/shared/crypto/index.server";
+import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
 import { refreshIngest } from "./consent-scope.server";
 import { ingestChannel } from "./ingest-channel.server";
 
-vi.mock("cloudflare:workers", () => import("#/shared/__mocks__/index.workers"));
-vi.mock("#/shared/db/client.server");
-
+const OWNER = "901";
 const AWAITING = "400";
 const GRANTED = "500";
 const OTHER = "600";
@@ -20,39 +19,69 @@ const AWAITING_CHANNEL = "410";
 const READABLE = "510";
 const HIDDEN = "520";
 const OTHER_CHANNEL = "610";
+const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 
-const guildOf = (
-  id: string,
-  consent: SeedGuild["consent"],
-  channels: SeedGuild["channels"],
-): SeedGuild => ({
-  id,
-  ownerId: "901",
-  consent,
-  rolePermissions: { [id]: "0" },
-  channels,
-  messages: [],
-});
+type ScenarioGuild = Readonly<{
+  id: string;
+  consented: boolean;
+  channels: readonly Readonly<{ id: string; botAccess: "readable" | "hidden" }>[];
+}>;
 
-const GUILDS: readonly SeedGuild[] = [
-  guildOf(AWAITING, "awaiting", [
-    { id: AWAITING_CHANNEL, botAccess: "readable", permissionOverwrites: [] },
-  ]),
-  guildOf(GRANTED, "granted", [
-    { id: READABLE, botAccess: "readable", permissionOverwrites: [] },
-    { id: HIDDEN, botAccess: "hidden", permissionOverwrites: [] },
-  ]),
-  guildOf(OTHER, "granted", [
-    { id: OTHER_CHANNEL, botAccess: "readable", permissionOverwrites: [] },
-  ]),
+const GUILDS: readonly ScenarioGuild[] = [
+  { id: AWAITING, consented: false, channels: [{ id: AWAITING_CHANNEL, botAccess: "readable" }] },
+  {
+    id: GRANTED,
+    consented: true,
+    channels: [
+      { id: READABLE, botAccess: "readable" },
+      { id: HIDDEN, botAccess: "hidden" },
+    ],
+  },
+  { id: OTHER, consented: true, channels: [{ id: OTHER_CHANNEL, botAccess: "readable" }] },
 ];
 
-const JOBS_OUTSIDE_SCOPE: readonly IngestJob[] = [
+const JOBS_OUTSIDE_SCOPE = [
   { guildId: AWAITING, channelId: AWAITING_CHANNEL },
   { guildId: GRANTED, channelId: HIDDEN },
   { guildId: GRANTED, channelId: OTHER_CHANNEL },
   { guildId: OTHER, channelId: READABLE },
 ];
+
+const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
+  Effect.gen(function* seedRows() {
+    const wrappedKey = yield* createGuildKey;
+    yield* Effect.promise(() =>
+      db.batch([
+        db.insert(guild).values({
+          id: seed.id,
+          name: `guild ${seed.id}`,
+          ownerId: OWNER,
+          wrappedKey,
+          joinedAt: SEEDED_AT,
+        }),
+        db.insert(channel).values(
+          seed.channels.map(({ id, botAccess }) => ({
+            id,
+            guildId: seed.id,
+            name: `channel ${id}`,
+            type: 0,
+            permissionOverwrites: [],
+            botAccess,
+          })),
+        ),
+      ]),
+    );
+  });
+
+const seedConsents = (): Promise<unknown> =>
+  db.insert(ingestConsent).values(
+    GUILDS.filter(({ consented }) => consented).map(({ id }) => ({
+      guildId: id,
+      grantedBy: OWNER,
+      grantedAt: SEEDED_AT,
+      noticeChannelId: "0",
+    })),
+  );
 
 const queuedBy = (guildId: string): Effect.Effect<readonly unknown[]> =>
   Effect.gen(function* queued() {
@@ -63,27 +92,43 @@ const queuedBy = (guildId: string): Effect.Effect<readonly unknown[]> =>
     );
   });
 
+const network = setupNetwork();
+
 const discordPathsDuring = <Failure>(
   work: Effect.Effect<void, Failure>,
 ): Effect.Effect<readonly string[], Failure> =>
   Effect.gen(function* fetched() {
-    const fetch = vi
-      .spyOn(globalThis, "fetch")
-      .mockImplementation((input) =>
-        Promise.resolve(answerAsDiscord({ url: new Request(input).url, memberships: {} })),
-      );
+    const paths: string[] = [];
+    network.use(
+      http.all("https://discord.com/*", ({ request }) => {
+        paths.push(new URL(request.url).pathname);
+        return HttpResponse.json([]);
+      }),
+    );
     yield* work;
-    return fetchedPaths(fetch.mock.calls);
+    return paths;
   });
 
-beforeAll(() => seedGuilds(GUILDS));
+const seedScenario = Effect.forEach(GUILDS, seedGuild, { discard: true }).pipe(
+  Effect.andThen(Effect.promise(seedConsents)),
+);
 
-beforeEach(() => {
-  vi.restoreAllMocks();
+beforeAll(() => {
+  network.enable();
+  return Effect.runPromise(seedScenario);
 });
 
 afterEach(() => {
-  vi.restoreAllMocks();
+  network.resetHandlers();
+});
+
+afterAll(() => {
+  network.disable();
+});
+
+beforeEach(() => {
+  vi.spyOn(env.AI, "run").mockResolvedValue({ data: [] });
+  vi.spyOn(env.MESSAGES, "upsert").mockResolvedValue({ mutationId: "test" });
 });
 
 it.effect("queues nothing for a server that has not consented", () =>

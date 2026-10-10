@@ -1,25 +1,41 @@
 import { it } from "@effect/vitest";
 import { env } from "cloudflare:workers";
-import { Array, Effect } from "effect";
-import { expect, vi } from "vite-plus/test";
+import { Array, Data, Effect } from "effect";
+import { beforeEach, expect, vi } from "vite-plus/test";
 
-import { deleteVectors, indexedIds } from "./vectors.server";
+import { deleteVectors } from "./vectors.server";
 
-vi.mock("cloudflare:workers", () => import("#/shared/__mocks__/index.workers"));
-
+const MAX_DELETE_IDS = 100;
 const CHANNEL_SIZE = 250;
-const SIMILARITY = 1;
-const VALUES = [SIMILARITY];
 const IDS = Array.makeBy(CHANNEL_SIZE, (index) => `vector-${String(index)}`);
+
+class TooManyIdsError extends Data.TaggedError("TooManyIdsError") {}
+
+const deleted = new Set<string>();
+
+beforeEach(() => {
+  deleted.clear();
+  vi.spyOn(env.MESSAGES, "deleteByIds").mockImplementation((ids) =>
+    Effect.runPromise(
+      Effect.succeed(ids).pipe(
+        Effect.filterOrFail(
+          (chunk) => chunk.length <= MAX_DELETE_IDS,
+          () => new TooManyIdsError(),
+        ),
+        Effect.map((chunk) => {
+          for (const id of chunk) {
+            deleted.add(id);
+          }
+          return { mutationId: "test" };
+        }),
+      ),
+    ),
+  );
+});
 
 it.effect("deletes more vectors than one Vectorize call accepts", () =>
   Effect.gen(function* deleteMany() {
-    yield* Effect.promise(() =>
-      env.MESSAGES.upsert(
-        IDS.map((id) => ({ id, values: VALUES, metadata: { guildId: "1", channelId: "2" } })),
-      ),
-    );
     yield* deleteVectors(IDS);
-    expect(yield* indexedIds(IDS)).toStrictEqual(new Set());
+    expect(deleted).toStrictEqual(new Set(IDS));
   }),
 );

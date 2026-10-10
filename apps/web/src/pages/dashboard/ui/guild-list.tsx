@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
 import { MascotTip } from "#/shared/ui/mascot-tip";
-import { PopLink } from "#/shared/ui/pop-link";
 
 import { GuildCard } from "./guild-card";
+import { PopLink } from "./pop-link";
 
 const TIP = "サーバーを選んでね";
 const TITLE = "あなたが管理しているサーバー";

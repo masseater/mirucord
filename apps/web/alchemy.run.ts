@@ -15,30 +15,8 @@ import { Config, Effect, Option, Schema } from "effect";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
-const OTLP = "otlp";
 const EMBEDDING_DIMENSIONS = 1024;
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);
-
-const otlpEnv = Config.all({
-  endpoint: Config.option(Config.NonEmptyString("OTEL_EXPORTER_OTLP_ENDPOINT")),
-  headers: Config.option(Config.schema(NonEmptySecret, "OTEL_EXPORTER_OTLP_HEADERS")),
-}).pipe(
-  Config.map(({ endpoint, headers }) =>
-    Option.match(endpoint, {
-      onNone: () => ({}),
-      onSome: (OTEL_EXPORTER_OTLP_ENDPOINT) => ({
-        OTEL_EXPORTER_OTLP_ENDPOINT,
-        OTEL_TRACES_EXPORTER: OTLP,
-        OTEL_METRICS_EXPORTER: OTLP,
-        OTEL_LOGS_EXPORTER: OTLP,
-        ...Option.match(headers, {
-          onNone: () => ({}),
-          onSome: (OTEL_EXPORTER_OTLP_HEADERS) => ({ OTEL_EXPORTER_OTLP_HEADERS }),
-        }),
-      }),
-    }),
-  ),
-);
 
 const discordEnv = Config.all({
   DISCORD_CLIENT_ID: Config.NonEmptyString("DISCORD_CLIENT_ID"),
@@ -96,11 +74,10 @@ const masterKey = Effect.gen(function* masterKey() {
 });
 
 const settings = Effect.gen(function* settings() {
-  const otlp = yield* otlpEnv;
   const discord = yield* discordEnv;
   const release = yield* releaseVersion;
   const operations = yield* operationsEnv;
-  return { otlp, discord, release, operations };
+  return { discord, release, operations };
 });
 
 const web = Effect.gen(function* web() {
@@ -109,13 +86,12 @@ const web = Effect.gen(function* web() {
   const INGEST = yield* Queues.Queue("Ingest");
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* masterKey;
-  const { otlp, discord, release, operations } = yield* settings;
+  const { discord, release, operations } = yield* settings;
   const site = yield* Website.Vite("Web", {
     main: "src/app/server/index.ts",
     domain: SITE_HOST,
     crons: ["*/5 * * * *"],
     env: {
-      ...otlp,
       ...discord,
       ...operations,
       BETTER_AUTH_SECRET,

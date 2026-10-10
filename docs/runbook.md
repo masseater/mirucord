@@ -17,17 +17,15 @@ vp run deploy:ci
 
 値を変えた後は、`ci` スタックを適用し、Actions から `verify` を手動で動かすとデプロイし直される。main への push でもよい。
 
-| 名前                          | 種類      | 必須 | 内容                                                  |
-| ----------------------------- | --------- | ---- | ----------------------------------------------------- |
-| `CLOUDFLARE_API_TOKEN`        | Secrets   | 必須 | Alchemy がデプロイに使うトークン。`ci` スタックが作る |
-| `CLOUDFLARE_ACCOUNT_ID`       | Secrets   | 必須 | デプロイ先のアカウント                                |
-| `DISCORD_CLIENT_ID`           | Variables | 必須 | Discord アプリの ID                                   |
-| `DISCORD_CLIENT_SECRET`       | Secrets   | 必須 | Discord の OAuth で使う                               |
-| `DISCORD_BOT_TOKEN`           | Secrets   | 必須 | 取り込みと権限確認で使う Bot のトークン               |
-| `MAX_GUILDS`                  | Variables | 任意 | 登録できるサーバー数の上限。既定は `80`               |
-| `ALERT_WEBHOOK_URL`           | Secrets   | 任意 | 障害を知らせる Discord の Webhook URL                 |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | Variables | 任意 | OTLP の送り先。設定しなければ Workers Logs だけに出す |
-| `OTEL_EXPORTER_OTLP_HEADERS`  | Secrets   | 任意 | OTLP の送り先の認証ヘッダー                           |
+| 名前                    | 種類      | 必須 | 内容                                                  |
+| ----------------------- | --------- | ---- | ----------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`  | Secrets   | 必須 | Alchemy がデプロイに使うトークン。`ci` スタックが作る |
+| `CLOUDFLARE_ACCOUNT_ID` | Secrets   | 必須 | デプロイ先のアカウント                                |
+| `DISCORD_CLIENT_ID`     | Variables | 必須 | Discord アプリの ID                                   |
+| `DISCORD_CLIENT_SECRET` | Secrets   | 必須 | Discord の OAuth で使う                               |
+| `DISCORD_BOT_TOKEN`     | Secrets   | 必須 | 取り込みと権限確認で使う Bot のトークン               |
+| `MAX_GUILDS`            | Variables | 任意 | 登録できるサーバー数の上限。既定は `80`               |
+| `ALERT_WEBHOOK_URL`     | Secrets   | 任意 | 障害を知らせる Discord の Webhook URL                 |
 
 `BETTER_AUTH_SECRET` と `MASTER_KEY` は Alchemy が初回に乱数で作り、状態に保存する。手で設定しない。
 `MASTER_KEY` はアカウントの Secrets Store に `MIRUCORD_MASTER_KEY` として置かれ、Worker はバインディング経由で読む。

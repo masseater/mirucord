@@ -6,7 +6,6 @@ import { Array, Effect, Option } from "effect";
 import { account, auth } from "#/shared/auth/index.server";
 import { MCP_URL } from "#/shared/config";
 import { db } from "#/shared/db/index.server";
-import { runRequest } from "#/shared/lib/index.server";
 
 import { buildServer } from "./tools.server";
 
@@ -40,7 +39,7 @@ const respond = (request: Request, discordUserId: Option.Option<string>): Effect
 const serveMcp = requireMcpAuth(
   auth,
   (request, claims) =>
-    runRequest(
+    Effect.runPromise(
       linkedDiscordUser(Option.fromNullishOr(claims.sub)).pipe(
         Effect.flatMap((discordUserId) => respond(request, discordUserId)),
       ),

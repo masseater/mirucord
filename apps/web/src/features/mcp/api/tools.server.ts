@@ -2,8 +2,6 @@ import { McpServer } from "@modelcontextprotocol/server";
 import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, Effect, Option, Schema, pipe } from "effect";
 
-import { runRequest } from "#/shared/lib/index.server";
-
 import { readMessages, searchMessages } from "./messages.server";
 import { listGuildIds, resolveScope } from "./scope.server";
 import type { GuildScope } from "./scope.server";
@@ -54,7 +52,7 @@ const scoped = (request: ToolRequest, withinScope: WithinScope): Effect.Effect<C
   );
 
 const withScope = (request: ToolRequest, withinScope: WithinScope): Promise<CallToolResult> =>
-  runRequest(scoped(request, withinScope));
+  Effect.runPromise(scoped(request, withinScope));
 
 const limitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_LIMIT);
@@ -76,7 +74,7 @@ const withChannel = (
   });
 
 const listServers = (discordUserId: string): Promise<CallToolResult> =>
-  runRequest(
+  Effect.runPromise(
     listGuildIds.pipe(
       Effect.flatMap((guildIds) =>
         pipe(

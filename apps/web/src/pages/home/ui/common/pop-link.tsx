@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { popButtonVariants } from "./pop-variants";
+import { popButtonVariants } from "#/shared/ui/pop-variants";
 
 const PopLink = ({
   href,

@@ -4,8 +4,9 @@ import type { ReactNode } from "react";
 
 import { refreshQuery } from "#/pages/dashboard/api/dashboard";
 import type { RefreshTarget } from "#/pages/dashboard/api/dashboard";
-import { refreshLabel, refreshNote, refreshViewOf } from "#/pages/dashboard/model/refresh-note";
 import { PopButton } from "#/shared/ui/pop-button";
+
+import { refreshLabel, refreshNote, refreshViewOf } from "./refresh-note";
 
 const RefreshButton = ({ target }: Readonly<{ target: RefreshTarget }>): ReactNode => {
   const options = refreshQuery(target);

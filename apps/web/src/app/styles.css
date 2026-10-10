@@ -13,8 +13,6 @@
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
   --border: oklch(0.92 0.004 286.32);
   --ring: oklch(0.705 0.015 286.067);
   --radius: 0.625rem;
@@ -24,8 +22,6 @@
   :root {
     --background: oklch(0.141 0.005 285.823);
     --foreground: oklch(0.985 0 0);
-    --primary: oklch(0.92 0.004 286.32);
-    --primary-foreground: oklch(0.21 0.006 285.885);
     --border: oklch(1 0 0 / 10%);
     --ring: oklch(0.552 0.016 285.938);
   }
@@ -52,7 +48,6 @@
   --color-discord: oklch(0.59 0.2 275);
   --shadow-pop: 0 6px 0 0 var(--color-ink);
   --shadow-pop-sm: 0 4px 0 0 var(--color-ink);
-  --shadow-soft: 0 24px 48px -24px oklch(0.45 0.12 285 / 40%);
   --animate-float: float 4s ease-in-out infinite;
   --animate-blink: blink 5s ease-in-out infinite;
   --animate-marquee: marquee 48s linear infinite;
@@ -124,8 +119,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
   --font-sans:
@@ -136,7 +129,6 @@
     ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
 }
 

@@ -18,21 +18,21 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 決めたこと
 
-| 項目                     | 決定                                                                                     |
-| ------------------------ | ---------------------------------------------------------------------------------------- |
-| 公開 URL                 | `https://mirucord.masseater.dev`（`src/shared/config/site.ts`）                          |
-| MCP の認可               | better-auth の `@better-auth/mcp`（OAuth 2.1 と DCR）                                    |
-| ログイン                 | Discord の OAuth で、scope は `identify` だけ。メールアドレスは集めない                  |
-| embedding                | Workers AI の `@cf/baai/bge-m3`（1024 次元、cosine）                                     |
-| 取り込み                 | Gateway は使わず、5 分ごとの Cron と Queue で REST をポーリングする                      |
-| 運営の閲覧               | 持たない。運営もサーバーの中身は読めない                                                 |
-| 鍵                       | Cloudflare Secrets Store の `MIRUCORD_MASTER_KEY` で包む。Alchemy が作ってバインドする   |
-| クラウド                 | Cloudflare だけを使い、AWS は使わない                                                    |
-| 取り込みの同意           | Bot を入れただけでは読まない。管理者が `/dashboard` でサーバー単位に同意してから取り込む |
-| 取り込む範囲             | Bot が Discord で閲覧できるチャンネルそのもの。チャンネルを選ぶ画面は作らない            |
-| 見えなくなったチャンネル | 取り込みを止め、30 日後に消す。管理画面からすぐ消すこともできる                          |
-| Discord の REST          | `@discordeno/rest`。discord.js と `@discordjs/rest` は Workers で動かない                |
-| D1 の場所                | APAC                                                                                     |
+| 項目                     | 決定                                                                                                                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 公開 URL                 | `https://mirucord.masseater.dev`（`src/shared/config/site.ts`）                                                                                                                            |
+| MCP の認可               | better-auth の `@better-auth/mcp`（OAuth 2.1 と DCR）                                                                                                                                      |
+| ログイン                 | Discord の OAuth で、scope は `identify` だけ。メールアドレスは集めない                                                                                                                    |
+| embedding                | Workers AI の `@cf/baai/bge-m3`（1024 次元、cosine）                                                                                                                                       |
+| 取り込み                 | Gateway は使わず、Cron と Queue で REST をポーリングする。5 分ごとに参加サーバーの確認と取り込み、1 時間ごとにチャンネル一覧を同期する。ダッシュボードを開いたときと更新ボタンでも同期する |
+| 運営の閲覧               | 持たない。運営もサーバーの中身は読めない                                                                                                                                                   |
+| 鍵                       | Cloudflare Secrets Store の `MIRUCORD_MASTER_KEY` で包む。Alchemy が作ってバインドする                                                                                                     |
+| クラウド                 | Cloudflare だけを使い、AWS は使わない                                                                                                                                                      |
+| 取り込みの同意           | Bot を入れただけでは読まない。管理者が `/dashboard` でサーバー単位に同意してから取り込む                                                                                                   |
+| 取り込む範囲             | Bot が Discord で閲覧できるチャンネルそのもの。チャンネルを選ぶ画面は作らない                                                                                                              |
+| 見えなくなったチャンネル | 取り込みを止め、30 日後に消す。管理画面からすぐ消すこともできる                                                                                                                            |
+| Discord の REST          | `@discordeno/rest`。discord.js と `@discordjs/rest` は Workers で動かない                                                                                                                  |
+| D1 の場所                | APAC                                                                                                                                                                                       |
 
 ## 今の状態
 

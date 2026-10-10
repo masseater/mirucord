@@ -7,7 +7,7 @@ import { ProudMiru } from "./proud-miru";
 
 const GUIDE = "ミルにおまかせ！";
 const LEAD = "さっそく";
-const TAIL = "思い出を掘り起こそう";
+const TAIL = "あの日を思い出そう";
 const TIME = "今日 21:10";
 
 const Closing = (): ReactNode => (

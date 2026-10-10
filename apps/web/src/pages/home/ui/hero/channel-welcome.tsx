@@ -5,7 +5,7 @@ import { Mascot } from "#/shared/brand";
 import { HeroActions } from "./hero-actions";
 
 const LEAD = "みんなの思い出を";
-const FOCUS = "AI と掘り起こそう";
+const FOCUS = "AI と見つけよう";
 const SUB = "あの夜の名場面も ミルがさがしてきてくれます";
 
 const ChannelWelcome = (): ReactNode => (

@@ -97,3 +97,26 @@ it("hides a thread whose parent channel is hidden", () => {
   ]);
   expect([...visibleChannelIds(snapshot, member(USER, []))]).toStrictEqual(["2", "12"]);
 });
+
+it("shows the posts of a forum the reader can see", () => {
+  const snapshot = snapshotOf([
+    { ...textChannel("1", []), type: ChannelType.GuildForum },
+    {
+      ...textChannel("2", [{ id: GUILD, type: OverwriteType.Role, allow: NOTHING, deny: VIEW }]),
+      type: ChannelType.GuildForum,
+    },
+    {
+      id: "11",
+      parentId: Option.some("1"),
+      type: ChannelType.PublicThread,
+      permissionOverwrites: [],
+    },
+    {
+      id: "21",
+      parentId: Option.some("2"),
+      type: ChannelType.PublicThread,
+      permissionOverwrites: [],
+    },
+  ]);
+  expect([...visibleChannelIds(snapshot, member(USER, []))]).toStrictEqual(["1", "11"]);
+});

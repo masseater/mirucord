@@ -1,9 +1,9 @@
-import { ChannelType } from "discord-api-types/v10";
 import { count, eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
-import { ingestOf } from "#/features/ingest/model/channel-ingest";
-import type { ChannelIngest } from "#/features/ingest/model/channel-ingest";
+import { forumRowOf, ingestOf } from "#/features/ingest/model/channel-ingest";
+import type { ChannelIngest, IngestRow } from "#/features/ingest/model/channel-ingest";
+import { kindOf, THREAD_PARENT_TYPES } from "#/features/ingest/model/channel-kind";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
@@ -13,12 +13,13 @@ import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 
 const NO_MESSAGES = 0;
-const SELECTABLE_TYPES: ReadonlySet<number> = new Set([
-  ChannelType.GuildText,
-  ChannelType.GuildAnnouncement,
-]);
 
-type SettingsChannel = Readonly<{ id: string; name: string; ingest: ChannelIngest }>;
+type SettingsChannel =
+  | Readonly<{ kind: "text"; id: string; name: string; ingest: ChannelIngest }>
+  | Readonly<{ kind: "forum"; id: string; name: string; ingest: ChannelIngest; posts: number }>;
+
+type StoredRow = IngestRow &
+  Readonly<{ id: string; name: string; type: number; parentId: string | null }>;
 
 type Consent =
   | Readonly<{ status: "awaiting" }>
@@ -54,6 +55,24 @@ const loadConsent = (guildId: string): Effect.Effect<Consent> =>
     ),
   );
 
+const settingsChannelOf = (
+  scope: ConsentScope,
+  row: StoredRow,
+  rows: readonly StoredRow[],
+): SettingsChannel => {
+  if (kindOf(row.type) === "text") {
+    return { kind: "text", id: row.id, name: row.name, ingest: ingestOf(scope, row) };
+  }
+  const posts = rows.filter(({ parentId }) => parentId === row.id);
+  return {
+    kind: "forum",
+    id: row.id,
+    name: row.name,
+    ingest: ingestOf(scope, forumRowOf(row, posts)),
+    posts: posts.length,
+  };
+};
+
 const loadChannels = (
   guildId: string,
   scope: ConsentScope,
@@ -64,6 +83,7 @@ const loadChannels = (
         id: channel.id,
         name: channel.name,
         type: channel.type,
+        parentId: channel.parentId,
         newest: channel.newestMessageId,
         backfill: channel.backfill,
         botAccess: channel.botAccess,
@@ -73,8 +93,8 @@ const loadChannels = (
   ).pipe(
     Effect.map((rows) =>
       rows
-        .filter(({ type }) => SELECTABLE_TYPES.has(type))
-        .map((row) => ({ id: row.id, name: row.name, ingest: ingestOf(scope, row) })),
+        .filter(({ type }) => THREAD_PARENT_TYPES.has(type))
+        .map((row) => settingsChannelOf(scope, row, rows)),
     ),
   );
 

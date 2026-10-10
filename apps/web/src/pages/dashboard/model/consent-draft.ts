@@ -14,11 +14,14 @@ const UNTOUCHED: ConsentDraft = { status: "untouched" };
 const readableChannels = (settings: GuildSettings): GuildSettings["channels"] =>
   settings.channels.filter(({ ingest }) => ingest !== "unreadable");
 
+const noticeChannels = (settings: GuildSettings): GuildSettings["channels"] =>
+  readableChannels(settings).filter(({ kind }) => kind === "text");
+
 const noticeChannelOfDataFirst = (settings: GuildSettings, draft: ConsentDraft): string => {
   if (draft.status === "edited") {
     return draft.noticeChannelId;
   }
-  return Array.head(readableChannels(settings)).pipe(
+  return Array.head(noticeChannels(settings)).pipe(
     Option.map(({ id }) => id),
     Option.getOrElse(() => NO_CHANNEL),
   );
@@ -29,5 +32,5 @@ const noticeChannelOf: {
   (settings: GuildSettings, draft: ConsentDraft): string;
 } = Function.dual(DATA_FIRST_ARITY, noticeChannelOfDataFirst);
 
-export { NO_CHANNEL, noticeChannelOf, readableChannels, UNTOUCHED };
+export { NO_CHANNEL, noticeChannelOf, noticeChannels, readableChannels, UNTOUCHED };
 export type { ConsentDraft };

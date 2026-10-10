@@ -6,6 +6,7 @@ export {
   getGuild,
   leaveGuild,
   listActiveThreads,
+  listArchivedThreads,
   listBotGuilds,
   listGuildChannels,
   listMessages,

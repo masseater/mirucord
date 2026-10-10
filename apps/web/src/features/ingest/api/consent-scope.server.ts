@@ -1,7 +1,8 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, notInArray, or } from "drizzle-orm";
 import { Array, DateTime, Effect, Option } from "effect";
 
 import { isPastRetention } from "#/features/ingest/model/bot-access";
+import { FORUM_TYPES } from "#/features/ingest/model/channel-kind";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 
@@ -77,12 +78,18 @@ const purgeOutOfScope = (guildId: string): Effect.Effect<void> =>
     Effect.flatMap((outOfScope) => Effect.forEach(outOfScope, purgeChannel, { discard: true })),
   );
 
+const NEEDS_INGEST = and(
+  eq(channel.botAccess, "readable"),
+  notInArray(channel.type, [...FORUM_TYPES]),
+  or(eq(channel.archive, "open"), eq(channel.backfill, "pending")),
+);
+
 const enqueueReadable = (guildId: string): Effect.Effect<void> =>
   Effect.promise(() =>
     db
       .select({ id: channel.id })
       .from(channel)
-      .where(and(eq(channel.guildId, guildId), eq(channel.botAccess, "readable"))),
+      .where(and(eq(channel.guildId, guildId), NEEDS_INGEST)),
   ).pipe(Effect.flatMap((rows) => enqueue(rows.map(({ id }) => ({ guildId, channelId: id })))));
 
 const enqueueInScope = (guildId: string): Effect.Effect<void> =>

@@ -35,7 +35,10 @@ const NOTICE = [
 ].join("\n");
 
 const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean =>
-  channels.some(({ id, ingest }) => id === request.noticeChannelId && ingest !== "unreadable");
+  channels.some(
+    ({ kind, id, ingest }) =>
+      kind === "text" && id === request.noticeChannelId && ingest !== "unreadable",
+  );
 
 const postNoticeOnce = (request: ConsentRequest, scope: ConsentScope): Effect.Effect<boolean> => {
   if (scope.status === "granted") {

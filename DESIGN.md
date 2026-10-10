@@ -74,14 +74,15 @@ SVG の中に置くときは `mascotSrc` を `image` 要素に渡す。
 
 ## 共通部品
 
-| 部品           | 置き場所                      | 使いどころ               |
-| -------------- | ----------------------------- | ------------------------ |
-| `AppFrame`     | `shared/ui/app-frame/`        | LP 以外のページの外枠    |
-| `Panel`        | `shared/ui/panel.tsx`         | 管理画面や規約のまとまり |
-| `PopButton`    | `shared/ui/pop-button.tsx`    | 画面内の操作             |
-| `SpeechBubble` | `shared/ui/speech-bubble.tsx` | ミルのセリフ             |
-| `MascotTip`    | `shared/ui/mascot-tip.tsx`    | ミルと吹き出しの組       |
-| `Mascot`       | `shared/brand/mascot.tsx`     | ミル本体                 |
+| 部品           | 置き場所                      | 使いどころ                 |
+| -------------- | ----------------------------- | -------------------------- |
+| `AppFrame`     | `shared/ui/app-frame/`        | LP 以外のページの外枠      |
+| `Panel`        | `shared/ui/panel.tsx`         | 管理画面や規約のまとまり   |
+| `PopButton`    | `shared/ui/pop-button.tsx`    | 画面内の操作               |
+| `SpeechBubble` | `shared/ui/speech-bubble.tsx` | ミルのセリフ               |
+| `MascotTip`    | `shared/ui/mascot-tip.tsx`    | ミルと吹き出しの組         |
+| `Mascot`       | `shared/brand/mascot.tsx`     | ミル本体                   |
+| `ChannelIcon`  | `shared/ui/channel-icon.tsx`  | チャンネルとフォーラムの印 |
 
 新しいページはまずこれらで組み、足りないときだけ部品を足す。
 部品を足したら、この表に追記する。

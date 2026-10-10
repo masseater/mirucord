@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { ChannelIcon } from "./channel-icon";
-import type { ChannelKind } from "./channel-icon";
+import { ChannelIcon } from "#/shared/ui/channel-icon";
+import type { ChannelKind } from "#/shared/ui/channel-icon";
 
 const NO_TOPIC = "";
 

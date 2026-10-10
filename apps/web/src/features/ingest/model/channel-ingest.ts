@@ -1,4 +1,4 @@
-import { Boolean, Function, Option } from "effect";
+import { Array, Boolean, Function, Option, pipe } from "effect";
 
 import type { ConsentScope } from "./consent-scope";
 
@@ -41,10 +41,36 @@ const ingestOfDataFirst = (scope: ConsentScope, row: IngestRow): ChannelIngest =
   return BACKFILL_INGEST[row.backfill];
 };
 
+const newestOfPosts = (posts: readonly IngestRow[]): string | null =>
+  pipe(
+    posts,
+    Array.map(({ newest }) => Option.fromNullOr(newest)),
+    Array.getSomes,
+    Array.head,
+    Option.getOrNull,
+  );
+
+const forumRowOfDataFirst = (
+  forum: Pick<IngestRow, "botAccess">,
+  posts: readonly IngestRow[],
+): IngestRow => ({
+  newest: newestOfPosts(posts),
+  backfill: Boolean.match(
+    posts.every(({ backfill }) => backfill === "done"),
+    { onTrue: () => "done" as const, onFalse: () => "pending" as const },
+  ),
+  botAccess: forum.botAccess,
+});
+
+const forumRowOf: {
+  (posts: readonly IngestRow[]): (forum: Pick<IngestRow, "botAccess">) => IngestRow;
+  (forum: Pick<IngestRow, "botAccess">, posts: readonly IngestRow[]): IngestRow;
+} = Function.dual(DATA_FIRST_ARITY, forumRowOfDataFirst);
+
 const ingestOf: {
   (row: IngestRow): (scope: ConsentScope) => ChannelIngest;
   (scope: ConsentScope, row: IngestRow): ChannelIngest;
 } = Function.dual(DATA_FIRST_ARITY, ingestOfDataFirst);
 
-export { ingestOf };
+export { forumRowOf, ingestOf };
 export type { ChannelIngest, IngestRow };

@@ -12,8 +12,7 @@ import { Panel } from "#/shared/ui/panel";
 import { ConsentActions } from "./consent-actions";
 
 const FAILED = "うまくいきませんでした。";
-const SCOPE =
-  "は、あなたが Discord で読めるチャンネルのメッセージを一覧して読めるようになります。投稿や変更はできません。";
+const SCOPE = "は、あなたが Discord で読めるチャンネルのメッセージを読めるようになります。";
 const ASK = "へのアクセスを許可しますか";
 
 const answerConsent = (accept: boolean): Promise<unknown> =>

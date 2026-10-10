@@ -7,7 +7,7 @@ import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
-const TIP = "サーバーの管理者さん向けの画面です。";
+const TIP = "サーバーの管理者さん向けだよ";
 const TITLE = "ログインして管理画面へ";
 const SIGN_IN = "Discord でログイン";
 const FAILED = "ログインできませんでした。";

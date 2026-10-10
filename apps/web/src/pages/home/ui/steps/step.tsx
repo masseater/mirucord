@@ -11,7 +11,7 @@ const Step = ({
   <li className="border-ink bg-milk shadow-pop flex flex-col gap-5 rounded-3xl border-2 p-7">
     <span
       className={cn(
-        "border-ink text-milk grid size-16 place-items-center rounded-full border-2 text-3xl font-black",
+        "border-ink text-ink grid size-16 place-items-center rounded-full border-2 text-3xl font-black",
         tone,
       )}
     >

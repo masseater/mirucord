@@ -86,8 +86,8 @@ export default defineConfig({
       "no-comments/disallowComments": "error",
       ...allRulesOf("tanstack-query", tanstackQuery),
       ...allRulesOf("tanstack-router", tanstackRouter),
-      "drizzle/enforce-delete-with-where": ["error", { drizzleObjectName: ["db"] }],
-      "drizzle/enforce-update-with-where": ["error", { drizzleObjectName: ["db"] }],
+      "drizzle/enforce-delete-with-where": "error",
+      "drizzle/enforce-update-with-where": "error",
       ...allRulesOf("shadcn", shadcn),
       ...allRulesOf("baseline-js", baselineJs),
       ...baselineJs.configs.recommended().rules,
@@ -150,6 +150,10 @@ export default defineConfig({
       {
         files: ["**/*.config.ts", "**/alchemy.run.ts", "**/src/app/server/index.ts"],
         rules: { "import/no-default-export": "off" },
+      },
+      {
+        files: ["**/shared/discord/discord.server.ts"],
+        rules: { "drizzle/enforce-delete-with-where": ["error", { drizzleObjectName: ["db"] }] },
       },
       {
         files: ["**/shared/ui/**"],

@@ -532,6 +532,10 @@
         transparent 1.5deg 8deg
       );
       mask-image: radial-gradient(circle, transparent 12%, black 45%);
+    }
+
+    .finale-lines,
+    .finale-burst {
       --s: 1;
       --e: 0.14;
       animation-name: finale-spin, finale-fade-out;
@@ -561,9 +565,6 @@
           transparent 23deg 30deg
         );
       mask-image: radial-gradient(circle, black 8%, transparent 40%);
-      --s: 1;
-      --e: 0.14;
-      animation-name: finale-spin, finale-fade-out;
     }
 
     .finale-slab {
@@ -574,7 +575,7 @@
       --s: 0.98;
       --e: 0.88;
       --ox: -110%;
-      animation-name: finale-slide-left, finale-out;
+      animation-name: finale-slide, finale-out;
     }
 
     .finale-stripe {
@@ -590,7 +591,7 @@
       --s: 0.95;
       --e: 0.85;
       --ox: 110%;
-      animation-name: finale-slide-right, finale-out;
+      animation-name: finale-slide, finale-out;
     }
 
     .finale-ring {
@@ -713,19 +714,18 @@
     .finale-count {
       position: relative;
       z-index: 3;
+      animation-name: finale-shake;
     }
 
     .finale-title {
       font-size: clamp(2.25rem, 7vw, 6rem);
       --s: 0.82;
       --e: 0.6;
-      animation-name: finale-shake;
     }
 
     .finale-count {
       --s: 0.5;
       --e: 0.42;
-      animation-name: finale-shake;
     }
 
     .finale-word {
@@ -897,15 +897,9 @@
   }
 }
 
-@keyframes finale-slide-left {
+@keyframes finale-slide {
   from {
-    translate: -110% 0;
-  }
-}
-
-@keyframes finale-slide-right {
-  from {
-    translate: 110% 0;
+    translate: var(--ox) 0;
   }
 }
 

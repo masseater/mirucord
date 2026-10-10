@@ -2,8 +2,9 @@ import type { ReactNode } from "react";
 
 import cutinMiru from "./cutin-miru.svg";
 import { FinaleCount } from "./finale-count";
-import { FinaleFrags } from "./finale-frags";
 import { FinaleTitle } from "./finale-title";
+import { FragmentCard } from "./fragment-card";
+import { FRAGMENTS } from "./fragments";
 
 const SPARKS = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
 const SPARK = "✦";
@@ -15,7 +16,16 @@ const GatherCard = (): ReactNode => (
     <span aria-hidden="true" className="finale-slab finale-part bg-grape" />
     <span aria-hidden="true" className="finale-stripe finale-part bg-butter-deep" />
     <span aria-hidden="true" className="finale-ring finale-part" />
-    <FinaleFrags />
+    <ul aria-hidden="true" className="finale-frags">
+      {FRAGMENTS.map((fragment) => (
+        <FragmentCard
+          key={fragment.text}
+          className="finale-frag finale-part"
+          member={fragment.member}
+          text={fragment.text}
+        />
+      ))}
+    </ul>
     <img
       src={cutinMiru}
       alt=""

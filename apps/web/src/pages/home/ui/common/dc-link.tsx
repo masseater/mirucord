@@ -2,11 +2,11 @@ import { cva } from "class-variance-authority";
 import type { ReactNode } from "react";
 
 const dcButtonVariants = cva(
-  "text-dc-bright focus-visible:outline-dc-link inline-flex shrink-0 items-center justify-center gap-2 rounded-sm font-bold whitespace-nowrap no-underline focus-visible:outline-2 motion-safe:transition-colors",
+  "text-dc-bright focus-visible:outline-dc-link inline-flex shrink-0 items-center justify-center gap-2 rounded-full font-bold whitespace-nowrap no-underline focus-visible:outline-2 motion-safe:transition-colors",
   {
     variants: {
       tone: {
-        primary: "bg-discord hover:bg-discord/85",
+        primary: "bg-grape hover:bg-grape/85",
         secondary: "bg-dc-active hover:bg-dc-line",
       },
       size: {

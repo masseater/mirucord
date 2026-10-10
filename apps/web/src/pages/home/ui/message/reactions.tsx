@@ -21,8 +21,8 @@ const Reactions = ({ items }: Readonly<{ items: readonly Reaction[] }>): ReactNo
       <li
         key={item.emoji}
         className={cn(
-          "flex items-center gap-1.5 rounded-md border px-1.5 py-0.5 text-sm",
-          item.by === "me" && "bg-discord/15 border-discord",
+          "flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-sm",
+          item.by === "me" && "bg-grape/25 border-lavender-deep",
           item.by === "others" && "bg-dc-sidebar border-transparent",
         )}
       >

@@ -52,7 +52,7 @@ const ChatLog = (): ReactNode => (
       <span className="text-dc-muted w-10 shrink-0 text-right text-xs opacity-0 group-hover:opacity-100">
         {CAMP_TIME}
       </span>
-      <span className="bg-discord/30 text-dc-bright -mr-3 rounded-sm px-0.5 font-medium">
+      <span className="bg-grape/50 text-dc-bright -mr-3 rounded-sm px-0.5 font-medium">
         {MENTION}
       </span>
       <span className="text-dc-text">{RIVER}</span>

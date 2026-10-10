@@ -3,9 +3,14 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 
 import { authClient } from "#/shared/auth";
+import { AppFrame } from "#/shared/ui/app-frame";
+import { MascotTip } from "#/shared/ui/mascot-tip";
+import { Panel } from "#/shared/ui/panel";
+import { PopButton } from "#/shared/ui/pop-button";
 
+const TIP = "おかえり！ Discord でログインしたら思い出さがしをはじめよう";
 const TITLE = "mirucord にログイン";
-const SUMMARY = "Discord からはユーザー ID と表示名だけを受け取ります。";
+const SUMMARY = "Discord のユーザー ID と名前だけを使います。";
 const SIGN_IN = "Discord でログイン";
 const FAILED = "ログインできませんでした。もう一度お試しください。";
 
@@ -18,19 +23,21 @@ const SignInPage = (): ReactNode => {
     mutate();
   }, [mutate]);
   return (
-    <main className="mx-auto flex max-w-xl flex-col gap-6 p-8">
-      <h1 className="text-2xl font-bold">{TITLE}</h1>
-      <p>{SUMMARY}</p>
-      <button
-        type="button"
-        className="bg-primary text-primary-foreground rounded px-4 py-2 disabled:opacity-50"
-        disabled={status === "pending"}
-        onClick={startSignIn}
-      >
-        {SIGN_IN}
-      </button>
-      {status === "error" && <p role="alert">{FAILED}</p>}
-    </main>
+    <AppFrame>
+      <MascotTip>{TIP}</MascotTip>
+      <Panel>
+        <h1 className="text-3xl font-black">{TITLE}</h1>
+        <p className="text-ink-soft font-bold">{SUMMARY}</p>
+        <PopButton tone="blurple" disabled={status === "pending"} onClick={startSignIn}>
+          {SIGN_IN}
+        </PopButton>
+        {status === "error" && (
+          <p role="alert" className="bg-pink rounded-2xl px-4 py-2 text-sm font-bold">
+            {FAILED}
+          </p>
+        )}
+      </Panel>
+    </AppFrame>
   );
 };
 

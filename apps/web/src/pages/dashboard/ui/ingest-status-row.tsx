@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest/index.server";
-import { cn } from "#/shared/lib/utils";
 
+import { Pill } from "./pill";
 import { PurgeChannelButton } from "./purge-channel-button";
 
 const INGEST = {
@@ -21,14 +21,7 @@ const IngestStatusRow = ({
 }: Readonly<{ guildId: string; channel: SettingsChannel }>): ReactNode => (
   <li className="border-line flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b-2 border-dashed py-2">
     <span className="font-bold">{`#${channel.name}`}</span>
-    <span
-      className={cn(
-        "border-ink rounded-full border-2 px-3 py-0.5 text-xs font-bold",
-        INGEST[channel.ingest].tone,
-      )}
-    >
-      {INGEST[channel.ingest].label}
-    </span>
+    <Pill tone={INGEST[channel.ingest].tone}>{INGEST[channel.ingest].label}</Pill>
     {channel.ingest === "paused" && <PurgeChannelButton guildId={guildId} channelId={channel.id} />}
   </li>
 );

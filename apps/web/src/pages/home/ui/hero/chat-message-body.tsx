@@ -11,7 +11,7 @@ const ChatMessageBody = ({
   <div className="flex flex-col gap-0.5">
     <p className="text-sm font-black">
       {name}
-      <time dateTime={time} className="text-mist ml-2 text-xs font-bold">
+      <time dateTime={time} className="text-ink-soft ml-2 text-xs font-bold">
         {time}
       </time>
     </p>

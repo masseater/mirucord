@@ -8,15 +8,32 @@ const MARK: Readonly<Record<Activity["status"], string>> = {
   mention: "bg-dc-new text-dc-rail ml-auto rounded-full px-1.5 text-xs leading-5 font-black",
 };
 
-const mentions = (activity: Activity): string => {
+const UNREAD_LABEL = "未読";
+
+const shown = (activity: Activity): string => {
   if (activity.status === "mention") {
     return String(activity.count);
   }
   return "";
 };
 
+const spoken = (activity: Activity): string => {
+  if (activity.status === "mention") {
+    return `メンション ${activity.count} 件`;
+  }
+  if (activity.status === "unread") {
+    return UNREAD_LABEL;
+  }
+  return "";
+};
+
 const ActivityMark = ({ activity }: Readonly<{ activity: Activity }>): ReactNode => (
-  <span className={MARK[activity.status]}>{mentions(activity)}</span>
+  <>
+    <span aria-hidden="true" className={MARK[activity.status]}>
+      {shown(activity)}
+    </span>
+    <span className="sr-only">{spoken(activity)}</span>
+  </>
 );
 
 export { ActivityMark };

@@ -1,5 +1,6 @@
 import { Array, Boolean, Function, Option, pipe } from "effect";
 
+import type { BotAccess } from "./bot-access";
 import type { ConsentScope } from "./consent-scope";
 
 const DATA_FIRST_ARITY = 2;
@@ -20,8 +21,8 @@ type ChannelIngest =
 
 type IngestRow = Readonly<{
   newest: string | null;
-  backfill: "pending" | "done";
-  botAccess: "readable" | "hidden";
+  backfill: keyof typeof BACKFILL_INGEST;
+  botAccess: BotAccess["status"];
 }>;
 
 const ingestOfDataFirst = (scope: ConsentScope, row: IngestRow): ChannelIngest => {

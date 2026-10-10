@@ -3,6 +3,7 @@ import { Link, useParams } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 import { guildPageQuery } from "#/pages/dashboard/api/dashboard";
+import { DASHBOARD_PATH } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 
@@ -20,7 +21,7 @@ const GuildSettingsPage = (): ReactNode => {
       <Link to="/dashboard" className="text-ink-soft hover:text-grape self-start font-bold">
         {BACK}
       </Link>
-      {data.status === "signedOut" && <SignInPanel returnTo={`/dashboard/${guildId}`} />}
+      {data.status === "signedOut" && <SignInPanel returnTo={`${DASHBOARD_PATH}/${guildId}`} />}
       {data.status === "notManaged" && <MascotTip>{NOT_MANAGED}</MascotTip>}
       {data.status === "ready" && <GuildSettingsView settings={data.settings} />}
     </AppFrame>

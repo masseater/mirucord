@@ -17,10 +17,6 @@ type GuildScope = Readonly<{
   visible: readonly string[];
 }>;
 
-const listGuildIds: Effect.Effect<readonly string[]> = Effect.promise(() =>
-  db.select({ id: guild.id }).from(guild),
-).pipe(Effect.map((rows) => rows.map(({ id }) => id)));
-
 const loadChannels = (guildId: string): Effect.Effect<readonly StoredChannel[]> =>
   Effect.promise(() =>
     db
@@ -90,5 +86,5 @@ const resolveScope = ({
     ),
   );
 
-export { listGuildIds, resolveScope };
+export { resolveScope };
 export type { GuildScope, StoredChannel, StoredGuild };

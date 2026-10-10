@@ -9,6 +9,10 @@
   gap: 1rem;
 }
 
+.scene-frag-ghost {
+  display: none;
+}
+
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .scene-track {
@@ -409,6 +413,15 @@
         contain 0% contain 100%,
         contain calc(var(--seen) + 0.42%) contain calc(var(--seen) + 1.25%),
         contain calc(var(--seen) + 1.04%) contain calc(var(--seen) + 1.91%);
+    }
+
+    .scene-frag-ghost {
+      display: grid;
+      grid-template-rows: 1fr;
+      padding-block: 0.25rem;
+      animation: scene-frag-pull linear both;
+      animation-timeline: --scene;
+      animation-range: contain calc(var(--seen) + 0.55%) contain calc(var(--seen) + 1.04%);
     }
 
     .scene-frag:nth-child(1) {
@@ -1044,5 +1057,13 @@
   }
   100% {
     scale: 1;
+  }
+}
+
+@keyframes scene-frag-pull {
+  to {
+    grid-template-rows: 0fr;
+    padding-block: 0;
+    opacity: 0;
   }
 }

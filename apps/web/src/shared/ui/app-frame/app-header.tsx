@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
+import { DASHBOARD_PATH } from "#/shared/config";
 
 const BRAND = "mirucord";
 const DASHBOARD = "管理画面";
@@ -11,7 +12,7 @@ const AppHeader = (): ReactNode => (
       <Mascot className="size-10" />
       {BRAND}
     </a>
-    <a href="/dashboard" className="hover:text-grape text-sm font-bold no-underline">
+    <a href={DASHBOARD_PATH} className="hover:text-grape text-sm font-bold no-underline">
       {DASHBOARD}
     </a>
   </header>

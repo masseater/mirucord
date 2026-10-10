@@ -1,6 +1,8 @@
 import { ChannelType } from "discord-api-types/v10";
 import { Function, Option } from "effect";
 
+import { THREAD_TYPES } from "#/shared/discord";
+
 import { canReadHistory } from "./permissions";
 import type { Overwrite } from "./permissions";
 
@@ -22,17 +24,9 @@ type Member = Readonly<{ userId: string; roleIds: readonly string[] }>;
 
 const DATA_FIRST_ARITY = 2;
 
-const PUBLIC_THREAD_TYPES: ReadonlySet<number> = new Set([
-  ChannelType.AnnouncementThread,
-  ChannelType.PublicThread,
-]);
+const ANY_THREAD_TYPES: ReadonlySet<number> = new Set([...THREAD_TYPES, ChannelType.PrivateThread]);
 
-const THREAD_TYPES: ReadonlySet<number> = new Set([
-  ...PUBLIC_THREAD_TYPES,
-  ChannelType.PrivateThread,
-]);
-
-const isThread = ({ type }: GuildChannel): boolean => THREAD_TYPES.has(type);
+const isThread = ({ type }: GuildChannel): boolean => ANY_THREAD_TYPES.has(type);
 
 const readableChannels = (snapshot: GuildSnapshot, member: Member): ReadonlySet<string> => {
   const reader = {
@@ -63,7 +57,7 @@ const visibleChannelIdsDataFirst = (
       const threads = snapshot.channels
         .filter(
           (guildChannel) =>
-            PUBLIC_THREAD_TYPES.has(guildChannel.type) &&
+            THREAD_TYPES.has(guildChannel.type) &&
             Option.exists(guildChannel.parentId, (parentId) => readable.has(parentId)),
         )
         .map(({ id }) => id);

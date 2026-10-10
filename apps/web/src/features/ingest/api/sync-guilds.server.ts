@@ -35,6 +35,16 @@ const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
     Effect.asVoid,
   );
 
+const updateGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
+  Effect.asVoid(
+    Effect.promise(() =>
+      db
+        .update(guild)
+        .set({ name: discordGuild.name, ownerId: discordGuild.owner_id })
+        .where(eq(guild.id, discordGuild.id)),
+    ),
+  );
+
 const replaceRoles = (discordGuild: DiscordGuild): Effect.Effect<void> =>
   Effect.asVoid(
     Effect.promise(() =>
@@ -109,7 +119,7 @@ const eachGuild = (
   );
 
 const refreshGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
-  getGuild(guildId).pipe(Effect.tap(upsertGuild), Effect.flatMap(replaceRoles));
+  getGuild(guildId).pipe(Effect.tap(updateGuild), Effect.flatMap(replaceRoles));
 
 const syncMembership = (
   refreshKnown: (guildId: string) => Effect.Effect<void, GuildSyncError>,

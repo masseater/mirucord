@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { DcLink } from "#/pages/home/ui/message/dc-link";
+import { DcLink } from "#/pages/home/ui/common/dc-link";
 import { DASHBOARD_PATH, REPOSITORY_URL } from "#/shared/config";
 
 const START = "Discord でログインしてはじめる";

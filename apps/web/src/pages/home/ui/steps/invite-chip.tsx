@@ -3,8 +3,8 @@ import { Match } from "effect";
 import type { ReactNode } from "react";
 
 import { inviteQuery } from "#/pages/home/api/invite";
+import { DcLink } from "#/pages/home/ui/common/dc-link";
 import { DiscordMark } from "#/pages/home/ui/common/discord-mark";
-import { DcLink } from "#/pages/home/ui/message/dc-link";
 
 const LABEL = "サーバーに追加する";
 const FULL = "現在は登録できるサーバー数の上限に達しています。しばらくしてからお試しください。";

@@ -17,7 +17,7 @@ const FeatureCell = ({
 }>): ReactNode => (
   <div
     className={cn(
-      "border-ink shadow-pop flex flex-col gap-6 rounded-3xl border-2 p-7 transition-transform hover:-translate-y-1",
+      "border-ink shadow-pop flex flex-col gap-6 rounded-3xl border-2 p-7 motion-safe:transition-transform motion-safe:hover:-translate-y-1",
       className,
     )}
   >

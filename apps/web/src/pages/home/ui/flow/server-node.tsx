@@ -5,8 +5,8 @@ import { DiscordMark } from "#/pages/home/ui/common/discord-mark";
 const TITLE = "みんなのサーバー";
 const CAPTION = "Bot を招待するだけ";
 
-const ServerNode = (): ReactNode => (
-  <g transform="translate(20 76)">
+const ServerNode = ({ left, top }: Readonly<{ left: string; top: string }>): ReactNode => (
+  <g transform={`translate(${left} ${top})`}>
     <rect y="8" width="230" height="160" rx="40" className="fill-ink" />
     <rect width="230" height="160" rx="40" className="fill-lavender stroke-ink" strokeWidth="3" />
     <DiscordMark left="91" top="26" size="48" className="fill-discord" />

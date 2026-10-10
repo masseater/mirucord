@@ -4,6 +4,8 @@ import { cn } from "#/shared/lib/utils";
 
 import type { SidebarCategory } from "./sidebar-categories";
 
+const COLLAPSED_LABEL = "(たたまれています)";
+
 const CHEVRON: Readonly<Record<SidebarCategory["state"], string>> = {
   open: "rotate-90",
   collapsed: "rotate-0",
@@ -27,6 +29,7 @@ const CategoryHeading = ({
       <path d="M9 6l6 6-6 6" />
     </svg>
     {name}
+    {state === "collapsed" && <span className="sr-only">{COLLAPSED_LABEL}</span>}
   </p>
 );
 

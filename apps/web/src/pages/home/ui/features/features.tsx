@@ -19,21 +19,20 @@ const REACTIONS = [
   { emoji: "✅", count: 2, by: "me" },
 ] as const;
 
+const WORRY: ChatLine = {
+  author: memberAuthor(MEMBERS.yui),
+  time: "今日 21:02",
+  text: "運営チャンネルの話まで出てきたらどうしようって思ってた",
+  reactions: [],
+};
+
 const CHATTER: readonly ChatLine[] = [
-  {
-    author: memberAuthor(MEMBERS.yui),
-    time: "今日 21:02",
-    text: "運営チャンネルの話まで出てきたらどうしようって思ってた",
-    reactions: [],
-  },
+  WORRY,
   {
     author: BOT,
     time: "今日 21:02",
     text: "出てこないよ！あなたが読めるチャンネルだけ見るね",
-    reply: {
-      author: memberAuthor(MEMBERS.yui),
-      text: "運営チャンネルの話まで出てきたらどうしようって思ってた",
-    },
+    reply: WORRY,
     reactions: [{ emoji: "🙆", count: 3, by: "others" }],
   },
   {

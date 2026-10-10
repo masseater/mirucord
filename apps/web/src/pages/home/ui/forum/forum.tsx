@@ -15,6 +15,13 @@ const GUIDE = "フォーラムもまかせてね！";
 const CHANNEL = "キャンプ部";
 const TIME = "今日 21:01";
 
+const RECIPE: ChatLine = {
+  author: memberAuthor(MEMBERS.miho),
+  time: "今日 21:01",
+  text: "レシピのまとめもミルに聞けば一発じゃん",
+  reactions: [],
+};
+
 const CHATTER: readonly ChatLine[] = [
   {
     author: memberAuthor(MEMBERS.kenta),
@@ -22,17 +29,12 @@ const CHATTER: readonly ChatLine[] = [
     text: "しおりのスレ、返信 40 件こえてて追えてなかったから助かる",
     reactions: [{ emoji: "🙏", count: 2, by: "others" }],
   },
-  {
-    author: memberAuthor(MEMBERS.miho),
-    time: "今日 21:01",
-    text: "レシピのまとめもミルに聞けば一発じゃん",
-    reactions: [],
-  },
+  RECIPE,
   {
     author: BOT,
     time: "今日 21:01",
     text: "まかせて！返信のおくのほうまで読むよ",
-    reply: { author: memberAuthor(MEMBERS.miho), text: "レシピのまとめもミルに聞けば一発じゃん" },
+    reply: RECIPE,
     reactions: [{ emoji: "💜", count: 3, by: "me" }],
   },
 ];

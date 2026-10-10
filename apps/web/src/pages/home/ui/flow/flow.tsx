@@ -18,21 +18,20 @@ const TIME = "今日 21:01";
 
 const REACTIONS = [{ emoji: "💡", count: 4, by: "others" }] as const;
 
+const QUESTION: ChatLine = {
+  author: memberAuthor(MEMBERS.tanaka),
+  time: "今日 21:01",
+  text: "AI に聞くと Discord の中まで見てくれるってこと？",
+  reactions: [],
+};
+
 const CHATTER: readonly ChatLine[] = [
-  {
-    author: memberAuthor(MEMBERS.tanaka),
-    time: "今日 21:01",
-    text: "AI に聞くと Discord の中まで見てくれるってこと？",
-    reactions: [],
-  },
+  QUESTION,
   {
     author: BOT,
     time: "今日 21:01",
     text: "そうだよ！ミルがかわりにさがして、AI にわたすの",
-    reply: {
-      author: memberAuthor(MEMBERS.tanaka),
-      text: "AI に聞くと Discord の中まで見てくれるってこと？",
-    },
+    reply: QUESTION,
     reactions: [{ emoji: "👀", count: 2, by: "others" }],
   },
   {

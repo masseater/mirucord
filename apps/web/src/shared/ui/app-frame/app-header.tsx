@@ -11,7 +11,7 @@ const AppHeader = (): ReactNode => (
       <Mascot className="size-10" />
       {BRAND}
     </a>
-    <a href="/dashboard" className="hover:text-blurple text-sm font-bold no-underline">
+    <a href="/dashboard" className="hover:text-grape text-sm font-bold no-underline">
       {DASHBOARD}
     </a>
   </header>

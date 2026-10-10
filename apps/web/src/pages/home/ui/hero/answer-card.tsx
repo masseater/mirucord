@@ -15,7 +15,7 @@ const AnswerCard = (): ReactNode => (
       <AnswerSource />
       {ANSWER_TAIL}
     </p>
-    <span className="bg-mint mt-2 inline-flex rounded-full px-3 py-1 text-xs font-bold">
+    <span className="bg-sky mt-2 inline-flex rounded-full px-3 py-1 text-xs font-bold">
       {CITATION}
     </span>
   </div>

@@ -14,7 +14,7 @@ const StepList = (): ReactNode => (
     <Step number="1" tone="bg-lavender-deep" title={INVITE}>
       <InviteChip />
     </Step>
-    <Step number="2" tone="bg-mint-deep" title={REGISTER}>
+    <Step number="2" tone="bg-butter-deep" title={REGISTER}>
       <CommandBox />
     </Step>
     <Step number="3" tone="bg-pink-deep" title={ASK}>

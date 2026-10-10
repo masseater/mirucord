@@ -16,7 +16,7 @@ const MESSAGES = [
   },
   {
     initial: "け",
-    avatar: "bg-mint-deep",
+    avatar: "bg-lavender-deep",
     name: "kenta",
     time: "22:05",
     body: "来年もぜったいキャンプ行こう",
@@ -43,7 +43,7 @@ const MESSAGES = [
 const ChatLog = (): ReactNode => (
   <div className="border-ink bg-milk shadow-pop relative -rotate-1 rounded-3xl border-2 px-6 pt-5 pb-8">
     <div className="border-line text-ink-soft flex justify-between border-b-2 border-dashed pb-3 text-sm font-bold">
-      <span className="text-blurple">{CHANNEL}</span>
+      <span className="text-grape">{CHANNEL}</span>
       <span>{DATE}</span>
     </div>
     <ul>

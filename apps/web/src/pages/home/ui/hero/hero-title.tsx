@@ -14,7 +14,7 @@ const HeroTitle = (): ReactNode => (
     </span>
     <h1 className="text-4xl leading-tight font-black sm:text-5xl lg:text-6xl">
       <span className="block">{LEAD}</span>
-      <span className="marker-butter text-blurple">{FOCUS}</span>
+      <span className="marker-butter text-grape">{FOCUS}</span>
     </h1>
     <p className="text-ink-soft text-lg leading-relaxed font-bold">{SUB}</p>
     <HeroActions />

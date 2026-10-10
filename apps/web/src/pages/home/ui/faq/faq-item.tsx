@@ -18,7 +18,7 @@ const FaqItem = ({
       <span className="grow">{question}</span>
       <span
         aria-hidden="true"
-        className="text-blurple text-2xl leading-none group-open:rotate-45 motion-safe:transition-transform"
+        className="text-grape text-2xl leading-none group-open:rotate-45 motion-safe:transition-transform"
       >
         {OPEN}
       </span>

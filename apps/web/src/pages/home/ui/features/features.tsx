@@ -11,7 +11,7 @@ const LABEL = "とくちょう";
 
 const Features = (): ReactNode => (
   <section className="mx-auto w-full max-w-6xl px-5 py-24 md:py-32">
-    <SectionHead label={LABEL} guide={GUIDE} tone="bg-mint" lead={LEAD} tail={TAIL} />
+    <SectionHead label={LABEL} guide={GUIDE} tone="bg-butter" lead={LEAD} tail={TAIL} />
     <FeatureGrid />
   </section>
 );

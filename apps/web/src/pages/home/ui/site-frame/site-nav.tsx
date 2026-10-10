@@ -16,7 +16,7 @@ const SiteNav = (): ReactNode => (
       {BRAND}
     </a>
     <NavLinks />
-    <PopLink href={DASHBOARD_PATH} tone="blurple" size="sm">
+    <PopLink href={DASHBOARD_PATH} tone="grape" size="sm">
       {SIGN_IN}
     </PopLink>
   </header>

@@ -15,7 +15,7 @@ const FeatureGrid = (): ReactNode => (
     <FeatureCell number="1" lead={WRITE} className="bg-lavender">
       <OperationChips />
     </FeatureCell>
-    <FeatureCell number="2" lead={SCOPE_LEAD} tail={SCOPE_TAIL} className="bg-mint">
+    <FeatureCell number="2" lead={SCOPE_LEAD} tail={SCOPE_TAIL} className="bg-sky">
       <ChannelList />
     </FeatureCell>
     <FeatureCell number="3" lead={CIPHER} className="bg-pink">

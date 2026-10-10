@@ -9,7 +9,7 @@ const PopLink = ({
   children,
 }: Readonly<{
   href: string;
-  tone: "blurple" | "milk" | "pink";
+  tone: "grape" | "milk" | "pink";
   size?: "sm" | "md" | "lg";
   children: ReactNode;
 }>): ReactNode => (

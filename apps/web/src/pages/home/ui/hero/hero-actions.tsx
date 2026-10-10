@@ -8,7 +8,7 @@ const HOW = "しくみを見る";
 
 const HeroActions = (): ReactNode => (
   <div className="mt-2 flex flex-wrap gap-4">
-    <PopLink href={DASHBOARD_PATH} tone="blurple" size="lg">
+    <PopLink href={DASHBOARD_PATH} tone="grape" size="lg">
       {START}
     </PopLink>
     <PopLink href="#how" tone="milk" size="lg">

@@ -5,7 +5,7 @@ const popButtonVariants = cva(
   {
     variants: {
       tone: {
-        blurple: "bg-blurple text-milk",
+        grape: "bg-grape text-milk",
         milk: "bg-milk text-ink",
         pink: "bg-pink text-ink",
       },

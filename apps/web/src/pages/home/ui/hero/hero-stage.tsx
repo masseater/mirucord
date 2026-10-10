@@ -15,7 +15,7 @@ const HeroStage = (): ReactNode => (
     <div className="absolute -bottom-12 left-20 md:-bottom-10 md:left-36">
       <SpeechBubble>{GUIDE}</SpeechBubble>
     </div>
-    <Mascot className="motion-safe:animate-float absolute -bottom-6 -left-2 size-24 md:-bottom-4 md:left-2 md:size-36" />
+    <Mascot className="motion-safe:animate-float absolute -bottom-6 -left-2 size-28 md:-bottom-6 md:-left-4 md:size-44" />
   </div>
 );
 

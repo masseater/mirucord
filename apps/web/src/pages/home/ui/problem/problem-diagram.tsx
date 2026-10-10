@@ -58,7 +58,7 @@ const ProblemDiagram = (): ReactNode => (
     <text x="840" y="180" textAnchor="end" className="fill-ink text-lg font-black">
       {SCROLL_TAIL}
     </text>
-    <text x="840" y="220" textAnchor="end" className="fill-pink-deep text-2xl font-black">
+    <text x="840" y="220" textAnchor="end" className="fill-grape text-2xl font-black">
       {SAD}
     </text>
   </svg>

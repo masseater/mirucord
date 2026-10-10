@@ -35,7 +35,7 @@ const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): React
       {!Array.isReadonlyArrayNonEmpty(readable) && <p className="font-bold">{EMPTY}</p>}
       <NoticeChannelPicker channels={readable} value={noticeChannelId} onChoose={pickNotice} />
       <p className="text-ink-soft text-sm">{NOTE}</p>
-      <PopButton tone="blurple" disabled={!canSubmit} onClick={submit}>
+      <PopButton tone="grape" disabled={!canSubmit} onClick={submit}>
         {SUBMIT}
       </PopButton>
       <ConsentResultMessage

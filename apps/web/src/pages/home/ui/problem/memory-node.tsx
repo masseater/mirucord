@@ -4,7 +4,7 @@ import { cn } from "#/shared/lib/utils";
 
 const TONES = {
   near: { frame: "fill-butter", fade: "opacity-100" },
-  middle: { frame: "fill-mint", fade: "opacity-60" },
+  middle: { frame: "fill-sky", fade: "opacity-60" },
   far: { frame: "fill-pink", fade: "opacity-30" },
 } as const;
 

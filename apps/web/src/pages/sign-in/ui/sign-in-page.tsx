@@ -38,7 +38,7 @@ const SignInPage = (): ReactNode => {
       <Panel>
         <h1 className="text-3xl font-black">{TITLE}</h1>
         <p className="text-ink-soft font-bold">{SUMMARY}</p>
-        <PopButton tone="blurple" disabled={status === "pending"} onClick={startSignIn}>
+        <PopButton tone="grape" disabled={status === "pending"} onClick={startSignIn}>
           {SIGN_IN}
         </PopButton>
         {status === "error" && (

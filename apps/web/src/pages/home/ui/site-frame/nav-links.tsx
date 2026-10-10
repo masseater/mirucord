@@ -12,7 +12,7 @@ const NavLinks = (): ReactNode => (
   <ul className="text-ink-soft hidden gap-7 text-sm font-bold md:flex">
     {LINKS.map((link) => (
       <li key={link.href}>
-        <a href={link.href} className="hover:text-blurple no-underline">
+        <a href={link.href} className="hover:text-grape no-underline">
           {link.label}
         </a>
       </li>

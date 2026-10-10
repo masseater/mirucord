@@ -1,1 +1,1 @@
-export { embed } from "./embedding.server";
+export { embed, EmbeddingError } from "./embedding.server";

@@ -10,6 +10,7 @@ import type { DiscordGuild, DiscordRequestError } from "#/shared/discord/index.s
 
 import { listChannelsOf } from "./channel-listing.server";
 import { forgetGuildMessages } from "./message-rows.server";
+import type { VectorizeError } from "./message-rows.server";
 import { syncChannels } from "./sync-channels.server";
 
 const INGEST_FLAG = "ingest-enabled";
@@ -68,7 +69,7 @@ const leaveOverLimit = (rejected: readonly string[]): Effect.Effect<void> =>
     { discard: true },
   );
 
-const removeDepartedGuilds = (current: readonly string[]): Effect.Effect<void> =>
+const removeDepartedGuilds = (current: readonly string[]): Effect.Effect<void, VectorizeError> =>
   selectIds(() => db.select({ id: guild.id }).from(guild)).pipe(
     Effect.map((stored) => stored.filter((id) => !current.includes(id))),
     Effect.flatMap((departed) =>
@@ -117,7 +118,10 @@ const replaceRoles = (discordGuild: DiscordGuild): Effect.Effect<void> =>
     ),
   );
 
-const syncGuild = (botUserId: string, guildId: string): Effect.Effect<void, DiscordRequestError> =>
+const syncGuild = (
+  botUserId: string,
+  guildId: string,
+): Effect.Effect<void, DiscordRequestError | VectorizeError> =>
   Effect.gen(function* sync() {
     const discordGuild = yield* getGuild(guildId);
     const listing = yield* listChannelsOf({ botUserId, discordGuild });
@@ -154,31 +158,41 @@ const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
   ),
 );
 
-const syncAll: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* syncAll() {
-  const rotating = yield* isRotating;
-  if (rotating) {
-    yield* rewrapGuildKeys;
-  }
-  const current = (yield* listBotGuilds).map(({ id }) => id);
-  const botUserId = yield* getBotUserId;
-  const admitted = yield* admitGuilds(current);
-  yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));
-  yield* removeDepartedGuilds(admitted);
-  yield* Effect.forEach(
-    admitted,
-    (id) =>
-      syncGuild(botUserId, id).pipe(
-        Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),
-      ),
-    { discard: true },
-  );
-});
+const syncAll: Effect.Effect<void, DiscordRequestError | VectorizeError> = Effect.gen(
+  function* syncAll() {
+    const rotating = yield* isRotating;
+    if (rotating) {
+      yield* rewrapGuildKeys;
+    }
+    const current = (yield* listBotGuilds).map(({ id }) => id);
+    const botUserId = yield* getBotUserId;
+    const admitted = yield* admitGuilds(current);
+    yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));
+    yield* removeDepartedGuilds(admitted);
+    yield* Effect.forEach(
+      admitted,
+      (id) =>
+        syncGuild(botUserId, id).pipe(
+          Effect.catchTags({
+            DiscordRequestError: ({ status }) => logDiscordFailure(status),
+            VectorizeError: ({ cause }) =>
+              Effect.logError("Could not remove vectors while syncing a server").pipe(
+                Effect.annotateLogs({ guildId: id, cause: String(cause) }),
+              ),
+          }),
+        ),
+      { discard: true },
+    );
+  },
+);
 
-const syncGuilds: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* syncGuilds() {
-  const enabled = yield* ingestEnabled;
-  if (enabled) {
-    yield* syncAll;
-  }
-});
+const syncGuilds: Effect.Effect<void, DiscordRequestError | VectorizeError> = Effect.gen(
+  function* syncGuilds() {
+    const enabled = yield* ingestEnabled;
+    if (enabled) {
+      yield* syncAll;
+    }
+  },
+);
 
 export { guildLimit, syncGuilds };

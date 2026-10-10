@@ -14,11 +14,14 @@ import type {
 import { columnsOf } from "./bot-access.server";
 import { loadScope } from "./consent-scope.server";
 import { channelMessagesSince, deleteMessages } from "./message-rows.server";
+import type { VectorizeError } from "./message-rows.server";
 import { storeMessages } from "./store-messages.server";
-import type { StoreTarget } from "./store-messages.server";
+import type { StoreError, StoreTarget } from "./store-messages.server";
 
 const MAX_PAGES_PER_RUN = 5;
 const LAST_PAGE = 1;
+
+type IngestError = DiscordRequestError | StoreError;
 
 const SnowflakeOrder: Order.Order<string> = Order.mapInput(Order.BigInt, BigInt);
 
@@ -59,7 +62,7 @@ const backfillAfter = (page: readonly DiscordMessage[]): Backfill =>
 const fetchAndStore = (
   target: StoreTarget,
   request: MessagePage,
-): Effect.Effect<readonly DiscordMessage[], DiscordRequestError> =>
+): Effect.Effect<readonly DiscordMessage[], IngestError> =>
   listMessages(target.job.channelId, request).pipe(
     Effect.tap((page) =>
       loadScope(target.job.guildId).pipe(
@@ -106,7 +109,10 @@ const oldestTimestamp = (page: readonly DiscordMessage[]): Option.Option<DateTim
     },
   });
 
-const removeDeleted = (job: IngestJob, latest: readonly DiscordMessage[]): Effect.Effect<void> => {
+const removeDeleted = (
+  job: IngestJob,
+  latest: readonly DiscordMessage[],
+): Effect.Effect<void, VectorizeError> => {
   const since = Option.some(latest).pipe(
     Option.filter(isFullPage),
     Option.flatMap(oldestTimestamp),
@@ -122,7 +128,7 @@ const pageForward = (
   target: StoreTarget,
   stopAt: string,
   { cursor, remaining }: Cursor,
-): Effect.Effect<Option.Option<string>, DiscordRequestError> =>
+): Effect.Effect<Option.Option<string>, IngestError> =>
   fetchAndStore(target, { direction: "after", cursor }).pipe(
     Effect.flatMap((page) => {
       const next = Option.getOrElse(newestId(idsOf(page)), () => cursor);
@@ -140,7 +146,7 @@ const catchUp = (
   target: StoreTarget,
   frontier: string,
   latest: readonly DiscordMessage[],
-): Effect.Effect<string, DiscordRequestError> => {
+): Effect.Effect<string, IngestError> => {
   const closed = Option.getOrElse(newestId(idsOf(latest)), () => frontier);
   const gapStart = oldestId(idsOf(latest)).pipe(
     Option.filter((oldest) => isFullPage(latest) && isNewerThan(oldest, frontier)),
@@ -157,7 +163,7 @@ const catchUp = (
 const pageBackward = (
   target: StoreTarget,
   { cursor, remaining }: Cursor,
-): Effect.Effect<History, DiscordRequestError> =>
+): Effect.Effect<History, IngestError> =>
   fetchAndStore(target, { direction: "before", cursor }).pipe(
     Effect.flatMap((page) => {
       const history = {
@@ -178,7 +184,7 @@ const advanceNewest = (
   target: StoreTarget,
   progress: ChannelProgress,
   latest: readonly DiscordMessage[],
-): Effect.Effect<Option.Option<string>, DiscordRequestError> =>
+): Effect.Effect<Option.Option<string>, IngestError> =>
   Option.match(Option.fromNullOr(progress.newest), {
     onNone: () => Effect.succeed(newestId(idsOf(latest))),
     onSome: (frontier) => Effect.asSome(catchUp(target, frontier, latest)),
@@ -188,7 +194,7 @@ const advanceOldest = (
   target: StoreTarget,
   progress: ChannelProgress,
   latest: readonly DiscordMessage[],
-): Effect.Effect<History, DiscordRequestError> => {
+): Effect.Effect<History, IngestError> => {
   const oldest = Option.fromNullOr(progress.oldest);
   if (progress.backfill === "done") {
     return Effect.succeed({ oldest, backfill: "done" });
@@ -218,10 +224,7 @@ const saveProgress = (
     ),
   );
 
-const ingestWith = (
-  job: IngestJob,
-  progress: ChannelProgress,
-): Effect.Effect<void, DiscordRequestError> =>
+const ingestWith = (job: IngestJob, progress: ChannelProgress): Effect.Effect<void, IngestError> =>
   Effect.gen(function* ingest() {
     const key = yield* openGuildKey(progress.wrappedKey);
     const target = { key, job };
@@ -246,7 +249,7 @@ const pauseHidden = (job: IngestJob): Effect.Effect<void> =>
     Effect.annotateLogs({ guildId: job.guildId, channelId: job.channelId }),
   );
 
-const ingestChannel = (job: IngestJob): Effect.Effect<void, DiscordRequestError> =>
+const ingestChannel = (job: IngestJob): Effect.Effect<void, DiscordRequestError | StoreError> =>
   loadProgress(job).pipe(
     Effect.flatMap(
       Option.match({
@@ -254,10 +257,12 @@ const ingestChannel = (job: IngestJob): Effect.Effect<void, DiscordRequestError>
         onSome: (progress) => ingestWith(job, progress),
       }),
     ),
-    Effect.catchIf(
-      ({ status }) => Option.contains(status, FORBIDDEN),
-      () => pauseHidden(job),
-    ),
+    Effect.catchTag("DiscordRequestError", (failure) => {
+      if (Option.contains(failure.status, FORBIDDEN)) {
+        return pauseHidden(job);
+      }
+      return Effect.fail(failure);
+    }),
   );
 
 export { ingestChannel };

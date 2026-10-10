@@ -6,6 +6,7 @@ import { channel, db } from "#/shared/db/index.server";
 import { columnsOf } from "./bot-access.server";
 import type { ChannelSync } from "./channel-listing.server";
 import { forgetChannelMessages } from "./message-rows.server";
+import type { VectorizeError } from "./message-rows.server";
 
 const ID_CHUNK = 50;
 
@@ -46,7 +47,7 @@ const loadStored = (guildId: string): Effect.Effect<readonly StoredRow[]> =>
 const deleteRows = (chunk: readonly string[]): Effect.Effect<void> =>
   Effect.asVoid(Effect.promise(() => db.delete(channel).where(inArray(channel.id, [...chunk]))));
 
-const removeChannels = (ids: readonly string[]): Effect.Effect<void> => {
+const removeChannels = (ids: readonly string[]): Effect.Effect<void, VectorizeError> => {
   const chunks = Array.chunksOf(ids, ID_CHUNK);
   return Effect.forEach(ids, forgetChannelMessages, { discard: true }).pipe(
     Effect.andThen(Effect.forEach(chunks, deleteRows, { discard: true })),
@@ -70,7 +71,7 @@ const pauseChannels = (ids: readonly string[]): Effect.Effect<void> =>
     ),
   );
 
-const settleStoredChannels = (sync: ChannelSync): Effect.Effect<void> =>
+const settleStoredChannels = (sync: ChannelSync): Effect.Effect<void, VectorizeError> =>
   loadStored(sync.discordGuild.id).pipe(
     Effect.map((rows) => settlementOf(sync, rows)),
     Effect.flatMap(({ departed, orphaned }) =>

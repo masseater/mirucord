@@ -1,9 +1,12 @@
 import type { ReactNode } from "react";
 
-const ClosingTitle = ({ lead, tail }: Readonly<{ lead: string; tail: string }>): ReactNode => (
-  <h2 className="font-mincho relative text-4xl leading-snug font-black md:text-6xl">
-    <span className="block">{lead}</span>
-    <span className="block">{tail}</span>
+const LEAD = "さっそく";
+const TAIL = "AI に聞いてみよう";
+
+const ClosingTitle = (): ReactNode => (
+  <h2 className="text-4xl leading-snug font-black md:text-6xl">
+    <span className="block">{LEAD}</span>
+    <span className="marker-butter">{TAIL}</span>
   </h2>
 );
 

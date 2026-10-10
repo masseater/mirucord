@@ -1,26 +1,21 @@
 import type { ReactNode } from "react";
 
 import { CtaLink } from "#/pages/home/ui/common/cta-link";
+import { Mascot } from "#/pages/home/ui/common/mascot";
 
 import { NavLinks } from "./nav-links";
 
 const BRAND = "mirucord";
-const SEAL = "見";
-const START = "無料で始める";
+const START = "無料ではじめる";
 
 const SiteNav = (): ReactNode => (
-  <header className="mx-auto flex h-18 w-full max-w-6xl items-center justify-between px-5">
-    <a
-      href="#top"
-      className="font-mincho flex items-center gap-2.5 text-2xl font-black no-underline"
-    >
-      <span className="bg-shu text-paper grid size-8 place-items-center rounded-sm text-lg">
-        {SEAL}
-      </span>
+  <header className="relative z-10 mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-5">
+    <a href="#top" className="flex items-center gap-2 text-2xl font-black no-underline">
+      <Mascot className="size-10" />
       {BRAND}
     </a>
     <NavLinks />
-    <CtaLink href="#start" tone="shu" size="sm">
+    <CtaLink href="#start" tone="blurple" size="sm">
       {START}
     </CtaLink>
   </header>

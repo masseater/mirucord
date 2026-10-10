@@ -2,17 +2,16 @@ import { cva } from "class-variance-authority";
 import type { ReactNode } from "react";
 
 const ctaLinkVariants = cva(
-  "inline-flex shrink-0 items-center justify-center rounded-full font-bold whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-shu/50 active:translate-y-px",
+  "inline-flex shrink-0 items-center justify-center rounded-full border-2 border-ink font-bold whitespace-nowrap no-underline transition-all outline-none focus-visible:ring-4 focus-visible:ring-lavender-deep/50 hover:-translate-y-0.5 active:translate-y-1 active:shadow-none",
   {
     variants: {
       tone: {
-        shu: "bg-shu text-paper hover:bg-shu/90",
-        sumi: "border border-sumi text-sumi hover:bg-sumi hover:text-paper",
-        paper: "border border-paper text-paper hover:bg-paper hover:text-sumi",
+        blurple: "bg-blurple text-milk",
+        milk: "bg-milk text-ink",
       },
       size: {
-        sm: "h-8 px-3 text-sm",
-        xl: "h-12 px-7 text-base",
+        sm: "h-9 px-4 text-sm shadow-pop-sm",
+        xl: "h-14 px-8 text-lg shadow-pop",
       },
     },
   },
@@ -25,7 +24,7 @@ const CtaLink = ({
   children,
 }: Readonly<{
   href: string;
-  tone: "shu" | "sumi" | "paper";
+  tone: "blurple" | "milk";
   size: "sm" | "xl";
   children: ReactNode;
 }>): ReactNode => (

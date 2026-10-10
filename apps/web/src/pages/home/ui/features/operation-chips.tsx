@@ -11,12 +11,12 @@ const OPERATIONS = [
 ] as const;
 
 const OperationChips = (): ReactNode => (
-  <ul className="flex flex-wrap gap-2.5 font-mono text-sm">
+  <ul className="flex flex-wrap gap-2 text-sm font-bold">
     {OPERATIONS.map((operation) => (
       <li
         key={operation.label}
         className={cn(
-          "rounded-lg border border-paper px-3.5 py-2",
+          "bg-milk border-ink rounded-full border-2 px-4 py-1.5",
           !operation.allowed && "border-dashed line-through opacity-40",
         )}
       >

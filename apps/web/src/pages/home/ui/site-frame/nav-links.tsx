@@ -1,18 +1,18 @@
 import type { ReactNode } from "react";
 
 const LINKS = [
-  { href: "#why", label: "課題" },
-  { href: "#how", label: "仕組み" },
-  { href: "#start", label: "導入" },
-  { href: "#safety", label: "安全性" },
-  { href: "#faq", label: "よくある質問" },
+  { href: "#why", label: "こまりごと" },
+  { href: "#how", label: "しくみ" },
+  { href: "#start", label: "はじめかた" },
+  { href: "#safety", label: "あんしん" },
+  { href: "#faq", label: "Q&A" },
 ] as const;
 
 const NavLinks = (): ReactNode => (
-  <ul className="text-sumi-soft hidden gap-7 text-sm md:flex">
+  <ul className="text-ink-soft hidden gap-7 text-sm font-bold md:flex">
     {LINKS.map((link) => (
       <li key={link.href}>
-        <a href={link.href} className="hover:text-shu no-underline">
+        <a href={link.href} className="hover:text-blurple no-underline">
           {link.label}
         </a>
       </li>

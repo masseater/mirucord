@@ -19,7 +19,7 @@ const SPECS = [
     label: "メッセージ本文",
     tags: ["AES-GCM"],
     accent: true,
-    detail: "サーバーごとの鍵で暗号化して保存します",
+    detail: "暗号化して保存します",
   },
   {
     label: "ログイン",
@@ -42,7 +42,7 @@ const SPECS = [
 ] as const;
 
 const SpecList = (): ReactNode => (
-  <dl>
+  <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     {SPECS.map((spec) => (
       <SpecRow
         key={spec.label}

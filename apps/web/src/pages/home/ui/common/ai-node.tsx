@@ -9,22 +9,23 @@ const AiNode = ({
   caption,
 }: Readonly<{ left: string; top: string; caption: string }>): ReactNode => (
   <g transform={`translate(${left} ${top})`}>
-    <rect width="230" height="160" rx="22" className="fill-sumi" />
+    <rect y="8" width="230" height="160" rx="40" className="fill-ink" />
+    <rect width="230" height="160" rx="40" className="fill-butter stroke-ink" strokeWidth="3" />
     <svg
-      x="24"
+      x="103"
       y="24"
-      width="22"
-      height="22"
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       aria-hidden="true"
       className="fill-claude"
     >
       <path d={siClaude.path} />
     </svg>
-    <text x="115" y="84" textAnchor="middle" className="fill-paper font-mincho text-5xl font-black">
+    <text x="115" y="96" textAnchor="middle" className="fill-ink text-4xl font-black">
       {AI_LABEL}
     </text>
-    <text x="115" y="122" textAnchor="middle" className="fill-kinu text-sm">
+    <text x="115" y="128" textAnchor="middle" className="fill-ink-soft text-sm font-bold">
       {caption}
     </text>
   </g>

@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { cn } from "#/shared/lib/utils";
 
 const TONES = {
-  connected: { frame: "stroke-kinu", note: "fill-nezumi", dash: "none" },
-  missing: { frame: "stroke-shu", note: "fill-shu", dash: "5 5" },
+  connected: { frame: "fill-mint", note: "fill-ink-soft" },
+  missing: { frame: "fill-pink", note: "fill-pink-deep" },
 } as const;
 
 const ServiceNode = ({
@@ -19,17 +19,18 @@ const ServiceNode = ({
   tone: keyof typeof TONES;
 }>): ReactNode => (
   <g transform={`translate(70 ${top})`}>
+    <rect y="6" width="220" height="96" rx="48" className="fill-ink" />
     <rect
-      width="200"
+      width="220"
       height="96"
-      rx="16"
-      className={cn("fill-paper", TONES[tone].frame)}
-      strokeDasharray={TONES[tone].dash}
+      rx="48"
+      className={cn("stroke-ink", TONES[tone].frame)}
+      strokeWidth="3"
     />
-    <text x="28" y="46" className="fill-sumi text-base font-bold">
+    <text x="110" y="44" textAnchor="middle" className="fill-ink text-lg font-black">
       {name}
     </text>
-    <text x="28" y="70" className={cn("text-sm", TONES[tone].note)}>
+    <text x="110" y="70" textAnchor="middle" className={cn("text-sm font-bold", TONES[tone].note)}>
       {status}
     </text>
   </g>

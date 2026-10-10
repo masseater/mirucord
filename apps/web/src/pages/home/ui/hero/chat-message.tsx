@@ -22,7 +22,7 @@ const ChatMessage = ({
   <li className="flex gap-3 py-3">
     <span
       className={cn(
-        "grid size-9 shrink-0 place-items-center rounded-full text-sm font-bold text-paper",
+        "text-milk grid size-10 shrink-0 place-items-center rounded-full text-sm font-black",
         avatar,
       )}
     >

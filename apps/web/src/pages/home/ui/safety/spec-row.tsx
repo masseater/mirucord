@@ -13,16 +13,16 @@ const SpecRow = ({
   accent: boolean;
   detail: string;
 }>): ReactNode => (
-  <div className="border-kinu grid gap-1.5 border-b py-5 md:grid-cols-4 md:gap-6 md:py-6">
-    <dt className="font-mincho text-lg font-bold">{label}</dt>
-    <dd className="flex flex-wrap items-baseline gap-2.5 md:col-span-3">
+  <div className="border-line bg-milk flex flex-col gap-3 rounded-3xl border-2 p-6">
+    <dt className="text-lg font-black">{label}</dt>
+    <dd className="flex flex-wrap items-center gap-2 text-sm leading-relaxed">
       {tags.map((tag) => (
         <span
           key={tag}
           className={cn(
-            "rounded-full border px-2.5 py-0.5 font-mono text-xs",
-            accent && "border-shu text-shu",
-            !accent && "border-sumi",
+            "rounded-full px-3 py-0.5 text-xs font-bold",
+            accent && "bg-pink",
+            !accent && "bg-lavender",
           )}
         >
           {tag}

@@ -25,12 +25,12 @@ const guildLimit: Effect.Effect<number> = Config.Int("MAX_GUILDS")
   .parse(ConfigProvider.fromUnknown(env))
   .pipe(Effect.orDie);
 
-const admitGuilds = (current: readonly string[]): Effect.Effect<readonly string[]> =>
-  Effect.all({
-    limit: guildLimit,
-    stored: selectIds(() => db.select({ id: guild.id }).from(guild)),
-  }).pipe(
-    Effect.map(({ limit, stored }) => {
+const admitGuilds = (
+  current: readonly string[],
+  stored: readonly string[],
+): Effect.Effect<readonly string[]> =>
+  guildLimit.pipe(
+    Effect.map((limit) => {
       const kept = current.filter((id) => stored.includes(id));
       const fresh = current.filter((id) => !stored.includes(id));
       return [...kept, ...Array.take(fresh, limit - kept.length)];
@@ -49,25 +49,24 @@ const leaveOverLimit = (rejected: readonly string[]): Effect.Effect<void> =>
     { discard: true },
   );
 
-const removeDepartedGuilds = (current: readonly string[]): Effect.Effect<void> =>
-  selectIds(() => db.select({ id: guild.id }).from(guild)).pipe(
-    Effect.map((stored) => stored.filter((id) => !current.includes(id))),
-    Effect.flatMap((departed) =>
-      Effect.forEach(
-        departed,
-        (id) =>
-          forgetGuildMessages(id).pipe(
-            Effect.andThen(Effect.promise(() => db.delete(guild).where(eq(guild.id, id)))),
-          ),
-        { discard: true },
+const removeDepartedGuilds = (
+  current: readonly string[],
+  stored: readonly string[],
+): Effect.Effect<void> =>
+  Effect.forEach(
+    stored.filter((id) => !current.includes(id)),
+    (id) =>
+      forgetGuildMessages(id).pipe(
+        Effect.andThen(Effect.promise(() => db.delete(guild).where(eq(guild.id, id)))),
       ),
-    ),
+    { discard: true },
   );
 
 type Membership = Readonly<{
   botUserId: string;
   admitted: readonly string[];
   fresh: readonly string[];
+  known: readonly string[];
 }>;
 
 const reconcileMembership: Effect.Effect<Membership, DiscordRequestError> = Effect.gen(
@@ -75,10 +74,15 @@ const reconcileMembership: Effect.Effect<Membership, DiscordRequestError> = Effe
     const current = (yield* listBotGuilds).map(({ id }) => id);
     const stored = yield* selectIds(() => db.select({ id: guild.id }).from(guild));
     const botUserId = yield* getBotUserId;
-    const admitted = yield* admitGuilds(current);
+    const admitted = yield* admitGuilds(current, stored);
     yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));
-    yield* removeDepartedGuilds(admitted);
-    return { botUserId, admitted, fresh: admitted.filter((id) => !stored.includes(id)) };
+    yield* removeDepartedGuilds(admitted, stored);
+    return {
+      botUserId,
+      admitted,
+      fresh: admitted.filter((id) => !stored.includes(id)),
+      known: admitted.filter((id) => stored.includes(id)),
+    };
   },
 );
 

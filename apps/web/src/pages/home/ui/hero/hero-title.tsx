@@ -4,8 +4,8 @@ import { HeroActions } from "./hero-actions";
 
 const BADGE = "Discord の思い出さがし";
 const LEAD = "みんなの思い出を";
-const FOCUS = "AI と掘り起こそう";
-const SUB = "あの夜の名場面も ミルがさがしてきてくれます";
+const FOCUS = "ミルと掘り起こそう";
+const SUB = "あの夜の名場面もすぐに見つかります";
 
 const HeroTitle = (): ReactNode => (
   <div className="relative flex flex-col items-start gap-6">

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as DotwellKnownSplatRouteImport } from './routes/[.]well-known/$'
 import { Route as ApiSplatRouteImport } from './routes/api.$'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
@@ -37,6 +38,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DotwellKnownSplatRoute = DotwellKnownSplatRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
   '/sign-in': typeof SignInRoute
+  '/terms': typeof TermsRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
   '/api/$': typeof ApiSplatRoute
   '/dashboard/$guildId': typeof DashboardGuildIdRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
   '/sign-in': typeof SignInRoute
+  '/terms': typeof TermsRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
   '/api/$': typeof ApiSplatRoute
   '/dashboard/$guildId': typeof DashboardGuildIdRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
   '/sign-in': typeof SignInRoute
+  '/terms': typeof TermsRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
   '/api/$': typeof ApiSplatRoute
   '/dashboard/$guildId': typeof DashboardGuildIdRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/privacy'
     | '/sign-in'
+    | '/terms'
     | '/.well-known/$'
     | '/api/$'
     | '/dashboard/$guildId'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/privacy'
     | '/sign-in'
+    | '/terms'
     | '/.well-known/$'
     | '/api/$'
     | '/dashboard/$guildId'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/privacy'
     | '/sign-in'
+    | '/terms'
     | '/.well-known/$'
     | '/api/$'
     | '/dashboard/$guildId'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   PrivacyRoute: typeof PrivacyRoute
   SignInRoute: typeof SignInRoute
+  TermsRoute: typeof TermsRoute
   DotwellKnownSplatRoute: typeof DotwellKnownSplatRoute
   ApiSplatRoute: typeof ApiSplatRoute
   DashboardGuildIdRoute: typeof DashboardGuildIdRoute
@@ -175,6 +188,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/$': {
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   PrivacyRoute: PrivacyRoute,
   SignInRoute: SignInRoute,
+  TermsRoute: TermsRoute,
   DotwellKnownSplatRoute: DotwellKnownSplatRoute,
   ApiSplatRoute: ApiSplatRoute,
   DashboardGuildIdRoute: DashboardGuildIdRoute,

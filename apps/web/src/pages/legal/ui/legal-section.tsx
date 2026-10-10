@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-const PrivacySection = ({
+const LegalSection = ({
   heading,
   paragraphs,
 }: Readonly<{ heading: string; paragraphs: readonly string[] }>): ReactNode => (
@@ -14,4 +14,4 @@ const PrivacySection = ({
   </section>
 );
 
-export { PrivacySection };
+export { LegalSection };

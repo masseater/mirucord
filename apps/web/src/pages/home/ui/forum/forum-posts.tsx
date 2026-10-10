@@ -6,7 +6,10 @@ import { ForumPost } from "./forum-post";
 
 const POSTS = [
   {
-    tags: ["⛺ キャンプ", "📌 決定"],
+    tags: [
+      { emoji: "⛺", label: "キャンプ" },
+      { emoji: "📌", label: "決定" },
+    ],
     title: "夏キャンプのしおり",
     member: MEMBERS.kenta,
     preview: "集合は駅に 9 時、テントは 2 つ持っていく",
@@ -14,7 +17,7 @@ const POSTS = [
     ago: "昨日",
   },
   {
-    tags: ["🍛 ごはん"],
+    tags: [{ emoji: "🍛", label: "ごはん" }],
     title: "キャンプ飯レシピまとめ",
     member: MEMBERS.miho,
     preview: "カレーは弱火でじっくり（たなか用）",
@@ -22,7 +25,10 @@ const POSTS = [
     ago: "3 日前",
   },
   {
-    tags: ["📷 写真", "❓ 質問"],
+    tags: [
+      { emoji: "📷", label: "写真" },
+      { emoji: "❓", label: "質問" },
+    ],
     title: "星空ってどう撮るの？",
     member: MEMBERS.yui,
     preview: "スマホでもいける？三脚いる？",

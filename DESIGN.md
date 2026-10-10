@@ -62,6 +62,7 @@ Discord と Claude のロゴの色は `discord` と `claude` を使う。
 
 ミルは虫めがねと金縁の眼鏡を持つ、紫のパーカーの女の子である。
 絵は `shared/brand/mascot.webp` の 1 枚だけを使い、`#/shared/brand` の `Mascot` で表示する。
+LP の締めだけは、腰に手を当てた「えっへん」の絵 `pages/home/ui/closing/proud-miru.webp` を使う。
 大きさは CSS で変え、絵を描き直したり色を変えたりしない。
 SVG の中に置くときは `mascotSrc` を `image` 要素に渡す。
 ミルは案内役として、画面ごとに一言だけ話す。

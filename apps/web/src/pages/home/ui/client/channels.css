@@ -1,0 +1,115 @@
+.ch-miru {
+  display: none;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ch-scope {
+      timeline-scope:
+        --ch-top, --ch-why, --ch-forum, --ch-how, --ch-features, --ch-start, --ch-safety, --ch-faq;
+    }
+
+    .ch-section[id="top"] {
+      view-timeline-name: --ch-top;
+    }
+
+    .ch-section[id="why"] {
+      view-timeline-name: --ch-why;
+    }
+
+    .ch-section[id="forum"] {
+      view-timeline-name: --ch-forum;
+    }
+
+    .ch-section[id="how"] {
+      view-timeline-name: --ch-how;
+    }
+
+    .ch-section[id="features"] {
+      view-timeline-name: --ch-features;
+    }
+
+    .ch-section[id="start"] {
+      view-timeline-name: --ch-start;
+    }
+
+    .ch-section[id="safety"] {
+      view-timeline-name: --ch-safety;
+    }
+
+    .ch-section[id="faq"] {
+      view-timeline-name: --ch-faq;
+    }
+
+    .ch-section {
+      view-timeline-inset: 50% 49%;
+    }
+
+    .ch-link {
+      animation: ch-active linear;
+      animation-range: cover 0% cover 100%;
+    }
+
+    .ch-miru {
+      display: block;
+      opacity: 0;
+      animation: ch-miru linear;
+      animation-range: cover 0% cover 100%;
+    }
+
+    .ch-link[href="#top"],
+    .ch-link[href="#top"] .ch-miru {
+      animation-timeline: --ch-top;
+    }
+
+    .ch-link[href="#why"],
+    .ch-link[href="#why"] .ch-miru {
+      animation-timeline: --ch-why;
+    }
+
+    .ch-link[href="#forum"],
+    .ch-link[href="#forum"] .ch-miru {
+      animation-timeline: --ch-forum;
+    }
+
+    .ch-link[href="#how"],
+    .ch-link[href="#how"] .ch-miru {
+      animation-timeline: --ch-how;
+    }
+
+    .ch-link[href="#features"],
+    .ch-link[href="#features"] .ch-miru {
+      animation-timeline: --ch-features;
+    }
+
+    .ch-link[href="#start"],
+    .ch-link[href="#start"] .ch-miru {
+      animation-timeline: --ch-start;
+    }
+
+    .ch-link[href="#safety"],
+    .ch-link[href="#safety"] .ch-miru {
+      animation-timeline: --ch-safety;
+    }
+
+    .ch-link[href="#faq"],
+    .ch-link[href="#faq"] .ch-miru {
+      animation-timeline: --ch-faq;
+    }
+  }
+}
+
+@keyframes ch-active {
+  0%,
+  100% {
+    background-color: var(--color-dc-active);
+    color: var(--color-dc-bright);
+  }
+}
+
+@keyframes ch-miru {
+  0%,
+  100% {
+    opacity: 1;
+  }
+}

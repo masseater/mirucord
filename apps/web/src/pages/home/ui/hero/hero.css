@@ -1,0 +1,127 @@
+.seek-flash,
+.seek-miru {
+  display: none;
+}
+
+.seek-flash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.seek-miru {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  translate: 0 -50%;
+}
+
+.seek[data-kind="found"] .seek-miru {
+  display: flex;
+}
+
+.seek[data-seek="0"] {
+  --seek: 0;
+}
+
+.seek[data-seek="1"] {
+  --seek: 1;
+}
+
+.seek[data-seek="2"] {
+  --seek: 2;
+}
+
+.answer-status > * {
+  grid-area: 1 / 1;
+}
+
+.answer-searching {
+  opacity: 0;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-scan {
+      view-timeline: --hero block;
+    }
+
+    .seek .seek-flash,
+    .seek .seek-miru {
+      display: flex;
+    }
+
+    .seek-flash {
+      animation: seek-flash linear both;
+      animation-timeline: --hero;
+      animation-range: cover calc(30% + var(--seek) * 8%) cover calc(38% + var(--seek) * 8%);
+    }
+
+    .seek[data-kind="pass"] .seek-miru {
+      animation: seek-pass linear both;
+      animation-timeline: --hero;
+      animation-range: cover calc(30% + var(--seek) * 8%) cover calc(38% + var(--seek) * 8%);
+    }
+
+    .seek[data-kind="found"] .seek-miru {
+      animation: seek-found linear both;
+      animation-timeline: --hero;
+      animation-range: cover calc(30% + var(--seek) * 8%) cover calc(36% + var(--seek) * 8%);
+    }
+
+    .answer-searching {
+      opacity: 1;
+      animation: fade-hide linear both;
+      animation-timeline: --hero;
+      animation-range: cover 50% cover 52%;
+    }
+
+    .answer-done,
+    .answer-reveal {
+      animation: fade-show linear both;
+      animation-timeline: --hero;
+      animation-range: cover 52% cover 56%;
+    }
+  }
+}
+
+@keyframes seek-flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+
+@keyframes seek-pass {
+  0% {
+    opacity: 0;
+    translate: 0 -110%;
+    scale: 0.6;
+  }
+  30%,
+  70% {
+    opacity: 1;
+    translate: 0 -50%;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 20%;
+    scale: 0.7;
+  }
+}
+
+@keyframes seek-found {
+  0% {
+    opacity: 0;
+    translate: 0 -110%;
+    scale: 0.6;
+  }
+  70% {
+    translate: 0 -40%;
+    scale: 1.1;
+  }
+}

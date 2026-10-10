@@ -36,6 +36,11 @@ main に入ったコミットは、`verify` が通った後に `deploy` ジョ�
 main を出し直すときは `gh workflow run verify -R masseater/mirucord --ref main` で同じジョブを動かす。
 D1 のマイグレーションは `apps/web/drizzle` にあり、デプロイのたびに Alchemy が未適用のものを当てる。
 
+D1 の置き場所は作成後に変えられない。
+移すときは `alchemy.run.ts` に `primaryLocationHint` と `clone` で旧 D1 を指す新しい D1 を足し、`DB` のバインディングを新しい方に向けて出す。
+コピーから切り替えまでの間に旧 D1 へ書かれた分は移らない。
+切り替えを本番で確かめてから、旧 D1 を `alchemy.run.ts` から消して出す。
+
 動いているコミットは `/api/health` で確かめる。
 
 ```sh

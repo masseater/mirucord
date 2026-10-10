@@ -3,8 +3,7 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 
 import { authClient } from "#/shared/auth";
-
-import { PopButton } from "./pop-button";
+import { PopButton } from "#/shared/ui/pop-button";
 
 const SIGN_IN = "Discord でログイン";
 const FAILED = "ログインできませんでした。";

@@ -1,19 +1,22 @@
 import { and, eq, gte, inArray } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
 
-import { db, inIdChunks, message } from "#/shared/db/index.server";
+import { db, message } from "#/shared/db/index.server";
 
+import { inIdChunks } from "./id-chunks.server";
 import { deleteVectors } from "./vectors.server";
 
 type StoredMessage = Readonly<{ id: string; editedAt: Option.Option<number> }>;
 
 const findStored = (ids: readonly string[]): Effect.Effect<readonly StoredMessage[]> =>
-  inIdChunks(ids, (chunk) =>
-    db
-      .select({ id: message.id, editedAt: message.editedAt })
-      .from(message)
-      .where(inArray(message.id, [...chunk])),
-  ).pipe(
+  inIdChunks({
+    ids,
+    run: (chunk) =>
+      db
+        .select({ id: message.id, editedAt: message.editedAt })
+        .from(message)
+        .where(inArray(message.id, [...chunk])),
+  }).pipe(
     Effect.map((chunks) =>
       chunks.flat().map(({ id, editedAt }) => ({
         id,
@@ -61,7 +64,10 @@ const forgetChannelMessages = (channelId: string): Effect.Effect<void> =>
 const deleteMessages = (ids: readonly string[]): Effect.Effect<void> =>
   deleteVectors(ids).pipe(
     Effect.andThen(
-      inIdChunks(ids, (chunk) => db.delete(message).where(inArray(message.id, [...chunk]))),
+      inIdChunks({
+        ids,
+        run: (chunk) => db.delete(message).where(inArray(message.id, [...chunk])),
+      }),
     ),
     Effect.asVoid,
   );

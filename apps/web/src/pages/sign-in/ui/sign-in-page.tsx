@@ -2,9 +2,9 @@ import { useLocation } from "@tanstack/react-router";
 import { Option } from "effect";
 import type { ReactNode } from "react";
 
+import { DiscordSignIn } from "#/features/sign-in";
 import { DASHBOARD_PATH } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
-import { DiscordSignIn } from "#/shared/ui/discord-sign-in";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 

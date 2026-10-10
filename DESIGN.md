@@ -24,6 +24,11 @@ LP だけは例外として、後述の「LP」に従う。
 `-deep` の上に `ink` 以外の小さな文字を載せない。
 主要な操作は Discord を思わせる `blurple` にする。
 危ない操作や取り消しは `pink` の面に `ink` の文字で示す。
+差し色はミルの服・虫めがねの枠・レンズから取った `accent-lavender`・`accent-butter`・`accent-sky` の3色にする。
+差し色は目を引きたい所だけに絞り、1画面で同じ差し色の面を何か所にも散らさない。
+`accent-lavender` はミルらしさを出す強調やフォーカスリング、`accent-butter` はマーカーやバッジ、`accent-sky` は情報ラベルや補助的な目印に使う。
+差し色の面は `cream` との差が小さいので、必ず `border-ink` の枠を付け、上の文字は `ink` にする。
+差し色を文字やリンクの色にするときは `-text` を使い、`cream` と `milk` の上で 4.5:1 を保つ。
 Discord と Claude のロゴの色は `discord` と `claude` を使う。
 
 ## 文字

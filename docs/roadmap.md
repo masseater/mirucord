@@ -34,16 +34,17 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 スライス 1 から 7 までを書いた。
 
-| 場所                                   | 内容                                                                                        |
-| -------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `apps/web/alchemy.run.ts`              | D1・Vectorize（metadata index 付き）・Queue と consumer・Workers AI・Cron・カスタムドメイン |
-| `apps/web/drizzle`                     | 最初のマイグレーション                                                                      |
-| `src/app/server/index.ts`              | TanStack Start の `fetch` と、`scheduled`・`queue` をまとめた Worker のエントリ             |
-| `src/features/ingest`                  | Cron での同期と、Queue でのメッセージ取り込み                                               |
-| `src/features/mcp`                     | 閲覧権限の計算、4 つのツール、`/mcp` の endpoint                                            |
-| `src/shared/crypto`                    | 鍵の包み直しと、メッセージの暗号化・復号                                                    |
-| `src/shared/discord`                   | Discord REST の呼び出し                                                                     |
-| `patches/@better-auth__oauth-provider` | `exactOptionalPropertyTypes` の下で `mcp()` が `BetterAuthPlugin` に代入できない型の修正    |
+| 場所                                     | 内容                                                                                        |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `apps/web/alchemy.run.ts`                | D1・Vectorize（metadata index 付き）・Queue と consumer・Workers AI・Cron・カスタムドメイン |
+| `apps/web/drizzle`                       | 最初のマイグレーション                                                                      |
+| `src/app/server/index.ts`                | TanStack Start の `fetch` と、`scheduled`・`queue` をまとめた Worker のエントリ             |
+| `src/features/ingest`                    | Cron での同期と、Queue でのメッセージ取り込み                                               |
+| `src/features/mcp`                       | 閲覧権限の計算、4 つのツール、`/mcp` の endpoint                                            |
+| `src/shared/crypto`                      | 鍵の包み直しと、メッセージの暗号化・復号                                                    |
+| `src/shared/discord`                     | Discord REST の呼び出し                                                                     |
+| `patches/@better-auth__oauth-provider`   | `exactOptionalPropertyTypes` の下で `mcp()` が `BetterAuthPlugin` に代入できない型の修正    |
+| `patches/@tanstack__eslint-plugin-start` | `no-async-client-component` と `no-client-code-in-server-component` の見逃しの修正          |
 
 `vp run verify` は、クラウドで動かない jev-lint と actions-lint を除いて通る。
 単体の `vp build` は `cloudflare:workers` を解決できずに失敗する。Cloudflare の Vite プラグインは `alchemy deploy` が差し込むので、ビルドはデプロイの中で行う。
@@ -128,6 +129,11 @@ npm でも、REST の値から権限を計算する保守されたパッケー�
 
 `patches/@better-auth__oauth-provider` は、上流の issue #10213 の回避策である。
 修正の PR #10266 が取り込まれたら、パッチを消す。
+
+`patches/@tanstack__eslint-plugin-start` は、0.1.0 の 2 つのルールの見逃しを直す。
+`no-async-client-component` はルート定義のないファイルを検査せず、`no-client-code-in-server-component` は起点のノード自身を見ない。
+TanStack/router に該当する issue はまだない（2026-10-10 時点）。
+この 2 点を直した版が出たら、パッチを消す。
 
 `auth:generate` は `mcp()` の起動処理が D1 を読むので、そのままでは失敗する。
 生成し直す時は、D1 を差し替えた一時設定を使う。

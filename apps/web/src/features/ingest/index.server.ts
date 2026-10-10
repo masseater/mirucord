@@ -7,4 +7,7 @@ export { purgePausedChannel } from "./api/purge-paused.server";
 export type { PurgeResult } from "./api/purge-paused.server";
 export { listManagedGuilds } from "./api/managed-guild.server";
 export type { ManagedGuild } from "./api/managed-guild.server";
-export { guildLimit, syncGuilds } from "./api/sync-guilds.server";
+export { guildLimit } from "./api/guild-membership.server";
+export { pollGuilds, syncGuilds } from "./api/sync-guilds.server";
+export { refreshGuildList, refreshManagedGuild } from "./api/guild-refresh.server";
+export type { GuildRefreshResult, RefreshResult } from "./api/guild-refresh.server";

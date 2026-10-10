@@ -1,21 +1,22 @@
 import type { ReactNode } from "react";
 
-import { SectionHead } from "#/pages/home/ui/common/section-head";
+import { ChannelSection } from "#/pages/home/ui/common/channel-section";
+import { Post } from "#/pages/home/ui/message/post";
 
-import { FlowDiagram } from "./flow-diagram";
+import { FlowFigure } from "./flow-figure";
 
 const LEAD = "ミルが";
 const TAIL = "思い出をさがしてくる";
 const GUIDE = "まかせてね";
-const LABEL = "しくみ";
+const CHANNEL = "しくみ";
+const TIME = "今日 21:01";
 
 const Flow = (): ReactNode => (
-  <section id="how" className="mx-auto w-full max-w-6xl scroll-mt-8 px-5 py-24 md:py-32">
-    <SectionHead label={LABEL} guide={GUIDE} tone="bg-sky" lead={LEAD} tail={TAIL} />
-    <div className="border-ink bg-milk bg-dots shadow-pop overflow-x-auto rounded-3xl border-2 p-4 md:p-12">
-      <FlowDiagram />
-    </div>
-  </section>
+  <ChannelSection id="how" name={CHANNEL}>
+    <Post time={TIME} guide={GUIDE} lead={LEAD} tail={TAIL}>
+      <FlowFigure />
+    </Post>
+  </ChannelSection>
 );
 
 export { Flow };

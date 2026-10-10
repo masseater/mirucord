@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
-import { SpecRow } from "./spec-row";
+import { Embed } from "#/pages/home/ui/message/embed";
+
+import { SpecField } from "./spec-field";
 
 const SPECS = [
   {
@@ -42,17 +44,19 @@ const SPECS = [
 ] as const;
 
 const SpecList = (): ReactNode => (
-  <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    {SPECS.map((spec) => (
-      <SpecRow
-        key={spec.label}
-        label={spec.label}
-        tags={spec.tags}
-        accent={spec.accent}
-        detail={spec.detail}
-      />
-    ))}
-  </dl>
+  <Embed accent="border-lavender-deep">
+    <dl className="grid gap-4 sm:grid-cols-2">
+      {SPECS.map((spec) => (
+        <SpecField
+          key={spec.label}
+          label={spec.label}
+          tags={spec.tags}
+          accent={spec.accent}
+          detail={spec.detail}
+        />
+      ))}
+    </dl>
+  </Embed>
 );
 
 export { SpecList };

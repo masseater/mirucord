@@ -1,64 +1,55 @@
 import type { ReactNode } from "react";
 
-import { ChatMessage } from "./chat-message";
+import { MEMBERS } from "#/pages/home/ui/common/members";
+import { memberAuthor } from "#/pages/home/ui/message/author";
+import { Message } from "#/pages/home/ui/message/message";
 
-const CHANNEL = "# ざつだん";
-const DATE = "2024年8月12日";
+import { MEMORY_ID } from "./memory";
 
 const MESSAGES = [
   {
-    initial: "ゆ",
-    avatar: "bg-pink-deep",
-    name: "ゆい",
+    anchor: "log-2202",
+    member: MEMBERS.yui,
     time: "22:02",
     body: "今日の星空やばかったね",
-    marked: false,
+    variant: "plain",
   },
   {
-    initial: "け",
-    avatar: "bg-lavender-deep",
-    name: "kenta",
+    anchor: "log-2205",
+    member: MEMBERS.kenta,
     time: "22:05",
     body: "来年もぜったいキャンプ行こう",
-    marked: false,
+    variant: "plain",
   },
   {
-    initial: "た",
-    avatar: "bg-sky-deep",
-    name: "たなか",
+    anchor: MEMORY_ID,
+    member: MEMBERS.tanaka,
     time: "22:14",
     body: "次こそカレー焦がさないって誓う",
-    marked: true,
+    variant: "highlight",
   },
   {
-    initial: "み",
-    avatar: "bg-butter-deep",
-    name: "みほ",
+    anchor: "log-2215",
+    member: MEMBERS.miho,
     time: "22:15",
     body: "焦げたのもおいしかったよ笑",
-    marked: false,
+    variant: "plain",
   },
 ] as const;
 
 const ChatLog = (): ReactNode => (
-  <div className="border-ink bg-milk shadow-pop relative -rotate-1 rounded-3xl border-2 px-6 pt-5 pb-8">
-    <div className="border-line text-ink-soft flex justify-between border-b-2 border-dashed pb-3 text-sm font-bold">
-      <span className="text-grape">{CHANNEL}</span>
-      <span>{DATE}</span>
-    </div>
-    <ul>
-      {MESSAGES.map((message) => (
-        <ChatMessage
-          key={message.time}
-          initial={message.initial}
-          avatar={message.avatar}
-          name={message.name}
-          time={message.time}
-          body={message.body}
-          marked={message.marked}
-        />
-      ))}
-    </ul>
+  <div>
+    {MESSAGES.map((message) => (
+      <Message
+        key={message.anchor}
+        id={message.anchor}
+        author={memberAuthor(message.member)}
+        time={message.time}
+        variant={message.variant}
+      >
+        <p>{message.body}</p>
+      </Message>
+    ))}
   </div>
 );
 

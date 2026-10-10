@@ -1,19 +1,22 @@
 import type { ReactNode } from "react";
 
-import { SectionHead } from "#/pages/home/ui/common/section-head";
+import { ChannelSection } from "#/pages/home/ui/common/channel-section";
+import { Post } from "#/pages/home/ui/message/post";
 
 import { FeatureGrid } from "./feature-grid";
 
 const LEAD = "ミルは見るだけ";
 const TAIL = "見ていい所だけ";
 const GUIDE = "チェックしてね";
-const LABEL = "とくちょう";
+const CHANNEL = "とくちょう";
+const TIME = "今日 21:02";
 
 const Features = (): ReactNode => (
-  <section className="mx-auto w-full max-w-6xl px-5 py-24 md:py-32">
-    <SectionHead label={LABEL} guide={GUIDE} tone="bg-butter" lead={LEAD} tail={TAIL} />
-    <FeatureGrid />
-  </section>
+  <ChannelSection id="features" name={CHANNEL}>
+    <Post time={TIME} guide={GUIDE} lead={LEAD} tail={TAIL}>
+      <FeatureGrid />
+    </Post>
+  </ChannelSection>
 );
 
 export { Features };

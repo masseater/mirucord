@@ -1,0 +1,3 @@
+const HASH = "#";
+
+export { HASH };

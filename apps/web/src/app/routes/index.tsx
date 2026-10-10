@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HomePage, loadHomePage } from "#/pages/home";
 import { SITE_ORIGIN } from "#/shared/config";
 
-const TITLE = "mirucord | Discord の思い出をミルと掘り起こそう";
+const TITLE = "mirucord | Discord の思い出をミルと見つけよう";
 const DESCRIPTION =
   "Discord サーバーの昔の会話や名場面をミルがさがしてきます。Bot を招待するだけで使えます。";
 

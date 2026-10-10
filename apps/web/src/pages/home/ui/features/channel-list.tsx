@@ -9,7 +9,7 @@ const CHANNELS = [
 ] as const;
 
 const ChannelList = (): ReactNode => (
-  <ul className="grid gap-2 text-sm">
+  <ul className="grid gap-1 text-sm">
     {CHANNELS.map((channel) => (
       <ChannelRow
         key={channel.name}

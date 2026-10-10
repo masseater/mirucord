@@ -45,10 +45,23 @@
   --color-sky-deep: oklch(0.86 0.063 215);
   --color-claude: oklch(0.67 0.13 40);
   --color-discord: oklch(0.59 0.2 275);
+  --color-dc-rail: oklch(0.21 0.006 265);
+  --color-dc-sidebar: oklch(0.25 0.008 265);
+  --color-dc-chat: oklch(0.29 0.008 265);
+  --color-dc-hover: oklch(0.27 0.008 265);
+  --color-dc-input: oklch(0.33 0.01 265);
+  --color-dc-active: oklch(0.36 0.012 265);
+  --color-dc-line: oklch(0.37 0.01 265);
+  --color-dc-text: oklch(0.9 0.006 265);
+  --color-dc-bright: oklch(0.97 0.003 265);
+  --color-dc-muted: oklch(0.7 0.012 265);
+  --color-dc-link: oklch(0.72 0.15 235);
+  --color-dc-online: oklch(0.66 0.17 150);
+  --color-dc-mention: oklch(0.8 0.14 75);
+  --color-dc-highlight: oklch(0.34 0.035 85);
   --shadow-pop: 0 6px 0 0 var(--color-ink);
   --shadow-pop-sm: 0 4px 0 0 var(--color-ink);
   --animate-float: float 4s ease-in-out infinite;
-  --animate-marquee: marquee 48s linear infinite;
   --animate-flow: flow 1.4s linear infinite;
   --animate-wiggle: wiggle 2.4s ease-in-out infinite;
 
@@ -68,21 +81,11 @@
     }
   }
 
-  @keyframes marquee {
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
   @keyframes flow {
     to {
       stroke-dashoffset: -28;
     }
   }
-}
-
-@utility paused {
-  animation-play-state: paused;
 }
 
 @utility dash-flow {
@@ -125,5 +128,192 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
+  }
+}
+
+.scene-frags {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+
+.scene-captions {
+  display: grid;
+  gap: 1rem;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scene-track {
+      height: 420dvh;
+      view-timeline: --scene block;
+    }
+
+    .scene-stage {
+      position: sticky;
+      top: 3rem;
+      height: calc(100dvh - 3rem);
+      overflow: hidden;
+      container-type: size;
+    }
+
+    .scene-frags {
+      display: block;
+    }
+
+    .scene-frag {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(15rem, 36cqw);
+      transform: translate(-50%, -50%);
+      animation:
+        scene-frag-in linear both,
+        scene-frag-move linear both;
+      animation-timeline: --scene, --scene;
+      animation-range:
+        contain var(--in) contain calc(var(--in) + 6%),
+        contain 0% contain 100%;
+    }
+
+    .scene-frag:nth-child(1) {
+      --x: -28cqw;
+      --y: -30cqh;
+      --r: -8deg;
+      --in: 0%;
+    }
+
+    .scene-frag:nth-child(2) {
+      --x: 27cqw;
+      --y: -31cqh;
+      --r: 7deg;
+      --in: 3%;
+    }
+
+    .scene-frag:nth-child(3) {
+      --x: -31cqw;
+      --y: 1cqh;
+      --r: 5deg;
+      --in: 6%;
+    }
+
+    .scene-frag:nth-child(4) {
+      --x: 30cqw;
+      --y: 3cqh;
+      --r: -6deg;
+      --in: 9%;
+    }
+
+    .scene-frag:nth-child(5) {
+      --x: -25cqw;
+      --y: 31cqh;
+      --r: 9deg;
+      --in: 12%;
+    }
+
+    .scene-frag:nth-child(6) {
+      --x: 25cqw;
+      --y: 32cqh;
+      --r: -9deg;
+      --in: 15%;
+    }
+
+    .scene-frag:nth-child(7) {
+      --x: 1cqw;
+      --y: -40cqh;
+      --r: 4deg;
+      --in: 18%;
+    }
+
+    .scene-frag:nth-child(8) {
+      --x: -1cqw;
+      --y: 40cqh;
+      --r: -4deg;
+      --in: 21%;
+    }
+
+    .scene-captions {
+      display: block;
+    }
+
+    .scene-caption {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(26rem, max(48cqw, 17rem));
+      transform: translate(-50%, -50%);
+      text-align: center;
+      animation: scene-caption linear both;
+      animation-timeline: --scene;
+      animation-range: contain var(--from) contain var(--to);
+    }
+
+    .scene-caption:nth-child(1) {
+      --from: -12%;
+      --to: 26%;
+    }
+
+    .scene-caption:nth-child(2) {
+      --from: 24%;
+      --to: 50%;
+    }
+
+    .scene-caption:nth-child(3) {
+      --from: 48%;
+      --to: 74%;
+    }
+
+    .scene-caption:nth-child(4) {
+      --from: 76%;
+      --to: 110%;
+    }
+  }
+}
+
+@keyframes scene-frag-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes scene-frag-move {
+  0% {
+    translate: calc(var(--x) * 1.8) calc(var(--y) * 1.8);
+  }
+  25%,
+  35% {
+    translate: var(--x) var(--y);
+  }
+  55% {
+    translate: calc(var(--x) * 1.15) calc(var(--y) * 1.12);
+    rotate: var(--r);
+  }
+  62% {
+    translate: calc(var(--x) * 1.05) calc(var(--y) * 1.18);
+    rotate: calc(var(--r) * -0.6);
+  }
+  72% {
+    translate: calc(var(--x) * 1.2) calc(var(--y) * 1.1);
+    rotate: var(--r);
+    scale: 1;
+  }
+  90%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 0;
+  }
+}
+
+@keyframes scene-caption {
+  0%,
+  100% {
+    opacity: 0;
+    scale: 0.92;
+  }
+  15%,
+  85% {
+    opacity: 1;
+    scale: 1;
   }
 }

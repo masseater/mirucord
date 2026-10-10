@@ -3,23 +3,23 @@ import type { ReactNode } from "react";
 import { CommandBox } from "./command-box";
 import { InviteChip } from "./invite-chip";
 import { PromptBox } from "./prompt-box";
-import { Step } from "./step";
+import { StepItem } from "./step-item";
 
-const INVITE = "Bot を招待";
-const REGISTER = "ミルを登録";
-const ASK = "話しかける";
+const INVITE = "1. Bot を招待";
+const REGISTER = "2. ミルを登録";
+const ASK = "3. 話しかける";
 
 const StepList = (): ReactNode => (
-  <ol className="grid gap-6 md:grid-cols-3">
-    <Step number="1" tone="bg-lavender-deep" title={INVITE}>
+  <ol className="grid gap-2">
+    <StepItem accent="border-lavender-deep" title={INVITE}>
       <InviteChip />
-    </Step>
-    <Step number="2" tone="bg-butter-deep" title={REGISTER}>
+    </StepItem>
+    <StepItem accent="border-mint" title={REGISTER}>
       <CommandBox />
-    </Step>
-    <Step number="3" tone="bg-pink-deep" title={ASK}>
+    </StepItem>
+    <StepItem accent="border-pink-deep" title={ASK}>
       <PromptBox />
-    </Step>
+    </StepItem>
   </ol>
 );
 

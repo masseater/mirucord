@@ -1,22 +1,20 @@
 import type { ReactNode } from "react";
 
-import { Mascot } from "#/shared/brand";
-import { SpeechBubble } from "#/shared/ui/speech-bubble";
+import { BOT } from "#/pages/home/ui/message/author";
+import { Message } from "#/pages/home/ui/message/message";
 
 import { ClosingActions } from "./closing-actions";
-import { ClosingTitle } from "./closing-title";
+import { ProudMiru } from "./proud-miru";
 
-const GUIDE = "ミルにおまかせ";
+const GUIDE = "ミルにおまかせ！";
+const TIME = "今日 21:10";
 
 const Closing = (): ReactNode => (
-  <section className="mx-auto w-full max-w-6xl px-5 pb-24">
-    <div className="border-ink bg-lavender bg-dots shadow-pop relative flex flex-col items-center gap-4 overflow-hidden rounded-3xl border-2 px-6 py-16 text-center md:py-20">
-      <SpeechBubble>{GUIDE}</SpeechBubble>
-      <Mascot className="motion-safe:animate-float size-32 md:size-40" />
-      <ClosingTitle />
-      <ClosingActions />
-    </div>
-  </section>
+  <Message author={BOT} time={TIME}>
+    <p>{GUIDE}</p>
+    <ProudMiru />
+    <ClosingActions />
+  </Message>
 );
 
 export { Closing };

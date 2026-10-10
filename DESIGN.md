@@ -1,6 +1,6 @@
 # DESIGN.md
 
-mirucord の画面は、コミュニティの思い出をミルと一緒に掘り起こす体験として作る。
+mirucord の画面は、コミュニティの思い出をミルと一緒に見つける体験として作る。
 パステルの色、丸ゴシック、ステッカーのような太い影で、やわらかく親しみやすい見た目にそろえる。
 LP、ログイン、管理画面、規約、MCP の同意画面はすべてこの文書に従う。
 
@@ -11,6 +11,7 @@ UI は shadcn/ui の考え方で組み、共通部品は `apps/web/src/shared/ui
 トークンは `apps/web/src/app/styles.css` の `@theme` で定義する。
 ブラウザの機能は Baseline Widely available の範囲で使い、実装は modern-web-guidance スキルの指針に従う。
 画面はライトテーマだけで作り、ページの外枠に `scheme-light` を付ける。
+LP だけは例外として、後述の「LP」に従う。
 
 ## 色
 
@@ -76,7 +77,6 @@ SVG の中に置くときは `mascotSrc` を `image` 要素に渡す。
 | `AppFrame`     | `shared/ui/app-frame/`        | LP 以外のページの外枠    |
 | `Panel`        | `shared/ui/panel.tsx`         | 管理画面や規約のまとまり |
 | `PopButton`    | `shared/ui/pop-button.tsx`    | 画面内の操作             |
-| `PopLink`      | `shared/ui/pop-link.tsx`      | ボタンの見た目をした遷移 |
 | `SpeechBubble` | `shared/ui/speech-bubble.tsx` | ミルのセリフ             |
 | `MascotTip`    | `shared/ui/mascot-tip.tsx`    | ミルと吹き出しの組       |
 | `Mascot`       | `shared/brand/mascot.tsx`     | ミル本体                 |
@@ -84,6 +84,17 @@ SVG の中に置くときは `mascotSrc` を `image` 要素に渡す。
 新しいページはまずこれらで組み、足りないときだけ部品を足す。
 部品を足したら、この表に追記する。
 LP だけの演出は `pages/home` に置き、ほかのページで使い始めたら `shared/ui` へ移す。
+
+## LP
+
+LP は Discord のダークテーマの画面を再現する。
+サーバー一覧・チャンネル一覧・メッセージ欄・メンバー一覧で組み、セクションをチャンネルとして並べる。
+色は `dc-` で始まるトークンを使い、外枠に `scheme-dark` を付ける。
+ミルは APP バッジ付きの Bot としてメッセージを投稿する。
+AI の答えは Discord の外の Claude の画面として描き、Bot が Discord に書きこむようには見せない。
+図やカードはメッセージの添付や埋め込みとして置き、パステルの色はそこで使う。
+「#思い出」だけは、スクロールに合わせて会話が散らばり、最後にミルのもとへ集まる演出を使う。
+スクロール連動アニメーションに対応しないブラウザや、動きを減らす設定では、静的な一覧で見せる。
 
 ## 言葉
 

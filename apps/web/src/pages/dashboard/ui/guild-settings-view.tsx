@@ -10,9 +10,8 @@ import { IngestStatus } from "./ingest-status";
 import { RevokePanel } from "./revoke-panel";
 
 const TIP = {
-  awaiting: "まだ何も読んでいません。下の説明を読んで、よければ同意してね。",
-  granted:
-    "Bot が見られるチャンネルを読んでいます。範囲は Discord のチャンネル権限で変えられます。",
+  awaiting: "よければ同意してね",
+  granted: "思い出を集めてるよ",
 } as const;
 
 const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (

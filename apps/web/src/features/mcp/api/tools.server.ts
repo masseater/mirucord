@@ -2,14 +2,13 @@ import { McpServer } from "@modelcontextprotocol/server";
 import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, Effect, Option, Schema, pipe } from "effect";
 
-import { runRequest } from "#/shared/lib/index.server";
-
 import { readMessages, searchMessages } from "./messages.server";
 import { listGuildIds, resolveScope } from "./scope.server";
 import type { GuildScope } from "./scope.server";
-import { DISCORD_UNAVAILABLE, errorResult, jsonResult, withScope } from "./tool-scope.server";
 
 const SERVER_INFO = { name: "mirucord", version: "0.0.0" };
+const SERVER_NOT_FOUND = "Server not found";
+const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
 const CHANNEL_NOT_FOUND = "Channel not found";
@@ -31,6 +30,30 @@ const ReadMessagesInput = Schema.Struct({
   before: Schema.optionalKey(Schema.String),
   limit: Limit,
 });
+const textResult = (text: string, isError: boolean): CallToolResult => ({
+  content: [{ type: "text", text }],
+  isError,
+});
+const jsonResult = (value: unknown): CallToolResult => textResult(JSON.stringify(value), false);
+const errorResult = (text: string): CallToolResult => textResult(text, true);
+
+type ToolRequest = Readonly<{ guildId: string; discordUserId: string }>;
+type WithinScope = (scope: GuildScope) => Effect.Effect<CallToolResult>;
+
+const scoped = (request: ToolRequest, withinScope: WithinScope): Effect.Effect<CallToolResult> =>
+  resolveScope(request).pipe(
+    Effect.flatMap(
+      Option.match({
+        onNone: () => Effect.succeed(errorResult(SERVER_NOT_FOUND)),
+        onSome: withinScope,
+      }),
+    ),
+    Effect.orElseSucceed(() => errorResult(DISCORD_UNAVAILABLE)),
+  );
+
+const withScope = (request: ToolRequest, withinScope: WithinScope): Promise<CallToolResult> =>
+  Effect.runPromise(scoped(request, withinScope));
+
 const limitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_LIMIT);
 const withChannel = (
@@ -51,7 +74,7 @@ const withChannel = (
   });
 
 const listServers = (discordUserId: string): Promise<CallToolResult> =>
-  runRequest(
+  Effect.runPromise(
     listGuildIds.pipe(
       Effect.flatMap((guildIds) =>
         pipe(

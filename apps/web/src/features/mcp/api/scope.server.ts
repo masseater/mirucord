@@ -1,14 +1,11 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Array, Effect, Option, Record } from "effect";
 
 import { visibleChannelIds } from "#/features/mcp/model/visibility";
 import type { GuildChannel, GuildSnapshot } from "#/features/mcp/model/visibility";
-import { account } from "#/shared/auth/index.server";
 import { channel, db, guild, role } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
-
-const DISCORD_PROVIDER = "discord";
 
 type StoredChannel = GuildChannel & Readonly<{ name: string }>;
 
@@ -19,14 +16,6 @@ type GuildScope = Readonly<{
   guild: StoredGuild;
   visible: readonly string[];
 }>;
-
-const discordUserIdOf = (userId: string): Effect.Effect<Option.Option<string>> =>
-  Effect.promise(() =>
-    db
-      .select({ accountId: account.accountId })
-      .from(account)
-      .where(and(eq(account.userId, userId), eq(account.providerId, DISCORD_PROVIDER))),
-  ).pipe(Effect.map((rows) => Option.map(Array.head(rows), ({ accountId }) => accountId)));
 
 const listGuildIds: Effect.Effect<readonly string[]> = Effect.promise(() =>
   db.select({ id: guild.id }).from(guild),
@@ -80,25 +69,18 @@ const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =
     ),
   );
 
-const memberScope = (
-  stored: StoredGuild,
-  discordUserId: string,
-  roleIds: readonly string[],
-): GuildScope => ({
-  guild: stored,
-  visible: [...visibleChannelIds(stored, Option.some({ userId: discordUserId, roleIds }))],
-});
-
 const scopeOf = (
   stored: StoredGuild,
   discordUserId: string,
 ): Effect.Effect<Option.Option<GuildScope>, DiscordRequestError> =>
   findMember(stored.guildId, discordUserId).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeedNone,
-        onSome: ({ roles }) => Effect.succeedSome(memberScope(stored, discordUserId, roles)),
-      }),
+    Effect.map(
+      Option.map(({ roles }) => ({
+        guild: stored,
+        visible: [
+          ...visibleChannelIds(stored, Option.some({ userId: discordUserId, roleIds: roles })),
+        ],
+      })),
     ),
   );
 
@@ -118,5 +100,5 @@ const resolveScope = ({
     ),
   );
 
-export { discordUserIdOf, listGuildIds, resolveScope };
+export { listGuildIds, resolveScope };
 export type { GuildScope, StoredChannel, StoredGuild };

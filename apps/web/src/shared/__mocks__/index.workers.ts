@@ -1,8 +1,9 @@
-import { MutableHashMap } from "effect";
+import { MutableHashMap, Option } from "effect";
 
 const NO_SIMILARITY = 0;
 const FIRST_INDEX = 0;
 const FULL_SIMILARITY = 1;
+const NO_TEXT = 0;
 const EMBEDDING: readonly number[] = [FULL_SIMILARITY, NO_SIMILARITY, NO_SIMILARITY];
 
 type Metadata = Readonly<Record<string, string>>;
@@ -31,8 +32,12 @@ const matchesOf = (found: readonly Readonly<{ id: string }>[]): VectorizeMatches
 
 const env = {
   AI: {
-    run: (_model: string, { text }: Readonly<{ text: readonly string[] }>): Promise<Embeddings> =>
-      Promise.resolve({ data: text.map(() => EMBEDDING) }),
+    run: (_model: string, { text }: Readonly<{ text: readonly string[] }>): Promise<Embeddings> => {
+      if (text.length === NO_TEXT) {
+        return Promise.reject(new Error("AiError: text must not be empty"));
+      }
+      return Promise.resolve({ data: text.map(() => EMBEDDING) });
+    },
   },
   MESSAGES: {
     upsert: (upserted: readonly StoredVector[]): Promise<Mutation> => {
@@ -41,6 +46,8 @@ const env = {
       }
       return Promise.resolve({ ids: upserted.map(({ id }) => id) });
     },
+    getByIds: (ids: readonly string[]): Promise<readonly StoredVector[]> =>
+      Promise.resolve(ids.flatMap((id) => Option.toArray(MutableHashMap.get(vectors, id)))),
     deleteByIds: (ids: readonly string[]): Promise<Mutation> => {
       for (const id of ids) {
         MutableHashMap.remove(vectors, id);

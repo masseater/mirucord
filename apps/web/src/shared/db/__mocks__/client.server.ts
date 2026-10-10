@@ -3,8 +3,12 @@ import { migrate } from "drizzle-orm/node-sqlite/migrator";
 
 import { authRelations } from "#/shared/auth/generated/auth.table";
 
-const db = drizzle(":memory:", { relations: authRelations });
+const sqlite = drizzle(":memory:", { relations: authRelations });
 
-migrate(db, { migrationsFolder: new URL("../../../../drizzle", import.meta.url).pathname });
+migrate(sqlite, { migrationsFolder: new URL("../../../../drizzle", import.meta.url).pathname });
+
+const db = Object.assign(sqlite, {
+  batch: (statements: readonly unknown[]) => Promise.all(statements),
+});
 
 export { db };

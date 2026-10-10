@@ -38,7 +38,7 @@ const discordEnv = Config.all({
 });
 
 const operationsEnv = Config.all({
-  MAX_GUILDS: Config.String("MAX_GUILDS").pipe(Config.withDefault("100")),
+  MAX_GUILDS: Config.String("MAX_GUILDS").pipe(Config.withDefault("80")),
   alertWebhook: Config.option(Config.schema(NonEmptySecret, "ALERT_WEBHOOK_URL")),
 }).pipe(
   Config.map(({ alertWebhook, ...limits }) => ({

@@ -60,7 +60,10 @@ export default Stack(
     });
     yield* Variables({
       ...repo,
-      variables: { DISCORD_CLIENT_ID: Config.NonEmptyString("DISCORD_CLIENT_ID") },
+      variables: {
+        DISCORD_CLIENT_ID: Config.NonEmptyString("DISCORD_CLIENT_ID"),
+        MAX_GUILDS: "80",
+      },
     });
     return { tokenId: token.tokenId };
   }),

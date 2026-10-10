@@ -1,6 +1,5 @@
+import { CHANNELS } from "#/pages/home/ui/common/channels";
 import type { Place, PlaceId } from "#/pages/home/ui/common/places";
-
-import { CHANNELS } from "./channels";
 
 type Activity =
   | Readonly<{ status: "read" }>

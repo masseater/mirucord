@@ -40,12 +40,13 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 外すもの
 
-| 対象                                     | 外す条件                                                                                                                                |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `patches/@better-auth__oauth-provider`   | 上流の PR #10266（issue #10213）が取り込まれた版が出たとき                                                                              |
-| `patches/@tanstack__eslint-plugin-start` | `no-async-client-component` などの見逃しを直した版が出たとき                                                                            |
-| `alchemy.run.ts` の旧 D1（`usDb`、ENAM） | APAC の D1 で困っていないと本番で確かめたとき。`usDb` と `clone` の指定を外して出す                                                     |
-| `ALERT_WEBHOOK_URL` への自作の通知       | Alchemy が `observability.issues` を扱えるようになったとき。Workers Observability の Issues に移す。調べた手段はコミット 56ccdc6 にある |
+| 対象                                              | 外す条件                                                                                                                                                |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `patches/@better-auth__oauth-provider`            | 上流の PR #10266（issue #10213）が取り込まれた版が出たとき                                                                                              |
+| `patches/@tanstack__eslint-plugin-start`          | `no-async-client-component` などの見逃しを直した版が出たとき                                                                                            |
+| `alchemy.run.ts` の旧 D1（`usDb`、ENAM）          | APAC の D1 で困っていないと本番で確かめたとき。`usDb` と `clone` の指定を外して出す                                                                     |
+| テストの `env.MESSAGES` と `env.AI` の `vi.spyOn` | miniflare が Vectorize と Workers AI をローカルで動かせるようになったとき。D1・Queues・Discord は `@cloudflare/vitest-plugin` の実物と MSW で動いている |
+| `ALERT_WEBHOOK_URL` への自作の通知                | Alchemy が `observability.issues` を扱えるようになったとき。Workers Observability の Issues に移す。調べた手段はコミット 56ccdc6 にある                 |
 
 ## 引き継ぎの注意
 

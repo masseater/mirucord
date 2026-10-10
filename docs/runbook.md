@@ -24,7 +24,7 @@ vp run deploy:ci
 | `DISCORD_CLIENT_ID`           | Variables | 必須 | Discord アプリの ID                                   |
 | `DISCORD_CLIENT_SECRET`       | Secrets   | 必須 | Discord の OAuth で使う                               |
 | `DISCORD_BOT_TOKEN`           | Secrets   | 必須 | 取り込みと権限確認で使う Bot のトークン               |
-| `MAX_GUILDS`                  | Variables | 任意 | 登録できるサーバー数の上限。既定は `100`              |
+| `MAX_GUILDS`                  | Variables | 任意 | 登録できるサーバー数の上限。既定は `80`               |
 | `ALERT_WEBHOOK_URL`           | Secrets   | 任意 | 障害を知らせる Discord の Webhook URL                 |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | Variables | 任意 | OTLP の送り先。設定しなければ Workers Logs だけに出す |
 | `OTEL_EXPORTER_OTLP_HEADERS`  | Secrets   | 任意 | OTLP の送り先の認証ヘッダー                           |
@@ -84,7 +84,7 @@ vp exec wrangler tail <Worker 名>
 
 登録済みのサーバーが `MAX_GUILDS` に達すると、その後に招待されたサーバーから Bot は自分で抜ける。
 上限に達している間は、トップページの招待リンクの代わりに、新しいサーバーには追加できない旨を表示する。
-上限を上げるときは Variables の `MAX_GUILDS` を変えてデプロイする。下げても、登録済みのサーバーは抜けない。
+上限を変えるときは `apps/web/alchemy.ci.ts` の `MAX_GUILDS` を変え、`ci` スタックを適用してデプロイする。下げても、登録済みのサーバーは抜けない。
 
 ## 秘密の差し替え
 

@@ -38,7 +38,7 @@ const ingestEnabled: Effect.Effect<boolean> = Effect.promise(() =>
   Effect.andThen(Effect.promise(() => OpenFeature.getClient().getBooleanValue(INGEST_FLAG, false))),
 );
 const QUEUE_BATCH_LIMIT = 100;
-const DEFAULT_GUILD_LIMIT = 100;
+const DEFAULT_GUILD_LIMIT = 80;
 const ID_CHUNK = 50;
 
 type ChannelRow = typeof channel.$inferInsert;

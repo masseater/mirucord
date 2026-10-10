@@ -18,15 +18,21 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 
 ## 決めたこと
 
-| 項目       | 決定                                                                                   |
-| ---------- | -------------------------------------------------------------------------------------- |
-| 公開 URL   | `https://mirucord.masseater.dev`（`src/shared/config/site.ts`）                        |
-| MCP の認可 | better-auth の `@better-auth/mcp`（OAuth 2.1 と DCR）                                  |
-| ログイン   | Discord の OAuth で、scope は `identify` だけ。メールアドレスは集めない                |
-| embedding  | Workers AI の `@cf/baai/bge-m3`（1024 次元、cosine）                                   |
-| 取り込み   | Gateway は使わず、5 分ごとの Cron と Queue で REST をポーリングする                    |
-| 運営の閲覧 | 持たない。運営もサーバーの中身は読めない                                               |
-| 鍵         | Cloudflare Secrets Store の `MIRUCORD_MASTER_KEY` で包む。Alchemy が作ってバインドする |
+| 項目                     | 決定                                                                                     |
+| ------------------------ | ---------------------------------------------------------------------------------------- |
+| 公開 URL                 | `https://mirucord.masseater.dev`（`src/shared/config/site.ts`）                          |
+| MCP の認可               | better-auth の `@better-auth/mcp`（OAuth 2.1 と DCR）                                    |
+| ログイン                 | Discord の OAuth で、scope は `identify` だけ。メールアドレスは集めない                  |
+| embedding                | Workers AI の `@cf/baai/bge-m3`（1024 次元、cosine）                                     |
+| 取り込み                 | Gateway は使わず、5 分ごとの Cron と Queue で REST をポーリングする                      |
+| 運営の閲覧               | 持たない。運営もサーバーの中身は読めない                                                 |
+| 鍵                       | Cloudflare Secrets Store の `MIRUCORD_MASTER_KEY` で包む。Alchemy が作ってバインドする   |
+| クラウド                 | Cloudflare だけを使い、AWS は使わない                                                    |
+| 取り込みの同意           | Bot を入れただけでは読まない。管理者が `/dashboard` でサーバー単位に同意してから取り込む |
+| 取り込む範囲             | Bot が Discord で閲覧できるチャンネルそのもの。チャンネルを選ぶ画面は作らない            |
+| 見えなくなったチャンネル | 取り込みを止め、30 日後に消す。管理画面からすぐ消すこともできる                          |
+| Discord の REST          | `@discordeno/rest`。discord.js と `@discordjs/rest` は Workers で動かない                |
+| D1 の場所                | APAC                                                                                     |
 
 ## 今の状態
 
@@ -38,10 +44,12 @@ Bot がサーバーから外れたら、そのサーバーの行とベクトル�
 | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `patches/@better-auth__oauth-provider`   | 上流の PR #10266（issue #10213）が取り込まれた版が出たとき                                                                              |
 | `patches/@tanstack__eslint-plugin-start` | `no-async-client-component` などの見逃しを直した版が出たとき                                                                            |
+| `alchemy.run.ts` の旧 D1（`usDb`、ENAM） | APAC の D1 で困っていないと本番で確かめたとき。`usDb` と `clone` の指定を外して出す                                                     |
 | `ALERT_WEBHOOK_URL` への自作の通知       | Alchemy が `observability.issues` を扱えるようになったとき。Workers Observability の Issues に移す。調べた手段はコミット 56ccdc6 にある |
 
 ## 引き継ぎの注意
 
 チャンネル権限の計算（`features/mcp/model/permissions.ts`）は、REST の値から計算できる保守されたパッケージがないため手で書いた。順序は Discord 公式ドキュメント「Permission Overwrites」に合わせている。
 `auth:generate` は `mcp()` の起動処理が D1 を読むので、D1 を差し替えた一時設定で動かす。
-zod は禁止パッケージなので、`better-call` の peer をそろえるために足してはいけない。
+zod は禁止パッケージなので、`better-call` の peer をそろえるために足してはいけない。スキーマと検証は effect の Schema で書く。
+`/sign-in` は MCP の OAuth のログイン画面も兼ねるので、ログイン後の行き先を `/dashboard` に固定しない。

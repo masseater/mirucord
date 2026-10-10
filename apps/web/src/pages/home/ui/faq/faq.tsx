@@ -17,33 +17,36 @@ const NEW = "新着";
 const QUESTIONS = [
   {
     time: "今日 21:06",
-    reply: { author: memberAuthor(MEMBERS.yui), text: "料金はかかりますか" },
-    answer: "いまは無料で使えるよ！",
+    reply: { author: memberAuthor(MEMBERS.yui), text: "ねえ、これってお金かかるの？" },
+    answer: "かからないよ！いまは無料で使えるの。",
     reactions: [{ emoji: "🎉", count: 5, by: "others" }],
   },
   {
     time: "今日 21:07",
-    reply: { author: memberAuthor(MEMBERS.kenta), text: "どこからミルに聞けますか" },
-    answer: "Claude みたいに MCP に対応した AI クライアントから呼んでね！",
+    reply: { author: memberAuthor(MEMBERS.kenta), text: "で、ミルにはどこから聞けばいいの？" },
+    answer: "Claude みたいな、MCP に対応した AI のアプリから呼んでね！",
     reactions: [{ emoji: "👀", count: 2, by: "others" }],
   },
   {
     time: "今日 21:08",
-    reply: { author: memberAuthor(MEMBERS.miho), text: "管理者でなくても使えますか" },
+    reply: {
+      author: memberAuthor(MEMBERS.miho),
+      text: "わたし管理者じゃないんだけど、使えるのかな？",
+    },
     answer:
-      "招待するときだけサーバーの管理権限がいるよ。そのあとはみんなそれぞれ自分の読めるチャンネルだけさがせるの！",
+      "使えるよ！サーバーの管理権限がいるのは、最初に招待するときだけなんだ。そのあとはみんな、自分が読めるチャンネルの中だけさがせるよ。",
     reactions: [{ emoji: "🙏", count: 3, by: "me" }],
   },
   {
     time: "今日 21:09",
-    reply: { author: memberAuthor(MEMBERS.yui), text: "DM も読まれますか" },
+    reply: { author: memberAuthor(MEMBERS.yui), text: "DM まで読まれちゃったりしない？" },
     answer:
       "読まないよ！ミルが読むのはサーバーのチャンネルとスレッドだけ。DM はのぞかないから安心してね。",
     reactions: [{ emoji: "🙆", count: 3, by: "others" }],
   },
   {
     time: "今日 21:10",
-    reply: { author: memberAuthor(MEMBERS.tanaka), text: "運営は会話を読めますか" },
+    reply: { author: memberAuthor(MEMBERS.tanaka), text: "運営の人って、俺らの会話読めたりする？" },
     answer: "読めないよ！本文は暗号化してしまってあるから、運営さんにも中身は見えないんだ。",
     reactions: [
       { emoji: "🔒", count: 4, by: "others" },

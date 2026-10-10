@@ -259,7 +259,7 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: min(24rem, max(44cqw, 16rem));
+      width: min(26rem, max(48cqw, 17rem));
       transform: translate(-50%, -50%);
       text-align: center;
       animation: scene-caption linear both;
@@ -268,7 +268,7 @@
     }
 
     .scene-caption:nth-child(1) {
-      --from: 0%;
+      --from: -12%;
       --to: 26%;
     }
 

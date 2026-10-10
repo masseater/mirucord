@@ -9,7 +9,7 @@ const FOCUS = "AI と見つけよう";
 const SUB = "あの夜の名場面も ミルがさがしてきてくれます";
 
 const ChannelWelcome = (): ReactNode => (
-  <div className="flex flex-col items-start gap-4 px-4 pt-10 pb-4">
+  <div className="flex flex-col items-start gap-4 px-4 pt-6 pb-2">
     <span className="bg-lavender grid size-20 place-items-center rounded-full">
       <Mascot className="motion-safe:animate-float size-16" />
     </span>

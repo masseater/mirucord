@@ -2,11 +2,10 @@ import type { ReactNode } from "react";
 
 import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
 
-import { AnswerWindow } from "./answer-window";
 import { ChannelTopic } from "./channel-topic";
 import { ChannelWelcome } from "./channel-welcome";
-import { ChatLog } from "./chat-log";
 import { DateDivider } from "./date-divider";
+import { HeroDemo } from "./hero-demo";
 
 const CHANNEL = "ざつだん";
 const TOPIC = "Discord の思い出さがし";
@@ -19,8 +18,7 @@ const Hero = (): ReactNode => (
     </ChannelHeader>
     <ChannelWelcome />
     <DateDivider date={DATE} />
-    <ChatLog />
-    <AnswerWindow />
+    <HeroDemo />
   </section>
 );
 

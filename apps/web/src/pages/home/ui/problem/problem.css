@@ -12,7 +12,7 @@
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .scene-track {
-      height: 560dvh;
+      height: 780dvh;
       view-timeline: --scene block;
     }
 
@@ -39,7 +39,7 @@
         scene-frag-move linear both;
       animation-timeline: --scene, --scene;
       animation-range:
-        contain var(--in) contain calc(var(--in) + 6%),
+        contain var(--in) contain calc(var(--in) + 4.06%),
         contain 0% contain 100%;
     }
 
@@ -54,49 +54,49 @@
       --x: 27cqw;
       --y: -31cqh;
       --r: 7deg;
-      --in: 3%;
+      --in: 2.03%;
     }
 
     .scene-frag:nth-child(3) {
       --x: -31cqw;
       --y: 1cqh;
       --r: 5deg;
-      --in: 6%;
+      --in: 4.06%;
     }
 
     .scene-frag:nth-child(4) {
       --x: 30cqw;
       --y: 3cqh;
       --r: -6deg;
-      --in: 9%;
+      --in: 6.09%;
     }
 
     .scene-frag:nth-child(5) {
       --x: -25cqw;
       --y: 31cqh;
       --r: 9deg;
-      --in: 12%;
+      --in: 8.12%;
     }
 
     .scene-frag:nth-child(6) {
       --x: 25cqw;
       --y: 32cqh;
       --r: -9deg;
-      --in: 15%;
+      --in: 10.15%;
     }
 
     .scene-frag:nth-child(7) {
       --x: 1cqw;
       --y: -40cqh;
       --r: 4deg;
-      --in: 18%;
+      --in: 12.18%;
     }
 
     .scene-frag:nth-child(8) {
       --x: -1cqw;
       --y: 40cqh;
       --r: -4deg;
-      --in: 21%;
+      --in: 14.21%;
     }
 
     .scene-captions {
@@ -116,23 +116,23 @@
     }
 
     .scene-caption:nth-child(1) {
-      --from: -12%;
-      --to: 20%;
+      --from: -8.12%;
+      --to: 13.53%;
     }
 
     .scene-caption:nth-child(2) {
-      --from: 18%;
-      --to: 36%;
+      --from: 12.18%;
+      --to: 24.35%;
     }
 
     .scene-caption:nth-child(3) {
-      --from: 34%;
-      --to: 50%;
+      --from: 23%;
+      --to: 33.82%;
     }
 
     .scene-caption:nth-child(4) {
-      --from: 92%;
-      --to: 115%;
+      --from: 94.44%;
+      --to: 110.42%;
     }
   }
 }
@@ -147,23 +147,23 @@
   0% {
     translate: calc(var(--x) * 1.8) calc(var(--y) * 1.8);
   }
-  20%,
-  38% {
+  13.53%,
+  25.71% {
     translate: var(--x) var(--y);
   }
-  42% {
+  28.41% {
     translate: calc(var(--x) * 1.15) calc(var(--y) * 1.12);
     rotate: var(--r);
   }
-  46% {
+  31.12% {
     translate: calc(var(--x) * 1.05) calc(var(--y) * 1.18);
     rotate: calc(var(--r) * -0.6);
   }
-  50% {
+  33.82% {
     translate: calc(var(--x) * 1.2) calc(var(--y) * 1.1);
     rotate: var(--r);
   }
-  56%,
+  51.47%,
   100% {
     translate: calc(var(--x) * 1.1) calc(var(--y) * 1.1);
     rotate: 0deg;
@@ -276,7 +276,7 @@
       counter-reset: found var(--found);
       animation: scene-count linear both;
       animation-timeline: --scene;
-      animation-range: contain 64% contain 90%;
+      animation-range: contain 75% contain 93.06%;
     }
 
     .scene-count::after {
@@ -295,7 +295,7 @@
       pointer-events: none;
       animation: cutin-root linear;
       animation-timeline: --scene;
-      animation-range: contain 50% contain 64%;
+      animation-range: contain 33.82% contain 75%;
     }
 
     .cutin-flash {
@@ -330,7 +330,7 @@
 
     .cutin > * {
       animation-timeline: --scene;
-      animation-range: contain 50% contain 64%;
+      animation-range: contain 33.82% contain 75%;
     }
 
     .scene-frag {
@@ -341,56 +341,56 @@
         scene-frag-carry linear forwards;
       animation-timeline: --scene, --scene, --scene, --scene;
       animation-range:
-        contain var(--in) contain calc(var(--in) + 6%),
+        contain var(--in) contain calc(var(--in) + 4.06%),
         contain 0% contain 100%,
-        contain calc(var(--seen) + 0.6%) contain calc(var(--seen) + 1.8%),
-        contain calc(var(--seen) + 1.5%) contain calc(var(--seen) + 2.75%);
+        contain calc(var(--seen) + 0.42%) contain calc(var(--seen) + 1.25%),
+        contain calc(var(--seen) + 1.04%) contain calc(var(--seen) + 1.91%);
     }
 
     .scene-frag:nth-child(1) {
-      --seen: 64%;
+      --seen: 75%;
       --sx: -24.5cqw;
       --sr: -14deg;
     }
 
     .scene-frag:nth-child(7) {
-      --seen: 66.75%;
+      --seen: 76.91%;
       --sx: -17.5cqw;
       --sr: -10deg;
     }
 
     .scene-frag:nth-child(2) {
-      --seen: 69.5%;
+      --seen: 78.82%;
       --sx: -10.5cqw;
       --sr: -6deg;
     }
 
     .scene-frag:nth-child(4) {
-      --seen: 72.25%;
+      --seen: 80.73%;
       --sx: -3.5cqw;
       --sr: -2deg;
     }
 
     .scene-frag:nth-child(6) {
-      --seen: 75%;
+      --seen: 82.64%;
       --sx: 3.5cqw;
       --sr: 2deg;
     }
 
     .scene-frag:nth-child(8) {
-      --seen: 77.75%;
+      --seen: 84.55%;
       --sx: 10.5cqw;
       --sr: 6deg;
     }
 
     .scene-frag:nth-child(5) {
-      --seen: 80.5%;
+      --seen: 86.46%;
       --sx: 17.5cqw;
       --sr: 10deg;
     }
 
     .scene-frag:nth-child(3) {
-      --seen: 83.25%;
+      --seen: 88.37%;
       --sx: 24.5cqw;
       --sr: 14deg;
     }
@@ -399,58 +399,10 @@
 
 @keyframes scene-miru-fly {
   0%,
-  63% {
+  72.06% {
     opacity: 0;
     translate: -50% -50%;
     scale: 0.4;
-  }
-  64% {
-    opacity: 1;
-    translate: -50% -50%;
-    rotate: 0deg;
-    scale: 1.25;
-  }
-  65.1%,
-  65.5% {
-    translate: calc(-50% + -30.8cqw) calc(-50% + -33cqh);
-    rotate: -12deg;
-    scale: 0.9;
-  }
-  66.75% {
-    opacity: 1;
-    translate: -50% -50%;
-    rotate: 0deg;
-    scale: 1.25;
-  }
-  67.85%,
-  68.25% {
-    translate: calc(-50% + 1.1cqw) calc(-50% + -44cqh);
-    rotate: 12deg;
-    scale: 0.9;
-  }
-  69.5% {
-    opacity: 1;
-    translate: -50% -50%;
-    rotate: 0deg;
-    scale: 1.25;
-  }
-  70.6%,
-  71% {
-    translate: calc(-50% + 29.7cqw) calc(-50% + -34.1cqh);
-    rotate: -12deg;
-    scale: 0.9;
-  }
-  72.25% {
-    opacity: 1;
-    translate: -50% -50%;
-    rotate: 0deg;
-    scale: 1.25;
-  }
-  73.35%,
-  73.75% {
-    translate: calc(-50% + 33cqw) calc(-50% + 3.3cqh);
-    rotate: 12deg;
-    scale: 0.9;
   }
   75% {
     opacity: 1;
@@ -458,60 +410,108 @@
     rotate: 0deg;
     scale: 1.25;
   }
-  76.1%,
-  76.5% {
+  75.76%,
+  76.04% {
+    translate: calc(-50% + -30.8cqw) calc(-50% + -33cqh);
+    rotate: -12deg;
+    scale: 0.9;
+  }
+  76.91% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  77.67%,
+  77.95% {
+    translate: calc(-50% + 1.1cqw) calc(-50% + -44cqh);
+    rotate: 12deg;
+    scale: 0.9;
+  }
+  78.82% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  79.58%,
+  79.86% {
+    translate: calc(-50% + 29.7cqw) calc(-50% + -34.1cqh);
+    rotate: -12deg;
+    scale: 0.9;
+  }
+  80.73% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  81.49%,
+  81.77% {
+    translate: calc(-50% + 33cqw) calc(-50% + 3.3cqh);
+    rotate: 12deg;
+    scale: 0.9;
+  }
+  82.64% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  83.4%,
+  83.68% {
     translate: calc(-50% + 27.5cqw) calc(-50% + 35.2cqh);
     rotate: -12deg;
     scale: 0.9;
   }
-  77.75% {
+  84.55% {
     opacity: 1;
     translate: -50% -50%;
     rotate: 0deg;
     scale: 1.25;
   }
-  78.85%,
-  79.25% {
+  85.31%,
+  85.59% {
     translate: calc(-50% + -1.1cqw) calc(-50% + 44cqh);
     rotate: 12deg;
     scale: 0.9;
   }
-  80.5% {
+  86.46% {
     opacity: 1;
     translate: -50% -50%;
     rotate: 0deg;
     scale: 1.25;
   }
-  81.6%,
-  82% {
+  87.22%,
+  87.5% {
     translate: calc(-50% + -27.5cqw) calc(-50% + 34.1cqh);
     rotate: -12deg;
     scale: 0.9;
   }
-  83.25% {
+  88.37% {
     opacity: 1;
     translate: -50% -50%;
     rotate: 0deg;
     scale: 1.25;
   }
-  84.35%,
-  84.75% {
+  89.13%,
+  89.41% {
     translate: calc(-50% + -34.1cqw) calc(-50% + 1.1cqh);
     rotate: 12deg;
     scale: 0.9;
   }
-  86% {
+  90.28% {
     opacity: 1;
     translate: -50% -50%;
     rotate: 0deg;
     scale: 1.25;
   }
-  88% {
+  91.67% {
     opacity: 1;
     translate: -50% -50%;
     scale: 1.5;
   }
-  91%,
+  93.75%,
   100% {
     opacity: 0;
     translate: -50% -50%;

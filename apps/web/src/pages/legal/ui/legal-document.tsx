@@ -28,7 +28,7 @@ const LegalDocument = ({
         paragraphs={section.paragraphs}
       />
     ))}
-    <a href={ISSUES_URL} className="hover:text-blurple self-start font-bold underline">
+    <a href={ISSUES_URL} className="hover:text-grape self-start font-bold underline">
       {CONTACT}
     </a>
   </AppFrame>

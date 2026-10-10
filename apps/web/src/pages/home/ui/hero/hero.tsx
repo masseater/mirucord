@@ -16,7 +16,7 @@ const Hero = (): ReactNode => (
       />
       <span
         aria-hidden="true"
-        className="bg-mint pointer-events-none absolute top-40 -right-24 size-96 rounded-full opacity-70 blur-3xl"
+        className="bg-sky pointer-events-none absolute top-40 -right-24 size-96 rounded-full opacity-70 blur-3xl"
       />
       <HeroTitle />
       <HeroStage />

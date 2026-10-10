@@ -31,7 +31,7 @@ const SignInPanel = ({ returnTo }: Readonly<{ returnTo: string }>): ReactNode =>
       <Panel>
         <h1 className="text-2xl font-black">{TITLE}</h1>
         <p className="text-ink-soft">{SUMMARY}</p>
-        <PopButton tone="blurple" disabled={status === "pending"} onClick={startSignIn}>
+        <PopButton tone="grape" disabled={status === "pending"} onClick={startSignIn}>
           {SIGN_IN}
         </PopButton>
         {status === "error" && <p role="alert">{FAILED}</p>}

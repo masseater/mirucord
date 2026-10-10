@@ -11,7 +11,7 @@ const QUESTIONS = [
   "みんなで笑った名言を集めて",
 ] as const;
 
-const TONES = ["bg-pink", "bg-mint", "bg-butter", "bg-sky", "bg-lavender", "bg-milk"] as const;
+const TONES = ["bg-pink", "bg-butter", "bg-sky", "bg-lavender", "bg-milk"] as const;
 
 const TRACK = [
   ...QUESTIONS.map((question, index) => ({

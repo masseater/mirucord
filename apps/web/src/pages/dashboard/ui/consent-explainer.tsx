@@ -47,7 +47,7 @@ const ConsentExplainer = (): ReactNode => (
         </dd>,
       ])}
     </dl>
-    <a href={PRIVACY_PATH} className="hover:text-blurple self-start font-bold underline">
+    <a href={PRIVACY_PATH} className="hover:text-grape self-start font-bold underline">
       {POLICY}
     </a>
   </Panel>

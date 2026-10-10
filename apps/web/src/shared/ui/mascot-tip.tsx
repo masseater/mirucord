@@ -6,7 +6,7 @@ import { SpeechBubble } from "./speech-bubble";
 
 const MascotTip = ({ children }: Readonly<{ children: ReactNode }>): ReactNode => (
   <div className="flex items-end gap-3">
-    <Mascot className="motion-safe:animate-wiggle size-16 shrink-0" />
+    <Mascot className="motion-safe:animate-wiggle size-20 shrink-0" />
     <div className="mb-6">
       <SpeechBubble>{children}</SpeechBubble>
     </div>

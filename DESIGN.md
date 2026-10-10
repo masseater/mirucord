@@ -75,7 +75,6 @@ Discord と Claude のロゴの色は `discord` と `claude` を使う。
 新しいページはまずこれらで組み、足りないときだけ部品を足す。
 部品を足したら、この表に追記する。
 LP だけの演出は `pages/home` に置き、ほかのページで使い始めたら `shared/ui` へ移す。
-LP のボタン型リンクもその1つで、見た目は `PopButton` と同じ `popButtonVariants` を使う。
 
 ## 言葉
 

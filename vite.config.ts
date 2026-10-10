@@ -173,16 +173,7 @@ export default defineConfig({
     tasks: {
       "jev-lint": {
         command: "jev-lint review --base origin/main",
-        cache: {
-          untrackedEnv: [
-            "OPENROUTER_API_KEY",
-            "HTTPS_PROXY",
-            "https_proxy",
-            "NO_PROXY",
-            "no_proxy",
-            "NODE_EXTRA_CA_CERTS",
-          ],
-        },
+        cache: false,
       },
     },
   },

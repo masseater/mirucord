@@ -13,6 +13,7 @@ import type { InferEnv } from "alchemy/Cloudflare";
 import { Config, Effect, Option, Schema } from "effect";
 
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
+import { POLL_CRON, SYNC_CRON } from "./src/features/ingest/model/sync-schedule.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;
@@ -95,7 +96,8 @@ const web = Effect.gen(function* web() {
   const site = yield* Website.Vite("Web", {
     main: "src/app/server/index.ts",
     domain: SITE_HOST,
-    crons: ["*/5 * * * *"],
+    crons: [POLL_CRON, SYNC_CRON],
+    compatibility: { flags: ["global_fetch_strictly_public"] },
     env: {
       ...discord,
       ...operations,

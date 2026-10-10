@@ -98,3 +98,4 @@ const syncChannels = (sync: ChannelSync): Effect.Effect<void, VectorizeError> =>
   );
 
 export { syncChannels };
+export type { VectorizeError } from "./vectors.server";

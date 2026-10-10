@@ -29,7 +29,11 @@ const SignInPanel = ({ returnTo }: Readonly<{ returnTo: string }>): ReactNode =>
       <MascotTip>{TIP}</MascotTip>
       <Panel>
         <h1 className="text-2xl font-black">{TITLE}</h1>
-        <PopButton tone="grape" disabled={status === "pending"} onClick={startSignIn}>
+        <PopButton
+          tone="grape"
+          disabled={status === "pending" || status === "success"}
+          onClick={startSignIn}
+        >
           {SIGN_IN}
         </PopButton>
         {status === "error" && <p role="alert">{FAILED}</p>}

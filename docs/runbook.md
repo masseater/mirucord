@@ -81,7 +81,7 @@ vp exec wrangler tail <Worker 名>
 
 ## 取り込みを止める
 
-取り込みは `src/features/ingest/api/sync-guilds.server.ts` の `ingest-enabled` フラグで止められる。
+取り込みは `src/features/ingest/api/ingest-flag.server.ts` の `ingest-enabled` フラグで止められる。
 `defaultVariant` を `off` にして main に入れると、次の Cron から同期と取り込みが止まる。MCP での検索は続けられる。
 
 ## サーバー数の上限

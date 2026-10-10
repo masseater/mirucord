@@ -41,7 +41,11 @@ const ConsentForm = ({ clientId }: Readonly<{ clientId: string }>): ReactNode =>
           {clientName}
           {SCOPE}
         </p>
-        <ConsentActions pending={status === "pending"} onAllow={allow} onDeny={deny} />
+        <ConsentActions
+          locked={status === "pending" || status === "success"}
+          onAllow={allow}
+          onDeny={deny}
+        />
         {status === "error" && <p role="alert">{FAILED}</p>}
       </Panel>
     </AppFrame>

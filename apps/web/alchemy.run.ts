@@ -12,8 +12,8 @@ import {
 import type { InferEnv } from "alchemy/Cloudflare";
 import { Config, Effect, Option, Schema } from "effect";
 
+import { POLL_CRON, SYNC_CRON } from "./src/features/ingest/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
-import { POLL_CRON, SYNC_CRON } from "./src/features/ingest/model/sync-schedule.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;

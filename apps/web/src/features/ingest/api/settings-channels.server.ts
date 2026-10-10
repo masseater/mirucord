@@ -4,11 +4,12 @@ import { Effect, Option } from "effect";
 import { forumRowOf, ingestOf } from "#/features/ingest/model/channel-ingest";
 import type { ChannelIngest, IngestRow } from "#/features/ingest/model/channel-ingest";
 import { kindOf, LISTED_TYPES } from "#/features/ingest/model/channel-kind";
-import { inDiscordOrder } from "#/features/ingest/model/channel-order";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { channel, db } from "#/shared/db/index.server";
 import { CATEGORY_TYPES } from "#/shared/discord";
 import type { ChannelKind } from "#/shared/discord";
+
+import { inDiscordOrder } from "./channel-order";
 
 const UNCATEGORIZED = "";
 

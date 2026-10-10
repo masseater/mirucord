@@ -9,66 +9,6 @@
         --ch-top, --ch-why, --ch-forum, --ch-how, --ch-features, --ch-start, --ch-safety, --ch-faq;
     }
 
-    .ch-section[id="top"] {
-      view-timeline-name: --ch-top, --pane;
-    }
-
-    .ch-section[id="why"] {
-      view-timeline-name: --ch-why, --pane;
-    }
-
-    .ch-section[id="forum"] {
-      view-timeline-name: --ch-forum, --pane;
-    }
-
-    .ch-section[id="how"] {
-      view-timeline-name: --ch-how, --pane;
-    }
-
-    .ch-section[id="features"] {
-      view-timeline-name: --ch-features, --pane;
-    }
-
-    .ch-section[id="start"] {
-      view-timeline-name: --ch-start, --pane;
-    }
-
-    .ch-section[id="safety"] {
-      view-timeline-name: --ch-safety, --pane;
-    }
-
-    .ch-section[id="faq"] {
-      view-timeline-name: --ch-faq, --pane;
-    }
-
-    .ch-section {
-      min-height: 100dvh;
-      view-timeline-inset:
-        50% 49%,
-        0;
-      animation:
-        ch-pane-in linear,
-        ch-pane-out linear;
-      animation-timeline: --pane, --pane;
-      animation-range:
-        entry 0% entry 100%,
-        exit 0% exit 100%;
-    }
-
-    .ch-section:first-child {
-      animation-name: none, ch-pane-out;
-    }
-
-    .ch-section:last-child {
-      animation-name: ch-pane-in, none;
-    }
-
-    .ch-header {
-      animation: ch-header-out linear;
-      animation-timeline: --pane;
-      animation-range: exit 0% exit 100%;
-    }
-
     .ch-link {
       animation: ch-active linear;
       animation-range: cover 0% cover 100%;
@@ -135,49 +75,5 @@
   0%,
   100% {
     opacity: 1;
-  }
-}
-
-@keyframes ch-pane-in {
-  0% {
-    translate: 0 -100dvh;
-  }
-  0%,
-  60% {
-    opacity: 0;
-    visibility: hidden;
-  }
-  85%,
-  100% {
-    opacity: 1;
-    visibility: visible;
-  }
-  100% {
-    translate: 0 0;
-  }
-}
-
-@keyframes ch-pane-out {
-  0% {
-    translate: 0 0;
-  }
-  0%,
-  30% {
-    opacity: 1;
-    visibility: visible;
-  }
-  55%,
-  100% {
-    opacity: 0;
-    visibility: hidden;
-  }
-  100% {
-    translate: 0 100dvh;
-  }
-}
-
-@keyframes ch-header-out {
-  to {
-    translate: 0 -100dvh;
   }
 }

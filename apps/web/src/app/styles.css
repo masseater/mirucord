@@ -146,7 +146,7 @@
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .scene-track {
-      height: 420dvh;
+      height: 560dvh;
       view-timeline: --scene block;
     }
 
@@ -251,22 +251,22 @@
 
     .scene-caption:nth-child(1) {
       --from: -12%;
-      --to: 26%;
+      --to: 20%;
     }
 
     .scene-caption:nth-child(2) {
-      --from: 24%;
-      --to: 50%;
+      --from: 18%;
+      --to: 36%;
     }
 
     .scene-caption:nth-child(3) {
-      --from: 48%;
-      --to: 74%;
+      --from: 34%;
+      --to: 52%;
     }
 
     .scene-caption:nth-child(4) {
-      --from: 76%;
-      --to: 110%;
+      --from: 92%;
+      --to: 115%;
     }
   }
 }
@@ -281,24 +281,29 @@
   0% {
     translate: calc(var(--x) * 1.8) calc(var(--y) * 1.8);
   }
-  25%,
-  35% {
+  20%,
+  38% {
     translate: var(--x) var(--y);
   }
-  55% {
+  42% {
     translate: calc(var(--x) * 1.15) calc(var(--y) * 1.12);
     rotate: var(--r);
   }
-  62% {
+  46% {
     translate: calc(var(--x) * 1.05) calc(var(--y) * 1.18);
     rotate: calc(var(--r) * -0.6);
   }
-  72% {
+  50% {
     translate: calc(var(--x) * 1.2) calc(var(--y) * 1.1);
     rotate: var(--r);
+  }
+  56%,
+  88% {
+    translate: calc(var(--x) * 1.1) calc(var(--y) * 1.1);
+    rotate: 0deg;
     scale: 1;
   }
-  90%,
+  95%,
   100% {
     translate: 0 0;
     rotate: 0deg;
@@ -316,5 +321,755 @@
   85% {
     opacity: 1;
     scale: 1;
+  }
+}
+
+.cutin {
+  position: relative;
+  display: grid;
+  place-items: center start;
+  height: 22rem;
+  margin: 1rem;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-ink);
+}
+
+.cutin-flash {
+  display: none;
+}
+
+.cutin-lines {
+  position: absolute;
+  inset: -50%;
+  background-image: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in oklch, var(--color-milk) 30%, transparent) 0deg 1.5deg,
+    transparent 1.5deg 8deg
+  );
+  mask-image: radial-gradient(circle, transparent 12%, black 45%);
+}
+
+.cutin-band {
+  position: absolute;
+  top: 50%;
+  left: -20%;
+  width: 140%;
+  height: 42%;
+  translate: 0 -50%;
+  rotate: -8deg;
+}
+
+.cutin-band-sub {
+  height: 54%;
+}
+
+.cutin-miru {
+  position: absolute;
+  right: 0;
+  bottom: -8%;
+  width: auto;
+  height: 118%;
+  rotate: 6deg;
+}
+
+.cutin-title {
+  position: relative;
+  display: grid;
+  padding-inline: 5%;
+  white-space: nowrap;
+  font-size: clamp(1.75rem, 6vw, 5rem);
+  line-height: 1.1;
+  rotate: -8deg;
+}
+
+.cutin-lead {
+  font-size: 0.55em;
+}
+
+.seek-flash,
+.seek-miru,
+.scene-miru,
+.forum-track,
+.faq-thinking,
+.ch-miru,
+.flow-carry {
+  display: none;
+}
+
+.seek-flash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.seek-miru {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  translate: 0 -50%;
+}
+
+.seek[data-kind="found"] .seek-miru {
+  display: flex;
+}
+
+.seek[data-seek="0"] {
+  --seek: 0;
+}
+
+.seek[data-seek="1"] {
+  --seek: 1;
+}
+
+.seek[data-seek="2"] {
+  --seek: 2;
+}
+
+.answer-status > * {
+  grid-area: 1 / 1;
+}
+
+.answer-searching {
+  opacity: 0;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-scan {
+      view-timeline: --hero block;
+    }
+
+    .seek .seek-flash,
+    .seek .seek-miru {
+      display: flex;
+    }
+
+    .seek-flash {
+      animation: seek-flash linear both;
+      animation-timeline: --hero;
+      animation-range: cover calc(30% + var(--seek) * 8%) cover calc(38% + var(--seek) * 8%);
+    }
+
+    .seek[data-kind="pass"] .seek-miru {
+      animation: seek-pass linear both;
+      animation-timeline: --hero;
+      animation-range: cover calc(30% + var(--seek) * 8%) cover calc(38% + var(--seek) * 8%);
+    }
+
+    .seek[data-kind="found"] .seek-miru {
+      animation: seek-found linear both;
+      animation-timeline: --hero;
+      animation-range: cover calc(30% + var(--seek) * 8%) cover calc(36% + var(--seek) * 8%);
+    }
+
+    .answer-searching {
+      opacity: 1;
+      animation: fade-hide linear both;
+      animation-timeline: --hero;
+      animation-range: cover 50% cover 52%;
+    }
+
+    .answer-done,
+    .answer-reveal {
+      animation: fade-show linear both;
+      animation-timeline: --hero;
+      animation-range: cover 52% cover 56%;
+    }
+  }
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scene-miru {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      width: min(6rem, 16cqw);
+      translate: -50% -50%;
+      z-index: 1;
+      animation: scene-miru-fly linear both;
+      animation-timeline: --scene;
+      animation-range: contain 51% contain 102.5%;
+    }
+
+    .cutin {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      height: auto;
+      margin: 0;
+      border-radius: 0;
+      background-color: transparent;
+      visibility: hidden;
+      pointer-events: none;
+      animation: cutin-root linear;
+      animation-timeline: --scene;
+      animation-range: contain 52% contain 68%;
+    }
+
+    .cutin-flash {
+      position: absolute;
+      inset: 0;
+      display: block;
+      animation: cutin-flash linear both;
+    }
+
+    .cutin-lines {
+      animation: cutin-lines linear both;
+    }
+
+    .cutin-band {
+      animation: cutin-band linear both;
+    }
+
+    .cutin-band-sub {
+      animation: cutin-band-sub linear both;
+    }
+
+    .cutin-miru {
+      right: -6vw;
+      height: min(88vh, 110vw);
+      animation: cutin-miru linear both;
+    }
+
+    .cutin-title {
+      font-size: clamp(2rem, 6.5vw, 7rem);
+      animation: cutin-title linear both;
+    }
+
+    .cutin > * {
+      animation-timeline: --scene;
+      animation-range: contain 52% contain 68%;
+    }
+
+    .scene-frag {
+      animation:
+        scene-frag-in linear both,
+        scene-frag-move linear both,
+        scene-frag-found linear both;
+      animation-timeline: --scene, --scene, --scene;
+      animation-range:
+        contain var(--in) contain calc(var(--in) + 6%),
+        contain 0% contain 100%,
+        contain var(--seen) contain calc(var(--seen) + 3%);
+    }
+
+    .scene-frag:nth-child(1) {
+      --seen: 67%;
+    }
+
+    .scene-frag:nth-child(7) {
+      --seen: 69.5%;
+    }
+
+    .scene-frag:nth-child(2) {
+      --seen: 72%;
+    }
+
+    .scene-frag:nth-child(4) {
+      --seen: 74.5%;
+    }
+
+    .scene-frag:nth-child(6) {
+      --seen: 77%;
+    }
+
+    .scene-frag:nth-child(8) {
+      --seen: 79.5%;
+    }
+
+    .scene-frag:nth-child(5) {
+      --seen: 82%;
+    }
+
+    .scene-frag:nth-child(3) {
+      --seen: 84.5%;
+    }
+
+    .forum-scan {
+      view-timeline: --forum block;
+    }
+
+    .forum-track {
+      position: absolute;
+      inset-block: 0;
+      right: 0.5rem;
+      display: block;
+      width: 3.5rem;
+      pointer-events: none;
+      @media (width >= 48rem) {
+        right: -4.5rem;
+      }
+      animation: forum-track linear both;
+      animation-timeline: --forum;
+      animation-range: cover 30% cover 60%;
+    }
+
+    .forum-miru {
+      animation: forum-miru linear both;
+      animation-timeline: --forum;
+      animation-range: cover 25% cover 65%;
+    }
+
+    .forum-read {
+      animation: pop-in linear both;
+      animation-timeline: --forum;
+      animation-range: cover var(--read) cover calc(var(--read) + 3%);
+    }
+
+    .forum-post:nth-child(1) .forum-read {
+      --read: 34%;
+    }
+
+    .forum-post:nth-child(2) .forum-read {
+      --read: 44%;
+    }
+
+    .forum-post:nth-child(3) .forum-read {
+      --read: 54%;
+    }
+
+    .ch-scope {
+      timeline-scope:
+        --ch-top, --ch-why, --ch-forum, --ch-how, --ch-features, --ch-start, --ch-safety, --ch-faq;
+    }
+
+    .ch-section[id="top"] {
+      view-timeline-name: --ch-top;
+    }
+
+    .ch-section[id="why"] {
+      view-timeline-name: --ch-why;
+    }
+
+    .ch-section[id="forum"] {
+      view-timeline-name: --ch-forum;
+    }
+
+    .ch-section[id="how"] {
+      view-timeline-name: --ch-how;
+    }
+
+    .ch-section[id="features"] {
+      view-timeline-name: --ch-features;
+    }
+
+    .ch-section[id="start"] {
+      view-timeline-name: --ch-start;
+    }
+
+    .ch-section[id="safety"] {
+      view-timeline-name: --ch-safety;
+    }
+
+    .ch-section[id="faq"] {
+      view-timeline-name: --ch-faq;
+    }
+
+    .ch-section {
+      view-timeline-inset: 50% 49%;
+    }
+
+    .ch-link {
+      animation: ch-active linear;
+      animation-range: cover 0% cover 100%;
+    }
+
+    .ch-miru {
+      display: block;
+      opacity: 0;
+      animation: ch-miru linear;
+      animation-range: cover 0% cover 100%;
+    }
+
+    .ch-link[href="#top"],
+    .ch-link[href="#top"] .ch-miru {
+      animation-timeline: --ch-top;
+    }
+
+    .ch-link[href="#why"],
+    .ch-link[href="#why"] .ch-miru {
+      animation-timeline: --ch-why;
+    }
+
+    .ch-link[href="#forum"],
+    .ch-link[href="#forum"] .ch-miru {
+      animation-timeline: --ch-forum;
+    }
+
+    .ch-link[href="#how"],
+    .ch-link[href="#how"] .ch-miru {
+      animation-timeline: --ch-how;
+    }
+
+    .ch-link[href="#features"],
+    .ch-link[href="#features"] .ch-miru {
+      animation-timeline: --ch-features;
+    }
+
+    .ch-link[href="#start"],
+    .ch-link[href="#start"] .ch-miru {
+      animation-timeline: --ch-start;
+    }
+
+    .ch-link[href="#safety"],
+    .ch-link[href="#safety"] .ch-miru {
+      animation-timeline: --ch-safety;
+    }
+
+    .ch-link[href="#faq"],
+    .ch-link[href="#faq"] .ch-miru {
+      animation-timeline: --ch-faq;
+    }
+
+    .flow-figure {
+      view-timeline: --flow block;
+    }
+
+    .flow-carry {
+      display: inline;
+      animation: flow-carry linear both;
+      animation-timeline: --flow;
+    }
+
+    .flow-carry[data-carry="a"] {
+      animation-range: cover 20% cover 40%;
+    }
+
+    .flow-carry[data-carry="b"] {
+      animation-range: cover 28% cover 48%;
+    }
+
+    .flow-carry[data-carry="c"] {
+      animation-range: cover 36% cover 56%;
+    }
+
+    .flow-carry[data-carry="d"] {
+      animation-range: cover 52% cover 72%;
+    }
+
+    .faq-reveal > * {
+      grid-area: 1 / 1;
+    }
+
+    .faq-thinking {
+      display: flex;
+      animation: fade-hide linear both;
+      animation-timeline: view();
+      animation-range: cover 30% cover 34%;
+    }
+
+    .faq-answer {
+      animation: fade-show linear both;
+      animation-timeline: view();
+      animation-range: cover 33% cover 38%;
+    }
+
+    .faq-reactions {
+      animation: pop-in linear both;
+      animation-timeline: view();
+      animation-range: cover 38% cover 42%;
+    }
+  }
+}
+
+@keyframes seek-flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+
+@keyframes seek-pass {
+  0% {
+    opacity: 0;
+    translate: 0 -110%;
+    scale: 0.6;
+  }
+  30%,
+  70% {
+    opacity: 1;
+    translate: 0 -50%;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 20%;
+    scale: 0.7;
+  }
+}
+
+@keyframes seek-found {
+  0% {
+    opacity: 0;
+    translate: 0 -110%;
+    scale: 0.6;
+  }
+  70% {
+    translate: 0 -40%;
+    scale: 1.1;
+  }
+}
+
+@keyframes fade-hide {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-show {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+@keyframes scene-miru-fly {
+  0%,
+  28% {
+    opacity: 0;
+    translate: -50% 60cqh;
+    rotate: 0deg;
+  }
+  31% {
+    opacity: 1;
+    translate: calc(-50% - 40cqw) calc(-50% - 36cqh);
+    rotate: -12deg;
+  }
+  36% {
+    translate: calc(-50% - 12cqw) calc(-50% - 44cqh);
+    rotate: 8deg;
+  }
+  41% {
+    translate: calc(-50% + 16cqw) calc(-50% - 36cqh);
+    rotate: -8deg;
+  }
+  46% {
+    translate: calc(-50% + 18cqw) calc(-50% + 2cqh);
+    rotate: 10deg;
+  }
+  51% {
+    translate: calc(-50% + 14cqw) calc(-50% + 30cqh);
+    rotate: -10deg;
+  }
+  56% {
+    translate: calc(-50% - 14cqw) calc(-50% + 38cqh);
+    rotate: 8deg;
+  }
+  61% {
+    translate: calc(-50% - 38cqw) calc(-50% + 30cqh);
+    rotate: -8deg;
+  }
+  66% {
+    translate: calc(-50% - 42cqw) calc(-50% + 2cqh);
+    rotate: 10deg;
+  }
+  72% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.4;
+  }
+  78%,
+  100% {
+    opacity: 0;
+    translate: -50% -50%;
+    scale: 0.6;
+  }
+}
+
+@keyframes scene-frag-found {
+  0%,
+  100% {
+    border-color: var(--color-dc-line);
+  }
+  30%,
+  70% {
+    border-color: var(--color-butter-deep);
+    box-shadow: 0 0 0 3px var(--color-butter-deep);
+  }
+}
+
+@keyframes forum-track {
+  to {
+    translate: 0 calc(100% - 3.5rem);
+  }
+}
+
+@keyframes forum-miru {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 1;
+  }
+  30%,
+  70% {
+    rotate: -10deg;
+  }
+  50% {
+    rotate: 10deg;
+  }
+}
+
+@keyframes ch-active {
+  0%,
+  100% {
+    background-color: var(--color-dc-active);
+    color: var(--color-dc-bright);
+  }
+}
+
+@keyframes ch-miru {
+  0%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes flow-carry {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 135px 0;
+  }
+}
+
+@keyframes cutin-root {
+  0% {
+    visibility: visible;
+    background-color: transparent;
+  }
+  6%,
+  90% {
+    visibility: visible;
+    background-color: color-mix(in oklch, var(--color-ink) 92%, transparent);
+  }
+  100% {
+    visibility: visible;
+    background-color: transparent;
+  }
+}
+
+@keyframes cutin-flash {
+  0% {
+    opacity: 0;
+  }
+  4% {
+    opacity: 0.95;
+  }
+  14%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes cutin-lines {
+  0% {
+    opacity: 0;
+    scale: 1.4;
+    rotate: 0deg;
+  }
+  10%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1;
+    rotate: 14deg;
+  }
+}
+
+@keyframes cutin-band {
+  0%,
+  4% {
+    translate: -130% -50%;
+  }
+  14%,
+  86% {
+    translate: 0 -50%;
+  }
+  100% {
+    translate: 130% -50%;
+  }
+}
+
+@keyframes cutin-band-sub {
+  0%,
+  6% {
+    translate: 130% -50%;
+  }
+  16%,
+  86% {
+    translate: 0 -50%;
+  }
+  100% {
+    translate: -130% -50%;
+  }
+}
+
+@keyframes cutin-miru {
+  0%,
+  10% {
+    opacity: 0;
+    translate: 70vw 0;
+    scale: 0.9;
+  }
+  22% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+  86% {
+    opacity: 1;
+    translate: -3vw 0;
+    scale: 1.06;
+  }
+  100% {
+    opacity: 0;
+    translate: -3vw 0;
+    scale: 1.06;
+  }
+}
+
+@keyframes cutin-title {
+  0%,
+  14% {
+    opacity: 0;
+    translate: -80vw 0;
+  }
+  26% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  86% {
+    opacity: 1;
+    translate: 2vw 0;
+  }
+  100% {
+    opacity: 0;
+    translate: 2vw 0;
   }
 }

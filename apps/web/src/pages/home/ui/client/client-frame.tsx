@@ -7,7 +7,7 @@ import { ServerRail } from "./server-rail";
 import { TitleBar } from "./title-bar";
 
 const ClientFrame = ({ children }: Readonly<{ children: ReactNode }>): ReactNode => (
-  <div className="bg-dc-rail text-dc-text min-h-dvh font-sans antialiased scheme-dark">
+  <div className="ch-scope bg-dc-rail text-dc-text min-h-dvh font-sans antialiased scheme-dark">
     <TitleBar />
     <div className="flex">
       <ServerRail />

@@ -9,6 +9,8 @@ import { MessageBody } from "./message-body";
 
 type Reply = Readonly<{ author: Author; text: string }>;
 
+const MENTION = "@";
+
 const Message = ({
   id,
   author,
@@ -27,7 +29,7 @@ const Message = ({
   <div
     id={id}
     className={cn(
-      "mt-2 scroll-mt-16 border-l-2 py-1.5 pr-4 pl-3.5",
+      "relative isolate mt-2 scroll-mt-16 border-l-2 py-1.5 pr-4 pl-3.5",
       variant === "plain" && "hover:bg-dc-hover border-transparent",
       variant === "highlight" && "bg-dc-highlight border-dc-mention",
     )}
@@ -36,7 +38,7 @@ const Message = ({
       <div className="relative flex items-center gap-1.5 pl-14 text-sm">
         <span className="border-dc-line absolute top-1/2 left-5 h-3 w-8 rounded-tl-md border-t-2 border-l-2" />
         <AuthorAvatar author={reply.author} size="xs" />
-        <AuthorName author={reply.author} />
+        <AuthorName author={reply.author} mark={MENTION} />
         <span className="text-dc-muted truncate">{reply.text}</span>
       </div>
     )}

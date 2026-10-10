@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
 
-const LEAD = ["ミルが", "ぜんぶ集めてくるよ"] as const;
+const LEAD = ["ミルが", "ぜんぶ見つけてきたよ！"] as const;
 const COUNT = "キャンプの思い出 8 件";
 
 const GatherCard = (): ReactNode => (

@@ -7,7 +7,7 @@ import { ForumPosts } from "./forum-posts";
 
 const LEAD = "フォーラムの投稿も";
 const TAIL = "ミルが返信まで読むよ";
-const GUIDE = "フォーラムもまかせて";
+const GUIDE = "フォーラムもまかせてね！";
 const CHANNEL = "キャンプ部";
 const TIME = "今日 21:01";
 

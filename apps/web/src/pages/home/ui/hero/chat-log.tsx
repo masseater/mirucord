@@ -6,6 +6,7 @@ import { Message } from "#/pages/home/ui/message/message";
 import type { Reply } from "#/pages/home/ui/message/message";
 import { Reactions } from "#/pages/home/ui/message/reactions";
 
+import { SeekMiru } from "./seek-miru";
 import starPhoto from "./star-photo.svg";
 import { Vow } from "./vow";
 
@@ -41,9 +42,11 @@ const ChatLog = (): ReactNode => (
         className="mt-1 h-auto max-w-full rounded-lg"
       />
       <Reactions items={SKY_REACTIONS} />
+      <SeekMiru kind="pass" step="0" />
     </Message>
     <Message id="log-2205" author={memberAuthor(MEMBERS.kenta)} time={CAMP_TIME}>
       <p>{CAMP}</p>
+      <SeekMiru kind="pass" step="1" />
     </Message>
     <div className="group hover:bg-dc-hover flex items-baseline gap-4 py-0.5 pr-4 pl-4 leading-relaxed">
       <span className="text-dc-muted w-10 shrink-0 text-right text-xs opacity-0 group-hover:opacity-100">

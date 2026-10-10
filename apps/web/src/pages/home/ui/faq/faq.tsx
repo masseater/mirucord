@@ -9,7 +9,7 @@ import { Closing } from "./closing";
 import { FaqPair } from "./faq-pair";
 
 const LEAD = "よくある質問";
-const GUIDE = "なんでも聞いてね";
+const GUIDE = "なんでも聞いてね！";
 const CHANNEL = "よくある質問";
 const TIME = "今日 21:05";
 const NEW = "新着";
@@ -18,26 +18,26 @@ const QUESTIONS = [
   {
     time: "今日 21:06",
     reply: { author: memberAuthor(MEMBERS.yui), text: "料金はかかりますか" },
-    answer: "いまは無料で使えます。",
+    answer: "いまは無料で使えるよ！",
     reactions: [{ emoji: "🎉", count: 5, by: "others" }],
   },
   {
     time: "今日 21:07",
     reply: { author: memberAuthor(MEMBERS.kenta), text: "どこからミルに聞けますか" },
-    answer: "Claude をはじめ MCP に対応した AI クライアントから聞けます。",
+    answer: "Claude みたいに MCP に対応した AI クライアントから呼んでね！",
     reactions: [{ emoji: "👀", count: 2, by: "others" }],
   },
   {
     time: "今日 21:08",
     reply: { author: memberAuthor(MEMBERS.miho), text: "管理者でなくても使えますか" },
     answer:
-      "Bot の招待にはサーバーの管理権限が必要です。招待したあとはメンバーそれぞれが自分の読めるチャンネルだけを検索できます。",
+      "招待するときだけサーバーの管理権限がいるよ。そのあとはみんなそれぞれ自分の読めるチャンネルだけさがせるの！",
     reactions: [{ emoji: "🙏", count: 3, by: "me" }],
   },
   {
     time: "今日 21:09",
     reply: { author: memberAuthor(MEMBERS.tanaka), text: "運営は会話を読めますか" },
-    answer: "読めません。本文は暗号化して保存していて、運営が中身を見る仕組みはありません。",
+    answer: "読めないよ！本文は暗号化してしまってあるから、運営さんにも中身は見えないんだ。",
     reactions: [
       { emoji: "🔒", count: 4, by: "others" },
       { emoji: "👍", count: 2, by: "me" },
@@ -53,13 +53,7 @@ const Faq = (): ReactNode => (
       <span className="bg-dc-new text-dc-bright rounded-sm px-1">{NEW}</span>
     </div>
     {QUESTIONS.map((item) => (
-      <FaqPair
-        key={item.reply.text}
-        time={item.time}
-        reply={item.reply}
-        answer={item.answer}
-        reactions={item.reactions}
-      />
+      <FaqPair key={item.reply.text} question={item} />
     ))}
     <Closing />
   </ChannelSection>

@@ -7,6 +7,7 @@ import { ForumTag } from "./forum-tag";
 
 const REPLIES = "💬";
 const REPLIES_LABEL = "返信";
+const READ = "ミルがよんだよ";
 
 const ForumPost = ({
   tags,
@@ -23,7 +24,7 @@ const ForumPost = ({
   replies: number;
   ago: string;
 }>): ReactNode => (
-  <li className="bg-dc-sidebar hover:bg-dc-hover grid gap-1.5 rounded-lg px-4 py-3">
+  <li className="forum-post bg-dc-sidebar hover:bg-dc-hover relative grid gap-1.5 rounded-lg px-4 py-3">
     <p className="flex flex-wrap gap-1">
       {tags.map((tag) => (
         <ForumTag key={tag.label} emoji={tag.emoji} label={tag.label} />
@@ -40,6 +41,12 @@ const ForumPost = ({
       <span>{replies}</span>
       <span className="ml-2">{ago}</span>
     </p>
+    <span
+      aria-hidden="true"
+      className="forum-read bg-lavender-deep text-ink absolute top-3 right-4 rounded-full px-2 py-0.5 text-xs font-bold"
+    >
+      {READ}
+    </span>
   </li>
 );
 

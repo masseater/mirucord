@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Mascot } from "#/pages/home/ui/common/mascot";
+import { Mascot } from "#/shared/brand";
 
 import { AiNode } from "./ai-node";
 import { ServerNode } from "./server-node";

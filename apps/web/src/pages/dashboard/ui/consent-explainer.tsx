@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { PRIVACY_PATH } from "#/shared/config";
+import { Panel } from "#/shared/ui/panel";
 
 const TITLE = "mirucord が読み取るもの";
 const POLICY = "プライバシーポリシー";
@@ -34,22 +35,22 @@ const ITEMS = [
 ] as const;
 
 const ConsentExplainer = (): ReactNode => (
-  <section className="flex flex-col gap-3">
-    <h2 className="text-xl font-bold">{TITLE}</h2>
-    <dl className="grid gap-3 md:grid-cols-4">
+  <Panel>
+    <h2 className="text-xl font-black">{TITLE}</h2>
+    <dl className="grid gap-3 leading-relaxed md:grid-cols-4">
       {ITEMS.map((item) => [
-        <dt key={`${item.term}-term`} className="font-bold md:col-span-1">
+        <dt key={`${item.term}-term`} className="text-blurple font-black md:col-span-1">
           {item.term}
         </dt>,
-        <dd key={`${item.term}-detail`} className="md:col-span-3">
+        <dd key={`${item.term}-detail`} className="text-ink-soft md:col-span-3">
           {item.detail}
         </dd>,
       ])}
     </dl>
-    <a href={PRIVACY_PATH} className="self-start underline">
+    <a href={PRIVACY_PATH} className="hover:text-blurple self-start font-bold underline">
       {POLICY}
     </a>
-  </section>
+  </Panel>
 );
 
 export { ConsentExplainer };

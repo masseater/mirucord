@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 
 import { dashboardQuery, withdrawConsent } from "#/pages/dashboard/api/dashboard";
+import { PopButton } from "#/shared/ui/pop-button";
 
 const SUMMARY = "同意を取り消す";
 const DETAIL =
@@ -25,17 +26,14 @@ const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
     mutate(guildId);
   }, [guildId, mutate]);
   return (
-    <details className="rounded border px-4 py-3">
-      <summary className="cursor-pointer font-bold">{SUMMARY}</summary>
-      <p className="mt-3">{DETAIL}</p>
-      <button
-        type="button"
-        className="border-pink-deep text-pink-deep mt-3 rounded border px-4 py-2 disabled:opacity-50"
-        disabled={status === "pending"}
-        onClick={revoke}
-      >
-        {CONFIRM}
-      </button>
+    <details className="border-ink bg-milk rounded-3xl border-2 px-6 py-4">
+      <summary className="text-pink-deep cursor-pointer font-black">{SUMMARY}</summary>
+      <p className="text-ink-soft mt-3">{DETAIL}</p>
+      <div className="mt-4">
+        <PopButton tone="pink" disabled={status === "pending"} onClick={revoke}>
+          {CONFIRM}
+        </PopButton>
+      </div>
       <output className="mt-3 block">{MESSAGES[status]}</output>
     </details>
   );

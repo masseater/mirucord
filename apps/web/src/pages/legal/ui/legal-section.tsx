@@ -1,17 +1,19 @@
 import type { ReactNode } from "react";
 
+import { Panel } from "#/shared/ui/panel";
+
 const LegalSection = ({
   heading,
   paragraphs,
 }: Readonly<{ heading: string; paragraphs: readonly string[] }>): ReactNode => (
-  <section className="flex flex-col gap-2">
-    <h2 className="text-xl font-bold">{heading}</h2>
+  <Panel>
+    <h2 className="text-xl font-black">{heading}</h2>
     {paragraphs.map((paragraph) => (
-      <p key={paragraph} className="leading-loose">
+      <p key={paragraph} className="text-ink-soft leading-loose">
         {paragraph}
       </p>
     ))}
-  </section>
+  </Panel>
 );
 
 export { LegalSection };

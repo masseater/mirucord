@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { CtaLink } from "#/pages/home/ui/common/cta-link";
-import { Mascot } from "#/pages/home/ui/common/mascot";
+import { Mascot } from "#/shared/brand";
 import { SIGN_IN_PATH } from "#/shared/config";
 
 import { NavLinks } from "./nav-links";

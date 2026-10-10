@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 
+import { Mascot } from "#/shared/brand";
 import { cn } from "#/shared/lib/utils";
-
-import { Mascot } from "./mascot";
 
 const SectionHead = ({
   label,

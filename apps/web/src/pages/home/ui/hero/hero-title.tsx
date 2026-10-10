@@ -1,21 +1,23 @@
 import type { ReactNode } from "react";
 
-import { HeroTitleFocus } from "./hero-title-focus";
+import { HeroActions } from "./hero-actions";
 
-const KICKER = "MCP SERVER FOR DISCORD";
-const TAGLINE = "Discord サーバーを AI の索引に";
-const LEAD = "埋もれた会話を";
+const BADGE = "Discord × AI";
+const LEAD = "Discord の会話も";
+const FOCUS = "AI がすぐ見つける";
+const SUB = "Bot を招待するだけで Claude から過去のやりとりを探せます";
 
 const HeroTitle = (): ReactNode => (
-  <div className="order-first flex items-start justify-end gap-8 lg:order-none lg:col-span-5">
-    <div className="writing-vertical flex gap-5 pt-2">
-      <span className="text-nezumi font-mono text-xs tracking-widest">{KICKER}</span>
-      <span className="text-sumi-soft tracking-widest">{TAGLINE}</span>
-    </div>
-    <h1 className="font-mincho writing-vertical text-5xl leading-snug font-black tracking-wider whitespace-nowrap md:text-6xl lg:text-7xl">
+  <div className="relative flex flex-col items-start gap-6">
+    <span className="border-ink bg-milk shadow-pop-sm rounded-full border-2 px-4 py-1.5 text-sm font-bold">
+      {BADGE}
+    </span>
+    <h1 className="text-4xl leading-tight font-black sm:text-5xl lg:text-6xl">
       <span className="block">{LEAD}</span>
-      <HeroTitleFocus />
+      <span className="marker-butter text-blurple">{FOCUS}</span>
     </h1>
+    <p className="text-ink-soft text-lg leading-relaxed font-bold">{SUB}</p>
+    <HeroActions />
   </div>
 );
 

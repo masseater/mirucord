@@ -17,14 +17,14 @@ const FeatureCell = ({
 }>): ReactNode => (
   <div
     className={cn(
-      "relative flex min-h-72 flex-col justify-between gap-7 overflow-hidden rounded-2xl p-9",
+      "border-ink shadow-pop flex flex-col gap-6 rounded-3xl border-2 p-7 transition-transform hover:-translate-y-1",
       className,
     )}
   >
-    <span className="font-mincho absolute top-8 right-8 text-sm tracking-widest opacity-70">
+    <span className="bg-ink text-milk grid size-10 place-items-center rounded-full text-lg font-black">
       {number}
     </span>
-    <h3 className="font-mincho text-3xl leading-snug font-black">
+    <h3 className="text-2xl leading-snug font-black">
       <span className="block">{lead}</span>
       <span className="block">{tail}</span>
     </h3>

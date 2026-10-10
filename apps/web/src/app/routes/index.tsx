@@ -8,7 +8,7 @@ const DESCRIPTION =
   "Discord サーバーの過去の会話を AI から探せる読み取り専用の MCP サーバーです。Bot を招待するだけで使えます。";
 const FONTS_ORIGIN = "https://fonts.googleapis.com";
 const FONTS_STATIC_ORIGIN = "https://fonts.gstatic.com";
-const FONTS_URL = `${FONTS_ORIGIN}/css2?family=JetBrains+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@500;700;900&display=swap`;
+const FONTS_URL = `${FONTS_ORIGIN}/css2?family=JetBrains+Mono:wght@400;500&family=Zen+Maru+Gothic:wght@500;700;900&display=swap`;
 
 const Route = createFileRoute("/")({
   loader: ({ context }) => loadHomePage(context.queryClient),

@@ -1,25 +1,18 @@
 import type { ReactNode } from "react";
 
+import { Mascot } from "#/pages/home/ui/common/mascot";
+
 import { ClosingActions } from "./closing-actions";
 import { ClosingTitle } from "./closing-title";
 
-const GLYPH = "索";
-const LEAD = "過去の会話を";
-const TAIL = "今日から資料に";
-
 const Closing = (): ReactNode => (
-  <div className="bg-sumi text-paper relative overflow-hidden py-40">
-    <span
-      aria-hidden="true"
-      className="font-mincho text-outline-ash text-giant pointer-events-none absolute top-1/2 -right-12 -translate-y-1/2 font-black"
-    >
-      {GLYPH}
-    </span>
-    <div className="mx-auto w-full max-w-6xl px-5">
-      <ClosingTitle lead={LEAD} tail={TAIL} />
+  <section className="mx-auto w-full max-w-6xl px-5 pb-24">
+    <div className="border-ink bg-lavender bg-dots shadow-pop relative flex flex-col items-center gap-8 overflow-hidden rounded-3xl border-2 px-6 py-16 text-center md:py-20">
+      <Mascot className="motion-safe:animate-float size-32 md:size-40" />
+      <ClosingTitle />
       <ClosingActions />
     </div>
-  </div>
+  </section>
 );
 
 export { Closing };

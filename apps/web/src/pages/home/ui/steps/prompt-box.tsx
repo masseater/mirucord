@@ -4,9 +4,9 @@ const PROMPT = "先月の議論をまとめて";
 const ENTER = "↵";
 
 const PromptBox = (): ReactNode => (
-  <div className="border-kinu bg-paper flex justify-between gap-2.5 rounded-xl border px-4 py-3.5 text-sm">
+  <div className="bg-pink flex items-center justify-between gap-2.5 rounded-full px-5 py-3 text-sm font-bold">
     <span>{PROMPT}</span>
-    <span className="text-shu font-mono">{ENTER}</span>
+    <span className="bg-ink text-milk grid size-7 place-items-center rounded-full">{ENTER}</span>
   </div>
 );
 

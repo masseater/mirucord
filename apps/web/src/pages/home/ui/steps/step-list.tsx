@@ -10,14 +10,14 @@ const REGISTER = "AI に登録";
 const ASK = "話しかける";
 
 const StepList = (): ReactNode => (
-  <ol className="border-sumi grid border-t-2 md:grid-cols-3">
-    <Step number="01" title={INVITE}>
+  <ol className="grid gap-6 md:grid-cols-3">
+    <Step number="1" tone="bg-lavender-deep" title={INVITE}>
       <InviteChip />
     </Step>
-    <Step number="02" title={REGISTER}>
+    <Step number="2" tone="bg-mint-deep" title={REGISTER}>
       <CommandBox />
     </Step>
-    <Step number="03" title={ASK}>
+    <Step number="3" tone="bg-pink-deep" title={ASK}>
       <PromptBox />
     </Step>
   </ol>

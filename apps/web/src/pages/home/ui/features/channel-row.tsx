@@ -9,7 +9,7 @@ const ChannelRow = ({
 }: Readonly<{ name: string; mark: string; visible: boolean }>): ReactNode => (
   <li
     className={cn(
-      "flex justify-between rounded-lg bg-washi px-3.5 py-2.5",
+      "bg-milk flex justify-between rounded-2xl px-4 py-2.5 font-bold",
       !visible && "opacity-40",
     )}
   >

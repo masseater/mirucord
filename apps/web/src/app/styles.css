@@ -32,34 +32,58 @@
 }
 
 @theme {
-  --color-washi: oklch(0.955 0.014 85);
-  --color-paper: oklch(0.982 0.008 85);
-  --color-sumi: oklch(0.215 0.01 75);
-  --color-sumi-soft: oklch(0.33 0.012 75);
-  --color-nezumi: oklch(0.5 0.012 80);
-  --color-kinu: oklch(0.88 0.018 85);
-  --color-shu: oklch(0.55 0.18 35);
-  --color-shu-soft: oklch(0.87 0.06 35);
-  --color-matsu: oklch(0.55 0.05 125);
-  --color-fuji: oklch(0.5 0.05 345);
-  --color-kon: oklch(0.36 0.07 270);
-  --color-kitsune: oklch(0.55 0.07 70);
+  --color-cream: oklch(0.985 0.014 95);
+  --color-milk: oklch(0.995 0.005 95);
+  --color-ink: oklch(0.32 0.06 285);
+  --color-ink-soft: oklch(0.45 0.05 285);
+  --color-mist: oklch(0.6 0.04 285);
+  --color-line: oklch(0.91 0.03 290);
+  --color-lavender: oklch(0.92 0.045 290);
+  --color-lavender-deep: oklch(0.72 0.12 285);
+  --color-blurple: oklch(0.6 0.19 275);
+  --color-pink: oklch(0.92 0.05 355);
+  --color-pink-deep: oklch(0.72 0.14 0);
+  --color-mint: oklch(0.93 0.06 170);
+  --color-mint-deep: oklch(0.68 0.11 170);
+  --color-butter: oklch(0.95 0.08 95);
+  --color-butter-deep: oklch(0.8 0.13 85);
+  --color-sky: oklch(0.92 0.05 235);
+  --color-sky-deep: oklch(0.7 0.11 240);
   --color-claude: oklch(0.67 0.13 40);
   --color-discord: oklch(0.59 0.2 275);
-  --text-giant: min(60vw, 40rem);
-  --text-giant--line-height: 1;
-  --shadow-paper: 0 30px 60px -30px oklch(0.35 0.05 70 / 30%);
-  --shadow-sumi: 0 30px 60px -20px oklch(0.2 0.02 70 / 45%);
-  --animate-sweep: sweep 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+  --shadow-pop: 0 6px 0 0 var(--color-ink);
+  --shadow-pop-sm: 0 4px 0 0 var(--color-ink);
+  --shadow-soft: 0 24px 48px -24px oklch(0.45 0.12 285 / 40%);
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-blink: blink 5s ease-in-out infinite;
   --animate-marquee: marquee 48s linear infinite;
   --animate-flow: flow 1.4s linear infinite;
+  --animate-wiggle: wiggle 2.4s ease-in-out infinite;
 
-  @keyframes sweep {
-    from {
-      background-size: 0% 100%;
+  @keyframes float {
+    50% {
+      transform: translateY(-10px);
     }
-    to {
-      background-size: 100% 100%;
+  }
+
+  @keyframes blink {
+    0%,
+    92%,
+    100% {
+      transform: scaleY(1);
+    }
+    96% {
+      transform: scaleY(0.1);
+    }
+  }
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-4deg);
+    }
+    50% {
+      transform: rotate(4deg);
     }
   }
 
@@ -76,36 +100,26 @@
   }
 }
 
-@utility writing-vertical {
-  writing-mode: vertical-rl;
-}
-
-@utility text-upright {
-  text-orientation: upright;
-}
-
-@utility text-outline-sumi {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--color-sumi);
-}
-
-@utility text-outline-ash {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--color-sumi-soft);
-}
-
-@utility marker-shu {
-  background-image: linear-gradient(transparent 55%, var(--color-shu-soft) 55%);
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-}
-
 @utility paused {
   animation-play-state: paused;
 }
 
 @utility dash-flow {
   stroke-dasharray: 6 8;
+}
+
+@utility origin-fill {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@utility bg-dots {
+  background-image: radial-gradient(var(--color-lavender) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+@utility marker-butter {
+  background-image: linear-gradient(transparent 60%, var(--color-butter) 60%);
 }
 
 @theme inline {
@@ -118,7 +132,9 @@
   --font-sans:
     "Zen Kaku Gothic New", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP",
     "Yu Gothic UI", Meiryo, ui-sans-serif, system-ui, sans-serif;
-  --font-mincho: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  --font-maru:
+    "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Noto Sans JP", ui-rounded,
+    ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

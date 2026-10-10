@@ -24,7 +24,6 @@
     "@better-auth/mcp": "catalog:",
     "@better-auth/oauth-provider": "catalog:",
     "@discordjs/rest": "catalog:",
-    "@distilled.cloud/aws": "catalog:",
     "@effect/atom-react": "catalog:stack",
     "@modelcontextprotocol/server": "catalog:",
     "@openfeature/core": "1.12.0",

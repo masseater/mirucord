@@ -10,7 +10,7 @@ Bot をサーバーに招待すると、メッセージが事前に保存され�
 デプロイは main の CI からだけ行う。
 
 メッセージ本文と投稿者名は、ギルドごとのデータ鍵で AES-GCM により暗号化して D1 に保存する。
-データ鍵は `MASTER_KEY` から HKDF で導いた鍵で AES-KW により包む。AWS KMS を設定した公式版では、データ鍵を KMS で作って包む。
+データ鍵は `MASTER_KEY` から HKDF で導いた鍵で AES-KW により包む。`MASTER_KEY` は Alchemy が作って Worker の secret に入れる。
 Vectorize に置くのはベクトルと `guildId`・`channelId` だけで、本文は置かない。
 メッセージ本文と検索クエリを、ログ・span の属性・エラーメッセージに出さない。
 Bot がサーバーから外れたら、そのサーバーの行とベクトルを消す。
@@ -102,22 +102,13 @@ Worker のバージョンにはコミットの SHA を刻み、`/api/health` が
 
 デプロイに要る設定と運用の手順は [runbook.md](runbook.md) にまとめた。
 
-### 6. 運営の閲覧を管理者の承認制にする（済）
+### 6. 運営の閲覧を管理者の承認制にする（取りやめ）
 
-運営は、`SUPPORT_OPERATOR_IDS` に Discord のユーザー ID を並べた人である。
-サーバー管理者（オーナー、管理者権限、サーバー管理権限のいずれか）が `grant_support_access` で時間（1〜72 時間）を決めて許可した間だけ、運営は同じ `/mcp` から保存済みの全チャンネルを読める。
-運営の読み出しはツールごとに `support_access` へ記録し、管理者は `list_support_access` で許可と読み出しの履歴を見られる。`revoke_support_access` で期限前に打ち切れる。
-別の endpoint を立てず `/mcp` に寄せたのは、権限の判定と記録を 1 か所に保つためである。
+運営がサーバーの中身を読む手段は持たない。一度作ったが、読み取りだけのサービスに要らない権限なので撤去した。
 
-### 7. 公式版の鍵を外部 KMS に移す（済）
+### 7. 公式版の鍵を外部 KMS に移す（取りやめ）
 
-`AWS_KMS_KEY_ID` などの AWS の設定がそろうと、新しいサーバーの鍵は AWS KMS で作る。
-保存する値には `aws-kms:` を頭に付ける。
-開くときは頭の印で方式を選ぶので、`MASTER_KEY` で包んだ既存の鍵もそのまま読める。
-`MASTER_KEY` を使う方式は、自前運用の既定として残す。
-AWS の呼び出しには、Alchemy と同じ作者の `@distilled.cloud/aws` を使う。Effect で書かれ、Workers 向けの export を持つためである。
-
-IAM ユーザーには、その鍵への `kms:GenerateDataKeyWithoutPlaintext` と `kms:Decrypt` だけを許す。
+AWS KMS への依存は撤去した。鍵は `MASTER_KEY` で包む方式だけにする。
 
 ## 引き継ぎの注意
 

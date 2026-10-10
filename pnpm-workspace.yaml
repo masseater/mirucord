@@ -41,7 +41,6 @@ catalog:
   discord-api-types: 0.38.56
   "@better-auth/mcp": 1.7.7
   jose: 6.2.12
-  "@distilled.cloud/aws": 1.0.0-rc.13
   "@better-auth/oauth-provider": 1.7.7
   simple-icons: 16.34.0
   class-variance-authority: 0.7.1

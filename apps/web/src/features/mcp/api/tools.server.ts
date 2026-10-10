@@ -7,14 +7,6 @@ import { runRequest } from "#/shared/lib/index.server";
 import { readMessages, searchMessages } from "./messages.server";
 import { listGuildIds, resolveScope } from "./scope.server";
 import type { GuildScope } from "./scope.server";
-import {
-  grantSupportAccess,
-  grantSupportTool,
-  listSupportAccess,
-  listSupportTool,
-  revokeSupportAccess,
-  revokeSupportTool,
-} from "./support-tools.server";
 import { DISCORD_UNAVAILABLE, errorResult, jsonResult, withScope } from "./tool-scope.server";
 
 const SERVER_INFO = { name: "mirucord", version: "0.0.0" };
@@ -69,10 +61,9 @@ const listServers = (discordUserId: string): Promise<CallToolResult> =>
       ),
       Effect.map((scopes) =>
         jsonResult(
-          Array.getSomes(scopes).map(({ guild, access }) => ({
+          Array.getSomes(scopes).map(({ guild }) => ({
             id: guild.guildId,
             name: guild.name,
-            access,
           })),
         ),
       ),
@@ -95,9 +86,8 @@ const visibleChannels = (scope: GuildScope): CallToolResult =>
 const listChannels =
   (discordUserId: string) =>
   ({ serverId }: typeof ListChannelsInput.Type): Promise<CallToolResult> =>
-    withScope(
-      { tool: "list_channels", guildId: serverId, discordUserId, channelId: Option.none() },
-      (scope) => Effect.succeed(visibleChannels(scope)),
+    withScope({ guildId: serverId, discordUserId }, (scope) =>
+      Effect.succeed(visibleChannels(scope)),
     );
 
 const search =
@@ -108,19 +98,12 @@ const search =
     channelId,
     limit,
   }: typeof SearchMessagesInput.Type): Promise<CallToolResult> =>
-    withScope(
-      {
-        tool: "search_messages",
-        guildId: serverId,
-        discordUserId,
-        channelId: Option.fromUndefinedOr(channelId),
-      },
-      (scope) =>
-        withChannel(scope, Option.fromUndefinedOr(channelId), (channelIds) =>
-          searchMessages({ scope, query, channelIds, limit: limitOf(limit) }).pipe(
-            Effect.map(jsonResult),
-          ),
+    withScope({ guildId: serverId, discordUserId }, (scope) =>
+      withChannel(scope, Option.fromUndefinedOr(channelId), (channelIds) =>
+        searchMessages({ scope, query, channelIds, limit: limitOf(limit) }).pipe(
+          Effect.map(jsonResult),
         ),
+      ),
     );
 
 const read =
@@ -131,22 +114,15 @@ const read =
     before,
     limit,
   }: typeof ReadMessagesInput.Type): Promise<CallToolResult> =>
-    withScope(
-      {
-        tool: "read_messages",
-        guildId: serverId,
-        discordUserId,
-        channelId: Option.some(channelId),
-      },
-      (scope) =>
-        withChannel(scope, Option.some(channelId), () =>
-          readMessages({
-            scope,
-            channelId,
-            before: Option.fromUndefinedOr(before),
-            limit: limitOf(limit),
-          }).pipe(Effect.map(jsonResult)),
-        ),
+    withScope({ guildId: serverId, discordUserId }, (scope) =>
+      withChannel(scope, Option.some(channelId), () =>
+        readMessages({
+          scope,
+          channelId,
+          before: Option.fromUndefinedOr(before),
+          limit: limitOf(limit),
+        }).pipe(Effect.map(jsonResult)),
+      ),
     );
 const toolInput = Schema.toStandardSchemaV1;
 
@@ -181,13 +157,6 @@ const buildServer = (discordUserId: string): McpServer => {
     },
     read(discordUserId),
   );
-  server.registerTool("grant_support_access", grantSupportTool, grantSupportAccess(discordUserId));
-  server.registerTool(
-    "revoke_support_access",
-    revokeSupportTool,
-    revokeSupportAccess(discordUserId),
-  );
-  server.registerTool("list_support_access", listSupportTool, listSupportAccess(discordUserId));
   return server;
 };
 

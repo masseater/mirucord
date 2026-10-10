@@ -1,3 +1,0 @@
-const HASH = "#";
-
-export { HASH };

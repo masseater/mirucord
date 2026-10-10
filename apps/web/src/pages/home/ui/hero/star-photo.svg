@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <rect width="320" height="180" fill="oklch(0.32 0.043 280)"/>
+  <g fill="oklch(0.96 0.05 92)">
+    <circle cx="28" cy="30" r="1.6"/><circle cx="64" cy="62" r="1"/><circle cx="96" cy="22" r="2.2"/>
+    <circle cx="132" cy="48" r="1.2"/><circle cx="170" cy="18" r="1.4"/><circle cx="204" cy="56" r="2"/>
+    <circle cx="240" cy="30" r="1"/><circle cx="274" cy="64" r="1.6"/><circle cx="300" cy="24" r="2.4"/>
+    <circle cx="150" cy="84" r="1"/>
+  </g>
+  <path d="M0 180 L70 120 L120 150 L190 96 L260 146 L320 116 L320 180 Z" fill="oklch(0.21 0.006 265)"/>
+  <path d="M196 180 L222 138 L248 180 Z" fill="oklch(0.85 0.07 18)"/>
+</svg>

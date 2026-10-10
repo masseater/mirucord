@@ -59,6 +59,7 @@
   --color-dc-online: oklch(0.66 0.17 150);
   --color-dc-mention: oklch(0.8 0.14 75);
   --color-dc-highlight: oklch(0.34 0.035 85);
+  --color-dc-new: oklch(0.63 0.21 25);
   --shadow-pop: 0 6px 0 0 var(--color-ink);
   --shadow-pop-sm: 0 4px 0 0 var(--color-ink);
   --animate-float: float 4s ease-in-out infinite;

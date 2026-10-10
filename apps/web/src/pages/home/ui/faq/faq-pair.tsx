@@ -1,21 +1,29 @@
 import type { ReactNode } from "react";
 
-import type { Member } from "#/pages/home/ui/common/members";
-import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
+import { BOT } from "#/pages/home/ui/message/author";
 import { Message } from "#/pages/home/ui/message/message";
+import type { Reply } from "#/pages/home/ui/message/message";
+import { Reactions } from "#/pages/home/ui/message/reactions";
+import type { Reaction } from "#/pages/home/ui/message/reactions";
 
 const FaqPair = ({
-  member,
   time,
-  question,
   answer,
-}: Readonly<{ member: Member; time: string; question: string; answer: string }>): ReactNode => (
+  reply,
+  reactions,
+}: Readonly<{
+  time: string;
+  answer: string;
+  reply: Reply;
+  reactions: readonly Reaction[];
+}>): ReactNode => (
   <>
-    <Message author={memberAuthor(member)} time={time}>
-      <h3>{question}</h3>
+    <Message author={reply.author} time={time}>
+      <h3>{reply.text}</h3>
     </Message>
-    <Message author={BOT} time={time}>
+    <Message author={BOT} time={time} reply={reply}>
       <p>{answer}</p>
+      <Reactions items={reactions} />
     </Message>
   </>
 );

@@ -45,6 +45,7 @@ const FlowDiagram = (): ReactNode => (
       y="58"
       width="120"
       height="120"
+      aria-hidden="true"
       className="motion-safe:animate-wiggle origin-fill"
     />
     <text x="500" y="222" textAnchor="middle" className="fill-ink text-xl font-black">

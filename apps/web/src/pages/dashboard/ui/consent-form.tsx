@@ -13,11 +13,9 @@ import { Pill } from "./pill";
 
 const TITLE = "Bot が見られるチャンネル";
 const SCOPE =
-  "同意すると、下のチャンネルとそのスレッドを読み取ります。範囲を変えたいときは、Discord のチャンネル権限で mirucord の Bot の「チャンネルを見る」をオンかオフにしてください。管理画面での選び直しは要りません。";
-const EMPTY =
-  "Bot が見られるチャンネルがまだありません。Discord のチャンネル権限で Bot に閲覧を許可してください。";
-const NOTE =
-  "同意すると、Bot が選んだチャンネルに「このサーバーの過去ログを mirucord が読み取ります」というお知らせを 1 回投稿します。";
+  "下のチャンネルとそのスレッドを読み取ります。範囲は Discord で Bot の「チャンネルを見る」権限を切り替えて変えます。";
+const EMPTY = "Bot が見られるチャンネルがまだありません。Discord で Bot に閲覧を許可してください。";
+const NOTE = "同意すると選んだチャンネルにお知らせを 1 回投稿します。";
 const SUBMIT = "同意して取り込みを始める";
 
 const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => {

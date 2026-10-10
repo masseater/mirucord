@@ -4,7 +4,7 @@ import { LegalDocument } from "./legal-document";
 
 const TITLE = "利用規約";
 
-const TIP = "mirucord を使うときの約束ごとです。";
+const TIP = "読んでおいてね";
 
 const SECTIONS = [
   {

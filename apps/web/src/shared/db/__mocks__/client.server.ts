@@ -8,7 +8,8 @@ const sqlite = drizzle(":memory:", { relations: authRelations });
 migrate(sqlite, { migrationsFolder: new URL("../../../../drizzle", import.meta.url).pathname });
 
 const db = Object.assign(sqlite, {
-  batch: (statements: readonly unknown[]) => Promise.all(statements),
+  batch: (statements: readonly Readonly<{ all: () => unknown }>[]) =>
+    Promise.resolve(sqlite.transaction(() => statements.map((statement) => statement.all()))),
 });
 
 export { db };

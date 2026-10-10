@@ -1,19 +1,22 @@
 import type { ReactNode } from "react";
 
-import { SectionHead } from "#/pages/home/ui/common/section-head";
+import { ChannelSection } from "#/pages/home/ui/client/channel-section";
+import { Post } from "#/pages/home/ui/message/post";
 
 import { StepList } from "./step-list";
 
 const LEAD = "3 ステップで";
 const TAIL = "すぐ使える";
 const GUIDE = "たった 3 つだよ";
-const LABEL = "はじめかた";
+const CHANNEL = "はじめかた";
+const TIME = "今日 21:03";
 
 const Steps = (): ReactNode => (
-  <section id="start" className="mx-auto w-full max-w-6xl scroll-mt-8 px-5 py-24 md:py-32">
-    <SectionHead label={LABEL} guide={GUIDE} tone="bg-butter" lead={LEAD} tail={TAIL} />
-    <StepList />
-  </section>
+  <ChannelSection id="start" name={CHANNEL}>
+    <Post time={TIME} guide={GUIDE} lead={LEAD} tail={TAIL}>
+      <StepList />
+    </Post>
+  </ChannelSection>
 );
 
 export { Steps };

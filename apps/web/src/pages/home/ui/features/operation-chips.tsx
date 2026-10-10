@@ -16,8 +16,9 @@ const OperationChips = (): ReactNode => (
       <li
         key={operation.label}
         className={cn(
-          "bg-milk border-ink rounded-full border-2 px-4 py-1.5",
-          !operation.allowed && "border-dashed line-through opacity-40",
+          "rounded-sm px-3 py-1",
+          operation.allowed && "bg-dc-active text-dc-bright",
+          !operation.allowed && "text-dc-muted line-through",
         )}
       >
         {operation.label}

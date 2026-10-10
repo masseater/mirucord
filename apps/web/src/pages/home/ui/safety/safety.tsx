@@ -1,19 +1,22 @@
 import type { ReactNode } from "react";
 
-import { SectionHead } from "#/pages/home/ui/common/section-head";
+import { ChannelSection } from "#/pages/home/ui/client/channel-section";
+import { Post } from "#/pages/home/ui/message/post";
 
 import { SpecList } from "./spec-list";
 
 const LEAD = "大事な思い出だから";
 const TAIL = "ていねいに預かります";
 const GUIDE = "大事にあずかるね";
-const LABEL = "あんしん";
+const CHANNEL = "あんしん";
+const TIME = "今日 21:04";
 
 const Safety = (): ReactNode => (
-  <section id="safety" className="mx-auto w-full max-w-6xl scroll-mt-8 px-5 py-24 md:py-32">
-    <SectionHead label={LABEL} guide={GUIDE} tone="bg-lavender" lead={LEAD} tail={TAIL} />
-    <SpecList />
-  </section>
+  <ChannelSection id="safety" name={CHANNEL}>
+    <Post time={TIME} guide={GUIDE} lead={LEAD} tail={TAIL}>
+      <SpecList />
+    </Post>
+  </ChannelSection>
 );
 
 export { Safety };

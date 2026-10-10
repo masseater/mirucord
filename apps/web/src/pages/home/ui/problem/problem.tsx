@@ -1,21 +1,22 @@
 import type { ReactNode } from "react";
 
-import { SectionHead } from "#/pages/home/ui/common/section-head";
+import { ChannelSection } from "#/pages/home/ui/client/channel-section";
+import { Post } from "#/pages/home/ui/message/post";
 
-import { ProblemDiagram } from "./problem-diagram";
+import { ProblemFigure } from "./problem-figure";
 
 const LEAD = "楽しかった会話も";
 const TAIL = "どんどん流れていっちゃう";
 const GUIDE = "あの話どこだっけ…";
-const LABEL = "思い出";
+const CHANNEL = "思い出";
+const TIME = "今日 21:00";
 
 const Problem = (): ReactNode => (
-  <section id="why" className="mx-auto w-full max-w-6xl scroll-mt-8 px-5 py-24 md:py-32">
-    <SectionHead label={LABEL} guide={GUIDE} tone="bg-pink" lead={LEAD} tail={TAIL} />
-    <div className="border-ink bg-milk bg-dots shadow-pop overflow-x-auto rounded-3xl border-2 p-4 md:p-12">
-      <ProblemDiagram />
-    </div>
-  </section>
+  <ChannelSection id="why" name={CHANNEL}>
+    <Post time={TIME} guide={GUIDE} lead={LEAD} tail={TAIL}>
+      <ProblemFigure />
+    </Post>
+  </ChannelSection>
 );
 
 export { Problem };

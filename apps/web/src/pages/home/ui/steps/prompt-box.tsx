@@ -4,9 +4,11 @@ const PROMPT = "去年の夏の思い出を教えて";
 const ENTER = "↵";
 
 const PromptBox = (): ReactNode => (
-  <div className="bg-pink flex items-center justify-between gap-2.5 rounded-full px-5 py-3 text-sm font-bold">
+  <div className="bg-dc-input text-dc-text flex items-center justify-between gap-2.5 rounded-lg px-4 py-2.5 text-sm">
     <span>{PROMPT}</span>
-    <span className="bg-ink text-milk grid size-7 place-items-center rounded-full">{ENTER}</span>
+    <span className="bg-blurple text-dc-bright grid size-7 place-items-center rounded-full">
+      {ENTER}
+    </span>
   </div>
 );
 

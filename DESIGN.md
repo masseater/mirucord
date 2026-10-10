@@ -11,6 +11,7 @@ UI は shadcn/ui の考え方で組み、共通部品は `apps/web/src/shared/ui
 トークンは `apps/web/src/app/styles.css` の `@theme` で定義する。
 ブラウザの機能は Baseline Widely available の範囲で使い、実装は modern-web-guidance スキルの指針に従う。
 画面はライトテーマだけで作り、ページの外枠に `scheme-light` を付ける。
+LP だけは例外として、後述の「LP」に従う。
 
 ## 色
 
@@ -70,6 +71,15 @@ Discord と Claude のロゴの色は `discord` と `claude` を使う。
 新しいページはまずこれらで組み、足りないときだけ部品を足す。
 部品を足したら、この表に追記する。
 LP だけの演出は `pages/home` に置き、ほかのページで使い始めたら `shared/ui` へ移す。
+
+## LP
+
+LP は Discord のダークテーマの画面を再現する。
+サーバー一覧・チャンネル一覧・メッセージ欄・メンバー一覧で組み、セクションをチャンネルとして並べる。
+色は `dc-` で始まるトークンを使い、外枠に `scheme-dark` を付ける。
+ミルは APP バッジ付きの Bot としてメッセージを投稿する。
+AI の答えは Discord の外の Claude の画面として描き、Bot が Discord に書きこむようには見せない。
+図やカードはメッセージの添付や埋め込みとして置き、パステルの色はそこで使う。
 
 ## 言葉
 

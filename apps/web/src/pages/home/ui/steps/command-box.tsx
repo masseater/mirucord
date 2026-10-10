@@ -5,9 +5,9 @@ import { MCP_URL } from "#/shared/config";
 const COMMAND = `claude mcp add --transport http mirucord ${MCP_URL}`;
 
 const CommandBox = (): ReactNode => (
-  <div className="bg-ink text-milk rounded-2xl px-4 py-3.5 font-mono text-xs">
+  <pre className="bg-dc-rail border-dc-line text-dc-text rounded-sm border px-3 py-2.5 font-mono text-xs whitespace-pre-wrap">
     <code className="break-all select-all">{COMMAND}</code>
-  </div>
+  </pre>
 );
 
 export { CommandBox };

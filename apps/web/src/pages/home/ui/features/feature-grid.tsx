@@ -1,26 +1,26 @@
 import type { ReactNode } from "react";
 
+import { TitledEmbed } from "#/pages/home/ui/message/titled-embed";
+
 import { ChannelList } from "./channel-list";
 import { CipherList } from "./cipher-list";
-import { FeatureCell } from "./feature-cell";
 import { OperationChips } from "./operation-chips";
 
 const WRITE = "書きこまない";
-const SCOPE_LEAD = "あなたが読める";
-const SCOPE_TAIL = "チャンネルだけ";
+const SCOPE = "あなたが読めるチャンネルだけ";
 const CIPHER = "本文は暗号化";
 
 const FeatureGrid = (): ReactNode => (
-  <div className="grid gap-6 md:grid-cols-3">
-    <FeatureCell number="1" lead={WRITE} className="bg-lavender">
+  <div className="grid gap-2">
+    <TitledEmbed accent="border-lavender-deep" title={WRITE}>
       <OperationChips />
-    </FeatureCell>
-    <FeatureCell number="2" lead={SCOPE_LEAD} tail={SCOPE_TAIL} className="bg-mint">
+    </TitledEmbed>
+    <TitledEmbed accent="border-mint-deep" title={SCOPE}>
       <ChannelList />
-    </FeatureCell>
-    <FeatureCell number="3" lead={CIPHER} className="bg-pink">
+    </TitledEmbed>
+    <TitledEmbed accent="border-pink-deep" title={CIPHER}>
       <CipherList />
-    </FeatureCell>
+    </TitledEmbed>
   </div>
 );
 

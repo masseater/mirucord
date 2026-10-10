@@ -1,17 +1,16 @@
 import type { ReactNode } from "react";
 
-import { Closing } from "./closing/closing";
+import { ClientFrame } from "./client/client-frame";
 import { Faq } from "./faq/faq";
 import { Features } from "./features/features";
 import { Flow } from "./flow/flow";
 import { Hero } from "./hero/hero";
 import { Problem } from "./problem/problem";
 import { Safety } from "./safety/safety";
-import { SiteFrame } from "./site-frame/site-frame";
 import { Steps } from "./steps/steps";
 
 const HomePage = (): ReactNode => (
-  <SiteFrame>
+  <ClientFrame>
     <Hero />
     <Problem />
     <Flow />
@@ -19,8 +18,7 @@ const HomePage = (): ReactNode => (
     <Steps />
     <Safety />
     <Faq />
-    <Closing />
-  </SiteFrame>
+  </ClientFrame>
 );
 
 export { HomePage };

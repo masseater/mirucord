@@ -46,11 +46,24 @@
   --color-sky-deep: oklch(0.7 0.11 240);
   --color-claude: oklch(0.67 0.13 40);
   --color-discord: oklch(0.59 0.2 275);
+  --color-dc-rail: oklch(0.21 0.006 265);
+  --color-dc-sidebar: oklch(0.25 0.008 265);
+  --color-dc-chat: oklch(0.29 0.008 265);
+  --color-dc-hover: oklch(0.27 0.008 265);
+  --color-dc-input: oklch(0.33 0.01 265);
+  --color-dc-active: oklch(0.36 0.012 265);
+  --color-dc-line: oklch(0.37 0.01 265);
+  --color-dc-text: oklch(0.9 0.006 265);
+  --color-dc-bright: oklch(0.97 0.003 265);
+  --color-dc-muted: oklch(0.7 0.012 265);
+  --color-dc-link: oklch(0.72 0.15 235);
+  --color-dc-online: oklch(0.66 0.17 150);
+  --color-dc-mention: oklch(0.8 0.14 75);
+  --color-dc-highlight: oklch(0.34 0.035 85);
   --shadow-pop: 0 6px 0 0 var(--color-ink);
   --shadow-pop-sm: 0 4px 0 0 var(--color-ink);
   --animate-float: float 4s ease-in-out infinite;
   --animate-blink: blink 5s ease-in-out infinite;
-  --animate-marquee: marquee 48s linear infinite;
   --animate-flow: flow 1.4s linear infinite;
   --animate-wiggle: wiggle 2.4s ease-in-out infinite;
 
@@ -81,21 +94,11 @@
     }
   }
 
-  @keyframes marquee {
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
   @keyframes flow {
     to {
       stroke-dashoffset: -28;
     }
   }
-}
-
-@utility paused {
-  animation-play-state: paused;
 }
 
 @utility dash-flow {

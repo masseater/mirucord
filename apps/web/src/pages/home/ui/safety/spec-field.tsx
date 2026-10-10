@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-const SpecRow = ({
+const SpecField = ({
   label,
   tags,
   accent,
@@ -13,16 +13,16 @@ const SpecRow = ({
   accent: boolean;
   detail: string;
 }>): ReactNode => (
-  <div className="border-line bg-milk flex flex-col gap-3 rounded-3xl border-2 p-6">
-    <dt className="text-lg font-black">{label}</dt>
-    <dd className="flex flex-wrap items-center gap-2 text-sm leading-relaxed">
+  <div className="grid content-start gap-1">
+    <dt className="text-dc-bright text-sm font-bold">{label}</dt>
+    <dd className="flex flex-wrap items-center gap-1.5 text-sm leading-relaxed">
       {tags.map((tag) => (
         <span
           key={tag}
           className={cn(
-            "rounded-full px-3 py-0.5 text-xs font-bold",
-            accent && "bg-pink",
-            !accent && "bg-lavender",
+            "rounded-sm px-1.5 text-xs font-bold",
+            accent && "bg-pink text-ink",
+            !accent && "bg-dc-active text-dc-bright",
           )}
         >
           {tag}
@@ -33,4 +33,4 @@ const SpecRow = ({
   </div>
 );
 
-export { SpecRow };
+export { SpecField };

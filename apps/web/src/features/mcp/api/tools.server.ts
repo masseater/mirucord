@@ -2,13 +2,18 @@ import { McpServer } from "@modelcontextprotocol/server";
 import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, Effect, Option, Schema, pipe } from "effect";
 
+import { SITE_ORIGIN } from "#/shared/config";
 import { CATEGORY_TYPES } from "#/shared/discord";
 
 import { readMessages, searchMessages } from "./messages.server";
 import { listGuildIds, resolveScope } from "./scope.server";
 import type { GuildScope } from "./scope.server";
 
-const SERVER_INFO = { name: "mirucord", version: "0.0.0" };
+const ICONS = [
+  { src: `${SITE_ORIGIN}/apple-touch-icon.png`, mimeType: "image/png", sizes: ["180x180"] },
+  { src: `${SITE_ORIGIN}/favicon-32x32.png`, mimeType: "image/png", sizes: ["32x32"] },
+];
+const SERVER_INFO = { name: "mirucord", version: "0.0.0", icons: ICONS, websiteUrl: SITE_ORIGIN };
 const SERVER_NOT_FOUND = "Server not found";
 const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const DEFAULT_LIMIT = 20;
@@ -164,7 +169,7 @@ const buildServer = (discordUserId: string): McpServer => {
   const server = new McpServer(SERVER_INFO);
   server.registerTool(
     "list_servers",
-    { description: "List the Discord servers you can read through mirucord." },
+    { description: "List the Discord servers you can read through mirucord.", icons: ICONS },
     () => listServers(discordUserId),
   );
   server.registerTool(
@@ -172,6 +177,7 @@ const buildServer = (discordUserId: string): McpServer => {
     {
       description:
         "List the text, voice, announcement, stage and forum channels and the threads (including forum posts) you can read in a server.",
+      icons: ICONS,
       inputSchema: Schema.toStandardJSONSchemaV1(toolInput(ListChannelsInput)),
     },
     listChannels(discordUserId),
@@ -180,6 +186,7 @@ const buildServer = (discordUserId: string): McpServer => {
     "search_messages",
     {
       description: "Search messages in a server by meaning.",
+      icons: ICONS,
       inputSchema: Schema.toStandardJSONSchemaV1(toolInput(SearchMessagesInput)),
     },
     search(discordUserId),
@@ -188,6 +195,7 @@ const buildServer = (discordUserId: string): McpServer => {
     "read_messages",
     {
       description: "Read the latest messages of a channel, newest first.",
+      icons: ICONS,
       inputSchema: Schema.toStandardJSONSchemaV1(toolInput(ReadMessagesInput)),
     },
     read(discordUserId),

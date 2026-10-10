@@ -15,7 +15,7 @@ const InviteChip = (): ReactNode => {
       open: ({ url }) => (
         <a
           href={url}
-          className="border-ink bg-lavender shadow-pop-sm inline-flex w-fit items-center gap-2.5 rounded-full border-2 px-5 py-2.5 text-sm font-bold no-underline transition-transform hover:-translate-y-0.5"
+          className="border-ink bg-lavender shadow-pop-sm inline-flex w-fit items-center gap-2.5 rounded-full border-2 px-5 py-2.5 text-sm font-bold no-underline motion-safe:transition-transform motion-safe:hover:-translate-y-0.5"
         >
           <DiscordMark size="20" className="fill-discord" />
           {LABEL}

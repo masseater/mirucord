@@ -36,7 +36,11 @@ const SignInPage = (): ReactNode => {
       <MascotTip>{TIP}</MascotTip>
       <Panel>
         <h1 className="text-3xl font-black">{TITLE}</h1>
-        <PopButton tone="grape" disabled={status === "pending"} onClick={startSignIn}>
+        <PopButton
+          tone="grape"
+          disabled={status === "pending" || status === "success"}
+          onClick={startSignIn}
+        >
           {SIGN_IN}
         </PopButton>
         {status === "error" && (

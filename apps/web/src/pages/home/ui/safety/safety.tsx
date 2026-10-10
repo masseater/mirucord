@@ -6,11 +6,12 @@ import { SpecList } from "./spec-list";
 
 const LEAD = "大事な会話だから";
 const TAIL = "ていねいに預かります";
+const GUIDE = "大事にあずかるね";
 const LABEL = "あんしん";
 
 const Safety = (): ReactNode => (
   <section id="safety" className="mx-auto w-full max-w-6xl scroll-mt-8 px-5 py-24 md:py-32">
-    <SectionHead label={LABEL} tone="bg-lavender" lead={LEAD} tail={TAIL} />
+    <SectionHead label={LABEL} guide={GUIDE} tone="bg-lavender" lead={LEAD} tail={TAIL} />
     <SpecList />
   </section>
 );

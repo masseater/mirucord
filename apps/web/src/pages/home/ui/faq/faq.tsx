@@ -5,6 +5,7 @@ import { SectionHead } from "#/pages/home/ui/common/section-head";
 import { FaqItem } from "./faq-item";
 
 const LEAD = "よくある質問";
+const GUIDE = "なんでも聞いてね";
 const LABEL = "Q&A";
 
 const QUESTIONS = [
@@ -26,7 +27,7 @@ const QUESTIONS = [
 
 const Faq = (): ReactNode => (
   <section id="faq" className="mx-auto w-full max-w-3xl scroll-mt-8 px-5 py-24 md:py-32">
-    <SectionHead label={LABEL} tone="bg-sky" lead={LEAD} />
+    <SectionHead label={LABEL} guide={GUIDE} tone="bg-sky" lead={LEAD} />
     <div className="grid gap-4">
       {QUESTIONS.map((item) => (
         <FaqItem key={item.question} question={item.question} answer={item.answer} />

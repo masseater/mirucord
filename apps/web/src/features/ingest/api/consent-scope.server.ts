@@ -77,21 +77,22 @@ const purgeOutOfScope = (guildId: string): Effect.Effect<void> =>
     Effect.flatMap((outOfScope) => Effect.forEach(outOfScope, purgeChannel, { discard: true })),
   );
 
+const enqueueReadable = (guildId: string): Effect.Effect<void> =>
+  Effect.promise(() =>
+    db
+      .select({ id: channel.id })
+      .from(channel)
+      .where(and(eq(channel.guildId, guildId), eq(channel.botAccess, "readable"))),
+  ).pipe(Effect.flatMap((rows) => enqueue(rows.map(({ id }) => ({ guildId, channelId: id })))));
+
 const enqueueInScope = (guildId: string): Effect.Effect<void> =>
-  Effect.all({
-    scope: loadScope(guildId),
-    rows: Effect.promise(() =>
-      db
-        .select({ id: channel.id })
-        .from(channel)
-        .where(and(eq(channel.guildId, guildId), eq(channel.botAccess, "readable"))),
-    ),
-  }).pipe(
-    Effect.flatMap(({ scope, rows }) =>
-      enqueue(
-        rows.filter(() => scope.status === "granted").map(({ id }) => ({ guildId, channelId: id })),
-      ),
-    ),
+  loadScope(guildId).pipe(
+    Effect.flatMap((scope) => {
+      if (scope.status === "awaiting") {
+        return Effect.void;
+      }
+      return enqueueReadable(guildId);
+    }),
   );
 
 const refreshIngest = (guildId: string): Effect.Effect<void> =>

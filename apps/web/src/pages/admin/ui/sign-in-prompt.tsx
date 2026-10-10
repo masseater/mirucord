@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { authClient } from "#/shared/auth";
 
 const SIGN_IN = "Sign in with Discord";
+const FAILED = "Sign-in failed. Please try again.";
 const ADMIN_PATH = "/admin";
 
 const signInToAdmin = (): Promise<unknown> =>
@@ -20,14 +21,17 @@ const SignInPrompt = (): ReactNode => {
     mutate();
   }, [mutate]);
   return (
-    <button
-      type="button"
-      className="bg-primary text-primary-foreground rounded px-4 py-2 disabled:opacity-50"
-      disabled={status === "pending"}
-      onClick={startSignIn}
-    >
-      {SIGN_IN}
-    </button>
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        className="bg-primary text-primary-foreground rounded px-4 py-2 disabled:opacity-50"
+        disabled={status === "pending"}
+        onClick={startSignIn}
+      >
+        {SIGN_IN}
+      </button>
+      {status === "error" && <p role="alert">{FAILED}</p>}
+    </div>
   );
 };
 

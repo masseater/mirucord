@@ -24,7 +24,7 @@
     "@better-auth/drizzle-adapter": "1.7.7",
     "@better-auth/mcp": "catalog:",
     "@better-auth/oauth-provider": "catalog:",
-    "@discordjs/rest": "catalog:",
+    "@discordeno/rest": "catalog:",
     "@effect/atom-react": "catalog:stack",
     "@modelcontextprotocol/server": "catalog:",
     "@openfeature/core": "1.12.0",

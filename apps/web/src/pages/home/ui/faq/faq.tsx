@@ -36,6 +36,13 @@ const QUESTIONS = [
   },
   {
     time: "今日 21:09",
+    reply: { author: memberAuthor(MEMBERS.yui), text: "DM も読まれますか" },
+    answer:
+      "読まないよ！ミルが読むのはサーバーのチャンネルとスレッドだけ。DM はのぞかないから安心してね。",
+    reactions: [{ emoji: "🙆", count: 3, by: "others" }],
+  },
+  {
+    time: "今日 21:10",
     reply: { author: memberAuthor(MEMBERS.tanaka), text: "運営は会話を読めますか" },
     answer: "読めないよ！本文は暗号化してしまってあるから、運営さんにも中身は見えないんだ。",
     reactions: [

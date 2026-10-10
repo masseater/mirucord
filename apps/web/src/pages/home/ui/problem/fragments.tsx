@@ -17,10 +17,10 @@ const FRAGMENTS = [
     text: "次こそカレー焦がさないって誓う",
   },
   { place: "フォーラム：キャンプ飯レシピ", member: MEMBERS.miho, text: "カレーは弱火でじっくり" },
-  { place: "DM", member: MEMBERS.yui, text: "カレーのこと まだ気にしてる？笑" },
-  { place: "VC の聞き専チャット", member: MEMBERS.kenta, text: "火力つよすぎでは" },
+  { place: "# しゃしん", member: MEMBERS.yui, text: "カレー焦げてるの 写ってた笑" },
+  { place: "スレッド：反省会", member: MEMBERS.kenta, text: "火力つよすぎでは" },
   { place: "# げーむ部", member: MEMBERS.tanaka, text: "キャンプ前に 1 戦だけやろ" },
-  { place: "別サーバー：大学のみんな", member: MEMBERS.yui, text: "この前のキャンプ 最高だった" },
+  { place: "# かんそう", member: MEMBERS.yui, text: "この前のキャンプ 最高だった" },
 ] as const;
 
 const Fragments = (): ReactNode => (

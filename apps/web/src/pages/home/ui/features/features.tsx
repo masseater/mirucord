@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { ChannelSection } from "#/pages/home/ui/client/channel-section";
+import { ChannelSection } from "#/pages/home/ui/common/channel-section";
 import { Post } from "#/pages/home/ui/message/post";
 
 import { FeatureGrid } from "./feature-grid";

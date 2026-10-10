@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-import { ChannelSection } from "#/pages/home/ui/client/channel-section";
-import { MEMBERS } from "#/pages/home/ui/client/members";
 import { Closing } from "#/pages/home/ui/closing/closing";
+import { ChannelSection } from "#/pages/home/ui/common/channel-section";
+import { MEMBERS } from "#/pages/home/ui/common/members";
 import { Post } from "#/pages/home/ui/message/post";
 
 import { FaqPair } from "./faq-pair";

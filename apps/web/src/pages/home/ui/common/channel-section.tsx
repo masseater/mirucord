@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { ChannelHeader } from "./channel-header";
+import { ChannelHeader } from "#/pages/home/ui/client/channel-header";
 
 const ChannelSection = ({
   id,

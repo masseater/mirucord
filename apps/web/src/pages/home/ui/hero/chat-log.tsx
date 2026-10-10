@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { MEMBERS } from "#/pages/home/ui/client/members";
+import { MEMBERS } from "#/pages/home/ui/common/members";
 import { memberAuthor } from "#/pages/home/ui/message/author";
 import { Message } from "#/pages/home/ui/message/message";
 

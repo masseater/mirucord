@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { Member } from "#/pages/home/ui/client/members";
+import type { Member } from "#/pages/home/ui/common/members";
 import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
 import { Message } from "#/pages/home/ui/message/message";
 

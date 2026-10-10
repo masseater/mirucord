@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 
+import { MEMBERS } from "#/pages/home/ui/common/members";
 import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
 
 import { MemberGroup } from "./member-group";
 import { MemberRow } from "./member-row";
-import { MEMBERS } from "./members";
 
 const LABEL = "メンバー";
 const BOTS = "BOT — 1";

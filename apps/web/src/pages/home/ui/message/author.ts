@@ -1,4 +1,4 @@
-import type { Member } from "#/pages/home/ui/client/members";
+import type { Member } from "#/pages/home/ui/common/members";
 
 type Author = Readonly<{ kind: "bot" }> | Readonly<{ kind: "member"; member: Member }>;
 

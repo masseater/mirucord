@@ -248,7 +248,9 @@
 }
 
 .scene-miru,
-.scene-count {
+.scene-count,
+.finale-burst,
+.finale-spark {
   display: none;
 }
 
@@ -349,50 +351,174 @@
 
     .scene-frag:nth-child(1) {
       --seen: 75%;
-      --sx: -24.5cqw;
-      --sr: -14deg;
+      --sx: -35.1cqw;
+      --sy: -13.8cqh;
+      --sr: -10deg;
     }
 
     .scene-frag:nth-child(7) {
       --seen: 76.91%;
-      --sx: -17.5cqw;
-      --sr: -10deg;
+      --sx: -14.6cqw;
+      --sy: -33.3cqh;
+      --sr: -6deg;
     }
 
     .scene-frag:nth-child(2) {
       --seen: 78.82%;
-      --sx: -10.5cqw;
-      --sr: -6deg;
+      --sx: 14.6cqw;
+      --sy: -33.3cqh;
+      --sr: 6deg;
     }
 
     .scene-frag:nth-child(4) {
       --seen: 80.73%;
-      --sx: -3.5cqw;
-      --sr: -2deg;
+      --sx: 35.1cqw;
+      --sy: -13.8cqh;
+      --sr: 10deg;
     }
 
     .scene-frag:nth-child(6) {
       --seen: 82.64%;
-      --sx: 3.5cqw;
-      --sr: 2deg;
+      --sx: 35.1cqw;
+      --sy: 13.8cqh;
+      --sr: -10deg;
     }
 
     .scene-frag:nth-child(8) {
       --seen: 84.55%;
-      --sx: 10.5cqw;
-      --sr: 6deg;
+      --sx: 14.6cqw;
+      --sy: 33.3cqh;
+      --sr: -6deg;
     }
 
     .scene-frag:nth-child(5) {
       --seen: 86.46%;
-      --sx: 17.5cqw;
-      --sr: 10deg;
+      --sx: -14.6cqw;
+      --sy: 33.3cqh;
+      --sr: 6deg;
     }
 
     .scene-frag:nth-child(3) {
       --seen: 88.37%;
-      --sx: 24.5cqw;
-      --sr: 14deg;
+      --sx: -35.1cqw;
+      --sy: 13.8cqh;
+      --sr: 10deg;
+    }
+
+    .scene-finale {
+      width: min(36rem, 84cqw);
+    }
+
+    .finale-card {
+      z-index: 1;
+    }
+
+    .finale-burst {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      width: 260cqmax;
+      aspect-ratio: 1;
+      translate: -50% -50%;
+      background-image:
+        radial-gradient(
+          circle,
+          color-mix(in oklch, var(--color-lavender-deep) 55%, transparent) 0%,
+          transparent 22%
+        ),
+        repeating-conic-gradient(
+          from 0deg,
+          color-mix(in oklch, var(--color-butter-deep) 55%, transparent) 0deg 3deg,
+          transparent 3deg 10deg,
+          color-mix(in oklch, var(--color-lavender-deep) 45%, transparent) 10deg 13deg,
+          transparent 13deg 20deg,
+          color-mix(in oklch, var(--color-sky-deep) 45%, transparent) 20deg 23deg,
+          transparent 23deg 30deg
+        );
+      mask-image: radial-gradient(circle, black 8%, transparent 40%);
+      animation: finale-burst linear both;
+      animation-timeline: --scene;
+      animation-range: contain 94.44% contain 110.42%;
+    }
+
+    .finale-spark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 2;
+      display: block;
+      color: var(--spark);
+      font-size: var(--size);
+      line-height: 1;
+      translate: calc(-50% + var(--px)) calc(-50% + var(--py));
+      animation: finale-spark linear both;
+      animation-timeline: --scene;
+      animation-range: contain var(--at) contain calc(var(--at) + 3%);
+    }
+
+    .finale-spark:nth-child(2) {
+      --px: -30cqw;
+      --py: -30cqh;
+      --spark: var(--color-butter-deep);
+      --size: 3rem;
+      --at: 95%;
+    }
+
+    .finale-spark:nth-child(3) {
+      --px: 30cqw;
+      --py: -28cqh;
+      --spark: var(--color-pink-deep);
+      --size: 2.25rem;
+      --at: 95.6%;
+    }
+
+    .finale-spark:nth-child(4) {
+      --px: -38cqw;
+      --py: 6cqh;
+      --spark: var(--color-sky-deep);
+      --size: 2rem;
+      --at: 96.2%;
+    }
+
+    .finale-spark:nth-child(5) {
+      --px: 38cqw;
+      --py: 8cqh;
+      --spark: var(--color-butter-deep);
+      --size: 3.25rem;
+      --at: 96.8%;
+    }
+
+    .finale-spark:nth-child(6) {
+      --px: -24cqw;
+      --py: 30cqh;
+      --spark: var(--color-lavender-deep);
+      --size: 2.5rem;
+      --at: 97.4%;
+    }
+
+    .finale-spark:nth-child(7) {
+      --px: 26cqw;
+      --py: 30cqh;
+      --spark: var(--color-sky-deep);
+      --size: 2rem;
+      --at: 98%;
+    }
+
+    .finale-spark:nth-child(8) {
+      --px: 0cqw;
+      --py: -38cqh;
+      --spark: var(--color-pink-deep);
+      --size: 2.5rem;
+      --at: 98.6%;
+    }
+
+    .finale-spark:nth-child(9) {
+      --px: 4cqw;
+      --py: 38cqh;
+      --spark: var(--color-butter-deep);
+      --size: 2.25rem;
+      --at: 99.2%;
     }
   }
 }
@@ -660,9 +786,9 @@
     scale: 0.7;
   }
   100% {
-    translate: var(--sx) 27cqh;
+    translate: var(--sx) var(--sy);
     rotate: var(--sr);
-    scale: 0.5;
+    scale: 0.6;
   }
 }
 
@@ -689,5 +815,36 @@
   100% {
     opacity: 0;
     --found: 8;
+  }
+}
+
+@keyframes finale-burst {
+  0% {
+    rotate: 0deg;
+    scale: 0.6;
+  }
+  20% {
+    scale: 1;
+  }
+  100% {
+    rotate: 40deg;
+    scale: 1.1;
+  }
+}
+
+@keyframes finale-spark {
+  0% {
+    opacity: 0;
+    scale: 0;
+    rotate: -45deg;
+  }
+  60% {
+    opacity: 1;
+    scale: 1.4;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
   }
 }

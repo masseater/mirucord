@@ -59,7 +59,7 @@
     },
     "shadcn": {
       "source": "shadcn-ui/ui",
-      "ref": "c003e96852fa9534aee40b2cb85a96d8bd38732d",
+      "ref": "e94cebe7c1fbdec477429e4767f082544d77e868",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "f615de216e085a84e31593ad0fa9062232adc40cd87b7c7ab2b8e49abf6500be"

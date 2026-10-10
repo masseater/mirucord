@@ -4,6 +4,7 @@ const NO_SIMILARITY = 0;
 const FIRST_INDEX = 0;
 const FULL_SIMILARITY = 1;
 const NO_TEXT = 0;
+const MAX_DELETE_IDS = 100;
 const EMBEDDING: readonly number[] = [FULL_SIMILARITY, NO_SIMILARITY, NO_SIMILARITY];
 
 type Metadata = Readonly<Record<string, string>>;
@@ -49,6 +50,9 @@ const env = {
     getByIds: (ids: readonly string[]): Promise<readonly StoredVector[]> =>
       Promise.resolve(ids.flatMap((id) => Option.toArray(MutableHashMap.get(vectors, id)))),
     deleteByIds: (ids: readonly string[]): Promise<Mutation> => {
+      if (ids.length > MAX_DELETE_IDS) {
+        return Promise.reject(new Error(`VECTOR_DELETE_ERROR (40007): max id count is 100`));
+      }
       for (const id of ids) {
         MutableHashMap.remove(vectors, id);
       }

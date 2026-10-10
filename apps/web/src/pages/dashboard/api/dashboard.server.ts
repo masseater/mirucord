@@ -1,5 +1,5 @@
 import { getRequest } from "@tanstack/react-start/server";
-import { Effect, Option } from "effect";
+import { Cause, Effect, Option } from "effect";
 
 import {
   grantConsent,
@@ -46,6 +46,11 @@ const withSignedInUser = <Value, Failure>(
         onNone: () => Effect.succeed(SIGNED_OUT),
         onSome: use,
       }),
+    ),
+    Effect.tapCause((cause) =>
+      Effect.logError("Dashboard request failed").pipe(
+        Effect.annotateLogs({ cause: Cause.pretty(cause) }),
+      ),
     ),
   );
 

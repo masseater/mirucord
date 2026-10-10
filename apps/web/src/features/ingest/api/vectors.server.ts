@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { Array, Effect } from "effect";
 
-const VECTOR_DELETE_LIMIT = 1000;
+const VECTOR_DELETE_LIMIT = 100;
 const VECTOR_GET_LIMIT = 20;
 
 const deleteVectors = (ids: readonly string[]): Effect.Effect<void> =>

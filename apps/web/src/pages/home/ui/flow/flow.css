@@ -1,0 +1,48 @@
+.flow-carry {
+  display: none;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .flow-figure {
+      view-timeline: --flow block;
+    }
+
+    .flow-carry {
+      display: inline;
+      animation: flow-carry linear both;
+      animation-timeline: --flow;
+    }
+
+    .flow-carry[data-carry="a"] {
+      animation-range: cover 20% cover 40%;
+    }
+
+    .flow-carry[data-carry="b"] {
+      animation-range: cover 28% cover 48%;
+    }
+
+    .flow-carry[data-carry="c"] {
+      animation-range: cover 36% cover 56%;
+    }
+
+    .flow-carry[data-carry="d"] {
+      animation-range: cover 52% cover 72%;
+    }
+  }
+}
+
+@keyframes flow-carry {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 135px 0;
+  }
+}

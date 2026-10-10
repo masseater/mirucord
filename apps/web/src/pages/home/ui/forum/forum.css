@@ -1,0 +1,74 @@
+.forum-track {
+  display: none;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .forum-scan {
+      view-timeline: --forum block;
+    }
+
+    .forum-track {
+      position: absolute;
+      inset-block: 0;
+      right: 0.5rem;
+      display: block;
+      width: 3.5rem;
+      pointer-events: none;
+      @media (width >= 48rem) {
+        right: -4.5rem;
+      }
+      animation: forum-track linear both;
+      animation-timeline: --forum;
+      animation-range: cover 30% cover 60%;
+    }
+
+    .forum-miru {
+      animation: forum-miru linear both;
+      animation-timeline: --forum;
+      animation-range: cover 25% cover 65%;
+    }
+
+    .forum-read {
+      animation: pop-in linear both;
+      animation-timeline: --forum;
+      animation-range: cover var(--read) cover calc(var(--read) + 3%);
+    }
+
+    .forum-post:nth-child(1) .forum-read {
+      --read: 34%;
+    }
+
+    .forum-post:nth-child(2) .forum-read {
+      --read: 44%;
+    }
+
+    .forum-post:nth-child(3) .forum-read {
+      --read: 54%;
+    }
+  }
+}
+
+@keyframes forum-track {
+  to {
+    translate: 0 calc(100% - 3.5rem);
+  }
+}
+
+@keyframes forum-miru {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 1;
+  }
+  30%,
+  70% {
+    rotate: -10deg;
+  }
+  50% {
+    rotate: 10deg;
+  }
+}

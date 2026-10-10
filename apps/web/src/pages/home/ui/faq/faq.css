@@ -1,0 +1,30 @@
+.faq-thinking {
+  display: none;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .faq-reveal > * {
+      grid-area: 1 / 1;
+    }
+
+    .faq-thinking {
+      display: flex;
+      animation: fade-hide linear both;
+      animation-timeline: view();
+      animation-range: cover 30% cover 34%;
+    }
+
+    .faq-answer {
+      animation: fade-show linear both;
+      animation-timeline: view();
+      animation-range: cover 33% cover 38%;
+    }
+
+    .faq-reactions {
+      animation: pop-in linear both;
+      animation-timeline: view();
+      animation-range: cover 38% cover 42%;
+    }
+  }
+}

@@ -1,0 +1,693 @@
+.scene-frags {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+
+.scene-captions {
+  display: grid;
+  gap: 1rem;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scene-track {
+      height: 560dvh;
+      view-timeline: --scene block;
+    }
+
+    .scene-stage {
+      position: sticky;
+      top: 3rem;
+      height: calc(100dvh - 3rem);
+      overflow: hidden;
+      container-type: size;
+    }
+
+    .scene-frags {
+      display: block;
+    }
+
+    .scene-frag {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(15rem, 36cqw);
+      transform: translate(-50%, -50%);
+      animation:
+        scene-frag-in linear both,
+        scene-frag-move linear both;
+      animation-timeline: --scene, --scene;
+      animation-range:
+        contain var(--in) contain calc(var(--in) + 6%),
+        contain 0% contain 100%;
+    }
+
+    .scene-frag:nth-child(1) {
+      --x: -28cqw;
+      --y: -30cqh;
+      --r: -8deg;
+      --in: 0%;
+    }
+
+    .scene-frag:nth-child(2) {
+      --x: 27cqw;
+      --y: -31cqh;
+      --r: 7deg;
+      --in: 3%;
+    }
+
+    .scene-frag:nth-child(3) {
+      --x: -31cqw;
+      --y: 1cqh;
+      --r: 5deg;
+      --in: 6%;
+    }
+
+    .scene-frag:nth-child(4) {
+      --x: 30cqw;
+      --y: 3cqh;
+      --r: -6deg;
+      --in: 9%;
+    }
+
+    .scene-frag:nth-child(5) {
+      --x: -25cqw;
+      --y: 31cqh;
+      --r: 9deg;
+      --in: 12%;
+    }
+
+    .scene-frag:nth-child(6) {
+      --x: 25cqw;
+      --y: 32cqh;
+      --r: -9deg;
+      --in: 15%;
+    }
+
+    .scene-frag:nth-child(7) {
+      --x: 1cqw;
+      --y: -40cqh;
+      --r: 4deg;
+      --in: 18%;
+    }
+
+    .scene-frag:nth-child(8) {
+      --x: -1cqw;
+      --y: 40cqh;
+      --r: -4deg;
+      --in: 21%;
+    }
+
+    .scene-captions {
+      display: block;
+    }
+
+    .scene-caption {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(26rem, max(48cqw, 17rem));
+      transform: translate(-50%, -50%);
+      text-align: center;
+      animation: scene-caption linear both;
+      animation-timeline: --scene;
+      animation-range: contain var(--from) contain var(--to);
+    }
+
+    .scene-caption:nth-child(1) {
+      --from: -12%;
+      --to: 20%;
+    }
+
+    .scene-caption:nth-child(2) {
+      --from: 18%;
+      --to: 36%;
+    }
+
+    .scene-caption:nth-child(3) {
+      --from: 34%;
+      --to: 50%;
+    }
+
+    .scene-caption:nth-child(4) {
+      --from: 92%;
+      --to: 115%;
+    }
+  }
+}
+
+@keyframes scene-frag-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes scene-frag-move {
+  0% {
+    translate: calc(var(--x) * 1.8) calc(var(--y) * 1.8);
+  }
+  20%,
+  38% {
+    translate: var(--x) var(--y);
+  }
+  42% {
+    translate: calc(var(--x) * 1.15) calc(var(--y) * 1.12);
+    rotate: var(--r);
+  }
+  46% {
+    translate: calc(var(--x) * 1.05) calc(var(--y) * 1.18);
+    rotate: calc(var(--r) * -0.6);
+  }
+  50% {
+    translate: calc(var(--x) * 1.2) calc(var(--y) * 1.1);
+    rotate: var(--r);
+  }
+  56%,
+  100% {
+    translate: calc(var(--x) * 1.1) calc(var(--y) * 1.1);
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+
+@keyframes scene-caption {
+  0%,
+  100% {
+    opacity: 0;
+    scale: 0.92;
+  }
+  15%,
+  85% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.cutin {
+  position: relative;
+  display: grid;
+  place-items: center start;
+  height: 22rem;
+  margin: 1rem;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-ink);
+}
+
+.cutin-flash {
+  display: none;
+}
+
+.cutin-lines {
+  position: absolute;
+  inset: -50%;
+  background-image: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in oklch, var(--color-milk) 30%, transparent) 0deg 1.5deg,
+    transparent 1.5deg 8deg
+  );
+  mask-image: radial-gradient(circle, transparent 12%, black 45%);
+}
+
+.cutin-band {
+  position: absolute;
+  top: 50%;
+  left: -20%;
+  width: 140%;
+  height: 42%;
+  translate: 0 -50%;
+  rotate: -8deg;
+}
+
+.cutin-band-sub {
+  height: 54%;
+}
+
+.cutin-miru {
+  position: absolute;
+  right: 0;
+  bottom: -8%;
+  width: auto;
+  height: 118%;
+  rotate: 6deg;
+}
+
+.cutin-title {
+  position: relative;
+  display: grid;
+  padding-inline: 5%;
+  white-space: nowrap;
+  font-size: clamp(1.75rem, 6vw, 5rem);
+  line-height: 1.1;
+  rotate: -8deg;
+}
+
+.cutin-lead {
+  font-size: 0.55em;
+}
+
+.scene-miru,
+.scene-count {
+  display: none;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scene-miru {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      width: min(8rem, 20cqw);
+      translate: -50% -50%;
+      z-index: 1;
+      animation: scene-miru-fly linear both;
+      animation-timeline: --scene;
+      animation-range: contain 0% contain 100%;
+    }
+
+    .scene-count {
+      position: absolute;
+      top: calc(50% + 12cqh);
+      left: 50%;
+      display: block;
+      translate: -50% 0;
+      counter-reset: found var(--found);
+      animation: scene-count linear both;
+      animation-timeline: --scene;
+      animation-range: contain 64% contain 90%;
+    }
+
+    .scene-count::after {
+      content: " " counter(found) " 件";
+    }
+
+    .cutin {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      height: auto;
+      margin: 0;
+      border-radius: 0;
+      background-color: transparent;
+      visibility: hidden;
+      pointer-events: none;
+      animation: cutin-root linear;
+      animation-timeline: --scene;
+      animation-range: contain 50% contain 64%;
+    }
+
+    .cutin-flash {
+      position: absolute;
+      inset: 0;
+      display: block;
+      animation: cutin-flash linear both;
+    }
+
+    .cutin-lines {
+      animation: cutin-lines linear both;
+    }
+
+    .cutin-band {
+      animation: cutin-band linear both;
+    }
+
+    .cutin-band-sub {
+      animation: cutin-band-sub linear both;
+    }
+
+    .cutin-miru {
+      right: -6vw;
+      height: min(88vh, 110vw);
+      animation: cutin-miru linear both;
+    }
+
+    .cutin-title {
+      font-size: clamp(2rem, 6.5vw, 7rem);
+      animation: cutin-title linear both;
+    }
+
+    .cutin > * {
+      animation-timeline: --scene;
+      animation-range: contain 50% contain 64%;
+    }
+
+    .scene-frag {
+      animation:
+        scene-frag-in linear both,
+        scene-frag-move linear both,
+        scene-frag-found linear both,
+        scene-frag-carry linear forwards;
+      animation-timeline: --scene, --scene, --scene, --scene;
+      animation-range:
+        contain var(--in) contain calc(var(--in) + 6%),
+        contain 0% contain 100%,
+        contain calc(var(--seen) + 0.6%) contain calc(var(--seen) + 1.8%),
+        contain calc(var(--seen) + 1.5%) contain calc(var(--seen) + 2.75%);
+    }
+
+    .scene-frag:nth-child(1) {
+      --seen: 64%;
+      --sx: -24.5cqw;
+      --sr: -14deg;
+    }
+
+    .scene-frag:nth-child(7) {
+      --seen: 66.75%;
+      --sx: -17.5cqw;
+      --sr: -10deg;
+    }
+
+    .scene-frag:nth-child(2) {
+      --seen: 69.5%;
+      --sx: -10.5cqw;
+      --sr: -6deg;
+    }
+
+    .scene-frag:nth-child(4) {
+      --seen: 72.25%;
+      --sx: -3.5cqw;
+      --sr: -2deg;
+    }
+
+    .scene-frag:nth-child(6) {
+      --seen: 75%;
+      --sx: 3.5cqw;
+      --sr: 2deg;
+    }
+
+    .scene-frag:nth-child(8) {
+      --seen: 77.75%;
+      --sx: 10.5cqw;
+      --sr: 6deg;
+    }
+
+    .scene-frag:nth-child(5) {
+      --seen: 80.5%;
+      --sx: 17.5cqw;
+      --sr: 10deg;
+    }
+
+    .scene-frag:nth-child(3) {
+      --seen: 83.25%;
+      --sx: 24.5cqw;
+      --sr: 14deg;
+    }
+  }
+}
+
+@keyframes scene-miru-fly {
+  0%,
+  63% {
+    opacity: 0;
+    translate: -50% -50%;
+    scale: 0.4;
+  }
+  64% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  65.1%,
+  65.5% {
+    translate: calc(-50% + -30.8cqw) calc(-50% + -33cqh);
+    rotate: -12deg;
+    scale: 0.9;
+  }
+  66.75% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  67.85%,
+  68.25% {
+    translate: calc(-50% + 1.1cqw) calc(-50% + -44cqh);
+    rotate: 12deg;
+    scale: 0.9;
+  }
+  69.5% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  70.6%,
+  71% {
+    translate: calc(-50% + 29.7cqw) calc(-50% + -34.1cqh);
+    rotate: -12deg;
+    scale: 0.9;
+  }
+  72.25% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  73.35%,
+  73.75% {
+    translate: calc(-50% + 33cqw) calc(-50% + 3.3cqh);
+    rotate: 12deg;
+    scale: 0.9;
+  }
+  75% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  76.1%,
+  76.5% {
+    translate: calc(-50% + 27.5cqw) calc(-50% + 35.2cqh);
+    rotate: -12deg;
+    scale: 0.9;
+  }
+  77.75% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  78.85%,
+  79.25% {
+    translate: calc(-50% + -1.1cqw) calc(-50% + 44cqh);
+    rotate: 12deg;
+    scale: 0.9;
+  }
+  80.5% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  81.6%,
+  82% {
+    translate: calc(-50% + -27.5cqw) calc(-50% + 34.1cqh);
+    rotate: -12deg;
+    scale: 0.9;
+  }
+  83.25% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  84.35%,
+  84.75% {
+    translate: calc(-50% + -34.1cqw) calc(-50% + 1.1cqh);
+    rotate: 12deg;
+    scale: 0.9;
+  }
+  86% {
+    opacity: 1;
+    translate: -50% -50%;
+    rotate: 0deg;
+    scale: 1.25;
+  }
+  88% {
+    opacity: 1;
+    translate: -50% -50%;
+    scale: 1.5;
+  }
+  91%,
+  100% {
+    opacity: 0;
+    translate: -50% -50%;
+    scale: 0.6;
+  }
+}
+
+@keyframes scene-frag-found {
+  0%,
+  100% {
+    border-color: var(--color-dc-line);
+  }
+  30%,
+  70% {
+    border-color: var(--color-butter-deep);
+    box-shadow: 0 0 0 3px var(--color-butter-deep);
+  }
+}
+
+@keyframes cutin-root {
+  0% {
+    visibility: visible;
+    background-color: transparent;
+  }
+  6%,
+  90% {
+    visibility: visible;
+    background-color: color-mix(in oklch, var(--color-ink) 92%, transparent);
+  }
+  100% {
+    visibility: visible;
+    background-color: transparent;
+  }
+}
+
+@keyframes cutin-flash {
+  0% {
+    opacity: 0;
+  }
+  4% {
+    opacity: 0.95;
+  }
+  14%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes cutin-lines {
+  0% {
+    opacity: 0;
+    scale: 1.4;
+    rotate: 0deg;
+  }
+  10%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1;
+    rotate: 14deg;
+  }
+}
+
+@keyframes cutin-band {
+  0%,
+  4% {
+    translate: -130% -50%;
+  }
+  14%,
+  86% {
+    translate: 0 -50%;
+  }
+  100% {
+    translate: 130% -50%;
+  }
+}
+
+@keyframes cutin-band-sub {
+  0%,
+  6% {
+    translate: 130% -50%;
+  }
+  16%,
+  86% {
+    translate: 0 -50%;
+  }
+  100% {
+    translate: -130% -50%;
+  }
+}
+
+@keyframes cutin-miru {
+  0%,
+  10% {
+    opacity: 0;
+    translate: 70vw 0;
+    scale: 0.9;
+  }
+  22% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+  86% {
+    opacity: 1;
+    translate: -3vw 0;
+    scale: 1.06;
+  }
+  100% {
+    opacity: 0;
+    translate: -3vw 0;
+    scale: 1.06;
+  }
+}
+
+@keyframes cutin-title {
+  0%,
+  14% {
+    opacity: 0;
+    translate: -80vw 0;
+  }
+  26% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  86% {
+    opacity: 1;
+    translate: 2vw 0;
+  }
+  100% {
+    opacity: 0;
+    translate: 2vw 0;
+  }
+}
+
+@keyframes scene-frag-carry {
+  0% {
+    translate: calc(var(--x) * 1.1) calc(var(--y) * 1.1);
+    rotate: 0deg;
+    scale: 1;
+  }
+  55% {
+    translate: 0 -4cqh;
+    scale: 0.7;
+  }
+  100% {
+    translate: var(--sx) 27cqh;
+    rotate: var(--sr);
+    scale: 0.5;
+  }
+}
+
+@property --found {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes scene-count {
+  0% {
+    opacity: 0;
+    scale: 0.6;
+    --found: 0;
+  }
+  3% {
+    opacity: 1;
+    scale: 1;
+  }
+  90% {
+    opacity: 1;
+    --found: 8;
+  }
+  100% {
+    opacity: 0;
+    --found: 8;
+  }
+}

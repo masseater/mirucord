@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { CHANNELS } from "./channels";
+import { CHANNELS } from "#/pages/home/ui/common/channels";
 
 const SUFFIX = " へメッセージを送信";
 

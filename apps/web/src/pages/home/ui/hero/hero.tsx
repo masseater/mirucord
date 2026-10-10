@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
 
-import { CHANNELS } from "#/pages/home/ui/client/channels";
 import { ChannelSection } from "#/pages/home/ui/common/channel-section";
+import { TOP_CHANNEL } from "#/pages/home/ui/common/channels";
 
 import { AnswerWindow } from "./answer-window";
 import { ChannelWelcome } from "./channel-welcome";
 import { ChatLog } from "./chat-log";
 
-const [CHANNEL] = CHANNELS;
+const CHANNEL = TOP_CHANNEL;
 const DATE = "2024年8月12日";
 
 const Hero = (): ReactNode => (

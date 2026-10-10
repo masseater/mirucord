@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 
 import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
-
-import { CHANNELS } from "./channels";
+import { CHANNELS } from "#/pages/home/ui/common/channels";
 
 const ChatHeader = (): ReactNode => (
   <div className="ch-bar bg-dc-chat sticky top-0 z-20 h-12">

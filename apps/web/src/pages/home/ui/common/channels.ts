@@ -1,5 +1,12 @@
+const TOP_CHANNEL = {
+  id: "top",
+  name: "ざつだん",
+  kind: "text",
+  topic: "Discord の思い出さがし",
+} as const;
+
 const CHANNELS = [
-  { id: "top", name: "ざつだん", kind: "text", topic: "Discord の思い出さがし" },
+  TOP_CHANNEL,
   { id: "why", name: "思い出", kind: "text", topic: "" },
   { id: "forum", name: "キャンプ部", kind: "forum", topic: "" },
   { id: "how", name: "しくみ", kind: "text", topic: "" },
@@ -9,4 +16,4 @@ const CHANNELS = [
   { id: "faq", name: "よくある質問", kind: "text", topic: "" },
 ] as const;
 
-export { CHANNELS };
+export { CHANNELS, TOP_CHANNEL };

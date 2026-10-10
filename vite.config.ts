@@ -136,9 +136,9 @@ export default defineConfig({
       "eslint/new-cap": [
         "error",
         {
-          capIsNewExceptions: ["Stack"],
+          capIsNewExceptions: ["Stack", "Secrets", "Variables"],
           capIsNewExceptionPattern:
-            "^(Config|Context|Data|Schema|D1|Queues|Vectorize|Website|Workers)\\.",
+            "^(ApiToken|Config|Context|Data|Schema|D1|Queues|Vectorize|Website|Workers)\\.",
         },
       ],
       "typescript/no-empty-interface": ["error", { allowSingleExtends: true }],
@@ -148,7 +148,12 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: ["**/*.config.ts", "**/alchemy.run.ts", "**/src/app/server/index.ts"],
+        files: [
+          "**/*.config.ts",
+          "**/alchemy.run.ts",
+          "**/alchemy.ci.ts",
+          "**/src/app/server/index.ts",
+        ],
         rules: { "import/no-default-export": "off" },
       },
       {

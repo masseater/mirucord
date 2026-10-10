@@ -59,7 +59,7 @@ Discord と Claude のロゴの色は `discord` と `claude` を使う。
 
 | 部品           | 置き場所                      | 使いどころ               |
 | -------------- | ----------------------------- | ------------------------ |
-| `AppFrame`     | `shared/ui/app-frame.tsx`     | LP 以外のページの外枠    |
+| `AppFrame`     | `shared/ui/app-frame/`        | LP 以外のページの外枠    |
 | `Panel`        | `shared/ui/panel.tsx`         | 管理画面や規約のまとまり |
 | `PopButton`    | `shared/ui/pop-button.tsx`    | 画面内の操作             |
 | `PopLink`      | `shared/ui/pop-link.tsx`      | ボタンの見た目をした遷移 |

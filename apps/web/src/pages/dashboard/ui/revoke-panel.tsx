@@ -26,7 +26,7 @@ const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
     mutate(guildId);
   }, [guildId, mutate]);
   return (
-    <details className="border-ink bg-milk rounded-3xl border-2 px-6 py-4">
+    <details className="border-ink bg-milk shadow-pop-sm rounded-3xl border-2 px-6 py-4">
       <summary className="cursor-pointer font-black">{SUMMARY}</summary>
       <p className="text-ink-soft mt-3">{DETAIL}</p>
       <div className="mt-4">

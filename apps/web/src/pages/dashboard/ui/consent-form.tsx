@@ -9,6 +9,7 @@ import { PopButton } from "#/shared/ui/pop-button";
 
 import { ConsentResultMessage } from "./consent-result-message";
 import { NoticeChannelPicker } from "./notice-channel-picker";
+import { Pill } from "./pill";
 
 const TITLE = "Bot が見られるチャンネル";
 const SCOPE =
@@ -26,16 +27,11 @@ const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): React
     <Panel>
       <h2 className="text-xl font-black">{TITLE}</h2>
       <p className="text-ink-soft text-sm leading-relaxed">{SCOPE}</p>
-      <ul className="flex flex-wrap gap-2">
+      <p className="flex flex-wrap gap-2">
         {readable.map((channel) => (
-          <li
-            key={channel.id}
-            className="border-ink bg-lavender rounded-full border-2 px-3 py-1 font-bold"
-          >
-            {`#${channel.name}`}
-          </li>
+          <Pill key={channel.id} tone="bg-lavender">{`#${channel.name}`}</Pill>
         ))}
-      </ul>
+      </p>
       {!Array.isReadonlyArrayNonEmpty(readable) && <p className="font-bold">{EMPTY}</p>}
       <NoticeChannelPicker channels={readable} value={noticeChannelId} onChoose={pickNotice} />
       <p className="text-ink-soft text-sm">{NOTE}</p>

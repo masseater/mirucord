@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
 import { MascotTip } from "#/shared/ui/mascot-tip";
+import { PopLink } from "#/shared/ui/pop-link";
 
 import { GuildCard } from "./guild-card";
 
@@ -25,12 +26,9 @@ const GuildList = ({
         <GuildCard key={guild.id} guild={guild} />
       ))}
     </ul>
-    <a
-      className="border-ink bg-milk shadow-pop-sm inline-flex h-11 items-center self-start rounded-full border-2 px-6 font-bold no-underline motion-safe:transition motion-safe:hover:-translate-y-0.5"
-      href={inviteUrl}
-    >
+    <PopLink href={inviteUrl} tone="milk">
       {INVITE}
-    </a>
+    </PopLink>
   </>
 );
 

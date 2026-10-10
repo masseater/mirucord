@@ -33,7 +33,9 @@ dist-ssr
 .claude/worktrees/
 
 # Agent skills restored from skills-lock.json
-.agents/skills/
+.agents/skills
+.claude/skills/*
+!.claude/skills/measure-dont-guess/
 
 .nitro
 .tanstack

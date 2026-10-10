@@ -7,7 +7,7 @@ import { Reactions } from "#/pages/home/ui/message/reactions";
 import { FeatureGrid } from "./feature-grid";
 
 const LEAD = "ミルは見るだけ";
-const TAIL = "見ていい所だけ";
+const TAIL = "見ていいとこだけ";
 const GUIDE = "ここをチェックしてね！";
 const CHANNEL = "とくちょう";
 const TIME = "今日 21:02";

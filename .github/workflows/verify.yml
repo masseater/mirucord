@@ -34,6 +34,20 @@ jobs:
           commits="$(gh api "repos/$GITHUB_REPOSITORY/compare/$BEFORE_SHA...$HEAD_SHA" --jq .total_commits)"
           git fetch --no-tags --depth="$((commits + 1))" origin "$HEAD_SHA"
           vp exec commitlint --from "$BEFORE_SHA" --to "$HEAD_SHA" --verbose
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .jev-lint/baseline.json
+          key: jev-lint-${{ github.sha }}
+          restore-keys: jev-lint-
+      - id: jev-lint
+        run: vp exec jev-lint check
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      - if: always() && steps.jev-lint.outcome != 'skipped'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .jev-lint/baseline.json
+          key: jev-lint-${{ github.sha }}
       - run: vp run verify
         env:
           GH_TOKEN: ${{ github.token }}

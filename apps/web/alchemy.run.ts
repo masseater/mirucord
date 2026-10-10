@@ -1,5 +1,14 @@
 import { Stack, makeRandom } from "alchemy";
-import { D1, Queues, Vectorize, Website, Workers, providers, state } from "alchemy/Cloudflare";
+import {
+  D1,
+  Queues,
+  SecretsStore,
+  Vectorize,
+  Website,
+  Workers,
+  providers,
+  state,
+} from "alchemy/Cloudflare";
 import type { InferEnv } from "alchemy/Cloudflare";
 import { Config, Effect, Option, Schema } from "effect";
 
@@ -77,6 +86,15 @@ const messagesIndex = Effect.gen(function* messagesIndex() {
   return index;
 });
 
+const masterKey = Effect.gen(function* masterKey() {
+  const store = yield* SecretsStore.Store("Secrets");
+  return yield* SecretsStore.Secret("MasterKeySecret", {
+    store,
+    name: "MIRUCORD_MASTER_KEY",
+    value: yield* makeRandom("MasterKey"),
+  });
+});
+
 const settings = Effect.gen(function* settings() {
   const otlp = yield* otlpEnv;
   const discord = yield* discordEnv;
@@ -90,7 +108,7 @@ const web = Effect.gen(function* web() {
   const MESSAGES = yield* messagesIndex;
   const INGEST = yield* Queues.Queue("Ingest");
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
-  const MASTER_KEY = yield* makeRandom("MasterKey");
+  const MASTER_KEY = yield* masterKey;
   const { otlp, discord, release, operations } = yield* settings;
   const site = yield* Website.Vite("Web", {
     main: "src/app/server/index.ts",

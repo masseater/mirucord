@@ -5,7 +5,7 @@ import { eq, inArray } from "drizzle-orm";
 import { Array, Config, ConfigProvider, DateTime, Effect, Option, pipe } from "effect";
 
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
-import { createGuildKey } from "#/shared/crypto/index.server";
+import { createGuildKey, isRotating, rewrapGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, message, role } from "#/shared/db/index.server";
 import {
   getGuild,
@@ -225,7 +225,39 @@ const enqueue = (jobs: readonly IngestJob[]): Effect.Effect<void> =>
     { discard: true },
   );
 
+const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
+  db.select({ id: guild.id, wrappedKey: guild.wrappedKey }).from(guild),
+).pipe(
+  Effect.flatMap((rows) =>
+    pipe(
+      rows,
+      Effect.forEach(({ id, wrappedKey }) =>
+        rewrapGuildKey(wrappedKey).pipe(
+          Effect.flatMap(
+            Option.match({
+              onNone: () => Effect.succeedNone,
+              onSome: (rewrapped) =>
+                Effect.promise(() =>
+                  db.update(guild).set({ wrappedKey: rewrapped }).where(eq(guild.id, id)),
+                ).pipe(Effect.as(Option.some(id))),
+            }),
+          ),
+        ),
+      ),
+    ),
+  ),
+  Effect.flatMap((results) =>
+    Effect.logInfo("Rewrapped guild keys").pipe(
+      Effect.annotateLogs({ rewrapped: Array.getSomes(results).length }),
+    ),
+  ),
+);
+
 const syncAll: Effect.Effect<void, DiscordRequestError> = Effect.gen(function* syncAll() {
+  const rotating = yield* isRotating;
+  if (rotating) {
+    yield* rewrapGuildKeys;
+  }
   const current = (yield* listBotGuilds).map(({ id }) => id);
   const admitted = yield* admitGuilds(current);
   yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));

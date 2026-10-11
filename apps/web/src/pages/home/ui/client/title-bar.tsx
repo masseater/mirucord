@@ -8,7 +8,7 @@ const SIGN_IN = "ログイン";
 const UNOFFICIAL = "Discord 非公式";
 
 const TitleBar = (): ReactNode => (
-  <header className="bg-dc-rail flex h-10 items-center justify-between px-3">
+  <header className="title-bar bg-dc-rail sticky top-0 flex h-10 items-center justify-between px-3">
     <a href="#top" className="text-dc-bright flex items-center gap-2 font-bold no-underline">
       <Mascot className="size-6" />
       {BRAND}

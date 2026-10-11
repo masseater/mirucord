@@ -1,3 +1,21 @@
+.ch-scope {
+  --title-bar: 2.5rem;
+}
+
+.title-bar {
+  z-index: 60;
+}
+
+.ch-sidebar {
+  top: var(--title-bar);
+  height: calc(100dvh - var(--title-bar));
+}
+
+.ch-head,
+.ch-bar {
+  top: var(--title-bar);
+}
+
 .ch-miru,
 .ch-peek-miru {
   display: none;
@@ -42,20 +60,22 @@
     .ch-bar-item {
       visibility: hidden;
       animation: ch-bar linear;
-      animation-range: entry calc(100% - 3rem) contain calc(100% - 3rem);
+      animation-range: entry calc(100% - 3rem - var(--title-bar)) contain
+        calc(100% - 3rem - var(--title-bar));
     }
 
     .composer-typing {
       animation: composer-typing linear;
       animation-timeline: --ch-top;
-      animation-range: cover 0% contain calc(100% - 3rem);
+      animation-range: cover 0% contain calc(100% - 3rem - var(--title-bar));
     }
 
     .ch-link,
     .ch-miru,
     .composer-hint {
       animation-timing-function: linear;
-      animation-range: entry calc(100% - 3rem) contain calc(100% - 3rem);
+      animation-range: entry calc(100% - 3rem - var(--title-bar)) contain
+        calc(100% - 3rem - var(--title-bar));
     }
 
     .ch-link {
@@ -135,7 +155,7 @@
       animation-name: ch-miru, ch-miru-away;
       animation-timeline: --ch-why, --scene;
       animation-range:
-        entry calc(100% - 3rem) contain calc(100% - 3rem),
+        entry calc(100% - 3rem - var(--title-bar)) contain calc(100% - 3rem - var(--title-bar)),
         contain 74.5% contain 90.5%;
     }
 

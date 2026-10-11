@@ -11,7 +11,7 @@ const LABELS = {
 const CopyBlock = ({ text }: Readonly<{ text: string }>): ReactNode => {
   const { state, copy } = useCopyText(text);
   return (
-    <div className="bg-dc-rail border-dc-line flex items-center gap-2 rounded-sm border py-1.5 pr-1.5 pl-3">
+    <div className="bg-dc-rail border-dc-line flex w-fit max-w-full items-center gap-2 rounded-sm border py-1.5 pr-1.5 pl-3">
       <p className="text-dc-text min-w-0 flex-1 font-mono text-sm wrap-anywhere select-all">
         {text}
       </p>

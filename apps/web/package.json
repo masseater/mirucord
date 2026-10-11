@@ -29,6 +29,7 @@
     "@openfeature/core": "1.12.0",
     "@openfeature/server-sdk": "catalog:stack",
     "@sapphire/bitfield": "catalog:",
+    "@sapphire/snowflake": "catalog:",
     "@tanstack/react-devtools": "0.10.13",
     "@tanstack/react-query": "catalog:stack",
     "@tanstack/react-query-devtools": "catalog:",

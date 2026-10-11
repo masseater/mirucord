@@ -1,3 +1,4 @@
+import { DiscordSnowflake } from "@sapphire/snowflake";
 import { and, eq, gte, inArray, lte } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
@@ -47,13 +48,8 @@ const channelMessagesSince = ({
       ),
   ).pipe(Effect.map((rows) => rows.map(({ id }) => id)));
 
-const DISCORD_EPOCH = 1_420_070_400_000n;
-const TIMESTAMP_UNIT = 4_194_304n;
-
-const timeOf = (id: string): Date => {
-  const millis = Number(BigInt(id) / TIMESTAMP_UNIT + DISCORD_EPOCH);
-  return DateTime.toDate(DateTime.makeUnsafe(millis));
-};
+const timeOf = (id: string): Date =>
+  DateTime.toDate(DateTime.makeUnsafe(DiscordSnowflake.timestampFrom(id)));
 
 const sinceOldest = (from: Option.Option<string>): readonly SQL[] =>
   Option.match(from, {

@@ -222,10 +222,9 @@ const settings = Effect.gen(function* settings() {
 });
 
 const storage = Effect.gen(function* storage() {
-  const usDb = yield* D1.Database("DB", { migrations: "./drizzle" });
-  const DB = yield* D1.Database("DbApac", {
+  const DB = yield* D1.Database("MirucordDb", {
+    name: yield* mirucordName("db"),
     primaryLocationHint: "apac",
-    clone: usDb,
     migrations: "./drizzle",
   });
   const MESSAGES = yield* messagesIndex;

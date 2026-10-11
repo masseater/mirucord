@@ -3,7 +3,7 @@ import { env } from "cloudflare:workers";
 import { DateTime, Effect } from "effect";
 import { expect } from "vite-plus/test";
 
-import { signGatewayEvent } from "#/features/ingest";
+import { signGatewayEvent } from "#/features/ingest/index.gateway";
 import { SITE_ORIGIN } from "#/shared/config";
 
 import { api } from "./api.server";

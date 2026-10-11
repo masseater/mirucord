@@ -1,11 +1,11 @@
 import { lte } from "drizzle-orm";
-import { Array, Boolean, DateTime, Effect, Option } from "effect";
+import { Array, Boolean, DateTime, Effect } from "effect";
 
 import { REFRESH_COOLDOWN } from "#/features/ingest/model/refresh-cooldown";
 import { db, syncRun } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { managedGuild } from "./managed-guild.server";
+import { whenManaged } from "./managed-guild.server";
 import { syncGuildList, syncOneGuild } from "./sync-guilds.server";
 
 const GUILD_LIST_SCOPE = "guilds";
@@ -57,15 +57,11 @@ const refreshGuildList: Effect.Effect<RefreshResult, DiscordRequestError> = thro
 const refreshManagedGuild = (
   input: Readonly<{ guildId: string; userId: string }>,
 ): Effect.Effect<GuildRefreshResult, DiscordRequestError> =>
-  managedGuild(input).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: (): Effect.Effect<GuildRefreshResult, DiscordRequestError> =>
-          Effect.succeed({ status: "notManaged" }),
-        onSome: () => throttled(`guild:${input.guildId}`, syncOneGuild(input.guildId)),
-      }),
-    ),
-  );
+  whenManaged({
+    membership: input,
+    denied: { status: "notManaged" },
+    use: () => throttled(`guild:${input.guildId}`, syncOneGuild(input.guildId)),
+  });
 
 export { refreshGuildList, refreshManagedGuild };
 export type { GuildRefreshResult, RefreshResult };

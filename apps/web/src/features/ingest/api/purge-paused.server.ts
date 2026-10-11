@@ -1,11 +1,11 @@
 import { and, eq } from "drizzle-orm";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect } from "effect";
 
 import { channel, db } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
 import { purgeChannel } from "./consent-scope.server";
-import { managedGuild } from "./managed-guild.server";
+import { whenManaged } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 import type { VectorizeError } from "./vectors.server";
 
@@ -59,14 +59,11 @@ const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult, Vector
 const purgePausedChannel = (
   request: PurgeRequest,
 ): Effect.Effect<PurgeResult, DiscordRequestError | VectorizeError> =>
-  managedGuild(request).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeed<PurgeResult>({ status: "forbidden" }),
-        onSome: () => purgeIfHidden(request),
-      }),
-    ),
-  );
+  whenManaged({
+    membership: request,
+    denied: { status: "forbidden" },
+    use: () => purgeIfHidden(request),
+  });
 
 export { purgePausedChannel };
 export type { PurgeRequest, PurgeResult };

@@ -10,7 +10,7 @@ import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { refreshIngest } from "./consent-scope.server";
 import { loadConsentedChannels } from "./guild-settings.server";
 import type { SettingsChannel } from "./guild-settings.server";
-import { managedGuild } from "./managed-guild.server";
+import { whenManaged } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 import { requestWithdrawal } from "./withdraw-guild.server";
 import type { VectorizeError } from "./withdraw-guild.server";
@@ -103,37 +103,29 @@ const applyConsent = (
 const grantConsent = (
   request: ConsentRequest,
 ): Effect.Effect<ConsentResult, DiscordRequestError | VectorizeError> =>
-  managedGuild(request).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeed<ConsentResult>({ status: "forbidden" }),
-        onSome: () =>
-          loadConsentedChannels(request.guildId).pipe(
-            Effect.flatMap(({ consent, channels }) => {
-              if (consent.status === "withdrawing") {
-                return Effect.succeed<ConsentResult>({ status: "invalid" });
-              }
-              return applyConsent(request, consent, channels);
-            }),
-          ),
-      }),
-    ),
-  );
+  whenManaged({
+    membership: request,
+    denied: { status: "forbidden" },
+    use: () =>
+      loadConsentedChannels(request.guildId).pipe(
+        Effect.flatMap(({ consent, channels }) => {
+          if (consent.status === "withdrawing") {
+            return Effect.succeed<ConsentResult>({ status: "invalid" });
+          }
+          return applyConsent(request, consent, channels);
+        }),
+      ),
+  });
 
 const revokeConsent = (
   membership: GuildMembership,
 ): Effect.Effect<RevokeResult, DiscordRequestError> =>
-  managedGuild(membership).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeed<RevokeResult>({ status: "forbidden" }),
-        onSome: () =>
-          requestWithdrawal(membership.guildId).pipe(
-            Effect.as<RevokeResult>({ status: "withdrawing" }),
-          ),
-      }),
-    ),
-  );
+  whenManaged({
+    membership,
+    denied: { status: "forbidden" },
+    use: () =>
+      requestWithdrawal(membership.guildId).pipe(Effect.as({ status: "withdrawing" } as const)),
+  });
 
 export { grantConsent, revokeConsent };
 export type { ConsentRequest, ConsentResult, RevokeResult };

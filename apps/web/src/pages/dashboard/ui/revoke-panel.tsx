@@ -1,11 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { Effect } from "effect";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
-import { dashboardQuery, withdrawConsent } from "#/pages/dashboard/api/dashboard";
-import { DASHBOARD_PATH } from "#/shared/config";
+import { withdrawConsent } from "#/pages/dashboard/api/dashboard";
+import { useReturnToDashboard } from "#/pages/dashboard/model/use-return-to-dashboard";
 import { PopButton } from "#/shared/ui/pop-button";
 
 const SUMMARY = "同意を取り消す";
@@ -19,22 +17,15 @@ const MESSAGES = {
 } as const;
 
 const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const leave = (result: Awaited<ReturnType<typeof withdrawConsent>>): Effect.Effect<void> => {
-    if (result.status !== "withdrawing") {
-      return Effect.void;
-    }
-    return Effect.promise(() => navigate({ to: DASHBOARD_PATH }));
-  };
-  const refreshDashboard = Effect.promise(() =>
-    queryClient.invalidateQueries({ queryKey: dashboardQuery.queryKey }),
-  );
-  const afterRevoke = (result: Awaited<ReturnType<typeof withdrawConsent>>): Effect.Effect<void> =>
-    refreshDashboard.pipe(Effect.andThen(leave(result)));
+  const returnToDashboard = useReturnToDashboard();
   const { mutate, status } = useMutation({
     mutationFn: withdrawConsent,
-    onSuccess: (result) => Effect.runPromise(afterRevoke(result)),
+    onSuccess: (result) => {
+      if (result.status !== "withdrawing") {
+        return returnToDashboard("stay");
+      }
+      return returnToDashboard("leave");
+    },
   });
   const revoke = useCallback(() => {
     mutate(guildId);

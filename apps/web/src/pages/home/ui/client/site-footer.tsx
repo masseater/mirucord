@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
 
-import { PRIVACY_PATH, SITE_HOST, TERMS_PATH } from "#/shared/config";
+import { PRIVACY_PATH, SELF_HOST_PATH, SITE_HOST, TECH_PATH, TERMS_PATH } from "#/shared/config";
 
 const PRIVACY = "プライバシーポリシー";
 const TERMS = "利用規約";
+const TECH = "技術の話";
+const SELF_HOST = "セルフホスト";
 const NOTICE = "Discord は Discord Inc. の商標です。mirucord は Discord Inc. とは関係ありません。";
 
 const SiteFooter = (): ReactNode => (
@@ -14,6 +16,12 @@ const SiteFooter = (): ReactNode => (
     </a>
     <a href={TERMS_PATH} className="hover:text-dc-text font-bold">
       {TERMS}
+    </a>
+    <a href={TECH_PATH} className="hover:text-dc-text font-bold">
+      {TECH}
+    </a>
+    <a href={SELF_HOST_PATH} className="hover:text-dc-text font-bold">
+      {SELF_HOST}
     </a>
     <span>{NOTICE}</span>
   </footer>

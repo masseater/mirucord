@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SelfHostRouteImport } from './routes/self-host'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as TechRouteImport } from './routes/tech'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as DotwellKnownSplatRouteImport } from './routes/[.]well-known/$'
 import { Route as ApiSplatRouteImport } from './routes/api.$'
@@ -35,9 +37,19 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SelfHostRoute = SelfHostRouteImport.update({
+  id: '/self-host',
+  path: '/self-host',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TechRoute = TechRouteImport.update({
+  id: '/tech',
+  path: '/tech',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -75,7 +87,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
+  '/self-host': typeof SelfHostRoute
   '/sign-in': typeof SignInRoute
+  '/tech': typeof TechRoute
   '/terms': typeof TermsRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
   '/api/$': typeof ApiSplatRoute
@@ -87,7 +101,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
+  '/self-host': typeof SelfHostRoute
   '/sign-in': typeof SignInRoute
+  '/tech': typeof TechRoute
   '/terms': typeof TermsRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
   '/api/$': typeof ApiSplatRoute
@@ -100,7 +116,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
+  '/self-host': typeof SelfHostRoute
   '/sign-in': typeof SignInRoute
+  '/tech': typeof TechRoute
   '/terms': typeof TermsRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
   '/api/$': typeof ApiSplatRoute
@@ -114,7 +132,9 @@ export interface FileRouteTypes {
     | '/'
     | '/mcp'
     | '/privacy'
+    | '/self-host'
     | '/sign-in'
+    | '/tech'
     | '/terms'
     | '/.well-known/$'
     | '/api/$'
@@ -126,7 +146,9 @@ export interface FileRouteTypes {
     | '/'
     | '/mcp'
     | '/privacy'
+    | '/self-host'
     | '/sign-in'
+    | '/tech'
     | '/terms'
     | '/.well-known/$'
     | '/api/$'
@@ -138,7 +160,9 @@ export interface FileRouteTypes {
     | '/'
     | '/mcp'
     | '/privacy'
+    | '/self-host'
     | '/sign-in'
+    | '/tech'
     | '/terms'
     | '/.well-known/$'
     | '/api/$'
@@ -151,7 +175,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   McpRoute: typeof McpRoute
   PrivacyRoute: typeof PrivacyRoute
+  SelfHostRoute: typeof SelfHostRoute
   SignInRoute: typeof SignInRoute
+  TechRoute: typeof TechRoute
   TermsRoute: typeof TermsRoute
   DotwellKnownSplatRoute: typeof DotwellKnownSplatRoute
   ApiSplatRoute: typeof ApiSplatRoute
@@ -183,11 +209,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/self-host': {
+      id: '/self-host'
+      path: '/self-host'
+      fullPath: '/self-host'
+      preLoaderRoute: typeof SelfHostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tech': {
+      id: '/tech'
+      path: '/tech'
+      fullPath: '/tech'
+      preLoaderRoute: typeof TechRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -239,7 +279,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   McpRoute: McpRoute,
   PrivacyRoute: PrivacyRoute,
+  SelfHostRoute: SelfHostRoute,
   SignInRoute: SignInRoute,
+  TechRoute: TechRoute,
   TermsRoute: TermsRoute,
   DotwellKnownSplatRoute: DotwellKnownSplatRoute,
   ApiSplatRoute: ApiSplatRoute,

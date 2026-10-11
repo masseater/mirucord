@@ -5,11 +5,7 @@ import type { Duration } from "effect";
 import { beforeEach, expect, vi } from "vite-plus/test";
 
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
-import {
-  GATEWAY_SIGNATURE_HEADER,
-  GATEWAY_TIMESTAMP_HEADER,
-  signGatewayEvent,
-} from "#/shared/crypto/index";
+import { signGatewayEvent } from "#/shared/crypto/index";
 
 import { receiveGatewayEvent } from "./gateway-event.server";
 
@@ -26,22 +22,15 @@ const signedRequest = (
   body: string,
   sentAt: DateTime.Utc,
   botToken: string,
-): Effect.Effect<Request> => {
-  const timestamp = String(DateTime.toEpochMillis(sentAt));
-  return signGatewayEvent({ botToken, timestamp, body }).pipe(
-    Effect.map(
-      (signature) =>
-        new Request("https://mirucord.test/api/gateway", {
-          method: "POST",
-          body,
-          headers: {
-            [GATEWAY_TIMESTAMP_HEADER]: timestamp,
-            [GATEWAY_SIGNATURE_HEADER]: signature,
-          },
-        }),
-    ),
+): Effect.Effect<Request> =>
+  Effect.sync(
+    () =>
+      new Request("https://mirucord.test/api/gateway", {
+        method: "POST",
+        body,
+        headers: signGatewayEvent({ botToken, id: "test-event", sentAt, body }),
+      }),
   );
-};
 
 const statusOf = (request: Request): Effect.Effect<number> =>
   Effect.promise(() => receiveGatewayEvent(request)).pipe(Effect.map(({ status }) => status));

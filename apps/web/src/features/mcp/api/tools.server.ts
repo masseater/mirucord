@@ -3,6 +3,13 @@ import type { CallToolResult } from "@modelcontextprotocol/server";
 import { ChannelType } from "discord-api-types/v10";
 import { Effect, Option, Schema } from "effect";
 
+import {
+  FindMessagesOutput,
+  ListChannelsOutput,
+  ListServersOutput,
+  ReadMessagesOutput,
+  SearchMessagesOutput,
+} from "#/features/mcp/api/tool-output";
 import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
 import {
@@ -12,13 +19,6 @@ import {
   ReadMessagesInput,
   SearchMessagesInput,
 } from "#/features/mcp/model/tool-input";
-import {
-  FindMessagesOutput,
-  ListChannelsOutput,
-  ListServersOutput,
-  ReadMessagesOutput,
-  SearchMessagesOutput,
-} from "#/features/mcp/model/tool-output";
 import { SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
 import { CATEGORY_TYPES } from "#/shared/discord";
 

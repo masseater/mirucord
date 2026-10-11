@@ -59,6 +59,11 @@ const loadStored = (
     ),
   );
 
+const holdsMessage = (scope: GuildScope, { guildId, channelId }: StoredMessage): boolean =>
+  scope.guild.consent === "consented" &&
+  guildId === scope.guild.guildId &&
+  scope.visible.includes(channelId);
+
 const openStored = (
   scope: GuildScope,
   stored: readonly StoredMessage[],
@@ -66,10 +71,7 @@ const openStored = (
   openGuildKey(scope.guild.wrappedKey).pipe(
     Effect.flatMap((key) =>
       Effect.forEach(
-        stored.filter(
-          ({ guildId, channelId }) =>
-            guildId === scope.guild.guildId && scope.visible.includes(channelId),
-        ),
+        stored.filter((row) => holdsMessage(scope, row)),
         (row) =>
           openMessage(row.sealed, key, {
             guildId: row.guildId,

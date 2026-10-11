@@ -86,11 +86,14 @@ const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =
       Option.match({
         onNone: () => Effect.succeedNone,
         onSome: (row) =>
-          Effect.all({
-            channels: loadChannels(guildId),
-            rolePermissions: loadRolePermissions(guildId),
-            consent: loadConsent(guildId),
-          }).pipe(Effect.map((parts) => Option.some({ ...row, ...parts, guildId }))),
+          Effect.all(
+            {
+              channels: loadChannels(guildId),
+              rolePermissions: loadRolePermissions(guildId),
+              consent: loadConsent(guildId),
+            },
+            { concurrency: "unbounded" },
+          ).pipe(Effect.map((parts) => Option.some({ ...row, ...parts, guildId }))),
       }),
     ),
   );

@@ -87,10 +87,13 @@ const guildSettings = (
       Option.match({
         onNone: () => Effect.succeedNone,
         onSome: ({ name }) =>
-          Effect.all({
-            consented: loadConsentedChannels(membership.guildId),
-            storedMessages: countMessages(membership.guildId),
-          }).pipe(
+          Effect.all(
+            {
+              consented: loadConsentedChannels(membership.guildId),
+              storedMessages: countMessages(membership.guildId),
+            },
+            { concurrency: "unbounded" },
+          ).pipe(
             Effect.map(({ consented, storedMessages }) =>
               Option.some({
                 ...consented,

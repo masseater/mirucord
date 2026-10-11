@@ -48,26 +48,29 @@ const purgeOutOfScope = (
   guildId: string,
   scope: ConsentScope,
 ): Effect.Effect<void, VectorizeError> =>
-  Effect.all({
-    stored: Effect.promise(() =>
-      db
-        .selectDistinct({ id: message.channelId })
-        .from(message)
-        .where(eq(message.guildId, guildId)),
-    ),
-    channels: Effect.promise(() =>
-      db
-        .select({
-          id: channel.id,
-          newest: channel.newestMessageId,
-          botAccess: channel.botAccess,
-          hiddenAt: channel.hiddenAt,
-        })
-        .from(channel)
-        .where(eq(channel.guildId, guildId)),
-    ),
-    now: DateTime.now,
-  }).pipe(
+  Effect.all(
+    {
+      stored: Effect.promise(() =>
+        db
+          .selectDistinct({ id: message.channelId })
+          .from(message)
+          .where(eq(message.guildId, guildId)),
+      ),
+      channels: Effect.promise(() =>
+        db
+          .select({
+            id: channel.id,
+            newest: channel.newestMessageId,
+            botAccess: channel.botAccess,
+            hiddenAt: channel.hiddenAt,
+          })
+          .from(channel)
+          .where(eq(channel.guildId, guildId)),
+      ),
+      now: DateTime.now,
+    },
+    { concurrency: "unbounded" },
+  ).pipe(
     Effect.map(({ stored, channels, now }) => {
       const withMessages = new Set(stored.map(({ id }) => id));
       return channels

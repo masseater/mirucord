@@ -70,9 +70,11 @@ type Membership = Readonly<{
 
 const reconcileMembership: Effect.Effect<Membership, DiscordRequestError> = Effect.gen(
   function* reconcileMembership() {
-    const current = (yield* listBotGuilds).map(({ id }) => id);
-    const stored = yield* listGuildIds;
-    const botUserId = yield* getBotUserId;
+    const { botGuilds, stored, botUserId } = yield* Effect.all(
+      { botGuilds: listBotGuilds, stored: listGuildIds, botUserId: getBotUserId },
+      { concurrency: "unbounded" },
+    );
+    const current = botGuilds.map(({ id }) => id);
     const admitted = yield* admitGuilds(current, stored);
     yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));
     yield* removeDepartedGuilds(admitted, stored);

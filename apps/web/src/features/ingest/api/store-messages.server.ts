@@ -26,16 +26,13 @@ type StoreTarget = Readonly<{ key: CryptoKey; job: IngestJob }>;
 const editedAtOf = ({ edited_timestamp }: DiscordMessage): Option.Option<DateTime.Utc> =>
   Option.fromNullOr(edited_timestamp);
 
-const isChanged = (stored: readonly StoredMessage[], incoming: DiscordMessage): boolean =>
-  Option.match(
-    Array.findFirst(stored, ({ id }) => id === incoming.id),
-    {
-      onNone: () => true,
-      onSome: ({ editedAt, describedWith }) =>
-        !Equal.equals(editedAt, Option.map(editedAtOf(incoming), DateTime.toEpochMillis)) ||
-        Option.isNone(describedWith),
-    },
-  );
+const isChanged = (previous: Option.Option<StoredMessage>, incoming: DiscordMessage): boolean =>
+  Option.match(previous, {
+    onNone: () => true,
+    onSome: ({ editedAt, describedWith }) =>
+      !Equal.equals(editedAt, Option.map(editedAtOf(incoming), DateTime.toEpochMillis)) ||
+      Option.isNone(describedWith),
+  });
 
 const authorNameOf = ({ author }: DiscordMessage): string =>
   Option.getOrElse(Option.fromNullishOr(author.global_name), () => author.username);
@@ -183,12 +180,20 @@ const writeVectors = (
   { job }: StoreTarget,
   changed: readonly DescribedMessage[],
 ): Effect.Effect<void, EmbeddingError | VectorizeError> => {
-  const blank = changed.filter((described) => String.isEmpty(searchTextOf(described)));
-  const indexable = changed.filter((described) => String.isNonEmpty(searchTextOf(described)));
-  const texts = indexable.map((described) => searchTextOf(described));
-  return deleteVectors(blank.map(({ incoming }) => incoming.id)).pipe(
-    Effect.andThen(embed(texts)),
-    Effect.map((embeddings) =>
+  const texts = changed.map((described) => ({
+    incoming: described.incoming,
+    text: searchTextOf(described),
+  }));
+  const blank = texts.filter(({ text }) => String.isEmpty(text));
+  const indexable = texts.filter(({ text }) => String.isNonEmpty(text));
+  return Effect.all(
+    [
+      deleteVectors(blank.map(({ incoming }) => incoming.id)),
+      embed(indexable.map(({ text }) => text)),
+    ],
+    { concurrency: "unbounded" },
+  ).pipe(
+    Effect.map(([, embeddings]) =>
       Array.zipWith(indexable, embeddings, ({ incoming }, values) =>
         toVector(job, incoming, values),
       ),
@@ -219,8 +224,11 @@ const storeMessages = ({
   const kept = page.filter(({ type }) => STORED_TYPES.has(type));
   return findStored(kept.map(({ id }) => id)).pipe(
     Effect.flatMap((stored) => {
-      const changed = kept.filter((incoming) => isChanged(stored, incoming));
-      const unchanged = kept.filter((incoming) => !isChanged(stored, incoming));
+      const byId = new Map(stored.map((row) => [row.id, row]));
+      const changedOf = (incoming: DiscordMessage): boolean =>
+        isChanged(Option.fromUndefinedOr(byId.get(incoming.id)), incoming);
+      const changed = kept.filter((incoming) => changedOf(incoming));
+      const unchanged = kept.filter((incoming) => !changedOf(incoming));
       return withoutVectors(unchanged).pipe(
         Effect.map((missing) => [...changed, ...missing]),
         Effect.flatMap(describeAll),

@@ -26,24 +26,27 @@ const loadForumPosts = ({
   guildId,
   channelId,
 }: Omit<ForumPostsRequest, "userId">): Effect.Effect<readonly ForumPost[]> =>
-  Effect.all({
-    scope: loadScope(guildId),
-    rows: Effect.promise(() =>
-      db
-        .select({
-          id: channel.id,
-          name: channel.name,
-          newest: channel.newestMessageId,
-          backfill: channel.backfill,
-          botAccess: channel.botAccess,
-          messages: count(message.id),
-        })
-        .from(channel)
-        .leftJoin(message, eq(message.channelId, channel.id))
-        .where(and(eq(channel.guildId, guildId), eq(channel.parentId, channelId)))
-        .groupBy(channel.id),
-    ),
-  }).pipe(
+  Effect.all(
+    {
+      scope: loadScope(guildId),
+      rows: Effect.promise(() =>
+        db
+          .select({
+            id: channel.id,
+            name: channel.name,
+            newest: channel.newestMessageId,
+            backfill: channel.backfill,
+            botAccess: channel.botAccess,
+            messages: count(message.id),
+          })
+          .from(channel)
+          .leftJoin(message, eq(message.channelId, channel.id))
+          .where(and(eq(channel.guildId, guildId), eq(channel.parentId, channelId)))
+          .groupBy(channel.id),
+      ),
+    },
+    { concurrency: "unbounded" },
+  ).pipe(
     Effect.map(({ scope, rows }) =>
       Array.sort(
         rows.map((row): ForumPost => ({

@@ -334,8 +334,8 @@ catalogs:
       specifier: 3.32.0
       version: 3.32.0
     renovate:
-      specifier: 44.145.3
-      version: 44.145.3
+      specifier: 44.146.0
+      version: 44.146.0
     steiger:
       specifier: 0.7.0
       version: 0.7.0
@@ -440,7 +440,7 @@ importers:
         version: 0.7.0(patch_hash=e482068f949218fd0893e69710a21e0b7bb96e425684d6e2c099ba2ecd1dcb21)
       renovate:
         specifier: catalog:stack
-        version: 44.145.3(supports-color@7.2.0)(typanion@3.14.0)
+        version: 44.146.0(supports-color@7.2.0)(typanion@3.14.0)
       skills:
         specifier: 'catalog:'
         version: 1.7.1
@@ -6119,9 +6119,6 @@ packages:
   es-module-lexer@2.3.2:
     resolution: {integrity: sha512-poHGpORABojJJucnV9KbOavETW8lBVnphkW77ER5/BQ5Fz7oXSoCNek7IH3vR5nRjdsEz926ibFYX8KtLQmdyw==}
 
-  es-module-lexer@3.0.2:
-    resolution: {integrity: sha512-BuIB67FngDSyQ/dpQNOZybwdEBDUGJQvOqwWr4ha/ufYiqzuEwPkKO2zLhRAgay28tStRIHUeWmszZAJo3GCOg==}
-
   es-module-lexer@3.0.3:
     resolution: {integrity: sha512-yWGe1O/j+almnV4hOYrmZo8u58JdnmXEMneRQAYkWtqSiT86yoMIEKF4rpqEDj52tbYl3xceBD3DQIBwcsC9Pw==}
 
@@ -8398,8 +8395,8 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
-  renovate@44.145.3:
-    resolution: {integrity: sha512-Eaca+EOk9/j0g9VCAOpItAh21NIv7xJ2bj2zsfVnuuLaaL4MaQdL8ZdiKBUlcm3Fa3tVdK6kGahet0WpxMmUBA==}
+  renovate@44.146.0:
+    resolution: {integrity: sha512-oyg1miESDxUSt7Izmd4yUxLJDf4twD7KtqHojQ1UxB9wFsAEZ5braRSK3DOWU3QxkJDI5p3KnxA/qXYjifrkog==}
     engines: {node: ^24.11.0, pnpm: ^11.0.0}
     hasBin: true
 
@@ -15356,8 +15353,6 @@ snapshots:
 
   es-module-lexer@2.3.2: {}
 
-  es-module-lexer@3.0.2: {}
-
   es-module-lexer@3.0.3: {}
 
   es-object-atoms@1.1.2:
@@ -16239,7 +16234,7 @@ snapshots:
   import-in-the-middle@3.5.1:
     dependencies:
       cjs-module-lexer: 2.2.1
-      es-module-lexer: 3.0.2
+      es-module-lexer: 3.0.3
       module-details-from-path: 1.0.4
 
   imurmurhash@0.1.4: {}
@@ -18109,7 +18104,7 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
-  renovate@44.145.3(supports-color@7.2.0)(typanion@3.14.0):
+  renovate@44.146.0(supports-color@7.2.0)(typanion@3.14.0):
     dependencies:
       '@aws-sdk/client-codecommit': 3.1139.0
       '@aws-sdk/client-ec2': 3.1139.0

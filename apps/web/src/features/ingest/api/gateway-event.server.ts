@@ -1,11 +1,11 @@
 import { env } from "cloudflare:workers";
 import { Effect, Option, Schema } from "effect";
 
+import { verifyGatewayEvent } from "#/features/ingest/model/gateway-signature";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 
 import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
-import { verifyGatewayEvent } from "./gateway-signature";
 import type { IngestError } from "./message-page.server";
 
 const PROCESSED = 200;

@@ -1,7 +1,7 @@
 import { GatewayDispatchEvents } from "discord-api-types/v10";
 import { Option, Schema } from "effect";
 
-import type { GatewayJob } from "#/features/ingest/model/ingest-job";
+import type { GatewayJob } from "./ingest-job";
 
 type GatewayEvent = Readonly<{ event: string | null; data: unknown }>;
 

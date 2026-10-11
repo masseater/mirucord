@@ -3,7 +3,7 @@ import type { Scope } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { signGatewayEvent } from "#/features/ingest/api/gateway-signature";
+import { signGatewayEvent } from "#/features/ingest";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 import { SITE_ORIGIN } from "#/shared/config/site";

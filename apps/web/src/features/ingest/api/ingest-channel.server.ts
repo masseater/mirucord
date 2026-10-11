@@ -1,43 +1,28 @@
 import { and, eq } from "drizzle-orm";
-import { Array, Boolean, DateTime, Effect, Number, Option, Order, pipe } from "effect";
+import { Array, Boolean, DateTime, Effect, Number, Option, pipe } from "effect";
 
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
-import { FORBIDDEN, listMessages, PAGE_SIZE } from "#/shared/discord/index.server";
-import type {
-  DiscordMessage,
-  DiscordRequestError,
-  MessagePage,
-} from "#/shared/discord/index.server";
+import { FORBIDDEN } from "#/shared/discord/index.server";
+import type { DiscordMessage } from "#/shared/discord/index.server";
 
 import { columnsOf } from "./bot-access.server";
-import { loadScope } from "./consent-scope.server";
+import {
+  fetchAndStore,
+  idsOf,
+  isFullPage,
+  isNewerThan,
+  newestId,
+  oldestId,
+} from "./message-page.server";
+import type { IngestError, StoreTarget } from "./message-page.server";
 import { channelMessagesSince, deleteMessages } from "./message-rows.server";
 import type { VectorizeError } from "./message-rows.server";
-import { storeMessages } from "./store-messages.server";
-import type { StoreError, StoreTarget } from "./store-messages.server";
+import { sweepHistory } from "./sweep-history.server";
 
 const MAX_PAGES_PER_RUN = 5;
 const LAST_PAGE = 1;
-
-type IngestError = DiscordRequestError | StoreError;
-
-const SnowflakeOrder: Order.Order<string> = Order.mapInput(Order.BigInt, BigInt);
-
-const newestId = (ids: readonly string[]): Option.Option<string> =>
-  Array.match(ids, {
-    onEmpty: () => Option.none(),
-    onNonEmpty: (nonEmpty) => Option.some(Array.max(nonEmpty, SnowflakeOrder)),
-  });
-
-const oldestId = (ids: readonly string[]): Option.Option<string> =>
-  Array.match(ids, {
-    onEmpty: () => Option.none(),
-    onNonEmpty: (nonEmpty) => Option.some(Array.min(nonEmpty, SnowflakeOrder)),
-  });
-
-const isNewerThan = Order.isGreaterThan(SnowflakeOrder);
 
 type Backfill = "pending" | "done";
 
@@ -50,31 +35,11 @@ type ChannelProgress = Readonly<{
   newest: string | null;
   oldest: string | null;
   backfill: Backfill;
+  sweep: string | null;
 }>;
-
-const idsOf = (page: readonly DiscordMessage[]): readonly string[] => page.map(({ id }) => id);
-
-const isFullPage = (page: readonly DiscordMessage[]): boolean => page.length >= PAGE_SIZE;
 
 const backfillAfter = (page: readonly DiscordMessage[]): Backfill =>
   Boolean.match(isFullPage(page), { onTrue: () => "pending", onFalse: () => "done" });
-
-const fetchAndStore = (
-  target: StoreTarget,
-  request: MessagePage,
-): Effect.Effect<readonly DiscordMessage[], IngestError> =>
-  listMessages(target.job.channelId, request).pipe(
-    Effect.tap((page) =>
-      loadScope(target.job.guildId).pipe(
-        Effect.flatMap((scope) => {
-          if (scope.status === "awaiting") {
-            return Effect.void;
-          }
-          return storeMessages({ ...target, page });
-        }),
-      ),
-    ),
-  );
 
 const loadProgress = (job: IngestJob): Effect.Effect<Option.Option<ChannelProgress>> =>
   Effect.promise(() =>
@@ -84,6 +49,7 @@ const loadProgress = (job: IngestJob): Effect.Effect<Option.Option<ChannelProgre
         newest: channel.newestMessageId,
         oldest: channel.oldestMessageId,
         backfill: channel.backfill,
+        sweep: channel.sweepCursor,
       })
       .from(channel)
       .innerJoin(guild, eq(channel.guildId, guild.id))
@@ -129,7 +95,7 @@ const pageForward = (
   stopAt: string,
   { cursor, remaining }: Cursor,
 ): Effect.Effect<Option.Option<string>, IngestError> =>
-  fetchAndStore(target, { direction: "after", cursor }).pipe(
+  fetchAndStore({ target, request: { direction: "after", cursor } }).pipe(
     Effect.flatMap((page) => {
       const next = Option.getOrElse(newestId(idsOf(page)), () => cursor);
       if (!isFullPage(page) || !isNewerThan(stopAt, next)) {
@@ -164,7 +130,7 @@ const pageBackward = (
   target: StoreTarget,
   { cursor, remaining }: Cursor,
 ): Effect.Effect<History, IngestError> =>
-  fetchAndStore(target, { direction: "before", cursor }).pipe(
+  fetchAndStore({ target, request: { direction: "before", cursor } }).pipe(
     Effect.flatMap((page) => {
       const history = {
         oldest: Option.orElse(oldestId(idsOf(page)), () => Option.some(cursor)),
@@ -206,11 +172,13 @@ const advanceOldest = (
   });
 };
 
-const saveProgress = (
-  job: IngestJob,
-  newest: Option.Option<string>,
-  history: History,
-): Effect.Effect<void> =>
+type Progress = Readonly<{
+  newest: Option.Option<string>;
+  history: History;
+  sweep: Option.Option<string>;
+}>;
+
+const saveProgress = (job: IngestJob, { newest, history, sweep }: Progress): Effect.Effect<void> =>
   Effect.asVoid(
     Effect.promise(() =>
       db
@@ -219,6 +187,7 @@ const saveProgress = (
           newestMessageId: Option.getOrNull(newest),
           oldestMessageId: Option.getOrNull(history.oldest),
           backfill: history.backfill,
+          sweepCursor: Option.getOrNull(sweep),
         })
         .where(eq(channel.id, job.channelId)),
     ),
@@ -228,11 +197,12 @@ const ingestWith = (job: IngestJob, progress: ChannelProgress): Effect.Effect<vo
   Effect.gen(function* ingest() {
     const key = yield* openGuildKey(progress.wrappedKey);
     const target = { key, job };
-    const latest = yield* fetchAndStore(target, { direction: "latest" });
+    const latest = yield* fetchAndStore({ target, request: { direction: "latest" } });
     yield* removeDeleted(job, latest);
     const newest = yield* advanceNewest(target, progress, latest);
     const history = yield* advanceOldest(target, progress, latest);
-    yield* saveProgress(job, newest, history);
+    const sweep = yield* sweepHistory({ target, sweep: Option.fromNullOr(progress.sweep), latest });
+    yield* saveProgress(job, { newest, history, sweep });
   });
 
 const pauseHidden = (job: IngestJob): Effect.Effect<void> =>
@@ -249,7 +219,7 @@ const pauseHidden = (job: IngestJob): Effect.Effect<void> =>
     Effect.annotateLogs({ guildId: job.guildId, channelId: job.channelId }),
   );
 
-const ingestChannel = (job: IngestJob): Effect.Effect<void, DiscordRequestError | StoreError> =>
+const ingestChannel = (job: IngestJob): Effect.Effect<void, IngestError> =>
   loadProgress(job).pipe(
     Effect.flatMap(
       Option.match({

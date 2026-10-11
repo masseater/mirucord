@@ -1,14 +1,14 @@
 import { eq } from "drizzle-orm";
-import { Array, DateTime, Effect, Option, pipe } from "effect";
+import { Array, DateTime, Effect, Option } from "effect";
 
-import { createGuildKey, isRotating, rewrapGuildKey } from "#/shared/crypto/index.server";
-import { db, guild, role } from "#/shared/db/index.server";
+import { createGuildKey } from "#/shared/crypto/index.server";
+import { db, guild, listGuildIds, role } from "#/shared/db/index.server";
 import { getBotUserId, getGuild } from "#/shared/discord/index.server";
 import type { DiscordGuild, DiscordRequestError } from "#/shared/discord/index.server";
 
 import { listChannelsOf } from "./channel-listing.server";
-import { refreshIngest } from "./consent-scope.server";
 import { logDiscordFailure, reconcileMembership } from "./guild-membership.server";
+import { welcomeGuild } from "./guild-welcome.server";
 import { whenIngestEnabled } from "./ingest-flag.server";
 import { syncChannels } from "./sync-channels.server";
 import type { VectorizeError } from "./sync-channels.server";
@@ -23,7 +23,16 @@ const syncedFields = ({
   ownerId: owner_id,
 });
 
-const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
+const updateGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
+  Effect.asVoid(
+    Effect.promise(() =>
+      db.update(guild).set(syncedFields(discordGuild)).where(eq(guild.id, discordGuild.id)),
+    ),
+  );
+
+type GuildArrival = "joined" | "known";
+
+const insertGuild = (discordGuild: DiscordGuild): Effect.Effect<GuildArrival> =>
   Effect.all({ wrappedKey: createGuildKey, now: DateTime.now }).pipe(
     Effect.flatMap(({ wrappedKey, now }) =>
       Effect.promise(() =>
@@ -35,20 +44,26 @@ const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
             wrappedKey,
             joinedAt: DateTime.toDate(now),
           })
-          .onConflictDoUpdate({
-            target: guild.id,
-            set: syncedFields(discordGuild),
-          }),
+          .onConflictDoNothing({ target: guild.id })
+          .returning({ id: guild.id }),
       ),
     ),
-    Effect.asVoid,
+    Effect.map((inserted): GuildArrival => {
+      if (Array.isReadonlyArrayEmpty(inserted)) {
+        return "known";
+      }
+      return "joined";
+    }),
   );
 
-const updateGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
-  Effect.asVoid(
-    Effect.promise(() =>
-      db.update(guild).set(syncedFields(discordGuild)).where(eq(guild.id, discordGuild.id)),
-    ),
+const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<GuildArrival> =>
+  insertGuild(discordGuild).pipe(
+    Effect.tap((arrival) => {
+      if (arrival === "joined") {
+        return Effect.void;
+      }
+      return updateGuild(discordGuild);
+    }),
   );
 
 const replaceRoles = (discordGuild: DiscordGuild): Effect.Effect<void> =>
@@ -69,38 +84,13 @@ const syncGuild = (botUserId: string, guildId: string): Effect.Effect<void, Guil
   Effect.gen(function* sync() {
     const discordGuild = yield* getGuild(guildId);
     const listing = yield* listChannelsOf({ botUserId, discordGuild });
-    yield* upsertGuild(discordGuild);
+    const arrival = yield* upsertGuild(discordGuild);
     yield* replaceRoles(discordGuild);
     yield* syncChannels({ discordGuild, ...listing });
+    if (arrival === "joined") {
+      yield* welcomeGuild({ botUserId, discordGuild, listing });
+    }
   });
-
-const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
-  db.select({ id: guild.id, wrappedKey: guild.wrappedKey }).from(guild),
-).pipe(
-  Effect.flatMap((rows) =>
-    pipe(
-      rows,
-      Effect.forEach(({ id, wrappedKey }) =>
-        rewrapGuildKey(wrappedKey).pipe(
-          Effect.flatMap(
-            Option.match({
-              onNone: () => Effect.succeedNone,
-              onSome: (rewrapped) =>
-                Effect.promise(() =>
-                  db.update(guild).set({ wrappedKey: rewrapped }).where(eq(guild.id, id)),
-                ).pipe(Effect.as(Option.some(id))),
-            }),
-          ),
-        ),
-      ),
-    ),
-  ),
-  Effect.flatMap((results) =>
-    Effect.logInfo("Rewrapped guild keys").pipe(
-      Effect.annotateLogs({ rewrapped: Array.getSomes(results).length }),
-    ),
-  ),
-);
 
 const logVectorFailure = (cause: unknown): Effect.Effect<void> =>
   Effect.logError("Could not remove vectors while syncing a server").pipe(
@@ -136,16 +126,6 @@ const syncMembership = (
     yield* eachGuild(known, refreshKnown);
   });
 
-const pollGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled(
-  Effect.gen(function* pollGuilds() {
-    const rotating = yield* isRotating;
-    if (rotating) {
-      yield* rewrapGuildKeys;
-    }
-    yield* syncMembership(refreshIngest);
-  }),
-);
-
 const syncGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled(
   reconcileMembership.pipe(
     Effect.flatMap(({ botUserId, admitted }) =>
@@ -169,4 +149,27 @@ const syncOneGuild = (guildId: string): Effect.Effect<void, DiscordRequestError>
     }),
   );
 
-export { pollGuilds, syncGuildList, syncGuilds, syncOneGuild };
+const admitJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+  reconcileMembership.pipe(
+    Effect.flatMap(({ botUserId, fresh }) =>
+      eachGuild(
+        fresh.filter((id) => id === guildId),
+        (id) => syncGuild(botUserId, id),
+      ),
+    ),
+  );
+
+const syncJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+  whenIngestEnabled(
+    listGuildIds.pipe(
+      Effect.flatMap((stored) => {
+        if (stored.includes(guildId)) {
+          return Effect.void;
+        }
+        return admitJoinedGuild(guildId);
+      }),
+    ),
+  );
+
+export { syncGuildList, syncGuilds, syncJoinedGuild, syncMembership, syncOneGuild };
+export type { GuildSyncError };

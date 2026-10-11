@@ -8,7 +8,7 @@ import { createGuildKey } from "#/shared/crypto/index.server";
 import { db, guild } from "#/shared/db/index.server";
 
 import { refreshGuildList, refreshManagedGuild } from "./guild-refresh.server";
-import { pollGuilds } from "./sync-guilds.server";
+import { pollGuilds } from "./poll-guilds.server";
 
 const BOT = "900";
 const OWNER = "901";

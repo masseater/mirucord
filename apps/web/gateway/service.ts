@@ -22,7 +22,7 @@ const runGateway = (botToken: string): Effect.Effect<void> =>
     const connection = yield* Effect.promise(() => rest.getSessionInfo());
     const gateway = createGatewayManager({
       token: botToken,
-      intents: GatewayIntentBits.GuildMessages,
+      intents: GatewayIntentBits.Guilds + GatewayIntentBits.GuildMessages,
       connection,
       preferSnakeCase: true,
       events: {

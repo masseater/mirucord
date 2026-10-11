@@ -1,11 +1,11 @@
 import { GatewayDispatchEvents } from "discord-api-types/v10";
-import { Option, Schema } from "effect";
+import { Array, Option, Schema } from "effect";
 
-import type { GatewayJob } from "./ingest-job";
+import type { GatewayJob, MessageJob } from "./ingest-job";
 
 type GatewayEvent = Readonly<{ event: string | null; data: unknown }>;
 
-type JobKind = GatewayJob["kind"];
+type JobKind = MessageJob["kind"];
 
 const MessageEvent = Schema.Struct({
   id: Schema.String,
@@ -19,6 +19,9 @@ const BulkDeleteEvent = Schema.Struct({
   guild_id: Schema.optional(Schema.String),
 });
 
+const GuildEvent = Schema.Struct({ id: Schema.String });
+
+const decodeGuild = Schema.decodeUnknownOption(GuildEvent);
 const decodeMessage = Schema.decodeUnknownOption(MessageEvent);
 const decodeBulkDelete = Schema.decodeUnknownOption(BulkDeleteEvent);
 
@@ -54,9 +57,15 @@ const bulkJob = (data: unknown): Option.Option<GatewayJob> =>
     Option.flatMap((event) => jobFor("forget", { ...event, messageIds: event.ids })),
   );
 
+const joinJob = (data: unknown): Option.Option<GatewayJob> =>
+  decodeGuild(data).pipe(Option.map(({ id }) => ({ kind: "join", guildId: id })));
+
 const toGatewayJob = ({ event, data }: GatewayEvent): Option.Option<GatewayJob> => {
   if (event === GatewayDispatchEvents.MessageDeleteBulk) {
     return bulkJob(data);
+  }
+  if (event === GatewayDispatchEvents.GuildCreate) {
+    return joinJob(data);
   }
   return Option.fromNullOr(event).pipe(
     Option.flatMap((name) => Option.fromUndefinedOr(KIND_OF_EVENT.get(name))),
@@ -64,5 +73,19 @@ const toGatewayJob = ({ event, data }: GatewayEvent): Option.Option<GatewayJob> 
   );
 };
 
-export { toGatewayJob };
+const subjectOf = (job: GatewayJob): Readonly<Record<string, string>> => {
+  if (job.kind === "join") {
+    return { kind: job.kind, guildId: job.guildId };
+  }
+  return { kind: job.kind, channelId: job.channelId };
+};
+
+const jobKeyOf = (job: GatewayJob): string => {
+  if (job.kind === "join") {
+    return job.guildId;
+  }
+  return Array.headNonEmpty(job.messageIds);
+};
+
+export { jobKeyOf, subjectOf, toGatewayJob };
 export type { GatewayEvent };

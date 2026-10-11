@@ -1,9 +1,9 @@
-import { Array, DateTime, Effect, Layer, Schedule, Schema } from "effect";
+import { DateTime, Effect, Layer, Schedule, Schema } from "effect";
 import type { Scope } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { GatewayJobSchema, signGatewayEvent } from "#/features/ingest";
+import { GatewayJobSchema, jobKeyOf, signGatewayEvent, subjectOf } from "#/features/ingest";
 import type { GatewayJob } from "#/features/ingest";
 import { SITE_ORIGIN } from "#/shared/config/site";
 
@@ -20,7 +20,7 @@ const signedRequest = (
   Effect.gen(function* signRequest() {
     const body = yield* encodeJob(job).pipe(Effect.orDie);
     const sentAt = yield* DateTime.now;
-    const id = `${job.kind}-${Array.headNonEmpty(job.messageIds)}-${DateTime.toEpochMillis(sentAt)}`;
+    const id = `${job.kind}-${jobKeyOf(job)}-${DateTime.toEpochMillis(sentAt)}`;
     return HttpClientRequest.post(GATEWAY_ENDPOINT).pipe(
       HttpClientRequest.setHeaders(signGatewayEvent({ botToken, id, sentAt, body })),
       HttpClientRequest.bodyText(body, "application/json"),
@@ -45,7 +45,7 @@ const deliverWithRetry = (
     Effect.retry({ schedule: Schedule.exponential(RETRY_BASE), times: RETRY_TIMES }),
     Effect.catchCause((cause) =>
       Effect.logError("Gateway event was not delivered", cause).pipe(
-        Effect.annotateLogs({ kind: job.kind, channelId: job.channelId }),
+        Effect.annotateLogs(subjectOf(job)),
       ),
     ),
   );

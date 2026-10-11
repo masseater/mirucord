@@ -5,17 +5,10 @@ import type { ReactNode } from "react";
 import type { ManagedGuild } from "#/features/ingest/index.server";
 
 import { GuildIcon } from "./guild-icon";
-import { Pill } from "./pill";
-
-const CONSENT = {
-  awaiting: { label: "同意待ち", tone: "bg-butter" },
-  granted: { label: "取り込み中", tone: "bg-mint" },
-  withdrawing: { label: "削除中", tone: "bg-pink" },
-} as const;
+import { IngestPill } from "./ingest-pill";
 
 const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => {
   const params = useMemo(() => ({ guildId: guild.id }), [guild.id]);
-  const consent = CONSENT[guild.consent];
   return (
     <li>
       <Link
@@ -25,7 +18,7 @@ const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => {
       >
         <GuildIcon guildId={guild.id} name={guild.name} icon={guild.icon} />
         <span className="text-dc-bright grow text-lg font-black">{guild.name}</span>
-        <Pill tone={consent.tone}>{consent.label}</Pill>
+        <IngestPill ingest={guild.ingest} />
       </Link>
     </li>
   );

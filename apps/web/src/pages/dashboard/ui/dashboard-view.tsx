@@ -15,7 +15,7 @@ const WITHDRAWING_TIP = "削除中だよ！";
 type ReadyDashboard = Extract<Dashboard, Readonly<{ status: "ready" }>>;
 
 const tipFor = ({ name, guilds }: ReadyDashboard): string => {
-  if (guilds.some(({ consent }) => consent === "withdrawing")) {
+  if (guilds.some(({ ingest }) => ingest === "withdrawing")) {
     return WITHDRAWING_TIP;
   }
   return `${name}さん、おかえり！`;

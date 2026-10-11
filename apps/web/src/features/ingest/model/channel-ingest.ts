@@ -77,10 +77,49 @@ const isNoticeCandidate = ({
 }: Readonly<{ kind: string; ingest: ChannelIngest }>): boolean =>
   NOTICE_KINDS.has(kind) && ingest !== "unreadable";
 
+type GuildIngest = "awaiting" | "withdrawing" | "waiting" | "backfilling" | "done";
+
+type GuildConsent = "awaiting" | "granted" | "withdrawing";
+
+const IN_PROGRESS: ReadonlySet<ChannelIngest> = new Set(["waiting", "backfilling"]);
+const COUNTED: ReadonlySet<ChannelIngest> = new Set(["waiting", "backfilling", "done"]);
+
+const grantedIngest = (channels: readonly ChannelIngest[]): GuildIngest => {
+  const counted = channels.filter((ingest) => COUNTED.has(ingest));
+  if (!counted.some((ingest) => IN_PROGRESS.has(ingest))) {
+    return "done";
+  }
+  if (counted.every((ingest) => ingest === "waiting")) {
+    return "waiting";
+  }
+  return "backfilling";
+};
+
+const guildIngestOfDataFirst = (
+  consent: GuildConsent,
+  channels: readonly ChannelIngest[],
+): GuildIngest => {
+  if (consent === "granted") {
+    return grantedIngest(channels);
+  }
+  return consent;
+};
+
+const guildIngestOf: {
+  (channels: readonly ChannelIngest[]): (consent: GuildConsent) => GuildIngest;
+  (consent: GuildConsent, channels: readonly ChannelIngest[]): GuildIngest;
+} = Function.dual(DATA_FIRST_ARITY, guildIngestOfDataFirst);
+
+const SCOPE_OF_CONSENT = {
+  awaiting: { status: "awaiting" },
+  granted: { status: "granted" },
+  withdrawing: { status: "awaiting" },
+} as const satisfies Record<GuildConsent, ConsentScope>;
+
 const ingestOf: {
   (row: IngestRow): (scope: ConsentScope) => ChannelIngest;
   (scope: ConsentScope, row: IngestRow): ChannelIngest;
 } = Function.dual(DATA_FIRST_ARITY, ingestOfDataFirst);
 
-export { forumRowOf, ingestOf, isNoticeCandidate };
-export type { ChannelIngest, IngestRow };
+export { forumRowOf, guildIngestOf, ingestOf, isNoticeCandidate, SCOPE_OF_CONSENT };
+export type { ChannelIngest, GuildConsent, GuildIngest, IngestRow };

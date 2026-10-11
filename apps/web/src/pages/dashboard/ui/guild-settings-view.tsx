@@ -12,7 +12,9 @@ import { RevokePanel } from "./revoke-panel";
 
 const TIP = {
   awaiting: "よければ同意してね",
-  granted: "思い出を集めてるよ",
+  waiting: "思い出を集めてるよ",
+  backfilling: "思い出を集めてるよ",
+  done: "思い出を集めたよ",
   withdrawing: "削除中だよ！",
 } as const;
 
@@ -20,7 +22,7 @@ const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>):
   const target = useMemo(() => ({ scope: "guild", guildId: settings.id }) as const, [settings.id]);
   return (
     <>
-      <MascotTip>{TIP[settings.consent.status]}</MascotTip>
+      <MascotTip>{TIP[settings.ingest]}</MascotTip>
       <h1 className="text-dc-bright font-maru text-3xl font-black">{settings.name}</h1>
       <RefreshButton target={target} />
       <ConsentRecord consent={settings.consent} />

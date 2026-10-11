@@ -53,7 +53,7 @@ const PlainRow = ({
   <span
     data-peek={peek}
     className={cn(
-      "relative flex items-center gap-1.5 rounded-sm px-2 py-1 font-bold whitespace-nowrap",
+      "ch-row relative flex items-center gap-1.5 rounded-sm px-2 py-1 font-bold whitespace-nowrap",
       TONE[activity.status],
       className,
     )}

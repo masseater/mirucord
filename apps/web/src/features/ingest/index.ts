@@ -5,5 +5,3 @@ export { toGatewayJob } from "./model/gateway-job";
 export { GatewayJobSchema } from "./model/ingest-job";
 export type { GatewayJob } from "./model/ingest-job";
 export { signGatewayEvent } from "./model/gateway-signature";
-export { GatewayJobSchema } from "./model/ingest-job";
-export type { GatewayJob } from "./model/ingest-job";

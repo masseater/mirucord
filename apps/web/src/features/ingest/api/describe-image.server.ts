@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Array, Data, Effect, Layer, Option, Schedule, Semaphore, String } from "effect";
+import { Array, Data, Effect, Layer, Option, Schedule, String } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { fromUint8Array } from "js-base64";
 
@@ -9,8 +9,6 @@ const MAX_TOKENS = 160;
 const RETRY_TIMES = 2;
 const RETRY_BASE = "500 millis";
 const MAX_IMAGE_BYTES = 4_000_000;
-const ONE_AT_A_TIME = 1;
-const IMAGE_SLOTS = Semaphore.makeUnsafe(ONE_AT_A_TIME);
 const DESCRIBABLE_TYPES: ReadonlySet<string> = new Set(["image/jpeg", "image/png", "image/webp"]);
 const PROMPT =
   "この画像を検索で見つけられるよう、日本語で1〜2文で説明してください。写っている物や料理の名前、読める文字があればその内容を具体的に書いてください。説明だけを答えてください。";
@@ -80,7 +78,6 @@ const describeWithClient = (
 ): Effect.Effect<Option.Option<string>, never, HttpClient.HttpClient> =>
   fetchImage(source).pipe(
     Effect.flatMap(runModel),
-    Semaphore.withPermits(IMAGE_SLOTS, ONE_AT_A_TIME),
     Effect.retry({ schedule: Schedule.exponential(RETRY_BASE), times: RETRY_TIMES }),
     Effect.map(Option.liftPredicate(String.isNonEmpty)),
     Effect.catchTag("DescribeError", ({ stage, reason }) =>

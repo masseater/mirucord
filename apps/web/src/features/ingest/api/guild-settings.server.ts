@@ -1,6 +1,7 @@
 import { count, eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
+import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { db, ingestConsent, message } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
@@ -13,6 +14,7 @@ const NO_MESSAGES = 0;
 
 type Consent =
   | Readonly<{ status: "awaiting" }>
+  | Readonly<{ status: "withdrawing" }>
   | Readonly<{
       status: "granted";
       grantedBy: string;
@@ -42,12 +44,17 @@ const loadConsent = (guildId: string): Effect.Effect<Consent> =>
     Effect.map((rows) =>
       Option.match(Array.head(rows), {
         onNone: (): Consent => ({ status: "awaiting" }),
-        onSome: (row): Consent => ({
-          status: "granted",
-          grantedBy: row.grantedBy,
-          grantedAt: row.grantedAt.getTime(),
-          noticeChannelId: row.noticeChannelId,
-        }),
+        onSome: (row): Consent => {
+          if (row.state === "withdrawing") {
+            return { status: "withdrawing" };
+          }
+          return {
+            status: "granted",
+            grantedBy: row.grantedBy,
+            grantedAt: row.grantedAt.getTime(),
+            noticeChannelId: row.noticeChannelId,
+          };
+        },
       }),
     ),
   );
@@ -64,10 +71,17 @@ const countMessages = (guildId: string): Effect.Effect<number> =>
     ),
   );
 
+const scopeOf = (consent: Consent): ConsentScope => {
+  if (consent.status === "granted") {
+    return consent;
+  }
+  return { status: "awaiting" };
+};
+
 const loadConsentedChannels = (guildId: string): Effect.Effect<ConsentedChannels> =>
   loadConsent(guildId).pipe(
     Effect.flatMap((consent) =>
-      loadChannels({ guildId, scope: consent }).pipe(
+      loadChannels({ guildId, scope: scopeOf(consent) }).pipe(
         Effect.map((listed) => ({ ...listed, consent })),
       ),
     ),

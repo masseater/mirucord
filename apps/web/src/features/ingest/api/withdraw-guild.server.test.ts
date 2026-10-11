@@ -8,7 +8,8 @@ import { beforeEach, expect, vi } from "vite-plus/test";
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent, message } from "#/shared/db/index.server";
 
-import { withdrawGuild } from "./withdraw-guild.server";
+import { ingestDeliveries } from "./ingest-queue.server";
+import { requestWithdrawal, withdrawGuild } from "./withdraw-guild.server";
 
 const OWNER = "901";
 const MAX_DELETE_IDS = 100;
@@ -23,6 +24,11 @@ const deletedVectors = new Set<string>();
 const flaky = { failures: 0 };
 const NO_FAILURE = 0;
 const ONE_FAILURE = 1;
+const FIRST_ATTEMPT = 1;
+const LAST_ATTEMPT = 6;
+const handled = { acked: 0, retried: 0 };
+const ONCE = 1;
+const NEVER = 0;
 
 const messageIdsOf = (guildId: string): readonly string[] =>
   Array.makeBy(STORED, (index) => `${guildId}-${String(index)}`);
@@ -97,9 +103,33 @@ const acceptDeletes = (): void => {
   });
 };
 
+const stateOf = (guildId: string): Effect.Effect<readonly string[]> =>
+  Effect.promise(() =>
+    db
+      .select({ state: ingestConsent.state })
+      .from(ingestConsent)
+      .where(eq(ingestConsent.guildId, guildId)),
+  ).pipe(Effect.map((rows) => rows.map(({ state }) => state)));
+
+const deliverWithdrawal = (guildId: string, attempts: number): Effect.Effect<void> =>
+  ingestDeliveries([
+    {
+      body: { kind: "withdraw", guildId },
+      attempts,
+      ack: () => {
+        handled.acked += ONCE;
+      },
+      retry: () => {
+        handled.retried += ONCE;
+      },
+    },
+  ]);
+
 beforeEach(() => {
   deletedVectors.clear();
   flaky.failures = NO_FAILURE;
+  handled.acked = NEVER;
+  handled.retried = NEVER;
 });
 
 it.effect("removes every message and vector before the consent goes away", () =>
@@ -137,5 +167,44 @@ it.effect("retries a Vectorize call that fails once", () =>
     yield* Fiber.join(fiber);
     expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 0, messages: 0 });
     expect(deletedVectors).toStrictEqual(new Set(messageIdsOf(guildId)));
+  }),
+);
+
+it.effect("marks the consent as withdrawing and queues the deletion", () =>
+  Effect.gen(function* requested() {
+    const guildId = "830";
+    yield* seedGuild(guildId);
+    const send = vi.spyOn(env.INGEST, "send");
+    yield* requestWithdrawal(guildId);
+    expect(yield* stateOf(guildId)).toStrictEqual(["withdrawing"]);
+    expect(send).toHaveBeenCalledWith({ kind: "withdraw", guildId });
+    expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 1, messages: STORED });
+  }),
+);
+
+it.effect("deletes everything when the queued withdrawal runs", () =>
+  Effect.gen(function* queued() {
+    const guildId = "840";
+    yield* seedGuild(guildId);
+    acceptDeletes();
+    yield* requestWithdrawal(guildId);
+    yield* deliverWithdrawal(guildId, FIRST_ATTEMPT);
+    expect(handled).toStrictEqual({ acked: ONCE, retried: NEVER });
+    expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 0, messages: 0 });
+  }),
+);
+
+it.effect("gives the consent back when the queued withdrawal keeps failing", () =>
+  Effect.gen(function* abandoned() {
+    const guildId = "850";
+    yield* seedGuild(guildId);
+    vi.spyOn(env.MESSAGES, "deleteByIds").mockRejectedValue(new VectorizeRejected());
+    yield* requestWithdrawal(guildId);
+    const fiber = yield* Effect.forkChild(deliverWithdrawal(guildId, LAST_ATTEMPT));
+    yield* TestClock.adjust(RETRY_WINDOW);
+    yield* Fiber.join(fiber);
+    expect(handled).toStrictEqual({ acked: NEVER, retried: ONCE });
+    expect(yield* stateOf(guildId)).toStrictEqual(["granted"]);
+    expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 1, messages: STORED });
   }),
 );

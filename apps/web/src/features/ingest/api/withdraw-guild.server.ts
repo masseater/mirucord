@@ -4,6 +4,7 @@ import { Array, Data, Effect, Option } from "effect";
 import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 
 import { purgeChannel } from "./consent-scope.server";
+import { enqueueWithdrawal } from "./enqueue.server";
 import type { VectorizeError } from "./vectors.server";
 
 class GuildDataRemainsError extends Data.TaggedError("GuildDataRemainsError")<{
@@ -48,5 +49,17 @@ const withdrawGuild = (
     Effect.andThen(purgeGuild(guildId)),
   );
 
-export { GuildDataRemainsError, withdrawGuild };
+const setConsentState = (guildId: string, state: "granted" | "withdrawing"): Effect.Effect<void> =>
+  Effect.promise(() =>
+    db.update(ingestConsent).set({ state }).where(eq(ingestConsent.guildId, guildId)),
+  ).pipe(Effect.asVoid);
+
+const requestWithdrawal = (guildId: string): Effect.Effect<void> =>
+  enqueueWithdrawal(guildId).pipe(Effect.andThen(setConsentState(guildId, "withdrawing")));
+
+const abandonWithdrawal = (guildId: string): Effect.Effect<void> =>
+  setConsentState(guildId, "granted");
+
+export { abandonWithdrawal, requestWithdrawal, withdrawGuild };
+export type { GuildDataRemainsError };
 export type { VectorizeError } from "./vectors.server";

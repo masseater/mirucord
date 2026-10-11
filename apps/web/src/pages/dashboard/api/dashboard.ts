@@ -1,11 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 import type { DataTag, UnusedSkipTokenOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
-import { Duration, Effect, Schema } from "effect";
+import { Duration, Effect, Option, Schema } from "effect";
 
 import { REFRESH_COOLDOWN } from "#/features/ingest";
 import type {
   ConsentResult,
+  ForumPostsResult,
   GuildRefreshResult,
   PurgeResult,
   RevokeResult,
@@ -14,15 +15,36 @@ import type {
 import {
   consentTo,
   loadDashboard,
+  loadForumPosts,
   loadGuildPage,
   purgeFor,
   refreshGuild,
   refreshGuilds,
   revokeFor,
 } from "./dashboard.server";
-import type { ConsentInput, GuildPage, SignedOut } from "./dashboard.server";
+import type {
+  ChannelTarget,
+  ConsentInput,
+  Dashboard,
+  GuildPage,
+  SignedOut,
+} from "./dashboard.server";
 
 type GuildPageKey = readonly ["dashboard", string];
+
+type ForumPostsKey = readonly ["dashboard", string, "forum", string];
+
+const WITHDRAWAL_POLL_SECONDS = 5;
+const WITHDRAWAL_POLL = Duration.seconds(WITHDRAWAL_POLL_SECONDS);
+
+const pollWhileWithdrawing = (dashboard: Option.Option<Dashboard>): number | false =>
+  dashboard.pipe(
+    Option.filter(
+      (loaded) =>
+        loaded.status === "ready" && loaded.guilds.some(({ consent }) => consent === "withdrawing"),
+    ),
+    Option.match({ onNone: () => false, onSome: () => Duration.toMillis(WITHDRAWAL_POLL) }),
+  );
 
 const GuildInput = Schema.Struct({ guildId: Schema.String });
 
@@ -40,6 +62,10 @@ const getDashboard = createServerFn({ method: "GET" }).handler(() =>
 const getGuildPage = createServerFn({ method: "GET" })
   .validator(Schema.toStandardSchemaV1(GuildInput))
   .handler(({ data }) => Effect.runPromise(loadGuildPage(data.guildId)));
+
+const getForumPosts = createServerFn({ method: "GET" })
+  .validator(Schema.toStandardSchemaV1(ChannelInput))
+  .handler(({ data }) => Effect.runPromise(loadForumPosts(data)));
 
 const postConsent = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(ConsentInputSchema))
@@ -64,6 +90,7 @@ const postRefreshGuild = createServerFn({ method: "POST" })
 const dashboardQuery = queryOptions({
   queryKey: ["dashboard"],
   queryFn: () => getDashboard(),
+  refetchInterval: ({ state }) => pollWhileWithdrawing(Option.fromUndefinedOr(state.data)),
 });
 
 const guildPageQuery = (
@@ -73,6 +100,23 @@ const guildPageQuery = (
   queryOptions({
     queryKey: ["dashboard", guildId] as const,
     queryFn: () => getGuildPage({ data: { guildId } }),
+  });
+
+type ForumPostsOutcome = ForumPostsResult | SignedOut;
+
+const forumPostsQuery = ({
+  guildId,
+  channelId,
+}: ChannelTarget): UnusedSkipTokenOptions<
+  ForumPostsOutcome,
+  Error,
+  ForumPostsOutcome,
+  ForumPostsKey
+> &
+  Readonly<{ queryKey: DataTag<ForumPostsKey, ForumPostsOutcome, Error> }> =>
+  queryOptions({
+    queryKey: ["dashboard", guildId, "forum", channelId] as const,
+    queryFn: () => getForumPosts({ data: { guildId, channelId } }),
   });
 
 type RefreshTarget = Readonly<{ scope: "guilds" }> | Readonly<{ scope: "guild"; guildId: string }>;
@@ -114,9 +158,10 @@ const withdrawConsent = (guildId: string): Promise<RevokeResult | SignedOut> =>
 const purgeStoredChannel = (input: typeof ChannelInput.Type): Promise<PurgeResult | SignedOut> =>
   postPurge({ data: input });
 
-export type { RefreshOutcome, RefreshTarget };
+export type { ForumPostsOutcome, RefreshOutcome, RefreshTarget };
 export {
   dashboardQuery,
+  forumPostsQuery,
   guildPageQuery,
   purgeStoredChannel,
   refreshQuery,

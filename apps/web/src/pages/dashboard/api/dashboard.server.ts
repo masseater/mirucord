@@ -2,6 +2,7 @@ import { getRequest } from "@tanstack/react-start/server";
 import { Cause, Effect, Option } from "effect";
 
 import {
+  forumPosts,
   grantConsent,
   guildSettings,
   listManagedGuilds,
@@ -12,6 +13,7 @@ import {
 } from "#/features/ingest/index.server";
 import type {
   ConsentResult,
+  ForumPostsResult,
   GuildRefreshResult,
   GuildSettings,
   ManagedGuild,
@@ -37,6 +39,8 @@ type ConsentInput = Readonly<{
   guildId: string;
   noticeChannelId: string;
 }>;
+
+type ChannelTarget = Readonly<{ guildId: string; channelId: string }>;
 
 const SIGNED_OUT: SignedOut = { status: "signedOut" };
 
@@ -83,10 +87,11 @@ const consentTo = (input: ConsentInput): Effect.Effect<ConsentResult | SignedOut
 const revokeFor = (guildId: string): Effect.Effect<RevokeResult | SignedOut> =>
   withSignedInUser((userId) => revokeConsent({ guildId, userId }).pipe(Effect.orDie));
 
-const purgeFor = (
-  input: Readonly<{ guildId: string; channelId: string }>,
-): Effect.Effect<PurgeResult | SignedOut> =>
+const purgeFor = (input: ChannelTarget): Effect.Effect<PurgeResult | SignedOut> =>
   withSignedInUser((userId) => purgePausedChannel({ ...input, userId }).pipe(Effect.orDie));
+
+const loadForumPosts = (input: ChannelTarget): Effect.Effect<ForumPostsResult | SignedOut> =>
+  withSignedInUser((userId) => forumPosts({ ...input, userId }).pipe(Effect.orDie));
 
 const refreshGuilds: Effect.Effect<RefreshResult | SignedOut> = withSignedInUser(() =>
   refreshGuildList.pipe(Effect.orDie),
@@ -98,10 +103,11 @@ const refreshGuild = (guildId: string): Effect.Effect<GuildRefreshResult | Signe
 export {
   consentTo,
   loadDashboard,
+  loadForumPosts,
   loadGuildPage,
   purgeFor,
   refreshGuild,
   refreshGuilds,
   revokeFor,
 };
-export type { ConsentInput, Dashboard, GuildPage, SignedOut };
+export type { ChannelTarget, ConsentInput, Dashboard, GuildPage, SignedOut };

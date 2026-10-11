@@ -12,8 +12,8 @@ import { loadConsentedChannels } from "./guild-settings.server";
 import type { SettingsChannel } from "./guild-settings.server";
 import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
-import { withdrawGuild } from "./withdraw-guild.server";
-import type { GuildDataRemainsError, VectorizeError } from "./withdraw-guild.server";
+import { requestWithdrawal } from "./withdraw-guild.server";
+import type { VectorizeError } from "./withdraw-guild.server";
 
 type ConsentRequest = Readonly<{
   guildId: string;
@@ -27,7 +27,7 @@ type ConsentResult =
   | Readonly<{ status: "invalid" }>
   | Readonly<{ status: "noticeFailed" }>;
 
-type RevokeResult = Readonly<{ status: "revoked" }> | Readonly<{ status: "forbidden" }>;
+type RevokeResult = Readonly<{ status: "withdrawing" }> | Readonly<{ status: "forbidden" }>;
 
 const NOTICE = [
   "はじめまして、ミルだよ！",
@@ -109,7 +109,12 @@ const grantConsent = (
         onNone: () => Effect.succeed<ConsentResult>({ status: "forbidden" }),
         onSome: () =>
           loadConsentedChannels(request.guildId).pipe(
-            Effect.flatMap(({ consent, channels }) => applyConsent(request, consent, channels)),
+            Effect.flatMap(({ consent, channels }) => {
+              if (consent.status === "withdrawing") {
+                return Effect.succeed<ConsentResult>({ status: "invalid" });
+              }
+              return applyConsent(request, consent, channels);
+            }),
           ),
       }),
     ),
@@ -117,13 +122,15 @@ const grantConsent = (
 
 const revokeConsent = (
   membership: GuildMembership,
-): Effect.Effect<RevokeResult, DiscordRequestError | GuildDataRemainsError | VectorizeError> =>
+): Effect.Effect<RevokeResult, DiscordRequestError> =>
   managedGuild(membership).pipe(
     Effect.flatMap(
       Option.match({
         onNone: () => Effect.succeed<RevokeResult>({ status: "forbidden" }),
         onSome: () =>
-          withdrawGuild(membership.guildId).pipe(Effect.as<RevokeResult>({ status: "revoked" })),
+          requestWithdrawal(membership.guildId).pipe(
+            Effect.as<RevokeResult>({ status: "withdrawing" }),
+          ),
       }),
     ),
   );

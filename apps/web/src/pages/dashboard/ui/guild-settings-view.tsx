@@ -13,6 +13,7 @@ import { RevokePanel } from "./revoke-panel";
 const TIP = {
   awaiting: "よければ同意してね",
   granted: "思い出を集めてるよ",
+  withdrawing: "削除中だよ！",
 } as const;
 
 const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => {

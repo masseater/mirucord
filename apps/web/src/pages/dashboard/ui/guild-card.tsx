@@ -8,6 +8,7 @@ import { Pill } from "#/shared/ui/pill";
 const CONSENT = {
   awaiting: { label: "同意待ち", tone: "bg-butter" },
   granted: { label: "取り込み中", tone: "bg-mint" },
+  withdrawing: { label: "削除中", tone: "bg-pink" },
 } as const;
 
 const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => {

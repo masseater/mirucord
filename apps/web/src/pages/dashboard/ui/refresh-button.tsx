@@ -20,10 +20,10 @@ const RefreshButton = ({ target }: Readonly<{ target: RefreshTarget }>): ReactNo
   }, [mutate]);
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <PopButton tone="milk" size="sm" disabled={view.status === "looking"} onClick={refresh}>
+      <PopButton tone="secondary" size="sm" disabled={view.status === "looking"} onClick={refresh}>
         {refreshLabel(view)}
       </PopButton>
-      <span aria-live="polite" className="text-ink-soft text-sm font-bold">
+      <span aria-live="polite" className="text-dc-muted text-sm font-bold">
         {refreshNote(view)}
       </span>
     </div>

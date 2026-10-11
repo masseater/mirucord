@@ -13,8 +13,8 @@ const ConsentMissing = (): ReactNode => (
   <AppFrame>
     <MascotTip>{TIP}</MascotTip>
     <Panel>
-      <h1 className="text-2xl font-black">{TITLE}</h1>
-      <p className="text-ink-soft leading-relaxed">{BODY}</p>
+      <h1 className="text-dc-bright font-maru text-2xl font-black">{TITLE}</h1>
+      <p className="text-dc-muted leading-relaxed">{BODY}</p>
     </Panel>
   </AppFrame>
 );

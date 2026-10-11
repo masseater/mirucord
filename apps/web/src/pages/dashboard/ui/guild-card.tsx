@@ -14,10 +14,10 @@ const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => {
       <Link
         to="/dashboard/$guildId"
         params={params}
-        className="border-ink bg-milk shadow-pop-sm flex items-center justify-between gap-4 rounded-3xl border-2 px-5 py-4 no-underline motion-safe:transition motion-safe:hover:-translate-y-0.5"
+        className="bg-dc-sidebar border-dc-line hover:bg-dc-hover flex items-center justify-between gap-4 rounded-2xl border px-5 py-4 no-underline motion-safe:transition-colors"
       >
         <GuildIcon guildId={guild.id} name={guild.name} icon={guild.icon} />
-        <span className="grow text-lg font-black">{guild.name}</span>
+        <span className="text-dc-bright grow text-lg font-black">{guild.name}</span>
         <IngestPill ingest={guild.ingest} />
       </Link>
     </li>

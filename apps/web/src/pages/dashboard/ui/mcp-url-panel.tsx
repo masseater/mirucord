@@ -7,8 +7,8 @@ const TITLE = "MCP サーバーの URL";
 
 const McpUrlPanel = (): ReactNode => (
   <Panel>
-    <h2 className="text-xl font-black">{TITLE}</h2>
-    <p className="bg-lavender rounded-2xl px-4 py-3 font-mono text-sm break-all select-all">
+    <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
+    <p className="bg-dc-rail border-dc-line text-dc-text rounded-lg border px-4 py-3 font-mono text-sm break-all select-all">
       {MCP_URL}
     </p>
   </Panel>

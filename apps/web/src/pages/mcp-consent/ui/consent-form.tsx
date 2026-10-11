@@ -33,11 +33,11 @@ const ConsentForm = ({ clientId }: Readonly<{ clientId: string }>): ReactNode =>
     <AppFrame>
       <MascotTip>{TIP}</MascotTip>
       <Panel>
-        <h1 className="text-2xl font-black">
+        <h1 className="text-dc-bright font-maru text-2xl font-black">
           {clientName}
           {ASK}
         </h1>
-        <p className="text-ink-soft leading-relaxed">
+        <p className="text-dc-muted leading-relaxed">
           {clientName}
           {SCOPE}
         </p>

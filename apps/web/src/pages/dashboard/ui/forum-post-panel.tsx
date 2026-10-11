@@ -13,7 +13,7 @@ const ForumPostPanel = ({
     <div
       id={forumPostsId(channelId)}
       hidden={disclosure.status === "closed"}
-      className="border-line basis-full border-l-2 py-1 pl-4"
+      className="border-dc-line basis-full border-l-2 py-1 pl-4"
     >
       {disclosure.status === "open" && <ForumPostList guildId={guildId} channelId={channelId} />}
     </div>

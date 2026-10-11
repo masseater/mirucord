@@ -23,7 +23,7 @@ const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>):
   return (
     <>
       <MascotTip>{TIP[settings.ingest]}</MascotTip>
-      <h1 className="text-3xl font-black">{settings.name}</h1>
+      <h1 className="text-dc-bright font-maru text-3xl font-black">{settings.name}</h1>
       <RefreshButton target={target} />
       <ConsentRecord consent={settings.consent} />
       {settings.consent.status === "awaiting" && <ConsentForm settings={settings} />}

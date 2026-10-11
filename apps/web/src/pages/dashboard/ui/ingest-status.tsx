@@ -15,7 +15,7 @@ const UNIT = "件";
 const IngestStatus = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (
   <Panel>
     <div className="flex flex-wrap items-center gap-2">
-      <h2 className="text-xl font-black">{TITLE}</h2>
+      <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
       <IngestPill ingest={settings.ingest} />
     </div>
     <p className="font-bold">

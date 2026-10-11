@@ -16,8 +16,8 @@ const LegalDocument = ({
   sections,
 }: Readonly<{ title: string; sections: readonly Section[] }>): ReactNode => (
   <AppFrame>
-    <h1 className="text-3xl font-black">{title}</h1>
-    <p className="text-ink-soft text-sm font-bold">{REVISED}</p>
+    <h1 className="text-dc-bright font-maru text-3xl font-black">{title}</h1>
+    <p className="text-dc-muted text-sm font-bold">{REVISED}</p>
     {sections.map((section) => (
       <LegalSection
         key={section.heading}
@@ -25,7 +25,7 @@ const LegalDocument = ({
         paragraphs={section.paragraphs}
       />
     ))}
-    <a href={ISSUES_URL} className="hover:text-grape self-start font-bold underline">
+    <a href={ISSUES_URL} className="hover:text-dc-bright self-start font-bold underline">
       {CONTACT}
     </a>
   </AppFrame>

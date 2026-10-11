@@ -24,10 +24,10 @@ const AccountPanel = ({ name }: Readonly<{ name: string }>): ReactNode => {
   }, [mutate]);
   return (
     <Panel>
-      <h2 className="text-xl font-black">{TITLE}</h2>
+      <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
       <p className="font-bold">{name}</p>
       <PopButton
-        tone="milk"
+        tone="secondary"
         size="sm"
         disabled={status === "pending" || status === "success"}
         onClick={signOut}
@@ -35,7 +35,7 @@ const AccountPanel = ({ name }: Readonly<{ name: string }>): ReactNode => {
         {SIGN_OUT}
       </PopButton>
       {status === "error" && (
-        <p role="alert" className="bg-pink rounded-2xl px-4 py-2 text-sm font-bold">
+        <p role="alert" className="bg-pink text-ink rounded-2xl px-4 py-2 text-sm font-bold">
           {FAILED}
         </p>
       )}

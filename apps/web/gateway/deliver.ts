@@ -3,8 +3,8 @@ import type { Scope } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
-import type { GatewayJob } from "#/features/ingest/model/ingest-job";
+import { GatewayJobSchema } from "#/features/ingest";
+import type { GatewayJob } from "#/features/ingest";
 import { SITE_ORIGIN } from "#/shared/config/site";
 import { signGatewayEvent } from "#/shared/crypto/index";
 

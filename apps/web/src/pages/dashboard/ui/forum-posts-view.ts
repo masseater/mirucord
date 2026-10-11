@@ -15,7 +15,7 @@ const NOTE: Readonly<Record<Exclude<ForumPostsView["status"], "listed">, string>
   loading: "読み込み中",
   failed: "読み込めませんでした",
   unavailable: "このフォーラムの投稿は見られません",
-  empty: "取り込んだ投稿はまだありません",
+  empty: "投稿はまだありません",
 };
 
 const viewOfOutcome = (outcome: ForumPostsOutcome): ForumPostsView => {

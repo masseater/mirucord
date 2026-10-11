@@ -5,6 +5,7 @@ import { Secrets, Variables, providers as gitHubProviders } from "alchemy/GitHub
 import { Config, Effect, Layer, Schema } from "effect";
 import type { ConfigError } from "effect/Config";
 
+import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const repo = { owner: "masseater", repository: "mirucord" };
@@ -85,7 +86,7 @@ const ci: Effect.Effect<CompiledStack, ConfigError> & Readonly<{ stackName: stri
       ...repo,
       variables: {
         DISCORD_CLIENT_ID: Config.NonEmptyString("DISCORD_CLIENT_ID"),
-        MAX_GUILDS: "80",
+        MAX_GUILDS: String(FREE_GUILD_LIMIT),
       },
     });
     return { tokenId: token.tokenId, observerTokenId: observer.tokenId };

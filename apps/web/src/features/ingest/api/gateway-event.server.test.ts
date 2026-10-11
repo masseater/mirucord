@@ -6,9 +6,10 @@ import { beforeEach, expect, vi } from "vite-plus/test";
 
 import { signGatewayEvent } from "#/features/ingest/model/gateway-signature";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
-import { SITE_ORIGIN } from "#/shared/config";
 
 import { receiveGatewayEvent } from "./gateway-event.server";
+
+type GatewayEvent = Readonly<{ body: string; headers: Readonly<Record<string, string>> }>;
 
 const PROCESSED = 200;
 const BAD_REQUEST = 400;
@@ -23,25 +24,14 @@ const signedRequest = (
   body: string,
   sentAt: DateTime.Utc,
   botToken: string,
-): Effect.Effect<Request> =>
-  Effect.sync(
-    () =>
-      new Request(`${SITE_ORIGIN}/api/gateway`, {
-        method: "POST",
-        body,
-        headers: signGatewayEvent({ botToken, id: "test-event", sentAt, body }),
-      }),
-  );
+): Effect.Effect<GatewayEvent> =>
+  Effect.sync(() => ({
+    body,
+    headers: signGatewayEvent({ botToken, id: "test-event", sentAt, body }),
+  }));
 
-const statusOf = (request: Request): Effect.Effect<number> =>
-  Effect.promise(() => request.text()).pipe(
-    Effect.flatMap((body) =>
-      Effect.promise(() =>
-        receiveGatewayEvent({ body, headers: Object.fromEntries(request.headers) }),
-      ),
-    ),
-    Effect.map(({ status }) => status),
-  );
+const statusOf = (event: GatewayEvent): Effect.Effect<number> =>
+  Effect.promise(() => receiveGatewayEvent(event)).pipe(Effect.map(({ status }) => status));
 
 beforeEach(() => {
   vi.spyOn(env.INGEST, "send").mockResolvedValue({
@@ -54,8 +44,8 @@ it.live("processes a signed gateway event without the queue", () =>
     const now = yield* DateTime.now;
     const send = vi.spyOn(env.INGEST, "send");
     const body = yield* encodeJson(JOB).pipe(Effect.orDie);
-    const request = yield* signedRequest(body, now, env.DISCORD_BOT_TOKEN);
-    expect(yield* statusOf(request)).toBe(PROCESSED);
+    const event = yield* signedRequest(body, now, env.DISCORD_BOT_TOKEN);
+    expect(yield* statusOf(event)).toBe(PROCESSED);
     expect(send).not.toHaveBeenCalled();
   }),
 );
@@ -65,8 +55,8 @@ it.live("rejects an event signed with another token", () =>
     const now = yield* DateTime.now;
     const send = vi.spyOn(env.INGEST, "send");
     const body = yield* encodeJson(JOB).pipe(Effect.orDie);
-    const request = yield* signedRequest(body, now, "another-token");
-    expect(yield* statusOf(request)).toBe(UNAUTHORIZED);
+    const event = yield* signedRequest(body, now, "another-token");
+    expect(yield* statusOf(event)).toBe(UNAUTHORIZED);
     expect(send).not.toHaveBeenCalled();
   }),
 );
@@ -76,15 +66,15 @@ it.live("rejects a replayed event", () =>
     const now = yield* DateTime.now;
     const sentAt = DateTime.subtractDuration(now, STALE_BY);
     const body = yield* encodeJson(JOB).pipe(Effect.orDie);
-    const request = yield* signedRequest(body, sentAt, env.DISCORD_BOT_TOKEN);
-    expect(yield* statusOf(request)).toBe(UNAUTHORIZED);
+    const event = yield* signedRequest(body, sentAt, env.DISCORD_BOT_TOKEN);
+    expect(yield* statusOf(event)).toBe(UNAUTHORIZED);
   }),
 );
 
 it.live("rejects a signed body that is not a gateway job", () =>
   Effect.gen(function* malformedEvent() {
     const now = yield* DateTime.now;
-    const request = yield* signedRequest('{"kind":"withdraw"}', now, env.DISCORD_BOT_TOKEN);
-    expect(yield* statusOf(request)).toBe(BAD_REQUEST);
+    const event = yield* signedRequest('{"kind":"withdraw"}', now, env.DISCORD_BOT_TOKEN);
+    expect(yield* statusOf(event)).toBe(BAD_REQUEST);
   }),
 );

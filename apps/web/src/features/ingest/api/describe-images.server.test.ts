@@ -21,24 +21,21 @@ const BROKEN = "851";
 const FORBIDDEN = 403;
 const DESCRIPTION = "ラーメンの写真";
 const PHOTO_URL = "https://cdn.discordapp.com/attachments/830/1/ramen.jpg";
-const PHOTO_PROXY = "https://media.discordapp.net/attachments/830/1/ramen.jpg";
-const PHOTO_WIDTH = 4000;
-const PHOTO_HEIGHT = 3000;
 const PHOTO_SIZE = 2_000_000;
-const ORIGINAL_CHANNEL = "840";
-const ORIGINAL = "841";
+const LARGE_SIZE = 5_000_000;
+const LARGE_CHANNEL = "840";
+const LARGE = "841";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 const UNIT = 1;
 const NONE = 0;
-const ORIGINAL_BYTES = 100_000;
+const PHOTO_BYTES = 100_000;
 const BYTE_VALUES = 256;
 
 const embeddedTexts: string[] = [];
-const resizedRequests: URL[] = [];
-const originalRequests: URL[] = [];
+const photoRequests: URL[] = [];
 const modelImages: string[] = [];
 
-const photoMessage = (id: string): unknown => ({
+const photoMessage = (id: string, size: number): unknown => ({
   id,
   type: DEFAULT_MESSAGE,
   content: "",
@@ -49,11 +46,8 @@ const photoMessage = (id: string): unknown => ({
     {
       filename: "ramen.jpg",
       url: PHOTO_URL,
-      proxy_url: PHOTO_PROXY,
       content_type: "image/jpeg",
-      size: PHOTO_SIZE,
-      width: PHOTO_WIDTH,
-      height: PHOTO_HEIGHT,
+      size,
     },
   ],
 });
@@ -62,38 +56,26 @@ const network = setupNetwork();
 
 const forbidden = (): Response => HttpResponse.text("forbidden", { status: FORBIDDEN });
 
-const answerWith = (id: string, image: () => Response, original = forbidden): void => {
+const answerWith = (id: string, image: () => Response, size = PHOTO_SIZE): void => {
   network.use(
     http.get("https://discord.com/api/v10/channels/:channelId/messages", () =>
-      HttpResponse.json([photoMessage(id)]),
+      HttpResponse.json([photoMessage(id, size)]),
     ),
-    http.get(PHOTO_PROXY, ({ request }) => {
-      resizedRequests.push(new URL(request.url));
-      return image();
-    }),
     http.get(PHOTO_URL, ({ request }) => {
-      originalRequests.push(new URL(request.url));
-      return original();
+      photoRequests.push(new URL(request.url));
+      return image();
     }),
   );
 };
 
-const jpeg = (): Response =>
-  HttpResponse.arrayBuffer(new Uint8Array([UNIT]).buffer, {
-    headers: { "content-type": "image/jpeg" },
-  });
+const photoBytes = Uint8Array.from({ length: PHOTO_BYTES }, (_value, index) => index % BYTE_VALUES);
 
-const originalBytes = Uint8Array.from(
-  { length: ORIGINAL_BYTES },
-  (_value, index) => index % BYTE_VALUES,
-);
-
-const expectedOriginal = `data:image/jpeg;base64,${btoa(
-  [...originalBytes].map((byte) => String.fromCodePoint(byte)).join(""),
+const expectedPhoto = `data:image/jpeg;base64,${btoa(
+  [...photoBytes].map((byte) => String.fromCodePoint(byte)).join(""),
 )}`;
 
-const largeJpeg = (): Response =>
-  HttpResponse.arrayBuffer(originalBytes.buffer, { headers: { "content-type": "image/jpeg" } });
+const photo = (): Response =>
+  HttpResponse.arrayBuffer(photoBytes.buffer, { headers: { "content-type": "image/jpeg" } });
 
 const seedGuild = Effect.gen(function* seed() {
   const wrappedKey = yield* createGuildKey;
@@ -103,7 +85,7 @@ const seedGuild = Effect.gen(function* seed() {
         .insert(guild)
         .values({ id: GUILD, name: "guild", ownerId: OWNER, wrappedKey, joinedAt: SEEDED_AT }),
       db.insert(channel).values(
-        [PHOTO_CHANNEL, ORIGINAL_CHANNEL, BROKEN_CHANNEL].map((id) => ({
+        [PHOTO_CHANNEL, LARGE_CHANNEL, BROKEN_CHANNEL].map((id) => ({
           id,
           guildId: GUILD,
           name: `channel ${id}`,
@@ -162,8 +144,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   embeddedTexts.length = NONE;
-  resizedRequests.length = NONE;
-  originalRequests.length = NONE;
+  photoRequests.length = NONE;
   modelImages.length = NONE;
   vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => answerModel(inputs));
   vi.spyOn(env.MESSAGES, "getByIds").mockResolvedValue([]);
@@ -181,16 +162,13 @@ afterAll(() => {
 
 it.effect("indexes an image-only message by the description of its image", () =>
   Effect.gen(function* described() {
-    answerWith(PHOTO, jpeg);
+    answerWith(PHOTO, photo);
     yield* ingestChannel({ guildId: GUILD, channelId: PHOTO_CHANNEL });
     expect(embeddedTexts).toStrictEqual([DESCRIPTION]);
-    expect(
-      resizedRequests.map(({ searchParams }) => [
-        searchParams.get("width"),
-        searchParams.get("height"),
-        searchParams.get("format"),
-      ]),
-    ).toStrictEqual([["768", "576", "jpeg"]]);
+    expect(modelImages.join("")).toContain(expectedPhoto);
+    expect(photoRequests.map(({ pathname }) => pathname)).toStrictEqual([
+      new URL(PHOTO_URL).pathname,
+    ]);
     const [row = { sealed: "", describedWith: "" }] = yield* storedRow(PHOTO);
     expect(row.describedWith).toBe("@cf/google/gemma-4-26b-a4b-it");
     const key = yield* guildKey;
@@ -205,14 +183,15 @@ it.effect("indexes an image-only message by the description of its image", () =>
   }),
 );
 
-it.live("falls back to the original image when the resized one is refused", () =>
-  Effect.gen(function* original() {
-    answerWith(ORIGINAL, forbidden, largeJpeg);
-    yield* ingestChannel({ guildId: GUILD, channelId: ORIGINAL_CHANNEL });
-    expect(embeddedTexts).toStrictEqual([DESCRIPTION]);
-    expect(modelImages.join("")).toContain(expectedOriginal);
-    expect(originalRequests.map(({ pathname }) => pathname)).toStrictEqual([
-      new URL(PHOTO_URL).pathname,
+it.effect("marks an image too large to describe as done without fetching it", () =>
+  Effect.gen(function* large() {
+    answerWith(LARGE, photo, LARGE_SIZE);
+    yield* ingestChannel({ guildId: GUILD, channelId: LARGE_CHANNEL });
+    expect(photoRequests).toStrictEqual([]);
+    expect(embeddedTexts).toStrictEqual([]);
+    const rows = yield* storedRow(LARGE);
+    expect(rows.map(({ describedWith }) => describedWith)).toStrictEqual([
+      "@cf/google/gemma-4-26b-a4b-it",
     ]);
   }),
 );

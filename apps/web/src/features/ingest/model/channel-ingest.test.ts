@@ -34,6 +34,10 @@ it("follows the backfill once consent covers a channel the bot can read", () => 
   expect(ingestOf(GRANTED, row("readable", CHANNEL))).toBe("backfilling");
 });
 
+it("finishes a channel that has no messages once its backfill is done", () => {
+  expect(ingestOf(GRANTED, { ...row("readable", EMPTY), backfill: "done" })).toBe("empty");
+});
+
 const FORUM = { botAccess: "readable" as const };
 const DONE_POST: IngestRow = { ...row("readable", CHANNEL), backfill: "done" };
 
@@ -41,7 +45,7 @@ it("follows the posts of a forum", () => {
   const empty = forumRowOf(FORUM, []);
   const halfway = forumRowOf(FORUM, [DONE_POST, row("readable", EMPTY)]);
   const finished = forumRowOf(FORUM, [DONE_POST, DONE_POST]);
-  expect(ingestOf(GRANTED, empty)).toBe("waiting");
+  expect(ingestOf(GRANTED, empty)).toBe("empty");
   expect(ingestOf(GRANTED, halfway)).toBe("backfilling");
   expect(ingestOf(GRANTED, finished)).toBe("done");
   expect(ingestOf(AWAITING, finished)).toBe("awaiting");

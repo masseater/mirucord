@@ -2,10 +2,11 @@ import { Array } from "effect";
 import type { ReactNode } from "react";
 
 import type { ReadableGuild } from "#/pages/dashboard/api/dashboard.server";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { ReadableGuildRow } from "./readable-guild-row";
 
-const EMPTY = "ミルがさがせるサーバーはまだありません。";
+const EMPTY = `${MASCOT_NAME}がさがせるサーバーはまだありません。`;
 
 const ReadableGuildList = ({
   guilds,

@@ -6,6 +6,7 @@ import { beforeEach, expect, vi } from "vite-plus/test";
 
 import { signGatewayEvent } from "#/features/ingest/model/gateway-signature";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
+import { SITE_ORIGIN } from "#/shared/config";
 
 import { receiveGatewayEvent } from "./gateway-event.server";
 
@@ -25,7 +26,7 @@ const signedRequest = (
 ): Effect.Effect<Request> =>
   Effect.sync(
     () =>
-      new Request("https://mirucord.test/api/gateway", {
+      new Request(`${SITE_ORIGIN}/api/gateway`, {
         method: "POST",
         body,
         headers: signGatewayEvent({ botToken, id: "test-event", sentAt, body }),

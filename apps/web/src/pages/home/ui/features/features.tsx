@@ -7,10 +7,11 @@ import { Chatter } from "#/pages/home/ui/message/chatter";
 import type { ChatLine } from "#/pages/home/ui/message/chatter";
 import { Post } from "#/pages/home/ui/message/post";
 import { Reactions } from "#/pages/home/ui/message/reactions";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { FeatureGrid } from "./feature-grid";
 
-const LEAD = "ミルは見ていいとこしか見ないよ！";
+const LEAD = `${MASCOT_NAME}は見ていいとこしか見ないよ！`;
 const CHANNEL = "とくちょう";
 const TIME = "今日 21:02";
 

@@ -3,13 +3,13 @@ import { Option } from "effect";
 import type { ReactNode } from "react";
 
 import { DiscordSignIn } from "#/features/sign-in";
-import { DASHBOARD_PATH } from "#/shared/config";
+import { DASHBOARD_PATH, SERVICE_NAME } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 
 const TIP = "おかえり！";
-const TITLE = "mirucord にログイン";
+const TITLE = `${SERVICE_NAME} にログイン`;
 
 const callbackUrlOf = (search: string): string | undefined =>
   Option.getOrUndefined(Option.liftPredicate(DASHBOARD_PATH, () => search === ""));

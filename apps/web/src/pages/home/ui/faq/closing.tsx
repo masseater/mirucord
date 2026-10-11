@@ -2,11 +2,12 @@ import type { ReactNode } from "react";
 
 import { BOT } from "#/pages/home/ui/message/author";
 import { Message } from "#/pages/home/ui/message/message";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { ClosingActions } from "./closing-actions";
 import { ProudMiru } from "./proud-miru";
 
-const GUIDE = "ミルにおまかせ！";
+const GUIDE = `${MASCOT_NAME}におまかせ！`;
 const TIME = "今日 21:12";
 
 const Closing = (): ReactNode => (

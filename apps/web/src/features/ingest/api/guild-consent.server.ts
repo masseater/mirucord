@@ -2,7 +2,7 @@ import { DateTime, Effect, Option } from "effect";
 
 import { isNoticeCandidate } from "#/features/ingest/model/channel-ingest";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
-import { PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
+import { MASCOT_NAME, PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
 import { db, ingestConsent } from "#/shared/db/index.server";
 import { postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
@@ -30,10 +30,10 @@ type ConsentResult =
 type RevokeResult = Readonly<{ status: "withdrawing" }> | Readonly<{ status: "forbidden" }>;
 
 const NOTICE = [
-  "はじめまして、ミルだよ！",
+  `はじめまして、${MASCOT_NAME}だよ！`,
   "このサーバーのみんなの思い出をさがせるように、過去ログを読ませてもらうね。",
-  "読むのは **ミルが見られるチャンネル** だけだよ。",
-  `ミルの使い方はここを見てね → ${SITE_ORIGIN}/#start`,
+  `読むのは **${MASCOT_NAME}が見られるチャンネル** だけだよ。`,
+  `${MASCOT_NAME}の使い方はここを見てね → ${SITE_ORIGIN}/#start`,
   `読んだ内容の扱いはここを見てね → ${SITE_ORIGIN}${PRIVACY_PATH}`,
 ].join("\n");
 

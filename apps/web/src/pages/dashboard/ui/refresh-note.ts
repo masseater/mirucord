@@ -2,6 +2,7 @@ import type { UseQueryResult } from "@tanstack/react-query";
 import { Option } from "effect";
 
 import type { RefreshOutcome } from "#/pages/dashboard/api/dashboard";
+import { MASCOT_NAME } from "#/shared/config";
 
 type RefreshView =
   | Readonly<{ status: "waiting" }>
@@ -13,7 +14,7 @@ const IDLE_LABEL = "更新";
 
 const LABEL: Readonly<Record<RefreshView["status"], string>> = {
   waiting: IDLE_LABEL,
-  looking: "ミルが見てくるね",
+  looking: `${MASCOT_NAME}が見てくるね`,
   failed: IDLE_LABEL,
   done: IDLE_LABEL,
 };

@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 
 import type { GuildListing } from "#/pages/dashboard/api/dashboard.server";
+import { MASCOT_NAME } from "#/shared/config";
 import { Panel } from "#/shared/ui/panel";
 
 import { ReadableGuildList } from "./readable-guild-list";
 
-const TITLE = "ミルがさがせるサーバー";
+const TITLE = `${MASCOT_NAME}がさがせるサーバー`;
 const UNAVAILABLE = "サーバーを確かめられませんでした。時間をおいて開き直してください。";
 
 const ReadableGuildPanel = ({ listing }: Readonly<{ listing: GuildListing }>): ReactNode => (

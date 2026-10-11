@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 
+import { MASCOT_NAME } from "#/shared/config";
+
 import cutinMiru from "./cutin-miru.svg";
 
-const LEAD = "ミルが";
+const LEAD = `${MASCOT_NAME}が`;
 const TITLE = ["ぜんぶ集めて", "くるよ！"] as const;
 
 const CutIn = (): ReactNode => (

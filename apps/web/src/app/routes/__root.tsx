@@ -2,6 +2,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext } from "@tanstack/react-router";
 
 import { RootDocument } from "#/app/shell/root-document";
+import { SERVICE_NAME } from "#/shared/config";
 
 import appCss from "#/app/styles.css?url";
 
@@ -15,7 +16,7 @@ const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
       { charSet: "utf8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "color-scheme", content: "light dark" },
-      { title: "mirucord" },
+      { title: SERVICE_NAME },
     ],
     links: [
       { rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },

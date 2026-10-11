@@ -1,12 +1,14 @@
 import { useId } from "react";
 import type { ReactNode } from "react";
 
+import { MASCOT_NAME } from "#/shared/config";
+
 import { AiNode } from "./ai-node";
 import { FlowCarry } from "./flow-carry";
 import { MiruNode } from "./miru-node";
 import { ServerNode } from "./server-node";
 
-const LABEL = "みんなのサーバーの会話をミルが預かって AI に届ける図";
+const LABEL = `みんなのサーバーの会話を${MASCOT_NAME}が預かって AI に届ける図`;
 const PROTOCOL = "MCP";
 const AI_CAPTION = "話しかけるだけ";
 

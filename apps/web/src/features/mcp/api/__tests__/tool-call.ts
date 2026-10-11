@@ -2,6 +2,7 @@ import { createMcpHandler } from "@modelcontextprotocol/server";
 import { Effect, Option, Schema } from "effect";
 
 import { buildServer } from "#/features/mcp/api/tools.server";
+import { SITE_ORIGIN } from "#/shared/config";
 
 import { USER } from "./scenario";
 
@@ -40,7 +41,7 @@ type ToolOutcome = Readonly<{ text: string; isError: boolean; structured: Option
 type ListingKey = keyof typeof Listing.Type;
 
 const requestOf = (body: string): Request =>
-  new Request("https://mirucord.test/mcp", {
+  new Request(`${SITE_ORIGIN}/mcp`, {
     method: "POST",
     headers: { "content-type": "application/json", accept: "application/json, text/event-stream" },
     body,

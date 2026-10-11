@@ -1,6 +1,7 @@
 import { CHANNELS } from "#/pages/home/ui/common/channels";
 import { GUIDE_CHANNELS } from "#/pages/home/ui/common/guide-channels";
 import type { Place, PlaceId } from "#/pages/home/ui/common/places";
+import { SERVICE_NAME } from "#/shared/config";
 
 type Activity =
   | Readonly<{ status: "read" }>
@@ -55,7 +56,7 @@ const CATEGORIES: readonly SidebarCategory[] = [
   },
   {
     state: "open",
-    name: "mirucord",
+    name: SERVICE_NAME,
     rows: [
       { type: "link", channel: how },
       { type: "link", channel: features },

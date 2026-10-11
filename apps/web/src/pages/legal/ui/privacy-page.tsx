@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { SERVICE_NAME } from "#/shared/config";
+
 import { LegalDocument } from "./legal-document";
 
 const TITLE = "プライバシーポリシー";
@@ -8,7 +10,7 @@ const SECTIONS = [
   {
     heading: "第1条（総則）",
     paragraphs: [
-      "masseater（以下「運営者」という。）は、運営者が提供するサービス「mirucord」（以下「本サービス」という。）における情報の取扱いについて、本プライバシーポリシー（以下「本ポリシー」という。）を定める。本ポリシーで用いる用語の意義は、本サービスの利用規約の定めによる。",
+      `masseater（以下「運営者」という。）は、運営者が提供するサービス「${SERVICE_NAME}」（以下「本サービス」という。）における情報の取扱いについて、本プライバシーポリシー（以下「本ポリシー」という。）を定める。本ポリシーで用いる用語の意義は、本サービスの利用規約の定めによる。`,
     ],
   },
   {

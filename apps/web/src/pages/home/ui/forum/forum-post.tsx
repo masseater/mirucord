@@ -1,13 +1,14 @@
 import type { ReactNode } from "react";
 
 import type { Member } from "#/pages/home/ui/common/members";
+import { MASCOT_NAME } from "#/shared/config";
 import { cn } from "#/shared/lib/utils";
 
 import { ForumTag } from "./forum-tag";
 
 const REPLIES = "💬";
 const REPLIES_LABEL = "返信";
-const READ = "ミルがよんだよ";
+const READ = `${MASCOT_NAME}がよんだよ`;
 
 const ForumPost = ({
   tags,

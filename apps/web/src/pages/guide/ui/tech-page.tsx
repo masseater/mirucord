@@ -1,12 +1,13 @@
 import type { ReactNode } from "react";
 
+import { MASCOT_NAME, SERVICE_NAME } from "#/shared/config";
+
 import type { GuideSection } from "./guide-block";
 import { GuideDocument } from "./guide-document";
 
 const TITLE = "技術の話";
-const TIP = "ミルの中身を見せちゃうよ";
-const LEAD =
-  "mirucord の構成、データの流れ、権限と同意の設計、検索の仕組みをまとめました。Cloudflare Workers と MCP をなんとなく知っている人に向けて書いています。";
+const TIP = `${MASCOT_NAME}の中身を見せちゃうよ`;
+const LEAD = `${SERVICE_NAME} の構成、データの流れ、権限と同意の設計、検索の仕組みをまとめました。Cloudflare Workers と MCP をなんとなく知っている人に向けて書いています。`;
 
 const SECTIONS: readonly GuideSection[] = [
   {
@@ -14,7 +15,7 @@ const SECTIONS: readonly GuideSection[] = [
     blocks: [
       {
         type: "text",
-        text: "mirucord は、Cloudflare Workers で動く 1 つの Worker と、Discord の Gateway につなぎっぱなしにする fly.io の Machine 1 台でできています。Web 画面、MCP サーバー、取り込みの処理は、すべて同じ Worker が受け持ちます。",
+        text: `${SERVICE_NAME} は、Cloudflare Workers で動く 1 つの Worker と、Discord の Gateway につなぎっぱなしにする fly.io の Machine 1 台でできています。Web 画面、MCP サーバー、取り込みの処理は、すべて同じ Worker が受け持ちます。`,
       },
       {
         type: "flow",

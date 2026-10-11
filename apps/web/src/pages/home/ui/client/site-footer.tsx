@@ -1,12 +1,19 @@
 import type { ReactNode } from "react";
 
-import { PRIVACY_PATH, SELF_HOST_PATH, SITE_HOST, TECH_PATH, TERMS_PATH } from "#/shared/config";
+import {
+  PRIVACY_PATH,
+  SELF_HOST_PATH,
+  SERVICE_NAME,
+  SITE_HOST,
+  TECH_PATH,
+  TERMS_PATH,
+} from "#/shared/config";
 
 const PRIVACY = "プライバシーポリシー";
 const TERMS = "利用規約";
 const TECH = "技術の話";
 const SELF_HOST = "セルフホスト";
-const NOTICE = "Discord は Discord Inc. の商標です。mirucord は Discord Inc. とは関係ありません。";
+const NOTICE = `Discord は Discord Inc. の商標です。${SERVICE_NAME} は Discord Inc. とは関係ありません。`;
 
 const SiteFooter = (): ReactNode => (
   <footer className="bg-dc-chat text-dc-muted border-dc-line flex flex-wrap gap-x-6 gap-y-2 border-t px-4 py-6 text-xs">

@@ -48,7 +48,7 @@ const operationsEnv = Config.all({
 
 type WorkerIssuesResource = Resource<
   typeof WORKER_ISSUES,
-  Readonly<{ workerName: string }>,
+  Readonly<{ workerName: string; deployment: unknown }>,
   Readonly<{ accountId: string; workerName: string }>
 >;
 
@@ -260,8 +260,8 @@ export default Stack(
     state: state(),
   },
   Effect.gen(function* stack() {
-    const { url, workerName } = yield* web;
-    yield* WorkerIssues("WorkerIssues", { workerName });
+    const { url, workerName, hash } = yield* web;
+    yield* WorkerIssues("WorkerIssues", { workerName, deployment: hash });
     return { url };
   }),
 );

@@ -6,7 +6,7 @@ import { GatewayIntentBits } from "discord-api-types/v10";
 import { Config, Effect, Option, Queue, Redacted, Stream } from "effect";
 
 import { toGatewayJob } from "#/features/ingest";
-import type { GatewayJob } from "#/features/ingest/model/ingest-job";
+import type { GatewayJob } from "#/features/ingest";
 
 import { makeDeliver } from "./deliver";
 

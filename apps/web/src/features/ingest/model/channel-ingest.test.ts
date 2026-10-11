@@ -34,6 +34,10 @@ it("follows the backfill once consent covers a channel the bot can read", () => 
   expect(ingestOf(GRANTED, row("readable", CHANNEL))).toBe("backfilling");
 });
 
+it("finishes a channel whose history holds no messages", () => {
+  expect(ingestOf(GRANTED, { ...row("readable", EMPTY), backfill: "done" })).toBe("done");
+});
+
 const FORUM = { botAccess: "readable" as const };
 const DONE_POST: IngestRow = { ...row("readable", CHANNEL), backfill: "done" };
 

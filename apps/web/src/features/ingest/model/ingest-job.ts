@@ -9,11 +9,42 @@ const WithdrawJobSchema = Schema.Struct({
   guildId: Schema.String,
 });
 
-const QueueJobSchema = Schema.Union([WithdrawJobSchema, IngestJobSchema]);
+const MessageIdsSchema = Schema.NonEmptyArray(Schema.String);
+
+const RefreshJobSchema = Schema.Struct({
+  kind: Schema.Literal("refresh"),
+  guildId: Schema.String,
+  channelId: Schema.String,
+  messageIds: MessageIdsSchema,
+});
+
+const ForgetJobSchema = Schema.Struct({
+  kind: Schema.Literal("forget"),
+  guildId: Schema.String,
+  channelId: Schema.String,
+  messageIds: MessageIdsSchema,
+});
+
+const GatewayJobSchema = Schema.Union([RefreshJobSchema, ForgetJobSchema]);
+
+const QueueJobSchema = Schema.Union([
+  WithdrawJobSchema,
+  RefreshJobSchema,
+  ForgetJobSchema,
+  IngestJobSchema,
+]);
 
 type IngestJob = typeof IngestJobSchema.Type;
 
+type GatewayJob = typeof GatewayJobSchema.Type;
+
+type RefreshJob = typeof RefreshJobSchema.Type;
+
+type ForgetJob = typeof ForgetJobSchema.Type;
+
+type WithdrawJob = typeof WithdrawJobSchema.Type;
+
 type QueueJob = typeof QueueJobSchema.Type;
 
-export { INGEST_MAX_RETRIES, QueueJobSchema };
-export type { IngestJob, QueueJob };
+export { GatewayJobSchema, INGEST_MAX_RETRIES, QueueJobSchema };
+export type { ForgetJob, GatewayJob, IngestJob, QueueJob, RefreshJob, WithdrawJob };

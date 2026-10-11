@@ -4,6 +4,7 @@ export { grantConsent, revokeConsent } from "./api/guild-consent.server";
 export type { ConsentResult, RevokeResult } from "./api/guild-consent.server";
 export { guildSettings } from "./api/guild-settings.server";
 export type { Consent, GuildSettings, SettingsChannel } from "./api/guild-settings.server";
+export { receiveGatewayEvent } from "./api/gateway-event.server";
 export { ingestDeliveries } from "./api/ingest-queue.server";
 export { purgePausedChannel } from "./api/purge-paused.server";
 export type { PurgeResult } from "./api/purge-paused.server";

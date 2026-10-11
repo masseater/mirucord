@@ -185,6 +185,9 @@ catalogs:
     '@commitlint/config-conventional':
       specifier: 21.2.3
       version: 21.2.3
+    '@discordeno/gateway':
+      specifier: 21.0.0
+      version: 21.0.0
     '@discordeno/rest':
       specifier: 21.0.0
       version: 21.0.0
@@ -209,6 +212,9 @@ catalogs:
     '@sapphire/bitfield':
       specifier: 1.2.4
       version: 1.2.4
+    '@sapphire/snowflake':
+      specifier: 3.5.5
+      version: 3.5.5
     '@shadcn/lint':
       specifier: 0.2.0
       version: 0.2.0
@@ -475,6 +481,9 @@ importers:
       '@better-auth/oauth-provider':
         specifier: 'catalog:'
         version: 1.7.7(patch_hash=f8820f4f992e2ddeaf073ce9c85bac4d8cc04a12f515043b6ef2981df704d020)(@better-auth/core@1.7.7(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.2)(@opentelemetry/api@1.9.1)(better-call@1.4.0(zod@3.25.76))(jose@6.2.12)(kysely@0.29.6)(nanostores@1.5.4))(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.2)(better-auth@1.7.7(94215ae2de0b29509a24b6d6b209c931))(better-call@1.4.0(zod@3.25.76))
+      '@discordeno/gateway':
+        specifier: 'catalog:'
+        version: 21.0.0
       '@discordeno/rest':
         specifier: 'catalog:'
         version: 21.0.0
@@ -493,6 +502,9 @@ importers:
       '@sapphire/bitfield':
         specifier: 'catalog:'
         version: 1.2.4
+      '@sapphire/snowflake':
+        specifier: 'catalog:'
+        version: 3.5.5
       '@tanstack/react-devtools':
         specifier: 0.10.13
         version: 0.10.13(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(csstype@3.2.3)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(solid-js@1.9.15)
@@ -1336,6 +1348,9 @@ packages:
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
+
+  '@discordeno/gateway@21.0.0':
+    resolution: {integrity: sha512-ur5Hatd1x86PPI4UnXKghAWat3vS90NvLJcpOSu1B1gYSENRZow8dohZ8Ov58SXWq5nZVuBYDJNCR248pWJvrg==}
 
   '@discordeno/rest@21.0.0':
     resolution: {integrity: sha512-ew5ddhUd7Qyv/GSzCy42bEmRv0yr2PspCMsLD/NeMiTLd3+OrVN5pAxBN9z+9JpS/daiiD/PVmvuUAVx/nXTEw==}
@@ -3580,6 +3595,10 @@ packages:
 
   '@sapphire/bitfield@1.2.4':
     resolution: {integrity: sha512-x0Zvb5jbn8A9fOdWksvxPuXdHGzk6v0Z5ogcYKKg06Az/Ih2WupKZ88CIX1/pZWk6vBWqH5LAU0lOVtEaw7D/A==}
+    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+
+  '@sapphire/snowflake@3.5.5':
+    resolution: {integrity: sha512-xzvBr1Q1c4lCe7i6sRnrofxeO1QTP/LKQ6A6qy0iB4x5yfiSfARMEQEghojzTNALDTcv8En04qYNIco9/K9eZQ==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
   '@sec-ant/readable-stream@0.4.1':
@@ -6481,6 +6500,9 @@ packages:
 
   functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
+
+  fzstd@0.1.1:
+    resolution: {integrity: sha512-dkuVSOKKwh3eas5VkJy1AW1vFpet8TA/fGmVA5krThl8YcOVE/8ZIoEA1+U1vEn5ckxxhLirSdY837azmbaNHA==}
 
   gaxios@7.1.3:
     resolution: {integrity: sha512-YGGyuEdVIjqxkxVH1pUTMY/XtmmsApXrCVv5EU25iX6inEPbV+VakJfLealkBtJN69AQmh1eGOdCl9Sm1UP6XQ==}
@@ -10654,6 +10676,17 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
+  '@discordeno/gateway@21.0.0':
+    dependencies:
+      '@discordeno/types': 21.0.0
+      '@discordeno/utils': 21.0.0
+      ws: 8.22.0
+    optionalDependencies:
+      fzstd: 0.1.1
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@discordeno/rest@21.0.0':
     dependencies:
       '@discordeno/types': 21.0.0
@@ -12452,6 +12485,8 @@ snapshots:
   '@rolldown/pluginutils@1.0.1': {}
 
   '@sapphire/bitfield@1.2.4': {}
+
+  '@sapphire/snowflake@3.5.5': {}
 
   '@sec-ant/readable-stream@0.4.1': {}
 
@@ -15823,6 +15858,9 @@ snapshots:
       is-document.all: 1.0.0
 
   functions-have-names@1.2.3: {}
+
+  fzstd@0.1.1:
+    optional: true
 
   gaxios@7.1.3(supports-color@7.2.0):
     dependencies:

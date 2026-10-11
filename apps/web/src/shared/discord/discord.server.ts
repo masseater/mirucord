@@ -218,17 +218,23 @@ const listMessages: {
   ): Effect.Effect<readonly DiscordMessage[], DiscordRequestError>;
 } = Function.dual(DATA_FIRST_ARITY, listMessagesDataFirst);
 
-const findMemberDataFirst = (
-  guildId: string,
-  userId: string,
-): Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError> =>
-  callDiscord(Member, () => send("GET", Routes.guildMember(guildId, userId))).pipe(
+const findDiscord = <Body extends Schema.Top>(
+  schema: Body,
+  route: string,
+): Effect.Effect<Option.Option<Body["Type"]>, DiscordRequestError, Body["DecodingServices"]> =>
+  callDiscord(schema, () => send("GET", route)).pipe(
     Effect.asSome,
     Effect.catchIf(
       (error) => Option.contains(error.status, NOT_FOUND),
       () => Effect.succeedNone,
     ),
   );
+
+const findMemberDataFirst = (
+  guildId: string,
+  userId: string,
+): Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError> =>
+  findDiscord(Member, Routes.guildMember(guildId, userId));
 
 const findMember: {
   (
@@ -240,10 +246,27 @@ const findMember: {
   ): Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError>;
 } = Function.dual(DATA_FIRST_ARITY, findMemberDataFirst);
 
+const findMessageDataFirst = (
+  channelId: string,
+  messageId: string,
+): Effect.Effect<Option.Option<DiscordMessage>, DiscordRequestError> =>
+  findDiscord(Message, Routes.channelMessage(channelId, messageId));
+
+const findMessage: {
+  (
+    messageId: string,
+  ): (channelId: string) => Effect.Effect<Option.Option<DiscordMessage>, DiscordRequestError>;
+  (
+    channelId: string,
+    messageId: string,
+  ): Effect.Effect<Option.Option<DiscordMessage>, DiscordRequestError>;
+} = Function.dual(DATA_FIRST_ARITY, findMessageDataFirst);
+
 export {
   DiscordRequestError,
   FORBIDDEN,
   findMember,
+  findMessage,
   getBotUserId,
   getGuild,
   leaveGuild,

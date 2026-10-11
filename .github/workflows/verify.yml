@@ -111,6 +111,21 @@ jobs:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           MAX_GUILDS: ${{ vars.MAX_GUILDS }}
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+      - id: fly
+        run: |
+          if [ -n "$FLY_API_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - if: steps.fly.outputs.enabled == 'true'
+        working-directory: apps/web
+        run: vp exec alchemy deploy alchemy.gateway.ts --stage prod --yes --no-input
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
 
   release:
     needs: verify

@@ -1,3 +1,4 @@
+import { DiscordSnowflake } from "@sapphire/snowflake";
 import { and, eq, gte, inArray, lte } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
@@ -47,16 +48,8 @@ const channelMessagesSince = ({
       ),
   ).pipe(Effect.map((rows) => rows.map(({ id }) => id)));
 
-const DISCORD_EPOCH = 1_420_070_400_000n;
-const TIMESTAMP_UNIT = 4_194_304n;
-
-const timeOf = (id: string): Date => {
-  const millis = Number(BigInt(id) / TIMESTAMP_UNIT + DISCORD_EPOCH);
-  return DateTime.toDate(DateTime.makeUnsafe(millis));
-};
-
-const isAtOrAbove = (id: string, from: Option.Option<string>): boolean =>
-  Option.match(from, { onNone: () => true, onSome: (oldest) => BigInt(id) >= BigInt(oldest) });
+const timeOf = (id: string): Date =>
+  DateTime.toDate(DateTime.makeUnsafe(DiscordSnowflake.timestampFrom(id)));
 
 const sinceOldest = (from: Option.Option<string>): readonly SQL[] =>
   Option.match(from, {
@@ -78,7 +71,9 @@ const channelMessagesBelow = ({
     lte(message.createdAt, timeOf(below)),
     ...sinceOldest(from),
   ];
-  const isWithin = (id: string): boolean => BigInt(id) < BigInt(below) && isAtOrAbove(id, from);
+  const isWithin = (id: string): boolean =>
+    BigInt(id) < BigInt(below) &&
+    Option.match(from, { onNone: () => true, onSome: (oldest) => BigInt(id) >= BigInt(oldest) });
   return Effect.promise(() =>
     db
       .select({ id: message.id })
@@ -86,6 +81,19 @@ const channelMessagesBelow = ({
       .where(and(...conditions)),
   ).pipe(Effect.map((rows) => rows.map(({ id }) => id).filter((id) => isWithin(id))));
 };
+
+const storedInChannel = ({
+  channelId,
+  ids,
+}: Readonly<{ channelId: string; ids: readonly string[] }>): Effect.Effect<readonly string[]> =>
+  inIdChunks({
+    ids,
+    run: (chunk) =>
+      db
+        .select({ id: message.id })
+        .from(message)
+        .where(and(eq(message.channelId, channelId), inArray(message.id, [...chunk]))),
+  }).pipe(Effect.map((chunks) => chunks.flat().map(({ id }) => id)));
 
 const MESSAGE_OWNER = { guild: message.guildId, channel: message.channelId } as const;
 
@@ -121,6 +129,7 @@ export {
   findStored,
   forgetChannelMessages,
   forgetGuildMessages,
+  storedInChannel,
 };
 export type { StoredMessage };
 export type { VectorizeError } from "./vectors.server";

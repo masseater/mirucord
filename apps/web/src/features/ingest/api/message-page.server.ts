@@ -33,6 +33,19 @@ const idsOf = (page: readonly DiscordMessage[]): readonly string[] => page.map((
 
 const isFullPage = (page: readonly DiscordMessage[]): boolean => page.length >= PAGE_SIZE;
 
+const storeConsented = ({
+  page,
+  ...target
+}: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<void, StoreError> =>
+  loadScope(target.job.guildId).pipe(
+    Effect.flatMap((scope) => {
+      if (scope.status === "awaiting") {
+        return Effect.void;
+      }
+      return storeMessages({ ...target, page });
+    }),
+  );
+
 const fetchAndStore = ({
   target,
   request,
@@ -41,18 +54,9 @@ const fetchAndStore = ({
   IngestError
 > =>
   listMessages(target.job.channelId, request).pipe(
-    Effect.tap((page) =>
-      loadScope(target.job.guildId).pipe(
-        Effect.flatMap((scope) => {
-          if (scope.status === "awaiting") {
-            return Effect.void;
-          }
-          return storeMessages({ ...target, page });
-        }),
-      ),
-    ),
+    Effect.tap((page) => storeConsented({ ...target, page })),
   );
 
-export { fetchAndStore, idsOf, isFullPage, isNewerThan, newestId, oldestId };
+export { fetchAndStore, idsOf, storeConsented, isFullPage, isNewerThan, newestId, oldestId };
 export type { IngestError };
 export type { StoreTarget } from "./store-messages.server";

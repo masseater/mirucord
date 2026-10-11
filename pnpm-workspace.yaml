@@ -38,6 +38,7 @@ catalog:
   "@discordeno/rest": 21.0.0
   "@modelcontextprotocol/server": 2.3.1
   "@sapphire/bitfield": 1.2.4
+  "@sapphire/snowflake": 3.5.5
   discord-api-types: 0.38.56
   "@better-auth/mcp": 1.7.7
   jose: 6.2.12
@@ -50,6 +51,7 @@ catalog:
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
   usehooks-ts: ^3.1.1
+  "@discordeno/gateway": 21.0.0
 catalogs:
   stack:
     "@effect/atom-react": 4.0.0

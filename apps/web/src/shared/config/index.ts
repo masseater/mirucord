@@ -9,3 +9,4 @@ export {
   TECH_PATH,
   TERMS_PATH,
 } from "./site";
+export { FREE_GUILD_LIMIT } from "./plan";

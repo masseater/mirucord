@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { Effect, Option, Schema } from "effect";
+import { Array, Effect, Option, Schema } from "effect";
 import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
 import {
@@ -57,6 +57,19 @@ const notFullyIngestedOf = (
   outcome.pipe(
     Effect.flatMap(({ structured }) => decodeSearchIngest(Option.getOrUndefined(structured))),
     Effect.map(({ notFullyIngested }) => notFullyIngested.map(({ channelId }) => channelId)),
+    Effect.orDie,
+  );
+
+const FoundIds = Schema.Array(Schema.Struct({ id: Schema.String }));
+const Found = Schema.Struct({ total: Schema.Finite, messages: FoundIds });
+const decodeFound = Schema.decodeUnknownEffect(Found);
+
+const foundOf = (
+  outcome: Effect.Effect<ToolOutcome>,
+): Effect.Effect<Readonly<{ total: number; ids: readonly string[] }>> =>
+  outcome.pipe(
+    Effect.flatMap(({ structured }) => decodeFound(Option.getOrUndefined(structured))),
+    Effect.map(({ total, messages }) => ({ total, ids: messages.map(({ id }) => id) })),
     Effect.orDie,
   );
 
@@ -126,19 +139,18 @@ it.effect("does not report a category as a channel still being stored", () =>
   }),
 );
 
-it.effect("refuses to search an unreadable channel or one from another server", () =>
+it.effect("refuses to search an unreadable channel, its threads or one from another server", () =>
   Effect.gen(function* searchRefused() {
-    const outcomes = yield* Effect.all([
-      callTool({
-        name: "search_messages",
-        args: { serverId: GUILD_A, query: SAME_WORDS, channelId: A_STAFF },
-      }),
-      callTool({
-        name: "search_messages",
-        args: { serverId: GUILD_A, query: SAME_WORDS, channelId: B_OPEN },
-      }),
-    ]);
-    expect(outcomes).toStrictEqual([REFUSED, REFUSED]);
+    const outcomes = yield* Effect.forEach(
+      ["search_messages", "find_messages"].flatMap((name) =>
+        [A_STAFF, A_STAFF_THREAD, A_PRIVATE_THREAD, B_OPEN].map((channelId) => ({
+          name,
+          args: { serverId: GUILD_A, query: SAME_WORDS, channelId },
+        })),
+      ),
+      callTool,
+    );
+    expect(outcomes).toStrictEqual(Array.replicate(REFUSED, outcomes.length));
   }),
 );
 
@@ -154,6 +166,19 @@ it.effect("searches a readable channel without its private threads", () =>
       returnMetadata: "none",
       filter: { guildId: GUILD_A, channelId: { $in: [A_OPEN] } },
     });
+  }),
+);
+
+it.effect("counts keyword matches only in the channels the user can read", () =>
+  Effect.gen(function* find() {
+    const found = yield* Effect.all([
+      foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "オフ会" } })),
+      foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "飲み会" } })),
+    ]);
+    expect(found).toStrictEqual([
+      { total: 1, ids: [A_OPEN_MESSAGE] },
+      { total: 0, ids: [] },
+    ]);
   }),
 );
 
@@ -181,7 +206,14 @@ it.effect("returns no messages from a server whose admin has not consented or wi
       ],
       (args) => idsOf("messages")(callTool({ name: "read_messages", args })),
     );
+    const counted = yield* Effect.forEach([GUILD_B, GUILD_D], (serverId) =>
+      foundOf(callTool({ name: "find_messages", args: { serverId, query: "オフ会" } })),
+    );
     expect([...found, ...read]).toStrictEqual([[], [], [], []]);
+    expect(counted).toStrictEqual([
+      { total: 0, ids: [] },
+      { total: 0, ids: [] },
+    ]);
   }),
 );
 

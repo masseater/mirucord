@@ -1,4 +1,4 @@
-import { Resource, Stack, makeRandom } from "alchemy";
+import { Resource, Stack, Stage, makeRandom } from "alchemy";
 import {
   CloudflareEnvironment,
   Credentials,
@@ -13,7 +13,7 @@ import {
 } from "alchemy/Cloudflare";
 import type { InferEnv } from "alchemy/Cloudflare";
 import { succeed as succeedProvider } from "alchemy/Provider";
-import { Config, Effect, Layer, Match, Option, Redacted, Schema } from "effect";
+import { Boolean, Config, Effect, Layer, Match, Option, Redacted, Schema } from "effect";
 import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
@@ -23,6 +23,8 @@ import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;
+const WORKER_NAME = "mirucord-web";
+const PRODUCTION_STAGE = "prod";
 const NOT_FOUND = 404;
 const WORKER_ISSUES = "Mirucord.WorkerIssues";
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);
@@ -201,6 +203,14 @@ const masterKey = Effect.gen(function* masterKey() {
   });
 });
 
+const stageWorkerName = Effect.gen(function* stageWorkerName() {
+  const stage = yield* Stage;
+  return Boolean.match(stage === PRODUCTION_STAGE, {
+    onTrue: () => WORKER_NAME,
+    onFalse: () => `${WORKER_NAME}-${stage}`,
+  });
+});
+
 const settings = Effect.gen(function* settings() {
   const discord = yield* discordEnv;
   const release = yield* releaseVersion;
@@ -221,6 +231,7 @@ const web = Effect.gen(function* web() {
   const MASTER_KEY = yield* masterKey;
   const { discord, release, operations } = yield* settings;
   const site = yield* Website.Vite("Web", {
+    name: yield* stageWorkerName,
     main: "src/app/server/index.ts",
     domain: SITE_HOST,
     crons: [POLL_CRON, SYNC_CRON],

@@ -92,19 +92,17 @@ vp exec wrangler tail <Worker 名>
 | `DISCORD_BOT_TOKEN`     | 本番の Bot のトークン                                                                                                 |
 
 Workers Observability は、ログを検索する API が書き込み権限を求めるので Write にする。D1 には書き込めない。
-D1 は wrangler で読む。本番の D1 は名前に `dbapac` を含む方である。
-wrangler には過去のログを検索するコマンドがないので、Workers Logs は API を直接呼ぶ。Discord も同じである。
+
+D1・Vectorize・Workers Logs は、`.mcp.json` にある Cloudflare 公式の MCP で読む。
+`cloudflare-api` は Cloudflare API を呼べるので D1 のクエリと Vectorize の検索に使い、`cloudflare-observability` で Workers Logs を検索する。
+どちらも `.claude/hooks/cloudflare-mcp-headers.ts` が Alchemy の認証解決を通して `CLOUDFLARE_API_TOKEN` をヘッダーに渡す。
+本番の D1 は名前に `dbapac` を含む方である。
+
+Discord は、アプリが使っている `@discordeno/rest` で読む。
 
 ```sh
-vp dlx -s wrangler d1 list --json | jq -r '.[].name'
-vp dlx -s wrangler d1 execute <データベース名> --remote --json --command "SELECT count(*) AS n FROM message WHERE channel_id = '<チャンネル ID>'"
-
-now=$(date +%s000)
-curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
-  "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/observability/telemetry/query" \
-  -d "{\"queryId\":\"adhoc\",\"view\":\"events\",\"limit\":50,\"timeframe\":{\"from\":$((now - 86400000)),\"to\":$now},\"parameters\":{\"filters\":[{\"key\":\"\$metadata.level\",\"operation\":\"eq\",\"type\":\"string\",\"value\":\"error\"}]}}" | jq '.result.events.events'
-
-curl -sS -H "Authorization: Bot $DISCORD_BOT_TOKEN" "https://discord.com/api/v10/channels/<チャンネル ID>/messages?limit=5" | jq length
+cd apps/web
+node --input-type=module -e "import { createRestManager } from '@discordeno/rest'; const rest = createRestManager({ token: process.env.DISCORD_BOT_TOKEN }); console.log((await rest.getMessages('<チャンネル ID>', { limit: 5 })).length)"
 ```
 
 デプロイは main の CI に任せる。出し直すときは GitHub の MCP で `verify` ワークフローを `main` に対して動かす。

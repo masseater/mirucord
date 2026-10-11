@@ -1,15 +1,16 @@
 import { useAtom } from "@effect/atom-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import type { UseMutationResult } from "@tanstack/react-query";
 import { Atom } from "effect/reactivity";
 import { useCallback } from "react";
 
 import type { ConsentResult, GuildSettings } from "#/features/ingest/index.server";
-import { dashboardQuery, saveConsent } from "#/pages/dashboard/api/dashboard";
+import { saveConsent } from "#/pages/dashboard/api/dashboard";
 import type { ConsentInput } from "#/pages/dashboard/api/dashboard.server";
 
 import { NO_CHANNEL, noticeChannelOf, UNTOUCHED } from "./consent-draft";
 import type { ConsentDraft } from "./consent-draft";
+import { useReturnToDashboard } from "./use-return-to-dashboard";
 
 type ConsentForm = Readonly<{
   noticeChannelId: string;
@@ -30,14 +31,15 @@ const consentDraftAtom = Atom.family((guildId: string) =>
 const useConsentForm = (settings: GuildSettings): ConsentForm => {
   const [draft, setDraft] = useAtom(consentDraftAtom(settings.id));
   const noticeChannelId = noticeChannelOf(settings, draft);
-  const queryClient = useQueryClient();
+  const returnToDashboard = useReturnToDashboard();
   const mutation = useMutation({
     mutationFn: saveConsent,
     onSuccess: (result) => {
-      if (result.status === "saved") {
-        setDraft(UNTOUCHED);
+      if (result.status !== "saved") {
+        return returnToDashboard("stay");
       }
-      return queryClient.invalidateQueries({ queryKey: dashboardQuery.queryKey });
+      setDraft(UNTOUCHED);
+      return returnToDashboard("leave");
     },
   });
   const { mutate } = mutation;

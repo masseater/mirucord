@@ -29,7 +29,7 @@ const DashboardView = ({ dashboard }: Readonly<{ dashboard: ReadyDashboard }>): 
     <ReadableGuildPanel listing={dashboard.readable} />
     <ConnectedAppPanel apps={dashboard.apps} />
     <AccountPanel name={dashboard.name} />
-    <hr className="border-ink border-t-2 border-dashed" />
+    <hr className="border-dc-line border-t border-dashed" />
     <GuildList guilds={dashboard.guilds} inviteUrl={dashboard.inviteUrl} />
   </>
 );

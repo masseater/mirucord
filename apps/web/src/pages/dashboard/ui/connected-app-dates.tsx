@@ -1,17 +1,12 @@
 import { Option } from "effect";
 import type { ReactNode } from "react";
 
+import { dateFormat } from "#/pages/dashboard/model/date-format";
 import type { ConnectedApp } from "#/shared/auth/index.server";
 
 const CONNECTED_AT = "つないだ日時";
 const UPDATED_AT = "更新日時";
 const UNKNOWN = "不明";
-
-const dateFormat = new Intl.DateTimeFormat("ja-JP", {
-  dateStyle: "long",
-  timeStyle: "short",
-  timeZone: "Asia/Tokyo",
-});
 
 const formatted = (epoch: number | null): string =>
   Option.match(Option.fromNullOr(epoch), {

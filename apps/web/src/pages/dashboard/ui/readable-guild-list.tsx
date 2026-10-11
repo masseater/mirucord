@@ -1,7 +1,7 @@
 import { Array } from "effect";
 import type { ReactNode } from "react";
 
-import type { ReadableGuild } from "#/pages/settings/api/settings.server";
+import type { ReadableGuild } from "#/pages/dashboard/api/dashboard.server";
 
 import { ReadableGuildRow } from "./readable-guild-row";
 

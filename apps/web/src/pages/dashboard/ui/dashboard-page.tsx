@@ -5,7 +5,7 @@ import { dashboardQuery } from "#/pages/dashboard/api/dashboard";
 import { DASHBOARD_PATH } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 
-import { GuildList } from "./guild-list";
+import { DashboardView } from "./dashboard-view";
 import { SignInPanel } from "./sign-in-panel";
 
 const DashboardPage = (): ReactNode => {
@@ -13,7 +13,7 @@ const DashboardPage = (): ReactNode => {
   return (
     <AppFrame>
       {data.status === "signedOut" && <SignInPanel returnTo={DASHBOARD_PATH} />}
-      {data.status === "ready" && <GuildList guilds={data.guilds} inviteUrl={data.inviteUrl} />}
+      {data.status === "ready" && <DashboardView dashboard={data} />}
     </AppFrame>
   );
 };

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { GuildListing } from "#/pages/settings/api/settings.server";
+import type { GuildListing } from "#/pages/dashboard/api/dashboard.server";
 import { Panel } from "#/shared/ui/panel";
 
 import { ReadableGuildList } from "./readable-guild-list";

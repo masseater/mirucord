@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { SignInPanel as DiscordSignInPanel } from "#/features/sign-in";
 
-const TIP = "サーバーの管理者さん向けだよ";
+const TIP = "おかえり！";
 const TITLE = "ログインして管理画面へ";
 
 const SignInPanel = ({ returnTo }: Readonly<{ returnTo: string }>): ReactNode => (

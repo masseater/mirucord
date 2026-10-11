@@ -33,8 +33,5 @@ const signedInUser = (request: Request): Effect.Effect<Option.Option<SignedInUse
     ),
   );
 
-const signedInDiscordUser = (request: Request): Effect.Effect<Option.Option<string>> =>
-  signedInUser(request).pipe(Effect.map(Option.map(({ discordUserId }) => discordUserId)));
-
-export { discordUserIdOf, signedInDiscordUser, signedInUser };
+export { discordUserIdOf, signedInUser };
 export type { SignedInUser };

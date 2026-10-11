@@ -13,7 +13,7 @@ const ForumPostList = ({
   const view = forumPostsViewOf(useQuery(forumPostsQuery({ guildId, channelId })));
   if (view.status !== "listed") {
     return (
-      <p aria-live="polite" className="text-ink-soft text-sm font-bold">
+      <p aria-live="polite" className="text-dc-muted text-sm font-bold">
         {forumPostsNote(view)}
       </p>
     );

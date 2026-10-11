@@ -20,22 +20,22 @@ const dateFormat = new Intl.DateTimeFormat("ja-JP", {
 const ConsentRecord = ({ consent }: Readonly<{ consent: Consent }>): ReactNode => {
   if (consent.status === "awaiting") {
     return (
-      <Panel tone="bg-butter">
-        <h2 className="text-xl font-black">{AWAITING}</h2>
+      <Panel accent="border-l-4 border-l-butter-deep">
+        <h2 className="text-dc-bright font-maru text-xl font-black">{AWAITING}</h2>
       </Panel>
     );
   }
   if (consent.status === "withdrawing") {
     return (
-      <Panel tone="bg-pink">
-        <h2 className="text-xl font-black">{WITHDRAWING}</h2>
+      <Panel accent="border-l-4 border-l-pink-deep">
+        <h2 className="text-dc-bright font-maru text-xl font-black">{WITHDRAWING}</h2>
         <p>{WITHDRAWING_DETAIL}</p>
       </Panel>
     );
   }
   return (
-    <Panel tone="bg-mint">
-      <h2 className="text-xl font-black">{GRANTED}</h2>
+    <Panel accent="border-l-4 border-l-mint">
+      <h2 className="text-dc-bright font-maru text-xl font-black">{GRANTED}</h2>
       <dl className="grid grid-cols-2 gap-y-1 text-sm">
         <dt className="font-bold">{GRANTED_AT}</dt>
         <dd>{dateFormat.format(consent.grantedAt)}</dd>

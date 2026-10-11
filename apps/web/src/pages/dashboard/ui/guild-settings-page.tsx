@@ -18,7 +18,7 @@ const GuildSettingsPage = (): ReactNode => {
   const { data } = useSuspenseQuery(guildPageQuery(guildId));
   return (
     <AppFrame>
-      <Link to="/dashboard" className="text-ink-soft hover:text-grape self-start font-bold">
+      <Link to="/dashboard" className="text-dc-muted hover:text-dc-bright self-start font-bold">
         {BACK}
       </Link>
       {data.status === "signedOut" && <SignInPanel returnTo={`${DASHBOARD_PATH}/${guildId}`} />}

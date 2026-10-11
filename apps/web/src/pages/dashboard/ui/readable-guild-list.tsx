@@ -11,7 +11,7 @@ const ReadableGuildList = ({
   guilds,
 }: Readonly<{ guilds: readonly ReadableGuild[] }>): ReactNode => (
   <>
-    {Array.isReadonlyArrayEmpty(guilds) && <p className="text-ink-soft">{EMPTY}</p>}
+    {Array.isReadonlyArrayEmpty(guilds) && <p className="text-dc-muted">{EMPTY}</p>}
     <ul className="flex flex-col gap-3">
       {guilds.map((guild) => (
         <ReadableGuildRow key={guild.id} guild={guild} />

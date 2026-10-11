@@ -18,15 +18,15 @@ const GuildList = ({
   inviteUrl,
 }: Readonly<{ guilds: readonly ManagedGuild[]; inviteUrl: string }>): ReactNode => (
   <Panel>
-    <h2 className="text-xl font-black">{TITLE}</h2>
+    <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
     <RefreshButton target={GUILD_LIST} />
-    {Array.isReadonlyArrayEmpty(guilds) && <p className="text-ink-soft">{EMPTY}</p>}
+    {Array.isReadonlyArrayEmpty(guilds) && <p className="text-dc-muted">{EMPTY}</p>}
     <ul className="flex flex-col gap-4">
       {guilds.map((guild) => (
         <GuildCard key={guild.id} guild={guild} />
       ))}
     </ul>
-    <a href={inviteUrl} className={popButtonVariants({ tone: "milk", size: "md" })}>
+    <a href={inviteUrl} className={popButtonVariants({ tone: "secondary", size: "md" })}>
       {INVITE}
     </a>
   </Panel>

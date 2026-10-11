@@ -21,14 +21,14 @@ const ConnectedAppRow = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode =>
     mutate(app.clientId);
   }, [app.clientId, mutate]);
   return (
-    <li className="border-ink flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3">
+    <li className="border-dc-line flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3">
       <span className="grow font-bold">{app.name}</span>
       {status === "error" && (
         <span role="alert" className="text-xs font-bold">
           {FAILED}
         </span>
       )}
-      <PopButton tone="pink" size="sm" disabled={status === "pending"} onClick={disconnect}>
+      <PopButton tone="danger" size="sm" disabled={status === "pending"} onClick={disconnect}>
         {DISCONNECT}
         <span className="sr-only">{`（${app.name}）`}</span>
       </PopButton>

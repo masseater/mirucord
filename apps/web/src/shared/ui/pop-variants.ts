@@ -1,18 +1,18 @@
 import { cva } from "class-variance-authority";
 
 const popButtonVariants = cva(
-  "border-ink inline-flex shrink-0 items-center justify-center gap-2.5 self-start rounded-full border-2 font-bold whitespace-nowrap no-underline outline-none focus-visible:ring-4 focus-visible:ring-lavender-deep/50 active:shadow-none motion-safe:transition motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-1 disabled:translate-y-0 disabled:opacity-50 disabled:shadow-none",
+  "focus-visible:outline-dc-link inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full font-bold whitespace-nowrap no-underline focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-50 motion-safe:transition-colors",
   {
     variants: {
       tone: {
-        grape: "bg-grape text-milk",
-        milk: "bg-milk text-ink",
-        pink: "bg-pink text-ink",
+        primary: "bg-grape text-dc-bright hover:bg-grape/85",
+        secondary: "bg-dc-active text-dc-bright hover:bg-dc-line",
+        danger: "bg-pink-deep text-ink hover:bg-pink-deep/85",
       },
       size: {
-        sm: "shadow-pop-sm h-9 px-4 text-sm",
-        md: "shadow-pop-sm h-11 px-6",
-        lg: "shadow-pop h-14 px-8 text-lg",
+        sm: "h-9 px-4 text-sm",
+        md: "h-11 px-5",
+        lg: "h-12 px-6",
       },
     },
   },

@@ -10,8 +10,8 @@ const UNAVAILABLE = "サーバーを確かめられませんでした。時間�
 
 const ReadableGuildPanel = ({ listing }: Readonly<{ listing: GuildListing }>): ReactNode => (
   <Panel>
-    <h2 className="text-xl font-black">{TITLE}</h2>
-    {listing.status === "unavailable" && <p className="text-ink-soft">{UNAVAILABLE}</p>}
+    <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
+    {listing.status === "unavailable" && <p className="text-dc-muted">{UNAVAILABLE}</p>}
     {listing.status === "ready" && <ReadableGuildList guilds={listing.guilds} />}
   </Panel>
 );

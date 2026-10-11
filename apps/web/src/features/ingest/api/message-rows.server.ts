@@ -82,6 +82,19 @@ const channelMessagesBelow = ({
   ).pipe(Effect.map((rows) => rows.map(({ id }) => id).filter((id) => isWithin(id))));
 };
 
+const storedInChannel = ({
+  channelId,
+  ids,
+}: Readonly<{ channelId: string; ids: readonly string[] }>): Effect.Effect<readonly string[]> =>
+  inIdChunks({
+    ids,
+    run: (chunk) =>
+      db
+        .select({ id: message.id })
+        .from(message)
+        .where(and(eq(message.channelId, channelId), inArray(message.id, [...chunk]))),
+  }).pipe(Effect.map((chunks) => chunks.flat().map(({ id }) => id)));
+
 const MESSAGE_OWNER = { guild: message.guildId, channel: message.channelId } as const;
 
 const forgetMessagesOf = (
@@ -116,6 +129,7 @@ export {
   findStored,
   forgetChannelMessages,
   forgetGuildMessages,
+  storedInChannel,
 };
 export type { StoredMessage };
 export type { VectorizeError } from "./vectors.server";

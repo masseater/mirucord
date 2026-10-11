@@ -219,6 +219,9 @@ const pauseHidden = (job: IngestJob): Effect.Effect<void> =>
     Effect.annotateLogs({ guildId: job.guildId, channelId: job.channelId }),
   );
 
+const loadChannelKey = (job: IngestJob): Effect.Effect<Option.Option<string>> =>
+  loadProgress(job).pipe(Effect.map(Option.map(({ wrappedKey }) => wrappedKey)));
+
 const ingestChannel = (job: IngestJob): Effect.Effect<void, IngestError> =>
   loadProgress(job).pipe(
     Effect.flatMap(
@@ -235,4 +238,4 @@ const ingestChannel = (job: IngestJob): Effect.Effect<void, IngestError> =>
     }),
   );
 
-export { ingestChannel };
+export { ingestChannel, loadChannelKey };

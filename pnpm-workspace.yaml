@@ -51,6 +51,7 @@ catalog:
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
   usehooks-ts: ^3.1.1
+  "@discordeno/gateway": 21.0.0
 catalogs:
   stack:
     "@effect/atom-react": 4.0.0

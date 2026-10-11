@@ -5,7 +5,7 @@ import { ServerHost } from "alchemy/Server";
 import { GatewayIntentBits } from "discord-api-types/v10";
 import { Config, Effect, Option, Queue, Redacted, Stream } from "effect";
 
-import { toGatewayJob } from "#/features/ingest/index.gateway";
+import { mergeJobs, toGatewayJob } from "#/features/ingest/index.gateway";
 import type { GatewayJob } from "#/features/ingest/index.gateway";
 
 import { makeDeliver } from "./deliver";
@@ -14,6 +14,16 @@ const GatewayApp = App("MirucordGatewayApp", { name: "mirucord-gateway-app" });
 
 const NORMAL_CLOSURE = 1000;
 const BOT_TOKEN_SECRET = "DISCORD_BOT_TOKEN";
+const FLUSH_EVENTS = 1000;
+const FLUSH_INTERVAL = "5 seconds";
+
+const mergeBatch = (batch: readonly GatewayJob[]): Effect.Effect<readonly GatewayJob[]> => {
+  const merged = mergeJobs(batch);
+  return Effect.logInfo("Gateway events merged").pipe(
+    Effect.annotateLogs({ events: batch.length, jobs: merged.length }),
+    Effect.as(merged),
+  );
+};
 
 const runGateway = (botToken: string): Effect.Effect<void> =>
   Effect.gen(function* connect() {
@@ -38,7 +48,12 @@ const runGateway = (botToken: string): Effect.Effect<void> =>
       Effect.promise(() => gateway.spawnShards()),
       () => Effect.promise(() => gateway.shutdown(NORMAL_CLOSURE, "Gateway stopped")),
     );
-    yield* Stream.fromQueue(jobs).pipe(Stream.runForEach(deliver));
+    yield* Stream.fromQueue(jobs).pipe(
+      Stream.groupedWithin(FLUSH_EVENTS, FLUSH_INTERVAL),
+      Stream.mapEffect(mergeBatch),
+      Stream.flattenIterable,
+      Stream.runForEach(deliver),
+    );
   }).pipe(Effect.scoped);
 
 class Gateway extends Service<Gateway>()(

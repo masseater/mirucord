@@ -93,6 +93,6 @@ const guildSettings = (
     ),
   );
 
-export { guildSettings, loadConsentedChannels };
+export { guildSettings, loadConsent, loadConsentedChannels };
 export type { Consent, ConsentedChannels, GuildSettings };
 export type { SettingsCategory, SettingsChannel } from "./settings-channels.server";

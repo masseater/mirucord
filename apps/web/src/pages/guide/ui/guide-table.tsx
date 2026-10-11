@@ -1,16 +1,38 @@
 import type { ReactNode } from "react";
 
-import { TableBody } from "./table-body";
-import { TableHead } from "./table-head";
+import { InlineText } from "./inline-text";
 
-const GuideTable = ({
-  head,
-  rows,
-}: Readonly<{ head: readonly string[]; rows: readonly (readonly string[])[] }>): ReactNode => (
+type Row = readonly string[];
+
+const headCell = (cell: string): ReactNode => (
+  <th key={cell} scope="col" className="px-2 py-2 font-bold">
+    {cell}
+  </th>
+);
+
+const bodyCell = (column: string | undefined, cell: string): ReactNode => (
+  <td key={column} className="px-2 py-2 leading-relaxed">
+    <InlineText text={cell} />
+  </td>
+);
+
+const bodyRow = (head: Row, row: Row): ReactNode => (
+  <tr key={row.join("|")} className="border-dc-line text-dc-muted border-b align-top">
+    {row.map((cell, column) => bodyCell(head[column], cell))}
+  </tr>
+);
+
+const tableHead = (head: Row): ReactNode => (
+  <thead>
+    <tr className="border-dc-line text-dc-bright border-b">{head.map((cell) => headCell(cell))}</tr>
+  </thead>
+);
+
+const GuideTable = ({ head, rows }: Readonly<{ head: Row; rows: readonly Row[] }>): ReactNode => (
   <div className="overflow-x-auto">
     <table className="w-full min-w-md border-collapse text-left text-sm">
-      <TableHead head={head} />
-      <TableBody head={head} rows={rows} />
+      {tableHead(head)}
+      <tbody>{rows.map((row) => bodyRow(head, row))}</tbody>
     </table>
   </div>
 );

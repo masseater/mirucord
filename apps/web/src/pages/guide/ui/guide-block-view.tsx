@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import type { GuideBlock } from "#/pages/guide/model/guide-block";
 
-import { GuideFlow } from "./guide-flow/guide-flow";
+import { GuideFlow } from "./guide-flow";
 import { GuideTable } from "./guide-table";
 import { InlineText } from "./inline-text";
 

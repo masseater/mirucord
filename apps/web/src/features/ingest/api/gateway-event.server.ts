@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { DateTime, Duration, Effect, Exit, Number, Option, Schema } from "effect";
+import { DateTime, Duration, Effect, Number, Option, Schema } from "effect";
 
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
@@ -57,16 +57,13 @@ const processEvent = (body: string): Effect.Effect<Response> =>
     onNone: () => Effect.succeed(new Response("Malformed gateway event", { status: BAD_REQUEST })),
     onSome: (job) =>
       runJob(job).pipe(
-        Effect.exit,
-        Effect.flatMap((exit) => {
-          if (Exit.isSuccess(exit)) {
-            return Effect.succeed(new Response("Processed", { status: PROCESSED }));
-          }
-          return Effect.logError("Gateway event failed", exit.cause).pipe(
+        Effect.as(new Response("Processed", { status: PROCESSED })),
+        Effect.catchCause((cause) =>
+          Effect.logError("Gateway event failed", cause).pipe(
             Effect.annotateLogs({ kind: job.kind, channelId: job.channelId }),
             Effect.as(new Response("Gateway event failed", { status: FAILED })),
-          );
-        }),
+          ),
+        ),
       ),
   });
 

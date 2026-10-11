@@ -27,12 +27,7 @@ const ForgetJobSchema = Schema.Struct({
 
 const GatewayJobSchema = Schema.Union([RefreshJobSchema, ForgetJobSchema]);
 
-const QueueJobSchema = Schema.Union([
-  WithdrawJobSchema,
-  RefreshJobSchema,
-  ForgetJobSchema,
-  IngestJobSchema,
-]);
+const QueueJobSchema = Schema.Union([WithdrawJobSchema, IngestJobSchema]);
 
 type IngestJob = typeof IngestJobSchema.Type;
 
@@ -42,9 +37,7 @@ type RefreshJob = typeof RefreshJobSchema.Type;
 
 type ForgetJob = typeof ForgetJobSchema.Type;
 
-type WithdrawJob = typeof WithdrawJobSchema.Type;
-
 type QueueJob = typeof QueueJobSchema.Type;
 
 export { GatewayJobSchema, INGEST_MAX_RETRIES, QueueJobSchema };
-export type { ForgetJob, GatewayJob, IngestJob, QueueJob, RefreshJob, WithdrawJob };
+export type { ForgetJob, GatewayJob, IngestJob, QueueJob, RefreshJob };

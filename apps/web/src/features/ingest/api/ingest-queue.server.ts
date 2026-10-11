@@ -1,15 +1,9 @@
-import { Cause, Effect, Exit, Match, Option, Schema } from "effect";
+import { Cause, Effect, Exit, Option, Schema } from "effect";
 
 import { INGEST_MAX_RETRIES, QueueJobSchema } from "#/features/ingest/model/ingest-job";
-import type {
-  ForgetJob,
-  QueueJob,
-  RefreshJob,
-  WithdrawJob,
-} from "#/features/ingest/model/ingest-job";
+import type { QueueJob } from "#/features/ingest/model/ingest-job";
 import { alertOperators } from "#/shared/alert/index.server";
 
-import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
 import { ingestChannel } from "./ingest-channel.server";
 import { abandonWithdrawal, withdrawGuild } from "./withdraw-guild.server";
 import type { GuildDataRemainsError } from "./withdraw-guild.server";
@@ -25,25 +19,15 @@ const decodeJob = Schema.decodeUnknownEffect(QueueJobSchema);
 
 type JobError = Effect.Error<ReturnType<typeof ingestChannel>> | GuildDataRemainsError;
 
-type KindJob = WithdrawJob | RefreshJob | ForgetJob;
-
-const runKindJob = Match.type<KindJob>().pipe(
-  Match.discriminatorsExhaustive("kind")({
-    withdraw: ({ guildId }): Effect.Effect<void, JobError> => withdrawGuild(guildId),
-    refresh: (job: RefreshJob): Effect.Effect<void, JobError> => refreshMessages(job),
-    forget: (job: ForgetJob): Effect.Effect<void, JobError> => forgetMessages(job),
-  }),
-);
-
 const runJob = (job: QueueJob): Effect.Effect<void, JobError> => {
   if ("kind" in job) {
-    return runKindJob(job);
+    return withdrawGuild(job.guildId);
   }
   return ingestChannel(job);
 };
 
 const undoJob = (job: QueueJob): Effect.Effect<void> => {
-  if ("kind" in job && job.kind === "withdraw") {
+  if ("kind" in job) {
     return abandonWithdrawal(job.guildId);
   }
   return Effect.void;

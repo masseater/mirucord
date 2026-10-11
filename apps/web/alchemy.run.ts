@@ -18,14 +18,15 @@ import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { POLL_CRON, SYNC_CRON } from "./src/features/ingest/index.ts";
-import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
+import { INGEST_MAX_RETRIES, POLL_CRON, SYNC_CRON } from "./src/features/ingest/index.ts";
+import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;
 const NAME_PREFIX = "mirucord";
 const PRODUCTION_STAGE = "prod";
 const NOT_FOUND = 404;
+const DEFAULT_MAX_GUILDS = String(FREE_GUILD_LIMIT);
 const WORKER_ISSUES = "Mirucord.WorkerIssues";
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);
 
@@ -36,7 +37,7 @@ const discordEnv = Config.all({
 });
 
 const operationsEnv = Config.all({
-  MAX_GUILDS: Config.String("MAX_GUILDS").pipe(Config.withDefault("80")),
+  MAX_GUILDS: Config.String("MAX_GUILDS").pipe(Config.withDefault(DEFAULT_MAX_GUILDS)),
   alertWebhook: Config.option(Config.schema(NonEmptySecret, "ALERT_WEBHOOK_URL")),
 }).pipe(
   Config.map(({ alertWebhook, ...limits }) => ({

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { Consent } from "#/features/ingest/index.server";
+import { dateFormat } from "#/pages/dashboard/model/date-format";
 import { Panel } from "#/shared/ui/panel";
 
 const AWAITING = "同意待ち";
@@ -10,12 +11,6 @@ const GRANTED_AT = "同意した日時";
 const WITHDRAWING = "削除中";
 const WITHDRAWING_DETAIL =
   "保存したメッセージと検索用データを削除しています。終わると同意待ちに戻ります。";
-
-const dateFormat = new Intl.DateTimeFormat("ja-JP", {
-  dateStyle: "long",
-  timeStyle: "short",
-  timeZone: "Asia/Tokyo",
-});
 
 const ConsentRecord = ({ consent }: Readonly<{ consent: Consent }>): ReactNode => {
   if (consent.status === "awaiting") {

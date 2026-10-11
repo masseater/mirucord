@@ -58,6 +58,8 @@ type DescribedMessage = Readonly<{
 const imageSourceOf = ({
   content_type,
   proxy_url,
+  url,
+  size,
   width,
   height,
 }: DiscordAttachment): Option.Option<ImageSource> =>
@@ -72,8 +74,11 @@ const imageSourceOf = ({
         image.width > NO_PIXELS &&
         image.height > NO_PIXELS,
     ),
-    Option.map(({ width: imageWidth, height: imageHeight }) => ({
+    Option.map(({ contentType, width: imageWidth, height: imageHeight }) => ({
       proxyUrl: proxy_url,
+      originalUrl: url,
+      contentType,
+      size,
       width: imageWidth,
       height: imageHeight,
     })),

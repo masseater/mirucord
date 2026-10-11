@@ -1,10 +1,8 @@
 import { ChannelType } from "discord-api-types/v10";
 import { Match } from "effect";
 
-import { CATEGORY_TYPES, THREAD_TYPES } from "#/shared/discord";
+import { CATEGORY_TYPES, FORUM_TYPES, THREAD_TYPES } from "#/shared/discord";
 import type { ChannelKind } from "#/shared/discord";
-
-const FORUM_TYPES: ReadonlySet<number> = new Set([ChannelType.GuildForum, ChannelType.GuildMedia]);
 
 const VOICE_TYPES: ReadonlySet<number> = new Set([
   ChannelType.GuildVoice,

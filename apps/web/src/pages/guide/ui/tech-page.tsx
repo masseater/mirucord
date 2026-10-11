@@ -39,7 +39,7 @@ const SECTIONS: readonly GuideSection[] = [
           { from: "Worker", label: "REST で読む", to: "Discord の API" },
           { from: "Worker", label: "取り込みのジョブ", to: "Queues" },
           { from: "Worker", label: "暗号化して保存", to: "D1" },
-          { from: "Worker", label: "埋め込みを作る", to: "Workers AI（bge-m3）" },
+          { from: "Worker", label: "埋め込みを作る", to: "Workers AI（plamo-embedding-1b）" },
           { from: "Worker", label: "ベクトルを保存・検索", to: "Vectorize" },
           { from: "Worker", label: "マスター鍵を読む", to: "Secrets Store" },
         ],
@@ -50,8 +50,8 @@ const SECTIONS: readonly GuideSection[] = [
         rows: [
           ["Web と API", "Cloudflare Workers の上の TanStack Start と Elysia"],
           ["データベース", "Cloudflare D1（APAC に配置）と Drizzle ORM"],
-          ["ベクトル検索", "Cloudflare Vectorize（1024 次元、cosine）"],
-          ["埋め込み", "Workers AI の `@cf/baai/bge-m3`"],
+          ["ベクトル検索", "Cloudflare Vectorize（2048 次元、cosine）"],
+          ["埋め込み", "Workers AI の `@cf/pfnet/plamo-embedding-1b`"],
           ["取り込みの待ち行列", "Cloudflare Queues"],
           ["鍵の保管", "Cloudflare Secrets Store"],
           ["Gateway の常駐", "fly.io の Machine（shared-cpu-1x、256MB、1 台）"],
@@ -133,7 +133,7 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "steps",
         items: [
-          "`search_messages` では、検索の言葉を `@cf/baai/bge-m3` で 1024 次元のベクトルにします。",
+          "`search_messages` では、検索の言葉を `@cf/pfnet/plamo-embedding-1b` で 2048 次元のベクトルにします。",
           "Vectorize に、サーバーの `guildId` と、読めるチャンネルの `channelId` で絞りこんだ近傍検索をかけます。",
           "見つかった ID の行を D1 から読み、データ鍵で復号して返します。",
         ],

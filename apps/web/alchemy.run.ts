@@ -22,7 +22,7 @@ import { INGEST_MAX_RETRIES, POLL_CRON, SYNC_CRON } from "./src/features/ingest/
 import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
-const EMBEDDING_DIMENSIONS = 1024;
+const EMBEDDING_DIMENSIONS = 2048;
 const NAME_PREFIX = "mirucord";
 const PRODUCTION_STAGE = "prod";
 const NOT_FOUND = 404;
@@ -189,7 +189,7 @@ const mirucordName = (resource: string): Effect.Effect<string, never, Stage> =>
 
 const messagesIndex = Effect.gen(function* messagesIndex() {
   const index = yield* Vectorize.Index("Messages", {
-    name: yield* mirucordName("messages"),
+    name: yield* mirucordName("messages-plamo"),
     dimensions: EMBEDDING_DIMENSIONS,
     metric: "cosine",
   });

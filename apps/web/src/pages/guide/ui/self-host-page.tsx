@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { GuideSection } from "#/pages/guide/model/guide-block";
-import { MASCOT_NAME, REPOSITORY_URL, SERVICE_NAME } from "#/shared/config";
+import { FREE_GUILD_LIMIT, MASCOT_NAME, REPOSITORY_URL, SERVICE_NAME } from "#/shared/config";
 
 import { GuideDocument } from "./guide-document";
 
@@ -16,7 +16,7 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "list",
         items: [
-          "Cloudflare のアカウントと、そこで管理しているドメイン。Workers、D1、Vectorize、Queues、Workers AI、Secrets Store を使います。料金と無料枠は Cloudflare の料金表で確かめてください。",
+          "Cloudflare のアカウントと、そこで管理しているドメイン。Workers、D1、Vectorize、Queues、Workers AI、Secrets Store を使います。Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
           "Discord Developer Portal のアプリケーション。",
           "fly.io のアカウント。編集と削除をすぐに反映させるための Gateway に使います。なくても、毎時の取り込みだけで動きます。",
           "GitHub のアカウント。CI からデプロイするときに使います。",
@@ -84,7 +84,7 @@ const SECTIONS: readonly GuideSection[] = [
           ["`DISCORD_CLIENT_SECRET`", "必須", "ログイン"],
           ["`DISCORD_BOT_TOKEN`", "必須", "取り込み、Gateway、Gateway の通知の署名"],
           ["`FLY_API_TOKEN`", "Gateway を動かすとき", "fly.io の認証"],
-          ["`MAX_GUILDS`", "任意（既定は 80）", "Bot が入れるサーバーの数の上限"],
+          ["`MAX_GUILDS`", `任意（既定は ${FREE_GUILD_LIMIT}）`, "Bot が入れるサーバーの数の上限"],
           ["`ALERT_WEBHOOK_URL`", "任意", "障害を知らせる Discord の Webhook"],
           ["`ALCHEMY_STAGE`", "任意", "Alchemy のステージ名"],
         ],

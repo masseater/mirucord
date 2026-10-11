@@ -1,7 +1,8 @@
 import { CHANNELS } from "#/pages/home/ui/common/channels";
-import { GUIDE_CHANNELS } from "#/pages/home/ui/common/guide-channels";
 import type { Place, PlaceId } from "#/pages/home/ui/common/places";
 import { SERVICE_NAME } from "#/shared/config";
+
+import { GUIDE_CHANNELS } from "./guide-channels";
 
 type Activity =
   | Readonly<{ status: "read" }>

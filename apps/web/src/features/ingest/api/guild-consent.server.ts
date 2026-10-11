@@ -1,10 +1,10 @@
-import { Boolean, DateTime, Effect, Option } from "effect";
+import { DateTime, Effect, Option } from "effect";
 
 import { isNoticeCandidate } from "#/features/ingest/model/channel-ingest";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { MASCOT_NAME, MCP_URL, ONBOARDING_STEPS, PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
 import { db, ingestConsent } from "#/shared/db/index.server";
-import { FORBIDDEN, postChannelMessage } from "#/shared/discord/index.server";
+import { FORBIDDEN, NOT_FOUND, postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
 import { refreshIngest } from "./consent-scope.server";
@@ -25,7 +25,9 @@ type ConsentResult =
   | Readonly<{ status: "saved" }>
   | Readonly<{ status: "forbidden" }>
   | Readonly<{ status: "invalid" }>
+  | Readonly<{ status: "withdrawing" }>
   | Readonly<{ status: "noticeForbidden" }>
+  | Readonly<{ status: "noticeMissing" }>
   | Readonly<{ status: "noticeFailed" }>;
 
 type RevokeResult = Readonly<{ status: "withdrawing" }> | Readonly<{ status: "forbidden" }>;
@@ -43,13 +45,18 @@ const NOTICE = [
 const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean =>
   channels.some((channel) => isNoticeCandidate(channel) && channel.id === request.noticeChannelId);
 
-type NoticePost = "posted" | "noticeForbidden" | "noticeFailed";
+type NoticePost = "posted" | "noticeForbidden" | "noticeMissing" | "noticeFailed";
+
+const NOTICE_FAILURES: ReadonlyMap<number, NoticePost> = new Map([
+  [FORBIDDEN, "noticeForbidden"],
+  [NOT_FOUND, "noticeMissing"],
+]);
 
 const noticeFailureOf = (status: Option.Option<number>): NoticePost =>
-  Boolean.match(Option.contains(status, FORBIDDEN), {
-    onTrue: () => "noticeForbidden",
-    onFalse: () => "noticeFailed",
-  });
+  status.pipe(
+    Option.flatMap((code) => Option.fromUndefinedOr(NOTICE_FAILURES.get(code))),
+    Option.getOrElse((): NoticePost => "noticeFailed"),
+  );
 
 const postNoticeOnce = (
   request: ConsentRequest,
@@ -124,7 +131,7 @@ const grantConsent = (
       loadConsentedChannels(request.guildId).pipe(
         Effect.flatMap(({ consent, channels }) => {
           if (consent.status === "withdrawing") {
-            return Effect.succeed<ConsentResult>({ status: "invalid" });
+            return Effect.succeed<ConsentResult>({ status: "withdrawing" });
           }
           return applyConsent(request, consent, channels);
         }),

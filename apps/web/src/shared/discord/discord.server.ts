@@ -228,6 +228,7 @@ export {
   listBotGuilds,
   listGuildChannels,
   listMessages,
+  NOT_FOUND,
   PAGE_SIZE,
 };
 export type { DiscordChannel, DiscordGuild, DiscordMember, DiscordMessage, MessagePage };

@@ -2,13 +2,12 @@ import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { Array, Config, ConfigProvider, Effect, Option } from "effect";
 
+import { FREE_GUILD_LIMIT } from "#/shared/config";
 import { db, guild, listGuildIds } from "#/shared/db/index.server";
 import { getBotUserId, leaveGuild, listBotGuilds } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
 import { forgetGuildMessages } from "./message-rows.server";
-
-const DEFAULT_GUILD_LIMIT = 80;
 
 const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =>
   Effect.logWarning("Discord request failed").pipe(
@@ -16,7 +15,7 @@ const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =
   );
 
 const guildLimit: Effect.Effect<number> = Config.Int("MAX_GUILDS")
-  .pipe(Config.withDefault(DEFAULT_GUILD_LIMIT))
+  .pipe(Config.withDefault(FREE_GUILD_LIMIT))
   .parse(ConfigProvider.fromUnknown(env))
   .pipe(Effect.orDie);
 

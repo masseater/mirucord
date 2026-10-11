@@ -4,7 +4,7 @@ import parser from "@typescript-eslint/parser";
 
 import { generated } from "./lint.config.ts";
 
-const BRAND_WORDS = "/mirucord|ミル/i";
+const BRAND_WORDS = "/[Mm]irucord|ミル/";
 const BRAND_MESSAGE =
   "サービス名とキャラクター名は #/shared/config の SERVICE_NAME と MASCOT_NAME から参照する";
 

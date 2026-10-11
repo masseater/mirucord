@@ -6,6 +6,8 @@ import { dashboardQuery, disconnectConnectedApp } from "#/pages/dashboard/api/da
 import type { ConnectedApp } from "#/shared/auth/index.server";
 import { PopButton } from "#/shared/ui/pop-button";
 
+import { ConnectedAppDates } from "./connected-app-dates";
+
 const DISCONNECT = "解除";
 const FAILED = "解除できませんでした";
 
@@ -30,6 +32,7 @@ const ConnectedAppRow = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode =>
         {DISCONNECT}
         <span className="sr-only">{`（${app.name}）`}</span>
       </PopButton>
+      <ConnectedAppDates app={app} />
     </li>
   );
 };

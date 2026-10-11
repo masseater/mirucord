@@ -1,5 +1,5 @@
 import { it } from "@effect/vitest";
-import { Effect, Option } from "effect";
+import { DateTime, Effect, Option } from "effect";
 import { expect } from "vite-plus/test";
 
 import { db } from "#/shared/db/client.server";
@@ -14,6 +14,10 @@ import {
 } from "./generated/auth.table";
 
 const SCOPES = ["openid"];
+const CONNECTED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
+const OLDER_REFRESH_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-02T00:00:00Z"));
+const REFRESHED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-03T00:00:00Z"));
+const DATES = { connectedAt: CONNECTED_AT.getTime(), updatedAt: REFRESHED_AT.getTime() };
 
 type Grant = Readonly<{ userId: string; clientId: string }>;
 
@@ -33,10 +37,25 @@ const seedGrant = ({ userId, clientId }: Grant): Effect.Effect<void> => {
   const id = `${userId}-${clientId}`;
   return Effect.promise(() =>
     db.batch([
-      db.insert(oauthConsent).values({ id, clientId, userId, scopes: SCOPES }),
       db
-        .insert(oauthRefreshToken)
-        .values({ id, token: `refresh-${id}`, clientId, userId, scopes: SCOPES }),
+        .insert(oauthConsent)
+        .values({ id, clientId, userId, scopes: SCOPES, createdAt: CONNECTED_AT }),
+      db.insert(oauthRefreshToken).values({
+        id: `${id}-old`,
+        token: `refresh-${id}-old`,
+        clientId,
+        userId,
+        scopes: SCOPES,
+        createdAt: OLDER_REFRESH_AT,
+      }),
+      db.insert(oauthRefreshToken).values({
+        id,
+        token: `refresh-${id}`,
+        clientId,
+        userId,
+        scopes: SCOPES,
+        createdAt: REFRESHED_AT,
+      }),
       db
         .insert(oauthAccessToken)
         .values({ id, token: `access-${id}`, clientId, userId, refreshId: id, scopes: SCOPES }),
@@ -58,8 +77,8 @@ it.effect("lists the apps a user connected, named by the client", () =>
     yield* seedGrant({ userId: "u1", clientId: "nameless" });
     const apps = yield* listConnectedApps("u1");
     expect(apps).toStrictEqual([
-      { clientId: "claude", name: "Claude" },
-      { clientId: "nameless", name: "nameless" },
+      { clientId: "claude", name: "Claude", ...DATES },
+      { clientId: "nameless", name: "nameless", ...DATES },
     ]);
   }),
 );
@@ -78,10 +97,12 @@ it.effect("disconnects one app of one user and keeps every other grant", () =>
       { userId: "u4", clientId: "claude-2" },
     ]);
     yield* disconnectApp({ userId: "u3", clientId: "claude-2" });
-    expect(yield* listConnectedApps("u3")).toStrictEqual([{ clientId: "other-2", name: "Other" }]);
-    expect(yield* listConnectedApps("u4")).toStrictEqual([
-      { clientId: "claude-2", name: "Claude" },
+    expect(yield* listConnectedApps("u3")).toStrictEqual([
+      { clientId: "other-2", name: "Other", ...DATES },
     ]);
-    expect(yield* tokenCount).toStrictEqual({ refresh: 4, access: 4 });
+    expect(yield* listConnectedApps("u4")).toStrictEqual([
+      { clientId: "claude-2", name: "Claude", ...DATES },
+    ]);
+    expect(yield* tokenCount).toStrictEqual({ refresh: 8, access: 4 });
   }),
 );

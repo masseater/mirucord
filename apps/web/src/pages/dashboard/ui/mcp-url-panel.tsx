@@ -1,16 +1,13 @@
 import type { ReactNode } from "react";
 
-import { MCP_URL } from "#/shared/config";
 import { Panel } from "#/shared/ui/panel";
 
-const TITLE = "MCP サーバーの URL";
+import { McpUrlCopy } from "./mcp-url-copy";
 
-const McpUrlPanel = (): ReactNode => (
-  <Panel>
-    <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
-    <p className="bg-dc-rail border-dc-line text-dc-text rounded-lg border px-4 py-3 font-mono text-sm break-all select-all">
-      {MCP_URL}
-    </p>
+const McpUrlPanel = ({ title, note }: Readonly<{ title: string; note: string }>): ReactNode => (
+  <Panel accent="border-lavender-deep">
+    <h2 className="text-dc-bright font-maru text-xl font-black">{title}</h2>
+    <McpUrlCopy note={note} />
   </Panel>
 );
 

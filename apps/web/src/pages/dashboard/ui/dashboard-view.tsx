@@ -1,43 +1,61 @@
 import type { ReactNode } from "react";
 
 import type { GuildIngest } from "#/features/ingest/index.server";
-import type { Dashboard } from "#/pages/dashboard/api/dashboard.server";
+import { nextStepsOf } from "#/pages/dashboard/model/next-steps";
+import type { NextSteps, ReadyDashboard } from "#/pages/dashboard/model/next-steps";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 
 import { AccountPanel } from "./account-panel";
 import { ConnectedAppPanel } from "./connected-app-panel";
 import { GuildList } from "./guild-list";
 import { McpUrlPanel } from "./mcp-url-panel";
+import { NextStepsPanel } from "./next-steps/next-steps-panel";
 import { ReadableGuildPanel } from "./readable-guild-panel";
 
 const TITLE = "管理画面";
 const WITHDRAWING_TIP = "削除中だよ！";
 const INGESTING_TIP = "思い出を集めてるよ";
+const NEXT_STEPS_TIP = "次にやることを教えるね！";
+const URL_TITLE = "MCP サーバーの URL";
+const URL_NOTE = "ほかのアプリでも使うときは、この URL をコネクタとして登録してね。";
 const INGESTING: ReadonlySet<GuildIngest> = new Set(["waiting", "backfilling"]);
 
-type ReadyDashboard = Extract<Dashboard, Readonly<{ status: "ready" }>>;
-
-const tipFor = ({ name, guilds }: ReadyDashboard): string => {
+const tipFor = ({ name, guilds }: ReadyDashboard, steps: NextSteps): string => {
   if (guilds.some(({ ingest }) => ingest === "withdrawing")) {
     return WITHDRAWING_TIP;
   }
   if (guilds.some(({ ingest }) => INGESTING.has(ingest))) {
     return INGESTING_TIP;
   }
+  if (steps.status === "pending") {
+    return NEXT_STEPS_TIP;
+  }
   return `${name}さん、おかえり！`;
 };
 
-const DashboardView = ({ dashboard }: Readonly<{ dashboard: ReadyDashboard }>): ReactNode => (
-  <>
-    <MascotTip>{tipFor(dashboard)}</MascotTip>
-    <h1 className="text-dc-bright font-maru text-3xl font-black">{TITLE}</h1>
-    <McpUrlPanel />
-    <ReadableGuildPanel listing={dashboard.readable} />
-    <ConnectedAppPanel apps={dashboard.apps} />
-    <AccountPanel name={dashboard.name} />
-    <hr className="border-dc-line border-t border-dashed" />
-    <GuildList guilds={dashboard.guilds} inviteUrl={dashboard.inviteUrl} />
-  </>
-);
+const stepsOrUrl = (steps: NextSteps, inviteUrl: string): ReactNode => {
+  if (steps.status === "pending") {
+    return (
+      <NextStepsPanel consent={steps.consent} register={steps.register} inviteUrl={inviteUrl} />
+    );
+  }
+  return <McpUrlPanel title={URL_TITLE} note={URL_NOTE} />;
+};
+
+const DashboardView = ({ dashboard }: Readonly<{ dashboard: ReadyDashboard }>): ReactNode => {
+  const steps = nextStepsOf(dashboard);
+  return (
+    <>
+      <MascotTip>{tipFor(dashboard, steps)}</MascotTip>
+      <h1 className="text-dc-bright font-maru text-3xl font-black">{TITLE}</h1>
+      {stepsOrUrl(steps, dashboard.inviteUrl)}
+      <ReadableGuildPanel listing={dashboard.readable} />
+      <ConnectedAppPanel apps={dashboard.apps} />
+      <AccountPanel name={dashboard.name} />
+      <hr className="border-dc-line border-t border-dashed" />
+      <GuildList guilds={dashboard.guilds} inviteUrl={dashboard.inviteUrl} />
+    </>
+  );
+};
 
 export { DashboardView };

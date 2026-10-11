@@ -24,12 +24,16 @@ const PHOTO_URL = "https://cdn.discordapp.com/attachments/830/1/ramen.jpg";
 const PHOTO_PROXY = "https://media.discordapp.net/attachments/830/1/ramen.jpg";
 const PHOTO_WIDTH = 4000;
 const PHOTO_HEIGHT = 3000;
+const PHOTO_SIZE = 2_000_000;
+const ORIGINAL_CHANNEL = "840";
+const ORIGINAL = "841";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 const UNIT = 1;
 const NONE = 0;
 
 const embeddedTexts: string[] = [];
 const resizedRequests: URL[] = [];
+const originalRequests: URL[] = [];
 
 const photoMessage = (id: string): unknown => ({
   id,
@@ -44,6 +48,7 @@ const photoMessage = (id: string): unknown => ({
       url: PHOTO_URL,
       proxy_url: PHOTO_PROXY,
       content_type: "image/jpeg",
+      size: PHOTO_SIZE,
       width: PHOTO_WIDTH,
       height: PHOTO_HEIGHT,
     },
@@ -52,7 +57,9 @@ const photoMessage = (id: string): unknown => ({
 
 const network = setupNetwork();
 
-const answerWith = (id: string, image: () => Response): void => {
+const forbidden = (): Response => HttpResponse.text("forbidden", { status: FORBIDDEN });
+
+const answerWith = (id: string, image: () => Response, original = forbidden): void => {
   network.use(
     http.get("https://discord.com/api/v10/channels/:channelId/messages", () =>
       HttpResponse.json([photoMessage(id)]),
@@ -60,6 +67,10 @@ const answerWith = (id: string, image: () => Response): void => {
     http.get(PHOTO_PROXY, ({ request }) => {
       resizedRequests.push(new URL(request.url));
       return image();
+    }),
+    http.get(PHOTO_URL, ({ request }) => {
+      originalRequests.push(new URL(request.url));
+      return original();
     }),
   );
 };
@@ -77,7 +88,7 @@ const seedGuild = Effect.gen(function* seed() {
         .insert(guild)
         .values({ id: GUILD, name: "guild", ownerId: OWNER, wrappedKey, joinedAt: SEEDED_AT }),
       db.insert(channel).values(
-        [PHOTO_CHANNEL, BROKEN_CHANNEL].map((id) => ({
+        [PHOTO_CHANNEL, ORIGINAL_CHANNEL, BROKEN_CHANNEL].map((id) => ({
           id,
           guildId: GUILD,
           name: `channel ${id}`,
@@ -134,6 +145,7 @@ beforeAll(() => {
 beforeEach(() => {
   embeddedTexts.length = NONE;
   resizedRequests.length = NONE;
+  originalRequests.length = NONE;
   vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => answerModel(inputs));
   vi.spyOn(env.MESSAGES, "getByIds").mockResolvedValue([]);
   vi.spyOn(env.MESSAGES, "upsert").mockResolvedValue({ mutationId: "test" });
@@ -174,9 +186,20 @@ it.effect("indexes an image-only message by the description of its image", () =>
   }),
 );
 
+it.live("falls back to the original image when the resized one is refused", () =>
+  Effect.gen(function* original() {
+    answerWith(ORIGINAL, forbidden, jpeg);
+    yield* ingestChannel({ guildId: GUILD, channelId: ORIGINAL_CHANNEL });
+    expect(embeddedTexts).toStrictEqual([DESCRIPTION]);
+    expect(originalRequests.map(({ pathname }) => pathname)).toStrictEqual([
+      new URL(PHOTO_URL).pathname,
+    ]);
+  }),
+);
+
 it.live("leaves a message to be described again when its image cannot be fetched", () =>
   Effect.gen(function* broken() {
-    answerWith(BROKEN, () => HttpResponse.text("forbidden", { status: FORBIDDEN }));
+    answerWith(BROKEN, forbidden);
     yield* ingestChannel({ guildId: GUILD, channelId: BROKEN_CHANNEL });
     const undescribed = Option.getOrNull(Option.none<string>());
     const rows = yield* storedRow(BROKEN);

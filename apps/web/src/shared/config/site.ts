@@ -2,6 +2,7 @@ const SITE_HOST = "mirucord.masseater.dev";
 const SITE_ORIGIN = `https://${SITE_HOST}`;
 const MCP_URL = `${SITE_ORIGIN}/mcp`;
 const DASHBOARD_PATH = "/dashboard";
+const SIGN_IN_LANDING = `${DASHBOARD_PATH}?from=signIn`;
 const PRIVACY_PATH = "/privacy";
 const TERMS_PATH = "/terms";
 const TECH_PATH = "/tech";
@@ -15,6 +16,7 @@ export {
   REPOSITORY_URL,
   SITE_HOST,
   SELF_HOST_PATH,
+  SIGN_IN_LANDING,
   SITE_ORIGIN,
   TECH_PATH,
   TERMS_PATH,

@@ -1,3 +1,5 @@
+export { forumPosts } from "./api/forum-posts.server";
+export type { ForumPost, ForumPostsResult } from "./api/forum-posts.server";
 export { grantConsent, revokeConsent } from "./api/guild-consent.server";
 export type { ConsentResult, RevokeResult } from "./api/guild-consent.server";
 export { guildSettings } from "./api/guild-settings.server";

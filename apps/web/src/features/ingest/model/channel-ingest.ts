@@ -5,6 +5,7 @@ import type { ConsentScope } from "./consent-scope";
 
 const DATA_FIRST_ARITY = 2;
 const BACKFILL_INGEST = { pending: "backfilling", done: "done" } as const;
+const EMPTY_INGEST = { pending: "waiting", done: "done" } as const;
 const HIDDEN_INGEST = {
   granted: { stored: "paused", empty: "cleared" },
   awaiting: { stored: "unreadable", empty: "unreadable" },
@@ -37,7 +38,7 @@ const ingestOfDataFirst = (scope: ConsentScope, row: IngestRow): ChannelIngest =
     return "awaiting";
   }
   if (holding === "empty") {
-    return "waiting";
+    return EMPTY_INGEST[row.backfill];
   }
   return BACKFILL_INGEST[row.backfill];
 };
@@ -57,7 +58,7 @@ const forumRowOfDataFirst = (
 ): IngestRow => ({
   newest: newestOfPosts(posts),
   backfill: Boolean.match(
-    posts.every(({ backfill }) => backfill === "done"),
+    Array.isReadonlyArrayNonEmpty(posts) && posts.every(({ backfill }) => backfill === "done"),
     { onTrue: () => "done" as const, onFalse: () => "pending" as const },
   ),
   botAccess: forum.botAccess,

@@ -4,10 +4,10 @@ import { DateTime, Effect, Schema } from "effect";
 import type { Duration } from "effect";
 import { beforeEach, expect, vi } from "vite-plus/test";
 
+import { signGatewayEvent } from "#/features/ingest/model/gateway-signature";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 
 import { receiveGatewayEvent } from "./gateway-event.server";
-import { signGatewayEvent } from "./gateway-signature";
 
 const PROCESSED = 200;
 const BAD_REQUEST = 400;

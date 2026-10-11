@@ -114,10 +114,15 @@
       width: min(26rem, max(48cqw, 17rem));
       transform: translate(-50%, -50%);
       text-align: center;
-      word-break: auto-phrase;
       animation: scene-caption linear both;
       animation-timeline: --scene;
       animation-range: contain var(--from) contain var(--to);
+    }
+
+    @supports (word-break: auto-phrase) {
+      .scene-caption {
+        word-break: auto-phrase;
+      }
     }
 
     .scene-caption:nth-child(1) {

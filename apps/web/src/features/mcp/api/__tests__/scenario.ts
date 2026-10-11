@@ -1,11 +1,11 @@
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { ChannelType, OverwriteType, PermissionFlagsBits } from "discord-api-types/v10";
-import { DateTime, Effect, Option, Record, Schema } from "effect";
+import { Array, DateTime, Effect, Option, Record, Schema } from "effect";
 import { http, HttpResponse } from "msw";
 
 import { buildServer } from "#/features/mcp/api/tools.server";
 import { createGuildKey, openGuildKey, sealMessage } from "#/shared/crypto/index.server";
-import { channel, db, guild, message, role } from "#/shared/db/index.server";
+import { channel, db, guild, ingestConsent, message, role } from "#/shared/db/index.server";
 
 const USER = "900";
 const OWNER = "901";
@@ -32,6 +32,7 @@ type ScenarioChannel = Readonly<{ id: string; overwrites: readonly Overwrite[] }
 type ScenarioMessage = Readonly<{ id: string; channelId: string }>;
 type ScenarioGuild = Readonly<{
   id: string;
+  consent: "consented" | "notConsented";
   roles: Readonly<Record<string, string>>;
   channels: readonly ScenarioChannel[];
   messages: readonly ScenarioMessage[];
@@ -44,6 +45,7 @@ const STAFF_ONLY: readonly Overwrite[] = [
 
 const openGuild = (id: string, channelId: string, messageId: string): ScenarioGuild => ({
   id,
+  consent: "notConsented",
   roles: { [id]: READ },
   channels: [{ id: channelId, overwrites: [] }],
   messages: [{ id: messageId, channelId }],
@@ -52,6 +54,7 @@ const openGuild = (id: string, channelId: string, messageId: string): ScenarioGu
 const GUILDS: readonly ScenarioGuild[] = [
   {
     id: GUILD_A,
+    consent: "consented",
     roles: { [GUILD_A]: READ, [MEMBER_ROLE]: NOTHING, [STAFF_ROLE]: NOTHING },
     channels: [
       { id: A_OPEN, overwrites: [] },
@@ -106,6 +109,23 @@ const sealedRows = (
     { concurrency: 1 },
   );
 
+const ingestedProgress = (
+  seed: ScenarioGuild,
+  channelId: string,
+): Partial<typeof channel.$inferInsert> => {
+  if (seed.consent === "notConsented") {
+    return {};
+  }
+  const newest = Array.findFirst(seed.messages, (stored) => stored.channelId === channelId);
+  return {
+    newestMessageId: newest.pipe(
+      Option.map(({ id }) => id),
+      Option.getOrNull,
+    ),
+    backfill: "done",
+  };
+};
+
 const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
   Effect.gen(function* seedRows() {
     const wrappedKey = yield* createGuildKey;
@@ -135,9 +155,24 @@ const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
           name: `channel ${id}`,
           type: ChannelType.GuildText,
           permissionOverwrites: overwrites,
+          ...ingestedProgress(seed, id),
         })),
       ),
     );
+    const noticeChannel = Array.head(seed.channels);
+    if (seed.consent === "consented") {
+      yield* Effect.promise(() =>
+        db.insert(ingestConsent).values({
+          guildId: seed.id,
+          grantedBy: OWNER,
+          grantedAt: SEEDED_AT,
+          noticeChannelId: noticeChannel.pipe(
+            Option.map(({ id }) => id),
+            Option.getOrElse(() => seed.id),
+          ),
+        }),
+      );
+    }
     const rows = yield* sealedRows(seed, yield* openGuildKey(wrappedKey));
     yield* Effect.promise(() => db.insert(message).values([...rows]));
   });
@@ -148,7 +183,10 @@ const seedScenario = (): Promise<void> =>
 const TextContent = Schema.Struct({ text: Schema.String });
 const ToolResult = Schema.Struct({ content: Schema.Tuple([TextContent]), isError: Schema.Boolean });
 const ToolResponse = Schema.fromJsonString(Schema.Struct({ result: ToolResult }));
-const IdList = Schema.fromJsonString(Schema.Array(Schema.Struct({ id: Schema.String })));
+const Ids = Schema.Array(Schema.Struct({ id: Schema.String }));
+const IdList = Schema.fromJsonString(Ids);
+const MessageList = Schema.fromJsonString(Schema.Struct({ messages: Ids }));
+const ReadIngest = Schema.fromJsonString(Schema.Struct({ ingest: Schema.String }));
 const ToolArguments = Schema.Record(Schema.String, Schema.String);
 const ToolParams = Schema.Struct({ name: Schema.String, arguments: ToolArguments });
 const ToolCall = Schema.fromJsonString(
@@ -162,6 +200,8 @@ const ToolCall = Schema.fromJsonString(
 const encodeToolCall = Schema.encodeEffect(ToolCall);
 const decodeToolResponse = Schema.decodeEffect(ToolResponse);
 const decodeIds = Schema.decodeEffect(IdList);
+const decodeMessages = Schema.decodeEffect(MessageList);
+const decodeReadIngest = Schema.decodeEffect(ReadIngest);
 
 type ToolOutcome = Readonly<{ text: string; isError: boolean }>;
 
@@ -212,6 +252,20 @@ const idsOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<readonly stri
     Effect.orDie,
   );
 
+const messageIdsOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<readonly string[]> =>
+  outcome.pipe(
+    Effect.flatMap(({ text }) => decodeMessages(text)),
+    Effect.map(({ messages }) => messages.map(({ id }) => id)),
+    Effect.orDie,
+  );
+
+const readIngestOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<string> =>
+  outcome.pipe(
+    Effect.flatMap(({ text }) => decodeReadIngest(text)),
+    Effect.map(({ ingest }) => ingest),
+    Effect.orDie,
+  );
+
 export {
   A_OPEN,
   A_OPEN_MESSAGE,
@@ -224,6 +278,8 @@ export {
   GUILD_B,
   GUILD_C,
   idsOf,
+  messageIdsOf,
+  readIngestOf,
   SAME_WORDS,
   seedScenario,
   USER,

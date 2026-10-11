@@ -7,6 +7,8 @@ type GatewayEvent = Readonly<{ event: string | null; data: unknown }>;
 
 type JobKind = MessageJob["kind"];
 
+const MESSAGES_PER_JOB = 100;
+
 const MessageEvent = Schema.Struct({
   id: Schema.String,
   channel_id: Schema.String,
@@ -87,5 +89,59 @@ const jobKeyOf = (job: GatewayJob): string => {
   return Array.headNonEmpty(job.messageIds);
 };
 
-export { jobKeyOf, subjectOf, toGatewayJob };
+type MessageChange = Readonly<{
+  kind: JobKind;
+  guildId: string;
+  channelId: string;
+  messageId: string;
+}>;
+
+const messageChangesOf = (job: GatewayJob): readonly MessageChange[] => {
+  if (job.kind === "join") {
+    return [];
+  }
+  return job.messageIds.map((messageId) => ({
+    kind: job.kind,
+    guildId: job.guildId,
+    channelId: job.channelId,
+    messageId,
+  }));
+};
+
+const joinedGuildsOf = (job: GatewayJob): readonly string[] => {
+  if (job.kind === "join") {
+    return [job.guildId];
+  }
+  return [];
+};
+
+const jobsOfGroup = (events: Array.NonEmptyReadonlyArray<MessageChange>): readonly GatewayJob[] => {
+  const { kind, guildId, channelId } = Array.headNonEmpty(events);
+  const messageIds = events.map(({ messageId }) => messageId);
+  return Array.chunksOf(messageIds, MESSAGES_PER_JOB).map((chunk): GatewayJob => ({
+    kind,
+    guildId,
+    channelId,
+    messageIds: chunk,
+  }));
+};
+
+const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
+  const latest = new Map(
+    jobs.flatMap((job) => messageChangesOf(job)).map((event) => [event.messageId, event]),
+  );
+  const groups = Array.groupBy(
+    [...latest.values()],
+    ({ kind, channelId }) => `${kind}:${channelId}`,
+  );
+  const joins = [...new Set(jobs.flatMap((job) => joinedGuildsOf(job)))].map(
+    (guildId): GatewayJob => ({
+      kind: "join",
+      guildId,
+    }),
+  );
+  return [...joins, ...Object.values(groups).flatMap((group) => jobsOfGroup(group))];
+};
+
+export { jobKeyOf, mergeJobs, subjectOf, toGatewayJob };
 export type { GatewayEvent };

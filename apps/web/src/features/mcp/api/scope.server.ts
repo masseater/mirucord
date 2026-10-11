@@ -1,19 +1,14 @@
 import { and, eq } from "drizzle-orm";
-import { Array, Effect, Option, pipe } from "effect";
+import { Array, Effect, Option } from "effect";
 
 import type { ChannelProgress, Consent } from "#/features/mcp/model/ingest-status";
-import {
-  channel,
-  db,
-  guild,
-  ingestConsent,
-  listGuildIds,
-  loadRolePermissions,
-} from "#/shared/db/index.server";
+import { channel, db, guild, ingestConsent, loadRolePermissions } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { visibleChannelIds } from "#/shared/permissions";
 import type { GuildChannel, GuildSnapshot } from "#/shared/permissions";
+
+const MEMBER_CONCURRENCY = 4;
 
 type StoredChannel = GuildChannel & ChannelProgress & Readonly<{ name: string }>;
 
@@ -25,6 +20,13 @@ type StoredGuild = Omit<GuildSnapshot, "channels"> &
     consent: Consent;
     channels: readonly StoredChannel[];
   }>;
+
+type ReadableGuild = Readonly<{
+  guildId: string;
+  name: string;
+  icon: string | null;
+  consent: Consent;
+}>;
 
 type GuildScope = Readonly<{
   guild: StoredGuild;
@@ -124,18 +126,41 @@ const resolveScope = ({
     ),
   );
 
+const consentOf = (granted: string | null): Consent =>
+  Option.match(Option.fromNullOr(granted), {
+    onNone: () => "notConsented",
+    onSome: () => "consented",
+  });
+
 const readableGuilds = (
   discordUserId: string,
-): Effect.Effect<readonly StoredGuild[], DiscordRequestError> =>
-  listGuildIds.pipe(
-    Effect.flatMap((guildIds) =>
-      pipe(
-        guildIds,
-        Effect.forEach((guildId) => resolveScope({ guildId, discordUserId })),
+): Effect.Effect<readonly ReadableGuild[], DiscordRequestError> =>
+  Effect.promise(() =>
+    db
+      .select({
+        guildId: guild.id,
+        name: guild.name,
+        icon: guild.icon,
+        granted: ingestConsent.guildId,
+      })
+      .from(guild)
+      .leftJoin(
+        ingestConsent,
+        and(eq(ingestConsent.guildId, guild.id), eq(ingestConsent.state, "granted")),
+      ),
+  ).pipe(
+    Effect.flatMap((rows) =>
+      Effect.forEach(
+        rows,
+        ({ granted, ...stored }) => {
+          const readable: ReadableGuild = { ...stored, consent: consentOf(granted) };
+          return findMember(stored.guildId, discordUserId).pipe(Effect.map(Option.as(readable)));
+        },
+        { concurrency: MEMBER_CONCURRENCY },
       ),
     ),
-    Effect.map((scopes) => Array.getSomes(scopes).map(({ guild: stored }) => stored)),
+    Effect.map(Array.getSomes),
   );
 
 export { readableGuilds, resolveScope };
-export type { GuildScope, StoredChannel, StoredGuild };
+export type { GuildScope, ReadableGuild, StoredChannel, StoredGuild };

@@ -114,6 +114,7 @@
       width: min(26rem, max(48cqw, 17rem));
       transform: translate(-50%, -50%);
       text-align: center;
+      word-break: auto-phrase;
       animation: scene-caption linear both;
       animation-timeline: --scene;
       animation-range: contain var(--from) contain var(--to);
@@ -411,30 +412,71 @@
     }
 
     .scene-frag {
+      display: block;
+      padding: 0;
+      border: 0;
+      background-color: transparent;
       animation:
         scene-frag-in linear both,
         scene-frag-move linear both,
-        scene-frag-found linear both,
-        scene-frag-carry linear forwards;
-      animation-timeline: --scene, --scene, --scene, --scene;
+        scene-frag-lift step-end forwards;
+      animation-timeline: --scene, --scene, --scene;
       animation-range:
         contain var(--in) contain calc(var(--in) + 4.06%),
         contain 0% contain 100%,
-        contain calc(var(--seen) + 0.42%) contain calc(var(--seen) + 1.25%),
-        contain calc(var(--seen) + 1.04%) contain calc(var(--seen) + 1.91%);
+        contain calc(var(--seen) + 0.55%) contain calc(var(--seen) + 0.56%);
+    }
+
+    .scene-frag-box {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--color-dc-line);
+      border-radius: var(--radius-lg);
+      background-color: var(--color-dc-sidebar);
+      animation:
+        scene-frag-dig linear both,
+        scene-frag-done linear forwards;
+      animation-iteration-count: 4, 1;
+      animation-timeline: --scene, --scene;
+      animation-range:
+        contain calc(var(--seen) + 0.55%) contain calc(var(--seen) + 1.1%),
+        contain calc(var(--seen) + 1.25%) contain calc(var(--seen) + 1.6%);
     }
 
     .scene-frag-ghost {
-      display: grid;
-      grid-template-rows: 1fr;
-      padding-block: 0.25rem;
-      animation: scene-frag-pull linear both;
+      display: block;
+      height: 3.25rem;
+      margin-top: 0.25rem;
+      overflow: hidden;
+    }
+
+    .scene-frag-scroll {
+      animation: scene-frag-scroll linear both;
+      animation-iteration-count: 3;
       animation-timeline: --scene;
-      animation-range: contain calc(var(--seen) + 0.55%) contain calc(var(--seen) + 1.04%);
+      animation-range: contain calc(var(--seen) + 0.55%) contain calc(var(--seen) + 1.1%);
+    }
+
+    .scene-frag-msg {
+      position: absolute;
+      inset-inline: 0;
+      top: 0;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--color-butter-deep);
+      border-radius: var(--radius-lg);
+      background-color: var(--color-dc-sidebar);
+      box-shadow: 0 0 0 3px var(--color-butter-deep);
+      animation:
+        scene-frag-pop linear both,
+        scene-frag-carry linear forwards;
+      animation-timeline: --scene, --scene;
+      animation-range:
+        contain calc(var(--seen) + 1%) contain calc(var(--seen) + 1.25%),
+        contain calc(var(--seen) + 1.25%) contain calc(var(--seen) + 1.91%);
     }
 
     .scene-frag:nth-child(1) {
       --seen: 75%;
+      --py: 1;
       --sx: -35.1cqw;
       --sy: -13.8cqh;
       --sr: -16deg;
@@ -442,6 +484,7 @@
 
     .scene-frag:nth-child(7) {
       --seen: 76.91%;
+      --py: 1;
       --sx: -14.6cqw;
       --sy: -33.3cqh;
       --sr: -6deg;
@@ -449,6 +492,7 @@
 
     .scene-frag:nth-child(2) {
       --seen: 78.82%;
+      --py: 1;
       --sx: 14.6cqw;
       --sy: -33.3cqh;
       --sr: 6deg;
@@ -456,6 +500,7 @@
 
     .scene-frag:nth-child(4) {
       --seen: 80.73%;
+      --py: -1;
       --sx: 35.1cqw;
       --sy: -13.8cqh;
       --sr: 16deg;
@@ -463,6 +508,7 @@
 
     .scene-frag:nth-child(6) {
       --seen: 82.64%;
+      --py: -1;
       --sx: 35.1cqw;
       --sy: 13.8cqh;
       --sr: -14deg;
@@ -470,6 +516,7 @@
 
     .scene-frag:nth-child(8) {
       --seen: 84.55%;
+      --py: -1;
       --sx: 14.6cqw;
       --sy: 33.3cqh;
       --sr: -6deg;
@@ -477,6 +524,7 @@
 
     .scene-frag:nth-child(5) {
       --seen: 86.46%;
+      --py: -1;
       --sx: -14.6cqw;
       --sy: 33.3cqh;
       --sr: 6deg;
@@ -484,6 +532,7 @@
 
     .scene-frag:nth-child(3) {
       --seen: 88.37%;
+      --py: -1;
       --sx: -35.1cqw;
       --sy: 13.8cqh;
       --sr: 14deg;
@@ -1036,11 +1085,24 @@
     rotate: 0deg;
     scale: 1.25;
   }
-  75.76%,
-  76.04% {
+  75.55% {
+    opacity: 1;
     translate: calc(-50% + -30.8cqw) calc(-50% + -33cqh);
     rotate: -12deg;
     scale: 0.9;
+  }
+  75.75%,
+  76% {
+    opacity: 0;
+    translate: calc(-50% + -30.8cqw) calc(-50% + -33cqh);
+    rotate: 0deg;
+    scale: 0.3;
+  }
+  76.25% {
+    opacity: 1;
+    translate: calc(-50% + -30.8cqw) calc(-50% + -33cqh);
+    rotate: 12deg;
+    scale: 1.1;
   }
   76.91% {
     opacity: 1;
@@ -1048,11 +1110,24 @@
     rotate: 0deg;
     scale: 1.25;
   }
-  77.67%,
-  77.95% {
+  77.46% {
+    opacity: 1;
     translate: calc(-50% + 1.1cqw) calc(-50% + -44cqh);
     rotate: 12deg;
     scale: 0.9;
+  }
+  77.66%,
+  77.91% {
+    opacity: 0;
+    translate: calc(-50% + 1.1cqw) calc(-50% + -44cqh);
+    rotate: 0deg;
+    scale: 0.3;
+  }
+  78.16% {
+    opacity: 1;
+    translate: calc(-50% + 1.1cqw) calc(-50% + -44cqh);
+    rotate: -12deg;
+    scale: 1.1;
   }
   78.82% {
     opacity: 1;
@@ -1060,11 +1135,24 @@
     rotate: 0deg;
     scale: 1.25;
   }
-  79.58%,
-  79.86% {
+  79.37% {
+    opacity: 1;
     translate: calc(-50% + 29.7cqw) calc(-50% + -34.1cqh);
     rotate: -12deg;
     scale: 0.9;
+  }
+  79.57%,
+  79.82% {
+    opacity: 0;
+    translate: calc(-50% + 29.7cqw) calc(-50% + -34.1cqh);
+    rotate: 0deg;
+    scale: 0.3;
+  }
+  80.07% {
+    opacity: 1;
+    translate: calc(-50% + 29.7cqw) calc(-50% + -34.1cqh);
+    rotate: 12deg;
+    scale: 1.1;
   }
   80.73% {
     opacity: 1;
@@ -1072,11 +1160,24 @@
     rotate: 0deg;
     scale: 1.25;
   }
-  81.49%,
-  81.77% {
+  81.28% {
+    opacity: 1;
     translate: calc(-50% + 33cqw) calc(-50% + 3.3cqh);
     rotate: 12deg;
     scale: 0.9;
+  }
+  81.48%,
+  81.73% {
+    opacity: 0;
+    translate: calc(-50% + 33cqw) calc(-50% + 3.3cqh);
+    rotate: 0deg;
+    scale: 0.3;
+  }
+  81.98% {
+    opacity: 1;
+    translate: calc(-50% + 33cqw) calc(-50% + 3.3cqh);
+    rotate: -12deg;
+    scale: 1.1;
   }
   82.64% {
     opacity: 1;
@@ -1084,11 +1185,24 @@
     rotate: 0deg;
     scale: 1.25;
   }
-  83.4%,
-  83.68% {
+  83.19% {
+    opacity: 1;
     translate: calc(-50% + 27.5cqw) calc(-50% + 35.2cqh);
     rotate: -12deg;
     scale: 0.9;
+  }
+  83.39%,
+  83.64% {
+    opacity: 0;
+    translate: calc(-50% + 27.5cqw) calc(-50% + 35.2cqh);
+    rotate: 0deg;
+    scale: 0.3;
+  }
+  83.89% {
+    opacity: 1;
+    translate: calc(-50% + 27.5cqw) calc(-50% + 35.2cqh);
+    rotate: 12deg;
+    scale: 1.1;
   }
   84.55% {
     opacity: 1;
@@ -1096,11 +1210,24 @@
     rotate: 0deg;
     scale: 1.25;
   }
-  85.31%,
-  85.59% {
+  85.1% {
+    opacity: 1;
     translate: calc(-50% + -1.1cqw) calc(-50% + 44cqh);
     rotate: 12deg;
     scale: 0.9;
+  }
+  85.3%,
+  85.55% {
+    opacity: 0;
+    translate: calc(-50% + -1.1cqw) calc(-50% + 44cqh);
+    rotate: 0deg;
+    scale: 0.3;
+  }
+  85.8% {
+    opacity: 1;
+    translate: calc(-50% + -1.1cqw) calc(-50% + 44cqh);
+    rotate: -12deg;
+    scale: 1.1;
   }
   86.46% {
     opacity: 1;
@@ -1108,11 +1235,24 @@
     rotate: 0deg;
     scale: 1.25;
   }
-  87.22%,
-  87.5% {
+  87.01% {
+    opacity: 1;
     translate: calc(-50% + -27.5cqw) calc(-50% + 34.1cqh);
     rotate: -12deg;
     scale: 0.9;
+  }
+  87.21%,
+  87.46% {
+    opacity: 0;
+    translate: calc(-50% + -27.5cqw) calc(-50% + 34.1cqh);
+    rotate: 0deg;
+    scale: 0.3;
+  }
+  87.71% {
+    opacity: 1;
+    translate: calc(-50% + -27.5cqw) calc(-50% + 34.1cqh);
+    rotate: 12deg;
+    scale: 1.1;
   }
   88.37% {
     opacity: 1;
@@ -1120,11 +1260,24 @@
     rotate: 0deg;
     scale: 1.25;
   }
-  89.13%,
-  89.41% {
+  88.92% {
+    opacity: 1;
     translate: calc(-50% + -34.1cqw) calc(-50% + 1.1cqh);
     rotate: 12deg;
     scale: 0.9;
+  }
+  89.12%,
+  89.37% {
+    opacity: 0;
+    translate: calc(-50% + -34.1cqw) calc(-50% + 1.1cqh);
+    rotate: 0deg;
+    scale: 0.3;
+  }
+  89.62% {
+    opacity: 1;
+    translate: calc(-50% + -34.1cqw) calc(-50% + 1.1cqh);
+    rotate: -12deg;
+    scale: 1.1;
   }
   90.28% {
     opacity: 1;
@@ -1145,15 +1298,45 @@
   }
 }
 
-@keyframes scene-frag-found {
-  0%,
-  100% {
-    border-color: var(--color-dc-line);
+@keyframes scene-frag-lift {
+  to {
+    z-index: 2;
   }
-  30%,
-  70% {
+}
+
+@keyframes scene-frag-dig {
+  25% {
+    rotate: -3deg;
     border-color: var(--color-butter-deep);
-    box-shadow: 0 0 0 3px var(--color-butter-deep);
+  }
+  75% {
+    rotate: 3deg;
+    border-color: var(--color-butter-deep);
+  }
+}
+
+@keyframes scene-frag-done {
+  to {
+    opacity: 0.35;
+  }
+}
+
+@keyframes scene-frag-scroll {
+  to {
+    translate: 0 -50%;
+  }
+}
+
+@keyframes scene-frag-pop {
+  from {
+    opacity: 0;
+    translate: 0 0;
+    scale: 0.3;
+  }
+  to {
+    opacity: 1;
+    translate: 0 calc(var(--py) * 105%);
+    scale: 1.05;
   }
 }
 
@@ -1284,16 +1467,16 @@
 
 @keyframes scene-frag-carry {
   0% {
-    translate: calc(var(--x) * 1.1) calc(var(--y) * 1.1);
+    translate: 0 calc(var(--py) * 105%);
     rotate: 0deg;
-    scale: 1;
+    scale: 1.05;
   }
   55% {
-    translate: 0 -4cqh;
+    translate: calc(var(--x) * -1.1) calc(-4cqh - var(--y) * 1.1);
     scale: 0.7;
   }
   100% {
-    translate: var(--sx) var(--sy);
+    translate: calc(var(--sx) - var(--x) * 1.1) calc(var(--sy) - var(--y) * 1.1);
     rotate: var(--sr);
     scale: 0.6;
   }
@@ -1322,13 +1505,5 @@
   100% {
     opacity: 0;
     --found: 8;
-  }
-}
-
-@keyframes scene-frag-pull {
-  to {
-    grid-template-rows: 0fr;
-    padding-block: 0;
-    opacity: 0;
   }
 }

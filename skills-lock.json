@@ -17,17 +17,17 @@
     },
     "cloudflare": {
       "source": "cloudflare/skills",
-      "ref": "c430dd965cea3a8faf0ef035e3b3d73b38518081",
+      "ref": "0871daceb347e3c51693fbe9c77555468df7e410",
       "sourceType": "github",
       "skillPath": "skills/cloudflare/SKILL.md",
-      "computedHash": "ec9de05454b2c5101c92d9e4927065258c090fa5207a106d764f7cc07ed55dbb"
+      "computedHash": "4f0291c3924bb6cfec5311b23cc9798ee0292c055ce88543cf2d2cc3001174f6"
     },
     "effect-ts": {
       "source": "Effect-TS/skills",
-      "ref": "2309e6f27d9955b434c0e3f394b945c136e89fd2",
+      "ref": "155c50c911f9c99c294ef8a4461981c5bbe6453e",
       "sourceType": "github",
       "skillPath": "skills/effect-ts/SKILL.md",
-      "computedHash": "6bdb9b95aa83071eca2f67ae947b7d398a22e9e6e08f6cfa35de9516b03efa6e"
+      "computedHash": "cb225ba5dda169883dfee680fba6c570c89245ba19242a9bc5c3f2ac8218a55f"
     },
     "elysiajs": {
       "source": "elysiajs/skills",
@@ -59,7 +59,7 @@
     },
     "shadcn": {
       "source": "shadcn-ui/ui",
-      "ref": "c2a67849be260701852b0977ba15eb5f3a0ce2a4",
+      "ref": "2d3f1cd436b18ea12f24130de4df781355925b08",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "da388f632cd83783c02967446e21941c9ee8291ccb43ba74c23f7d4e9b7c298c"
@@ -94,7 +94,7 @@
     },
     "workers-best-practices": {
       "source": "cloudflare/skills",
-      "ref": "c430dd965cea3a8faf0ef035e3b3d73b38518081",
+      "ref": "0871daceb347e3c51693fbe9c77555468df7e410",
       "sourceType": "github",
       "skillPath": "skills/workers-best-practices/SKILL.md",
       "computedHash": "e1c30e93854345114dfa6a0a077363119eb99c03e5c64a8f2109349802e1f2aa"

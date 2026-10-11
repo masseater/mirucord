@@ -98,3 +98,4 @@ packageExtensions:
 patchedDependencies:
   "@better-auth/oauth-provider@1.7.7": patches/@better-auth__oauth-provider@1.7.7.patch
   "@tanstack/eslint-plugin-start@0.1.0": patches/@tanstack__eslint-plugin-start@0.1.0.patch
+  jev-lint@0.7.0: patches/jev-lint@0.7.0.patch

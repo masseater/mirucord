@@ -13,9 +13,9 @@ vp run verify
 
 ルートの `.env` に書く。
 
-| 名前                 | 用途                              |
-| -------------------- | --------------------------------- |
-| `OPENROUTER_API_KEY` | jev-lint（`vp run verify`）の判定 |
+| 名前                 | 用途                          |
+| -------------------- | ----------------------------- |
+| `OPENROUTER_API_KEY` | push 前に走る jev-lint の判定 |
 
 `apps/web/.env` に書く。
 

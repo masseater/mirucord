@@ -4,6 +4,7 @@ import { Array, Data, Effect, Schedule } from "effect";
 const VECTOR_DELETE_LIMIT = 100;
 const VECTOR_GET_LIMIT = 20;
 const RETRY_TIMES = 4;
+const VECTORIZE_CONCURRENCY = 4;
 const RETRY_BASE = "200 millis";
 
 class VectorizeError extends Data.TaggedError("VectorizeError")<{ readonly cause: unknown }> {}
@@ -19,7 +20,7 @@ const deleteVectors = (ids: readonly string[]): Effect.Effect<void, VectorizeErr
   Effect.forEach(
     Array.chunksOf(ids, VECTOR_DELETE_LIMIT),
     (chunk) => callVectorize(() => env.MESSAGES.deleteByIds([...chunk])),
-    { discard: true },
+    { discard: true, concurrency: VECTORIZE_CONCURRENCY },
   );
 
 type MessageVector = Readonly<{
@@ -48,8 +49,10 @@ const upsertVectors = (vectors: readonly MessageVector[]): Effect.Effect<void, V
   Array.match(vectors, { onEmpty: () => Effect.void, onNonEmpty: upsertAll });
 
 const indexedIds = (ids: readonly string[]): Effect.Effect<ReadonlySet<string>, VectorizeError> =>
-  Effect.forEach(Array.chunksOf(ids, VECTOR_GET_LIMIT), (chunk) =>
-    callVectorize(() => env.MESSAGES.getByIds([...chunk])),
+  Effect.forEach(
+    Array.chunksOf(ids, VECTOR_GET_LIMIT),
+    (chunk) => callVectorize(() => env.MESSAGES.getByIds([...chunk])),
+    { concurrency: VECTORIZE_CONCURRENCY },
   ).pipe(Effect.map((found) => new Set(found.flat().map(({ id }) => id))));
 
 export { deleteVectors, indexedIds, upsertVectors, VectorizeError };

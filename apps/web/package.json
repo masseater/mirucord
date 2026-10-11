@@ -46,6 +46,7 @@
     "effect": "catalog:stack",
     "elysia": "catalog:stack",
     "jose": "catalog:",
+    "js-base64": "catalog:",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "scheduler": "0.28.0",

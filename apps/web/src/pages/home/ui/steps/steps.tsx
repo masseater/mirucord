@@ -11,7 +11,7 @@ import { SystemMessage } from "#/pages/home/ui/message/system-message";
 import { StepList } from "./step-list";
 
 const LEAD = "3 ステップで";
-const TAIL = "すぐ使えるよ";
+const TAIL = "使えるよ";
 const GUIDE = "たった 3 つだよ！";
 const CHANNEL = "はじめかた";
 const TIME = "今日 21:03";
@@ -20,7 +20,7 @@ const JOINED = "がサーバーに参加しました。";
 const REGISTERED: ChatLine = {
   author: memberAuthor(MEMBERS.kenta),
   time: "今日 21:03",
-  text: "登録したらすぐ使えた",
+  text: "取り込みが終わったら使えた",
   reactions: [{ emoji: "🎉", count: 3, by: "others" }],
 };
 

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
-import { disconnectConnectedApp, settingsQuery } from "#/pages/settings/api/settings";
+import { dashboardQuery, disconnectConnectedApp } from "#/pages/dashboard/api/dashboard";
 import type { ConnectedApp } from "#/shared/auth/index.server";
 import { PopButton } from "#/shared/ui/pop-button";
 
@@ -13,7 +13,7 @@ const ConnectedAppRow = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode =>
   const queryClient = useQueryClient();
   const { mutate, status } = useMutation({
     mutationFn: disconnectConnectedApp,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: settingsQuery.queryKey }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: dashboardQuery.queryKey }),
   });
   const disconnect = useCallback(() => {
     mutate(app.clientId);

@@ -3,7 +3,7 @@ import { Option } from "effect";
 import type { ReactNode } from "react";
 
 import { DiscordSignIn } from "#/features/sign-in";
-import { SETTINGS_PATH } from "#/shared/config";
+import { DASHBOARD_PATH } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
@@ -12,7 +12,7 @@ const TIP = "おかえり！";
 const TITLE = "mirucord にログイン";
 
 const callbackUrlOf = (search: string): string | undefined =>
-  Option.getOrUndefined(Option.liftPredicate(SETTINGS_PATH, () => search === ""));
+  Option.getOrUndefined(Option.liftPredicate(DASHBOARD_PATH, () => search === ""));
 
 const SignInPage = (): ReactNode => {
   const search = useLocation({ select: ({ searchStr }) => searchStr });

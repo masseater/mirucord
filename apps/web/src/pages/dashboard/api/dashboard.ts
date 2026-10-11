@@ -14,6 +14,7 @@ import type {
 
 import {
   consentTo,
+  disconnectFor,
   loadDashboard,
   loadForumPosts,
   loadGuildPage,
@@ -26,6 +27,7 @@ import type {
   ChannelTarget,
   ConsentInput,
   Dashboard,
+  DisconnectResult,
   GuildPage,
   SignedOut,
 } from "./dashboard.server";
@@ -47,6 +49,8 @@ const pollWhileWithdrawing = (dashboard: Option.Option<Dashboard>): number | fal
   );
 
 const GuildInput = Schema.Struct({ guildId: Schema.String });
+
+const AppInput = Schema.Struct({ clientId: Schema.String });
 
 const ChannelInput = Schema.Struct({ guildId: Schema.String, channelId: Schema.String });
 
@@ -155,12 +159,20 @@ const saveConsent = (input: ConsentInput): Promise<ConsentResult | SignedOut> =>
 const withdrawConsent = (guildId: string): Promise<RevokeResult | SignedOut> =>
   postRevoke({ data: { guildId } });
 
+const postDisconnect = createServerFn({ method: "POST" })
+  .validator(Schema.toStandardSchemaV1(AppInput))
+  .handler(({ data }) => Effect.runPromise(disconnectFor(data.clientId)));
+
+const disconnectConnectedApp = (clientId: string): Promise<DisconnectResult> =>
+  postDisconnect({ data: { clientId } });
+
 const purgeStoredChannel = (input: typeof ChannelInput.Type): Promise<PurgeResult | SignedOut> =>
   postPurge({ data: input });
 
 export type { ForumPostsOutcome, RefreshOutcome, RefreshTarget };
 export {
   dashboardQuery,
+  disconnectConnectedApp,
   forumPostsQuery,
   guildPageQuery,
   purgeStoredChannel,

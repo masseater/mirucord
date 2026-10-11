@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
-import { DASHBOARD_PATH, SETTINGS_PATH } from "#/shared/config";
+import { DASHBOARD_PATH } from "#/shared/config";
 
 const BRAND = "mirucord";
 const DASHBOARD = "管理画面";
-const SETTINGS = "設定";
 
 const AppHeader = (): ReactNode => (
   <header className="mx-auto flex h-20 w-full max-w-3xl items-center justify-between px-5">
@@ -13,14 +12,9 @@ const AppHeader = (): ReactNode => (
       <Mascot className="size-10" />
       {BRAND}
     </a>
-    <nav className="flex items-center gap-5 text-sm font-bold">
-      <a href={SETTINGS_PATH} className="hover:text-grape no-underline">
-        {SETTINGS}
-      </a>
-      <a href={DASHBOARD_PATH} className="hover:text-grape no-underline">
-        {DASHBOARD}
-      </a>
-    </nav>
+    <a href={DASHBOARD_PATH} className="hover:text-grape text-sm font-bold no-underline">
+      {DASHBOARD}
+    </a>
   </header>
 );
 

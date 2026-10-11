@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { ReadableGuild } from "#/pages/settings/api/settings.server";
+import type { ReadableGuild } from "#/pages/dashboard/api/dashboard.server";
 import { Pill } from "#/shared/ui/pill";
 
 const CONSENT = {

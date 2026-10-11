@@ -3,9 +3,9 @@ import { Effect, Option, Schema } from "effect";
 
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
-import { verifyGatewayEvent } from "#/shared/crypto/index";
 
 import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
+import { verifyGatewayEvent } from "./gateway-signature";
 import type { IngestError } from "./message-page.server";
 
 const PROCESSED = 200;

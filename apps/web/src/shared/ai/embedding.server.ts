@@ -1,8 +1,7 @@
 import { env } from "cloudflare:workers";
 import { Array, Data, Effect, Schedule } from "effect";
 
-const MODEL = "@cf/pfnet/plamo-embedding-1b";
-const QUERY_INSTRUCTION = "次の文章に対して、関連する文章を検索してください: ";
+const MODEL = "@cf/baai/bge-m3";
 const RETRY_TIMES = 4;
 const RETRY_BASE = "200 millis";
 
@@ -12,7 +11,7 @@ const embedAll = (
   texts: Array.NonEmptyReadonlyArray<string>,
 ): Effect.Effect<readonly (readonly number[])[], EmbeddingError> =>
   Effect.tryPromise({
-    try: () => env.AI.run(MODEL, { text: [...texts] }),
+    try: () => env.AI.run(MODEL, { text: [...texts], truncate_inputs: true }),
     catch: (cause) => new EmbeddingError({ cause }),
   }).pipe(
     Effect.flatMap((output) => {
@@ -29,13 +28,4 @@ const embed = (
 ): Effect.Effect<readonly (readonly number[])[], EmbeddingError> =>
   Array.match(texts, { onEmpty: () => Effect.succeed([]), onNonEmpty: embedAll });
 
-const embedQuery = (query: string): Effect.Effect<readonly number[], EmbeddingError> =>
-  embedAll([`${QUERY_INSTRUCTION}${query}`]).pipe(
-    Effect.flatMap((vectors) =>
-      Effect.fromOption(Array.head(vectors)).pipe(
-        Effect.mapError(() => new EmbeddingError({ cause: `${MODEL} returned no embeddings` })),
-      ),
-    ),
-  );
-
-export { embed, embedQuery, EmbeddingError };
+export { embed, EmbeddingError };

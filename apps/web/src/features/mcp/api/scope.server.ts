@@ -1,16 +1,29 @@
 import { and, eq } from "drizzle-orm";
 import { Array, Effect, Option, pipe } from "effect";
 
-import { channel, db, guild, listGuildIds, loadRolePermissions } from "#/shared/db/index.server";
+import type { ChannelProgress, Consent } from "#/features/mcp/model/ingest-status";
+import {
+  channel,
+  db,
+  guild,
+  ingestConsent,
+  listGuildIds,
+  loadRolePermissions,
+} from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { visibleChannelIds } from "#/shared/permissions";
 import type { GuildChannel, GuildSnapshot } from "#/shared/permissions";
 
-type StoredChannel = GuildChannel & Readonly<{ name: string }>;
+type StoredChannel = GuildChannel & ChannelProgress & Readonly<{ name: string }>;
 
 type StoredGuild = Omit<GuildSnapshot, "channels"> &
-  Readonly<{ name: string; wrappedKey: string; channels: readonly StoredChannel[] }>;
+  Readonly<{
+    name: string;
+    wrappedKey: string;
+    consent: Consent;
+    channels: readonly StoredChannel[];
+  }>;
 
 type GuildScope = Readonly<{
   guild: StoredGuild;
@@ -26,12 +39,30 @@ const loadChannels = (guildId: string): Effect.Effect<readonly StoredChannel[]> 
         parentId: channel.parentId,
         type: channel.type,
         permissionOverwrites: channel.permissionOverwrites,
+        newest: channel.newestMessageId,
+        backfill: channel.backfill,
       })
       .from(channel)
       .where(and(eq(channel.guildId, guildId), eq(channel.botAccess, "readable"))),
   ).pipe(
     Effect.map((rows) =>
-      rows.map((row) => ({ ...row, parentId: Option.fromNullOr(row.parentId) })),
+      rows.map((row) => ({
+        ...row,
+        parentId: Option.fromNullOr(row.parentId),
+        newest: Option.fromNullOr(row.newest),
+      })),
+    ),
+  );
+
+const loadConsent = (guildId: string): Effect.Effect<Consent> =>
+  Effect.promise(() =>
+    db
+      .select({ guildId: ingestConsent.guildId })
+      .from(ingestConsent)
+      .where(eq(ingestConsent.guildId, guildId)),
+  ).pipe(
+    Effect.map((rows): Consent =>
+      Array.match(rows, { onEmpty: () => "notConsented", onNonEmpty: () => "consented" }),
     ),
   );
 
@@ -50,6 +81,7 @@ const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =
           Effect.all({
             channels: loadChannels(guildId),
             rolePermissions: loadRolePermissions(guildId),
+            consent: loadConsent(guildId),
           }).pipe(Effect.map((parts) => Option.some({ ...row, ...parts, guildId }))),
       }),
     ),

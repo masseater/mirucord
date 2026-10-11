@@ -16,6 +16,8 @@ import {
   GUILD_B,
   GUILD_C,
   idsOf,
+  messageIdsOf,
+  readIngestOf,
   SAME_WORDS,
   seedScenario,
   USER,
@@ -87,7 +89,7 @@ it.effect("asks the vector index only for the requested server and its readable 
 
 it.effect("drops other servers and unreadable channels even if the index returns them", () =>
   Effect.gen(function* search() {
-    const ids = yield* idsOf(
+    const ids = yield* messageIdsOf(
       callTool({ name: "search_messages", args: { serverId: GUILD_A, query: SAME_WORDS } }),
     );
     expect(ids).toStrictEqual([A_OPEN_MESSAGE]);
@@ -122,10 +124,24 @@ it.effect("refuses to read an unreadable channel or one from another server", ()
 
 it.effect("reads a readable channel of the requested server", () =>
   Effect.gen(function* read() {
-    const ids = yield* idsOf(
+    const ids = yield* messageIdsOf(
       callTool({ name: "read_messages", args: { serverId: GUILD_A, channelId: A_OPEN } }),
     );
     expect(ids).toStrictEqual([A_OPEN_MESSAGE]);
+  }),
+);
+
+it.effect("tells a channel without consent apart from one that has no messages", () =>
+  Effect.gen(function* readIngest() {
+    const ingests = yield* Effect.all([
+      readIngestOf(
+        callTool({ name: "read_messages", args: { serverId: GUILD_A, channelId: A_OPEN } }),
+      ),
+      readIngestOf(
+        callTool({ name: "read_messages", args: { serverId: GUILD_B, channelId: B_OPEN } }),
+      ),
+    ]);
+    expect(ingests).toStrictEqual(["done", "notConsented"]);
   }),
 );
 

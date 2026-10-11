@@ -2,7 +2,11 @@ import { Schema } from "effect";
 
 const INGEST_MAX_RETRIES = 5;
 
-const IngestJobSchema = Schema.Struct({ guildId: Schema.String, channelId: Schema.String });
+const IngestJobSchema = Schema.Struct({
+  guildId: Schema.String,
+  channelId: Schema.String,
+  resumeBefore: Schema.optionalKey(Schema.String),
+});
 
 const WithdrawJobSchema = Schema.Struct({
   kind: Schema.Literal("withdraw"),

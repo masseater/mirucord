@@ -1,5 +1,6 @@
-import { and, eq } from "drizzle-orm";
-import { Array, Boolean, DateTime, Effect, Number, Option, pipe } from "effect";
+import { and, eq, isNull } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
+import { Array, Boolean, DateTime, Effect, Number, Option } from "effect";
 
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKey } from "#/shared/crypto/index.server";
@@ -8,6 +9,7 @@ import { FORBIDDEN } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
 import { columnsOf } from "./bot-access.server";
+import { enqueue } from "./enqueue.server";
 import {
   fetchAndStore,
   idsOf,
@@ -17,9 +19,7 @@ import {
   oldestId,
 } from "./message-page.server";
 import type { IngestError, StoreTarget } from "./message-page.server";
-import { channelMessagesSince, deleteMessages } from "./message-rows.server";
-import type { VectorizeError } from "./message-rows.server";
-import { sweepHistory } from "./sweep-history.server";
+import { removeDeleted, sweepHistory } from "./sweep-history.server";
 
 const MAX_PAGES_PER_RUN = 5;
 const LAST_PAGE = 1;
@@ -62,33 +62,6 @@ const loadProgress = (job: IngestJob): Effect.Effect<Option.Option<ChannelProgre
         ),
       ),
   ).pipe(Effect.map(Array.head));
-
-const oldestTimestamp = (page: readonly DiscordMessage[]): Option.Option<DateTime.DateTime> =>
-  Array.match(page, {
-    onEmpty: () => Option.none(),
-    onNonEmpty: (nonEmpty) => {
-      const timestamps = pipe(
-        nonEmpty,
-        Array.map(({ timestamp }) => timestamp),
-      );
-      return Option.some(Array.min(timestamps, DateTime.Order));
-    },
-  });
-
-const removeDeleted = (
-  job: IngestJob,
-  latest: readonly DiscordMessage[],
-): Effect.Effect<void, VectorizeError> => {
-  const since = Option.some(latest).pipe(
-    Option.filter(isFullPage),
-    Option.flatMap(oldestTimestamp),
-  );
-  const present = new Set(idsOf(latest));
-  return channelMessagesSince({ channelId: job.channelId, since }).pipe(
-    Effect.map((stored) => stored.filter((id) => !present.has(id))),
-    Effect.flatMap(deleteMessages),
-  );
-};
 
 const pageForward = (
   target: StoreTarget,
@@ -178,32 +151,74 @@ type Progress = Readonly<{
   sweep: Option.Option<string>;
 }>;
 
-const saveProgress = (job: IngestJob, { newest, history, sweep }: Progress): Effect.Effect<void> =>
-  Effect.asVoid(
-    Effect.promise(() =>
-      db
-        .update(channel)
-        .set({
-          newestMessageId: Option.getOrNull(newest),
-          oldestMessageId: Option.getOrNull(history.oldest),
-          backfill: history.backfill,
-          sweepCursor: Option.getOrNull(sweep),
-        })
-        .where(eq(channel.id, job.channelId)),
-    ),
+type Saved = "saved" | "superseded";
+
+const sameOldest = (oldest: string | null): SQL =>
+  Option.match(Option.fromNullOr(oldest), {
+    onNone: () => isNull(channel.oldestMessageId),
+    onSome: (id) => eq(channel.oldestMessageId, id),
+  });
+
+const saveProgress = (
+  job: IngestJob,
+  previous: ChannelProgress,
+  { newest, history, sweep }: Progress,
+): Effect.Effect<Saved> =>
+  Effect.promise(() =>
+    db
+      .update(channel)
+      .set({
+        newestMessageId: Option.getOrNull(newest),
+        oldestMessageId: Option.getOrNull(history.oldest),
+        backfill: history.backfill,
+        sweepCursor: Option.getOrNull(sweep),
+      })
+      .where(and(eq(channel.id, job.channelId), sameOldest(previous.oldest)))
+      .returning({ id: channel.id }),
+  ).pipe(
+    Effect.map((rows): Saved => {
+      if (Array.isReadonlyArrayEmpty(rows)) {
+        return "superseded";
+      }
+      return "saved";
+    }),
   );
+
+const continueBackfill = (job: IngestJob, history: History): Effect.Effect<void> => {
+  if (history.backfill === "done") {
+    return Effect.void;
+  }
+  return Option.match(history.oldest, {
+    onNone: () => Effect.void,
+    onSome: (resumeBefore) =>
+      enqueue([{ guildId: job.guildId, channelId: job.channelId, resumeBefore }]).pipe(
+        Effect.andThen(Effect.logInfo("Backfill continues")),
+        Effect.annotateLogs({ guildId: job.guildId, channelId: job.channelId, resumeBefore }),
+      ),
+  });
+};
 
 const ingestWith = (job: IngestJob, progress: ChannelProgress): Effect.Effect<void, IngestError> =>
   Effect.gen(function* ingest() {
     const key = yield* openGuildKey(progress.wrappedKey);
     const target = { key, job };
     const latest = yield* fetchAndStore({ target, request: { direction: "latest" } });
-    yield* removeDeleted(job, latest);
+    yield* removeDeleted({ channelId: job.channelId, latest });
     const newest = yield* advanceNewest(target, progress, latest);
     const history = yield* advanceOldest(target, progress, latest);
     const sweep = yield* sweepHistory({ target, sweep: Option.fromNullOr(progress.sweep), latest });
-    yield* saveProgress(job, { newest, history, sweep });
+    const saved = yield* saveProgress(job, progress, { newest, history, sweep });
+    if (saved === "saved") {
+      yield* continueBackfill(job, history);
+    }
   });
+
+const isSuperseded = (job: IngestJob, progress: ChannelProgress): boolean =>
+  Option.fromUndefinedOr(job.resumeBefore).pipe(
+    Option.exists(
+      (resumeBefore) => progress.backfill === "done" || progress.oldest !== resumeBefore,
+    ),
+  );
 
 const pauseHidden = (job: IngestJob): Effect.Effect<void> =>
   DateTime.now.pipe(
@@ -227,7 +242,12 @@ const ingestChannel = (job: IngestJob): Effect.Effect<void, IngestError> =>
     Effect.flatMap(
       Option.match({
         onNone: () => Effect.void,
-        onSome: (progress) => ingestWith(job, progress),
+        onSome: (progress) => {
+          if (isSuperseded(job, progress)) {
+            return Effect.void;
+          }
+          return ingestWith(job, progress);
+        },
       }),
     ),
     Effect.catchTag("DiscordRequestError", (failure) => {

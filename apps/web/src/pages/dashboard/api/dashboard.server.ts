@@ -1,6 +1,6 @@
 import { getRequest } from "@tanstack/react-start/server";
 import { eq } from "drizzle-orm";
-import { Boolean, Cause, Effect, Option } from "effect";
+import { Cause, Effect, Option } from "effect";
 
 import {
   forumPosts,
@@ -34,7 +34,6 @@ type ReadableGuild = Readonly<{
   id: string;
   name: string;
   icon: string | null;
-  consent: "awaiting" | "granted";
 }>;
 
 type GuildListing =
@@ -98,22 +97,16 @@ const consentedGuildIds: Effect.Effect<readonly string[]> = Effect.promise(() =>
     .where(eq(ingestConsent.state, "granted")),
 ).pipe(Effect.map((rows) => rows.map(({ guildId }) => guildId)));
 
-const consentOf = (consented: readonly string[], guildId: string): ReadableGuild["consent"] =>
-  Boolean.match(consented.includes(guildId), {
-    onFalse: () => "awaiting",
-    onTrue: () => "granted",
-  });
-
 const listReadable = (discordUserId: string): Effect.Effect<GuildListing> =>
-  Effect.all({ guilds: readableGuilds(discordUserId), consented: consentedGuildIds }).pipe(
+  Effect.all(
+    { guilds: readableGuilds(discordUserId), consented: consentedGuildIds },
+    { concurrency: "unbounded" },
+  ).pipe(
     Effect.map(({ guilds, consented }): GuildListing => ({
       status: "ready",
-      guilds: guilds.map(({ guildId, name, icon }) => ({
-        id: guildId,
-        name,
-        icon,
-        consent: consentOf(consented, guildId),
-      })),
+      guilds: guilds
+        .filter(({ guildId }) => consented.includes(guildId))
+        .map(({ guildId, name, icon }) => ({ id: guildId, name, icon })),
     })),
     Effect.catchTag("DiscordRequestError", () =>
       Effect.logWarning("Could not list readable servers").pipe(
@@ -123,11 +116,14 @@ const listReadable = (discordUserId: string): Effect.Effect<GuildListing> =>
   );
 
 const loadDashboard: Effect.Effect<Dashboard> = withSignedInAccount((user) =>
-  Effect.all({
-    guilds: listManagedGuilds(user.discordUserId),
-    readable: listReadable(user.discordUserId),
-    apps: listConnectedApps(user.userId),
-  }).pipe(
+  Effect.all(
+    {
+      guilds: listManagedGuilds(user.discordUserId),
+      readable: listReadable(user.discordUserId),
+      apps: listConnectedApps(user.userId),
+    },
+    { concurrency: "unbounded" },
+  ).pipe(
     Effect.map((parts): Dashboard => ({
       status: "ready",
       name: user.name,

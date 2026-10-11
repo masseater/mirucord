@@ -1,10 +1,10 @@
-import { DateTime, Effect, Option } from "effect";
+import { Boolean, DateTime, Effect, Option } from "effect";
 
 import { isNoticeCandidate } from "#/features/ingest/model/channel-ingest";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { MASCOT_NAME, PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
 import { db, ingestConsent } from "#/shared/db/index.server";
-import { postChannelMessage } from "#/shared/discord/index.server";
+import { FORBIDDEN, postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
 import { refreshIngest } from "./consent-scope.server";
@@ -25,6 +25,7 @@ type ConsentResult =
   | Readonly<{ status: "saved" }>
   | Readonly<{ status: "forbidden" }>
   | Readonly<{ status: "invalid" }>
+  | Readonly<{ status: "noticeForbidden" }>
   | Readonly<{ status: "noticeFailed" }>;
 
 type RevokeResult = Readonly<{ status: "withdrawing" }> | Readonly<{ status: "forbidden" }>;
@@ -40,22 +41,33 @@ const NOTICE = [
 const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean =>
   channels.some((channel) => isNoticeCandidate(channel) && channel.id === request.noticeChannelId);
 
-const postNoticeOnce = (request: ConsentRequest, scope: ConsentScope): Effect.Effect<boolean> => {
+type NoticePost = "posted" | "noticeForbidden" | "noticeFailed";
+
+const noticeFailureOf = (status: Option.Option<number>): NoticePost =>
+  Boolean.match(Option.contains(status, FORBIDDEN), {
+    onTrue: () => "noticeForbidden",
+    onFalse: () => "noticeFailed",
+  });
+
+const postNoticeOnce = (
+  request: ConsentRequest,
+  scope: ConsentScope,
+): Effect.Effect<NoticePost> => {
   if (scope.status === "granted") {
-    return Effect.succeed(true);
+    return Effect.succeed("posted");
   }
   return postChannelMessage({
     channelId: request.noticeChannelId,
     content: NOTICE,
   }).pipe(
-    Effect.as(true),
+    Effect.as<NoticePost>("posted"),
     Effect.catchTag("DiscordRequestError", ({ status }) =>
       Effect.logWarning("Could not post the ingest notice").pipe(
         Effect.annotateLogs({
           guildId: request.guildId,
           status: Option.getOrElse(status, () => "network"),
         }),
-        Effect.as(false),
+        Effect.as(noticeFailureOf(status)),
       ),
     ),
   );
@@ -89,8 +101,8 @@ const applyConsent = (
   }
   return postNoticeOnce(request, scope).pipe(
     Effect.flatMap((posted) => {
-      if (!posted) {
-        return Effect.succeed<ConsentResult>({ status: "noticeFailed" });
+      if (posted !== "posted") {
+        return Effect.succeed<ConsentResult>({ status: posted });
       }
       return saveConsent(request).pipe(
         Effect.andThen(refreshIngest(request.guildId)),

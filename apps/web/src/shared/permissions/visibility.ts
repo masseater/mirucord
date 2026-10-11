@@ -3,8 +3,8 @@ import { Function, Option } from "effect";
 
 import { THREAD_TYPES } from "#/shared/discord";
 
-import { canReadHistory } from "./permissions";
-import type { Overwrite } from "./permissions";
+import { canReadHistory, canSendMessages } from "./permissions";
+import type { Overwrite, ReaderContext } from "./permissions";
 
 type GuildChannel = Readonly<{
   id: string;
@@ -28,7 +28,13 @@ const ANY_THREAD_TYPES: ReadonlySet<number> = new Set([...THREAD_TYPES, ChannelT
 
 const isThread = ({ type }: GuildChannel): boolean => ANY_THREAD_TYPES.has(type);
 
-const readableChannels = (snapshot: GuildSnapshot, member: Member): ReadonlySet<string> => {
+type ChannelCheck = (reader: ReaderContext, overwrites: readonly Overwrite[]) => boolean;
+
+const allowedChannels = (
+  snapshot: GuildSnapshot,
+  member: Member,
+  check: ChannelCheck,
+): ReadonlySet<string> => {
   const reader = {
     guildId: snapshot.guildId,
     ownerId: snapshot.ownerId,
@@ -40,7 +46,7 @@ const readableChannels = (snapshot: GuildSnapshot, member: Member): ReadonlySet<
     snapshot.channels
       .filter(
         (guildChannel) =>
-          !isThread(guildChannel) && canReadHistory(reader, guildChannel.permissionOverwrites),
+          !isThread(guildChannel) && check(reader, guildChannel.permissionOverwrites),
       )
       .map(({ id }) => id),
   );
@@ -53,7 +59,7 @@ const visibleChannelIdsDataFirst = (
   Option.match(member, {
     onNone: () => new Set<string>(),
     onSome: (present) => {
-      const readable = readableChannels(snapshot, present);
+      const readable = allowedChannels(snapshot, present, canReadHistory);
       const threads = snapshot.channels
         .filter(
           (guildChannel) =>
@@ -70,5 +76,19 @@ const visibleChannelIds: {
   (snapshot: GuildSnapshot, member: Option.Option<Member>): ReadonlySet<string>;
 } = Function.dual(DATA_FIRST_ARITY, visibleChannelIdsDataFirst);
 
-export { visibleChannelIds };
+const postableChannelIdsDataFirst = (
+  snapshot: GuildSnapshot,
+  member: Option.Option<Member>,
+): ReadonlySet<string> =>
+  Option.match(member, {
+    onNone: () => new Set<string>(),
+    onSome: (present) => allowedChannels(snapshot, present, canSendMessages),
+  });
+
+const postableChannelIds: {
+  (member: Option.Option<Member>): (snapshot: GuildSnapshot) => ReadonlySet<string>;
+  (snapshot: GuildSnapshot, member: Option.Option<Member>): ReadonlySet<string>;
+} = Function.dual(DATA_FIRST_ARITY, postableChannelIdsDataFirst);
+
+export { postableChannelIds, visibleChannelIds };
 export type { GuildChannel, GuildSnapshot, Member };

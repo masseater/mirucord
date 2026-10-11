@@ -1,18 +1,19 @@
 import { createGatewayManager } from "@discordeno/gateway";
 import { createRestManager } from "@discordeno/rest";
-import { Service } from "alchemy/Fly";
+import { App, Service } from "alchemy/Fly";
 import { ServerHost } from "alchemy/Server";
 import { GatewayIntentBits } from "discord-api-types/v10";
 import { Config, Effect, Option, Queue, Redacted, Stream } from "effect";
 
-import { toGatewayJob } from "#/features/ingest";
-import type { GatewayJob } from "#/features/ingest";
+import { toGatewayJob } from "#/features/ingest/index.gateway";
+import type { GatewayJob } from "#/features/ingest/index.gateway";
 
 import { makeDeliver } from "./deliver";
 
-const APP_NAME = "mirucord-gateway";
+const GatewayApp = App("MirucordGatewayApp", { name: "mirucord-gateway-app" });
 
 const NORMAL_CLOSURE = 1000;
+const BOT_TOKEN_SECRET = "DISCORD_BOT_TOKEN";
 
 const runGateway = (botToken: string): Effect.Effect<void> =>
   Effect.gen(function* connect() {
@@ -43,7 +44,8 @@ const runGateway = (botToken: string): Effect.Effect<void> =>
 class Gateway extends Service<Gateway>()(
   "MirucordGateway",
   {
-    name: APP_NAME,
+    app: GatewayApp,
+    name: "mirucord-gateway",
     main: import.meta.url,
     handler: "Gateway",
     region: "iad",
@@ -51,10 +53,14 @@ class Gateway extends Service<Gateway>()(
   },
   Effect.gen(function* gateway() {
     const host = yield* ServerHost;
-    const botToken = yield* Config.Redacted("DISCORD_BOT_TOKEN").pipe(Effect.orDie);
-    yield* host.run(runGateway(Redacted.value(botToken)));
+    yield* host.run(
+      Config.Redacted(BOT_TOKEN_SECRET).pipe(
+        Effect.orDie,
+        Effect.flatMap((botToken) => runGateway(Redacted.value(botToken))),
+      ),
+    );
     return {};
   }),
 ) {}
 
-export { Gateway };
+export { BOT_TOKEN_SECRET, Gateway, GatewayApp };

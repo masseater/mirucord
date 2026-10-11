@@ -3,8 +3,13 @@ import type { Scope } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { GatewayJobSchema, jobKeyOf, signGatewayEvent, subjectOf } from "#/features/ingest";
-import type { GatewayJob } from "#/features/ingest";
+import {
+  GatewayJobSchema,
+  jobKeyOf,
+  signGatewayEvent,
+  subjectOf,
+} from "#/features/ingest/index.gateway";
+import type { GatewayJob } from "#/features/ingest/index.gateway";
 import { SITE_ORIGIN } from "#/shared/config/site";
 
 const GATEWAY_ENDPOINT = `${SITE_ORIGIN}/api/gateway`;

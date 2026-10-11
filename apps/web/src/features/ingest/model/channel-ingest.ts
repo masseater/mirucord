@@ -74,8 +74,9 @@ const NOTICE_KINDS: ReadonlySet<string> = new Set(["text", "announcement"]);
 const isNoticeCandidate = ({
   kind,
   ingest,
-}: Readonly<{ kind: string; ingest: ChannelIngest }>): boolean =>
-  NOTICE_KINDS.has(kind) && ingest !== "unreadable";
+  botPost,
+}: Readonly<{ kind: string; ingest: ChannelIngest; botPost: "allowed" | "denied" }>): boolean =>
+  NOTICE_KINDS.has(kind) && ingest !== "unreadable" && botPost === "allowed";
 
 type GuildIngest = "awaiting" | "withdrawing" | "waiting" | "backfilling" | "done";
 

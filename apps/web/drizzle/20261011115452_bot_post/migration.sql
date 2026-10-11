@@ -1,0 +1,1 @@
+ALTER TABLE `channel` ADD `botPost` text DEFAULT 'allowed' NOT NULL;

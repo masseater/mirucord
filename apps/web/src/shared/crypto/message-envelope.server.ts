@@ -40,10 +40,16 @@ const unseal: {
   (sealed: string, key: CryptoKey, context: string): Effect.Effect<string>;
 } = Function.dual(DATA_FIRST_ARITY, unsealDataFirst);
 
+const AttachmentSchema = Schema.Struct({
+  filename: Schema.String,
+  url: Schema.String,
+  description: Schema.optional(Schema.String),
+});
+
 const MessageBodySchema = Schema.Struct({
   authorName: Schema.String,
   content: Schema.String,
-  attachments: Schema.Array(Schema.Struct({ filename: Schema.String, url: Schema.String })),
+  attachments: Schema.Array(AttachmentSchema),
 });
 
 type MessageBody = typeof MessageBodySchema.Type;

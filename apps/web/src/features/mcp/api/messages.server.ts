@@ -4,6 +4,7 @@ import { Array, DateTime, Effect, Option } from "effect";
 
 import { embed } from "#/shared/ai/index.server";
 import { openGuildKey, openMessage } from "#/shared/crypto/index.server";
+import type { MessageBody } from "#/shared/crypto/index.server";
 import { db, message } from "#/shared/db/index.server";
 
 import type { GuildScope } from "./scope.server";
@@ -31,7 +32,7 @@ type MessageView = Readonly<{
   channelId: string;
   author: string;
   content: string;
-  attachments: readonly Readonly<{ filename: string; url: string }>[];
+  attachments: MessageBody["attachments"];
   createdAt: string;
   edited: boolean;
   url: string;

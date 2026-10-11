@@ -5,7 +5,6 @@ import type { ConsentScope } from "./consent-scope";
 
 const DATA_FIRST_ARITY = 2;
 const BACKFILL_INGEST = { pending: "backfilling", done: "done" } as const;
-const EMPTY_INGEST = { pending: "waiting", done: "empty" } as const;
 const HIDDEN_INGEST = {
   granted: { stored: "paused", empty: "cleared" },
   awaiting: { stored: "unreadable", empty: "unreadable" },
@@ -17,7 +16,6 @@ type ChannelIngest =
   | "paused"
   | "cleared"
   | "waiting"
-  | "empty"
   | "backfilling"
   | "done";
 
@@ -39,7 +37,7 @@ const ingestOfDataFirst = (scope: ConsentScope, row: IngestRow): ChannelIngest =
     return "awaiting";
   }
   if (holding === "empty") {
-    return EMPTY_INGEST[row.backfill];
+    return "waiting";
   }
   return BACKFILL_INGEST[row.backfill];
 };

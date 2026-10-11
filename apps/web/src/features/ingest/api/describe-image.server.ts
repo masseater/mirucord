@@ -1,9 +1,9 @@
 import { env } from "cloudflare:workers";
-import { Data, Effect, Layer, Option, Schedule, String } from "effect";
+import { Array, Data, Effect, Layer, Option, Schedule, String } from "effect";
 import { Base64 } from "effect/encoding";
 import { FetchHttpClient, HttpClient } from "effect/http";
 
-const DESCRIBE_MODEL = "@cf/google/gemma-3-12b-it";
+const DESCRIBE_MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const MAX_SIDE = 768;
 const MIN_SIDE = 1;
 const OK_STATUS = 200;
@@ -13,7 +13,15 @@ const RETRY_BASE = "500 millis";
 const PROMPT =
   "この画像を検索で見つけられるよう、日本語で1〜2文で説明してください。写っている物や料理の名前、読める文字があればその内容を具体的に書いてください。説明だけを答えてください。";
 
-class DescribeError extends Data.TaggedError("DescribeError")<{ readonly cause: unknown }> {}
+class DescribeError extends Data.TaggedError("DescribeError")<{
+  readonly stage: "fetch" | "model";
+  readonly reason: string;
+}> {}
+
+const reasonOf = (cause: unknown): string =>
+  Option.liftPredicate(cause, (value): value is Error => value instanceof Error).pipe(
+    Option.match({ onNone: () => "unknown", onSome: ({ name, message }) => `${name}: ${message}` }),
+  );
 
 type ImageSource = Readonly<{ proxyUrl: string; width: number; height: number }>;
 
@@ -36,11 +44,13 @@ const fetchImage = (
     Effect.flatMap((client) => client.get(resizedUrl(source))),
     Effect.filterOrFail(
       ({ status }) => status === OK_STATUS,
-      ({ status }) => new DescribeError({ cause: `Image request failed with ${status}` }),
+      ({ status }) => new DescribeError({ stage: "fetch", reason: `status ${status}` }),
     ),
     Effect.flatMap((response) => response.arrayBuffer),
     Effect.map((buffer) => Base64.encode(new Uint8Array(buffer))),
-    Effect.mapError((cause) => new DescribeError({ cause })),
+    Effect.catchTag(["HttpClientError"], (cause) =>
+      Effect.fail(new DescribeError({ stage: "fetch", reason: cause.reason.name })),
+    ),
   );
 
 const runModel = (image: string): Effect.Effect<string, DescribeError> =>
@@ -57,9 +67,17 @@ const runModel = (image: string): Effect.Effect<string, DescribeError> =>
           },
         ],
         max_tokens: MAX_TOKENS,
+        chat_template_kwargs: { enable_thinking: false },
       }),
-    catch: (cause) => new DescribeError({ cause }),
-  }).pipe(Effect.map(({ response }) => String.trim(response)));
+    catch: (cause) => new DescribeError({ stage: "model", reason: reasonOf(cause) }),
+  }).pipe(
+    Effect.map(({ choices }) =>
+      Array.head(choices).pipe(
+        Option.flatMap(({ message }) => Option.fromNullishOr(message.content)),
+        Option.match({ onNone: () => "", onSome: String.trim }),
+      ),
+    ),
+  );
 
 const describeWithClient = (
   source: ImageSource,
@@ -68,8 +86,11 @@ const describeWithClient = (
     Effect.flatMap(runModel),
     Effect.retry({ schedule: Schedule.exponential(RETRY_BASE), times: RETRY_TIMES }),
     Effect.map(Option.liftPredicate(String.isNonEmpty)),
-    Effect.catchTag("DescribeError", () =>
-      Effect.logWarning("Could not describe an image").pipe(Effect.as(Option.none<string>())),
+    Effect.catchTag("DescribeError", ({ stage, reason }) =>
+      Effect.logWarning("Could not describe an image").pipe(
+        Effect.annotateLogs({ stage, reason }),
+        Effect.as(Option.none<string>()),
+      ),
     ),
   );
 

@@ -44,11 +44,15 @@ const runGateway = (botToken: string): Effect.Effect<void> =>
 
 class Gateway extends Service<Gateway>()(
   "Gateway",
-  Stage.pipe(
+  Effect.serviceOption(Stage).pipe(
     Effect.map((stage) => ({
-      name: Boolean.match(stage === PRODUCTION_STAGE, {
-        onTrue: () => APP_NAME,
-        onFalse: () => `${APP_NAME}-${stage}`,
+      name: Option.match(stage, {
+        onNone: () => APP_NAME,
+        onSome: (name) =>
+          Boolean.match(name === PRODUCTION_STAGE, {
+            onTrue: () => APP_NAME,
+            onFalse: () => `${APP_NAME}-${name}`,
+          }),
       }),
       main: import.meta.url,
       handler: "Gateway",

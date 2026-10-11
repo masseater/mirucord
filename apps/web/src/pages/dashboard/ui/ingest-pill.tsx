@@ -10,6 +10,7 @@ const INGEST = {
   paused: { label: "ミルが見られないため停止中（30 日後に保存分を削除）", tone: "bg-pink" },
   cleared: { label: "ミルが見られないため停止中（保存分は削除済み）", tone: "bg-milk" },
   waiting: { label: "取り込み待ち", tone: "bg-butter" },
+  empty: { label: "取り込み済み（メッセージなし）", tone: "bg-mint" },
   backfilling: { label: "過去ログを取り込み中", tone: "bg-sky" },
   done: { label: "取り込み済み", tone: "bg-mint" },
 } as const;

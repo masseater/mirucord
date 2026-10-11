@@ -12,6 +12,16 @@
   display: none;
 }
 
+@media (height < 56rem) {
+  .ch-groups {
+    gap: calc(var(--spacing) * 2);
+  }
+
+  .ch-row {
+    padding-block: calc(var(--spacing) * 0.5);
+  }
+}
+
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .ch-scope {

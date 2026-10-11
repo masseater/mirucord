@@ -14,7 +14,7 @@ const ChannelSidebar = (): ReactNode => (
     <p className="text-dc-bright border-dc-rail flex h-12 shrink-0 items-center border-b px-4 font-bold">
       {SERVER}
     </p>
-    <div className="grid content-start gap-3 overflow-y-auto px-2 py-3">
+    <div className="ch-groups grid content-start gap-3 overflow-y-auto px-2 py-3">
       {CATEGORIES.map((category) => (
         <SidebarGroup key={category.name} category={category} />
       ))}

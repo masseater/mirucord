@@ -2,12 +2,12 @@ import type { ReactNode } from "react";
 
 import type { GuildSettings, SettingsChannel } from "#/features/ingest/index.server";
 import { groupByCategory } from "#/pages/dashboard/model/channel-groups";
-import { Pill } from "#/shared/ui/pill";
 
 import { CategoryHeading } from "./category-heading";
 import { ChannelLabel } from "./channel-label";
 import { ForumPillToggle } from "./forum-pill-toggle";
 import { ForumPostPanel } from "./forum-post-panel";
+import { Pill } from "./pill";
 
 const ReadableChannelList = ({
   settings,

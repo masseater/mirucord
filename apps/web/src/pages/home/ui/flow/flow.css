@@ -37,6 +37,30 @@
       animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.38) contain
         calc(100% - 100dvh - var(--dwell) * 0);
     }
+
+    .flow-column {
+      view-timeline-name: --flow-column;
+    }
+
+    .flow-column .flow-carry {
+      animation-timeline: --flow-column;
+    }
+
+    .flow-column .flow-carry[data-carry="a"] {
+      animation-range: cover 20% cover 32%;
+    }
+
+    .flow-column .flow-carry[data-carry="b"] {
+      animation-range: cover 26% cover 38%;
+    }
+
+    .flow-column .flow-carry[data-carry="c"] {
+      animation-range: cover 32% cover 44%;
+    }
+
+    .flow-column .flow-carry[data-carry="d"] {
+      animation-range: cover 42% cover 55%;
+    }
   }
 }
 

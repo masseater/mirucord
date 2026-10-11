@@ -316,7 +316,12 @@
 .finale-number {
   margin-left: 0.15em;
   font-size: clamp(5rem, 16vw, 11rem);
-  text-shadow: 0.06em 0.06em 0 var(--color-grape);
+  text-shadow:
+    0.025em 0 0 var(--color-ink),
+    -0.025em 0 0 var(--color-ink),
+    0 0.025em 0 var(--color-ink),
+    0 -0.025em 0 var(--color-ink),
+    0.06em 0.06em 0 var(--color-grape);
   rotate: -7deg;
 }
 
@@ -668,7 +673,7 @@
       --spread: 1;
       position: absolute;
       inset: 0;
-      z-index: 1;
+      z-index: 3;
       display: block;
     }
 
@@ -684,56 +689,56 @@
     }
 
     .finale-frag:nth-child(1) {
-      --fx: -36vw;
-      --fy: -38vh;
+      --fx: -38vw;
+      --fy: -42vh;
       --fr: -8deg;
       --s: 0.46;
     }
 
     .finale-frag:nth-child(2) {
-      --fx: -8vw;
-      --fy: -41vh;
+      --fx: -14vw;
+      --fy: -42vh;
       --fr: 5deg;
       --s: 0.43;
     }
 
     .finale-frag:nth-child(3) {
-      --fx: 18vw;
-      --fy: -38vh;
+      --fx: 10vw;
+      --fy: -42vh;
       --fr: -4deg;
       --s: 0.4;
     }
 
     .finale-frag:nth-child(4) {
-      --fx: 38vw;
-      --fy: -32vh;
+      --fx: 36vw;
+      --fy: -42vh;
       --fr: 9deg;
       --s: 0.37;
     }
 
     .finale-frag:nth-child(5) {
-      --fx: 40vw;
-      --fy: -8vh;
+      --fx: 38vw;
+      --fy: 40vh;
       --fr: -6deg;
       --s: 0.34;
     }
 
     .finale-frag:nth-child(6) {
-      --fx: 20vw;
-      --fy: -16vh;
+      --fx: 14vw;
+      --fy: 42vh;
       --fr: 7deg;
       --s: 0.31;
     }
 
     .finale-frag:nth-child(7) {
-      --fx: -38vw;
-      --fy: 40vh;
+      --fx: -12vw;
+      --fy: 42vh;
       --fr: 6deg;
       --s: 0.28;
     }
 
     .finale-frag:nth-child(8) {
-      --fx: 4vw;
+      --fx: -38vw;
       --fy: 42vh;
       --fr: -7deg;
       --s: 0.25;
@@ -815,12 +820,12 @@
     .finale-title,
     .finale-count {
       position: relative;
-      z-index: 3;
+      z-index: 4;
       animation-name: finale-shake;
     }
 
     .finale-title {
-      font-size: clamp(1.75rem, 7vw, 6rem);
+      font-size: clamp(1.75rem, 5vw, 6rem);
       --s: 0.82;
       --e: 0.6;
     }
@@ -859,11 +864,21 @@
 
     .finale-number {
       display: inline-block;
-      font-size: clamp(6rem, 26vw, 18rem);
+      font-size: clamp(5rem, min(16vw, 30vh), 11rem);
       --s: 0.56;
       --e: 0.48;
       --ox: -80vw;
       animation-name: finale-number, finale-out;
+    }
+
+    @media (aspect-ratio < 1) {
+      .finale-title {
+        font-size: clamp(1.75rem, 7vw, 6rem);
+      }
+
+      .finale-number {
+        font-size: clamp(6rem, 26vw, 18rem);
+      }
     }
 
     .finale-spark {
@@ -1491,9 +1506,10 @@
     translate: -3vw 0;
     scale: 1.06;
   }
+  96%,
   100% {
     opacity: 0;
-    translate: -3vw 0;
+    translate: 70vw 0;
     scale: 1.06;
   }
 }
@@ -1512,9 +1528,10 @@
     opacity: 1;
     translate: 2vw 0;
   }
+  96%,
   100% {
     opacity: 0;
-    translate: 2vw 0;
+    translate: -80vw 0;
   }
 }
 

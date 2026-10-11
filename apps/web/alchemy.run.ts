@@ -48,7 +48,7 @@ const operationsEnv = Config.all({
 
 type WorkerIssuesResource = Resource<
   typeof WORKER_ISSUES,
-  Readonly<{ workerName: string; deployment: unknown }>,
+  Readonly<{ workerName: string; deployment: Effect.Success<typeof web>["hash"] }>,
   Readonly<{ accountId: string; workerName: string }>
 >;
 

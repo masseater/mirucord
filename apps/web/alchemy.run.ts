@@ -1,5 +1,7 @@
-import { Stack, makeRandom } from "alchemy";
+import { Resource, Stack, makeRandom } from "alchemy";
 import {
+  CloudflareEnvironment,
+  Credentials,
   D1,
   Queues,
   SecretsStore,
@@ -10,13 +12,19 @@ import {
   state,
 } from "alchemy/Cloudflare";
 import type { InferEnv } from "alchemy/Cloudflare";
-import { Config, Effect, Option, Schema } from "effect";
+import { succeed as succeedProvider } from "alchemy/Provider";
+import { Config, Effect, Layer, Match, Option, Redacted, Schema } from "effect";
+import type { Context } from "effect";
+import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
+import type { HttpClientError } from "effect/http";
 
 import { POLL_CRON, SYNC_CRON } from "./src/features/ingest/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;
+const NOT_FOUND = 404;
+const WORKER_ISSUES = "Mirucord.WorkerIssues";
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);
 
 const discordEnv = Config.all({
@@ -37,6 +45,125 @@ const operationsEnv = Config.all({
     }),
   })),
 );
+
+type WorkerIssuesResource = Resource<
+  typeof WORKER_ISSUES,
+  Readonly<{ workerName: string }>,
+  Readonly<{ accountId: string; workerName: string }>
+>;
+
+const WorkerIssues = Resource<WorkerIssuesResource>(WORKER_ISSUES);
+
+type CloudflareCredentials = Effect.Success<Context.Service.Shape<typeof Credentials>>;
+type CredentialsError = Effect.Error<Context.Service.Shape<typeof Credentials>>;
+type ScriptSettingsCall<Value> = Effect.Effect<
+  Value,
+  HttpClientError.HttpClientError | Schema.SchemaError | CredentialsError,
+  CloudflareEnvironment | Credentials | HttpClient.HttpClient
+>;
+
+const authHeaders = Match.type<CloudflareCredentials>().pipe(
+  Match.discriminatorsExhaustive("type")({
+    apiKey: ({ apiKey, email }) => ({
+      "X-Auth-Key": Redacted.value(apiKey),
+      "X-Auth-Email": email,
+    }),
+    apiToken: ({ apiToken }) => ({ Authorization: `Bearer ${Redacted.value(apiToken)}` }),
+    oauth: ({ accessToken }) => ({ Authorization: `Bearer ${Redacted.value(accessToken)}` }),
+  }),
+);
+
+const IssuesSetting = Schema.NullOr(Schema.Struct({ enabled: Schema.Boolean }));
+
+const Observability = Schema.StructWithRest(
+  Schema.Struct({ issues: Schema.optional(IssuesSetting) }),
+  [Schema.Record(Schema.String, Schema.Unknown)],
+);
+
+const ObservabilitySetting = Schema.optional(Schema.NullOr(Observability));
+
+const ScriptSettings = Schema.Struct({
+  result: Schema.Struct({ observability: ObservabilitySetting }),
+});
+
+type ObservedObservability = typeof Observability.Type;
+
+const issuesEnabled = ({ issues }: ObservedObservability): boolean =>
+  Option.fromNullishOr(issues).pipe(Option.exists(({ enabled }) => enabled));
+
+const scriptSettingsTarget = Effect.fn("scriptSettingsTarget")(function* scriptSettingsTarget(
+  workerName: string,
+) {
+  const { accountId } = yield* yield* CloudflareEnvironment;
+  const credentials = yield* yield* Credentials;
+  const script = encodeURIComponent(workerName);
+  return {
+    url: `${credentials.apiBaseUrl}/accounts/${accountId}/workers/scripts/${script}/script-settings`,
+    headers: authHeaders(credentials),
+  };
+});
+
+const sendScriptSettings = Effect.fn("sendScriptSettings")(function* sendScriptSettings(
+  workerName: string,
+  build: (url: string) => HttpClientRequest.HttpClientRequest,
+) {
+  const { url, headers } = yield* scriptSettingsTarget(workerName);
+  const client = yield* HttpClient.HttpClient;
+  return yield* client.execute(build(url).pipe(HttpClientRequest.setHeaders(headers)));
+});
+
+const observeScriptSettings = (
+  workerName: string,
+): ScriptSettingsCall<Option.Option<ObservedObservability>> =>
+  sendScriptSettings(workerName, HttpClientRequest.get).pipe(
+    Effect.flatMap((response) =>
+      Match.value(response.status).pipe(
+        Match.when(NOT_FOUND, () => Effect.succeedNone),
+        Match.orElse(() =>
+          HttpClientResponse.filterStatusOk(response).pipe(
+            Effect.flatMap(HttpClientResponse.schemaBodyJson(ScriptSettings)),
+            Effect.map(({ result }) => result.observability ?? {}),
+            Effect.asSome,
+          ),
+        ),
+      ),
+    ),
+  );
+
+const patchIssues = (
+  workerName: string,
+  observability: ObservedObservability,
+  enabled: boolean,
+): ScriptSettingsCall<void> =>
+  sendScriptSettings(workerName, (url) =>
+    HttpClientRequest.patch(url).pipe(
+      HttpClientRequest.bodyJsonUnsafe({
+        observability: { ...observability, issues: { enabled } },
+      }),
+    ),
+  ).pipe(Effect.flatMap(HttpClientResponse.filterStatusOk), Effect.asVoid);
+
+const setWorkerIssues = (workerName: string, enabled: boolean): ScriptSettingsCall<void> =>
+  observeScriptSettings(workerName).pipe(
+    Effect.map(Option.filter((observability) => issuesEnabled(observability) !== enabled)),
+    Effect.flatMap(
+      Option.match({
+        onNone: () => Effect.void,
+        onSome: (observability) => patchIssues(workerName, observability, enabled),
+      }),
+    ),
+  );
+
+const workerIssuesProvider = succeedProvider(WorkerIssues, {
+  diff: () => Effect.succeed({ action: "update" } as const),
+  reconcile: ({ news }) =>
+    setWorkerIssues(news.workerName, true).pipe(
+      Effect.andThen(CloudflareEnvironment),
+      Effect.flatten,
+      Effect.map(({ accountId }) => ({ accountId, workerName: news.workerName })),
+    ),
+  delete: ({ output }) => setWorkerIssues(output.workerName, false),
+});
 
 const releaseVersion = Config.option(Config.NonEmptyString("GITHUB_SHA")).pipe(
   Config.map(
@@ -121,14 +248,20 @@ const web = Effect.gen(function* web() {
   return site;
 });
 
+const stackProviders = workerIssuesProvider.pipe(Layer.provideMerge(providers()));
+
 type WebEnv = InferEnv<typeof web>;
 
 export type { WebEnv };
 export default Stack(
   "web",
-  { providers: providers(), state: state() },
+  {
+    providers: stackProviders,
+    state: state(),
+  },
   Effect.gen(function* stack() {
-    const { url } = yield* web;
+    const { url, workerName } = yield* web;
+    yield* WorkerIssues("WorkerIssues", { workerName });
     return { url };
   }),
 );

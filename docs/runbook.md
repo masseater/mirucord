@@ -73,6 +73,11 @@ Vectorize には戻す仕組みがない。D1 を戻した後は、各チャン�
 | Guild sync could not list servers from Discord | Bot のトークンが無効か、Discord が落ちている                                                                                    |
 | Queue job gave up after retries                | チャンネルの取り込みか同意取り消しの削除が 5 回続けて失敗し、Queue から捨てた。取り消しなら同意を残し、もう一度押せる状態に戻す |
 
+Workers Issues は、デプロイのたびに `alchemy.run.ts` の `WorkerIssues` が有効化する。
+捕まえていない例外・5xx・`console.error` で出したエラーを、ダッシュボードの Worker の Issues でまとめて読める。
+クラウドのセッションからは観測用のトークンで `GET /accounts/<アカウント ID>/workers/observability/issues` を呼んで読む。
+Issues から知らせる Automations はまだ IaC で作れないので、通知は `ALERT_WEBHOOK_URL` が担う。
+
 ログは Cloudflare のダッシュボードの Workers Logs で読む。手元で流して見るときは次を使う。
 
 ```sh

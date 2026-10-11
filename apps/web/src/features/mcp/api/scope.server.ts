@@ -10,7 +10,12 @@ import type { GuildChannel, GuildSnapshot } from "#/shared/permissions";
 type StoredChannel = GuildChannel & Readonly<{ name: string }>;
 
 type StoredGuild = Omit<GuildSnapshot, "channels"> &
-  Readonly<{ name: string; wrappedKey: string; channels: readonly StoredChannel[] }>;
+  Readonly<{
+    name: string;
+    icon: string | null;
+    wrappedKey: string;
+    channels: readonly StoredChannel[];
+  }>;
 
 type GuildScope = Readonly<{
   guild: StoredGuild;
@@ -38,7 +43,12 @@ const loadChannels = (guildId: string): Effect.Effect<readonly StoredChannel[]> 
 const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =>
   Effect.promise(() =>
     db
-      .select({ name: guild.name, ownerId: guild.ownerId, wrappedKey: guild.wrappedKey })
+      .select({
+        name: guild.name,
+        icon: guild.icon,
+        ownerId: guild.ownerId,
+        wrappedKey: guild.wrappedKey,
+      })
       .from(guild)
       .where(eq(guild.id, guildId)),
   ).pipe(

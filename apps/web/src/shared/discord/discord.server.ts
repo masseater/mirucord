@@ -21,6 +21,7 @@ const PermissionOverwrite = Schema.Struct({
 const Guild = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
+  icon: Schema.optional(Schema.NullOr(Schema.String)),
   owner_id: Schema.String,
   roles: Schema.Array(Schema.Struct({ id: Schema.String, permissions: Schema.String })),
 });

@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import type { ManagedGuild } from "#/features/ingest/index.server";
 import { Pill } from "#/shared/ui/pill";
 
+import { GuildIcon } from "./guild-icon";
+
 const CONSENT = {
   awaiting: { label: "同意待ち", tone: "bg-butter" },
   granted: { label: "取り込み中", tone: "bg-mint" },
@@ -21,7 +23,8 @@ const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => {
         params={params}
         className="border-ink bg-milk shadow-pop-sm flex items-center justify-between gap-4 rounded-3xl border-2 px-5 py-4 no-underline motion-safe:transition motion-safe:hover:-translate-y-0.5"
       >
-        <span className="text-lg font-black">{guild.name}</span>
+        <GuildIcon guildId={guild.id} name={guild.name} icon={guild.icon} />
+        <span className="grow text-lg font-black">{guild.name}</span>
         <Pill tone={consent.tone}>{consent.label}</Pill>
       </Link>
     </li>

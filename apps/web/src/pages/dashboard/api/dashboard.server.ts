@@ -30,7 +30,12 @@ import { botInviteUrl } from "#/shared/discord/index.server";
 
 type SignedOut = Readonly<{ status: "signedOut" }>;
 
-type ReadableGuild = Readonly<{ id: string; name: string; consent: "awaiting" | "granted" }>;
+type ReadableGuild = Readonly<{
+  id: string;
+  name: string;
+  icon: string | null;
+  consent: "awaiting" | "granted";
+}>;
 
 type GuildListing =
   | Readonly<{ status: "ready"; guilds: readonly ReadableGuild[] }>
@@ -103,9 +108,10 @@ const listReadable = (discordUserId: string): Effect.Effect<GuildListing> =>
   Effect.all({ guilds: readableGuilds(discordUserId), consented: consentedGuildIds }).pipe(
     Effect.map(({ guilds, consented }): GuildListing => ({
       status: "ready",
-      guilds: guilds.map(({ guildId, name }) => ({
+      guilds: guilds.map(({ guildId, name, icon }) => ({
         id: guildId,
         name,
+        icon,
         consent: consentOf(consented, guildId),
       })),
     })),

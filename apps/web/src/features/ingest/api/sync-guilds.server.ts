@@ -13,6 +13,9 @@ import { whenIngestEnabled } from "./ingest-flag.server";
 import { syncChannels } from "./sync-channels.server";
 import type { VectorizeError } from "./sync-channels.server";
 
+const iconOf = ({ icon }: DiscordGuild): string | null =>
+  Option.getOrNull(Option.fromNullishOr(icon));
+
 const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
   Effect.all({ wrappedKey: createGuildKey, now: DateTime.now }).pipe(
     Effect.flatMap(({ wrappedKey, now }) =>
@@ -22,13 +25,18 @@ const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
           .values({
             id: discordGuild.id,
             name: discordGuild.name,
+            icon: iconOf(discordGuild),
             ownerId: discordGuild.owner_id,
             wrappedKey,
             joinedAt: DateTime.toDate(now),
           })
           .onConflictDoUpdate({
             target: guild.id,
-            set: { name: discordGuild.name, ownerId: discordGuild.owner_id },
+            set: {
+              name: discordGuild.name,
+              icon: iconOf(discordGuild),
+              ownerId: discordGuild.owner_id,
+            },
           }),
       ),
     ),
@@ -40,7 +48,11 @@ const updateGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
     Effect.promise(() =>
       db
         .update(guild)
-        .set({ name: discordGuild.name, ownerId: discordGuild.owner_id })
+        .set({
+          name: discordGuild.name,
+          icon: iconOf(discordGuild),
+          ownerId: discordGuild.owner_id,
+        })
         .where(eq(guild.id, discordGuild.id)),
     ),
   );

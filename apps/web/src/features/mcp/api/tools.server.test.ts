@@ -16,7 +16,6 @@ import {
   GUILD_B,
   GUILD_C,
   idsOf,
-  messageIdsOf,
   readIngestOf,
   SAME_WORDS,
   seedScenario,
@@ -30,7 +29,7 @@ const DEFAULT_LIMIT = 20;
 const READ_LIMIT = 50;
 const UNIT = 1;
 const EMBEDDING = [UNIT];
-const REFUSED = { text: "Channel not found", isError: true };
+const REFUSED = { text: "Channel not found", isError: true, structured: Option.none() };
 
 const readPastChannelCheck = (channelId: string): Effect.Effect<readonly string[]> =>
   resolveScope({ guildId: GUILD_A, discordUserId: USER }).pipe(
@@ -43,16 +42,15 @@ const readPastChannelCheck = (channelId: string): Effect.Effect<readonly string[
   );
 
 const PendingChannel = Schema.Struct({ channelId: Schema.String });
-const SearchIngest = Schema.fromJsonString(
-  Schema.Struct({ notFullyIngested: Schema.Array(PendingChannel) }),
-);
-const decodeSearchIngest = Schema.decodeEffect(SearchIngest);
+const SearchIngest = Schema.Struct({ notFullyIngested: Schema.Array(PendingChannel) });
+const decodeSearchIngest = Schema.decodeUnknownEffect(SearchIngest);
+const decodeJsonText = Schema.decodeEffect(Schema.fromJsonString(Schema.Unknown));
 
 const notFullyIngestedOf = (
   outcome: Effect.Effect<ToolOutcome>,
 ): Effect.Effect<readonly string[]> =>
   outcome.pipe(
-    Effect.flatMap(({ text }) => decodeSearchIngest(text)),
+    Effect.flatMap(({ structured }) => decodeSearchIngest(Option.getOrUndefined(structured))),
     Effect.map(({ notFullyIngested }) => notFullyIngested.map(({ channelId }) => channelId)),
     Effect.orDie,
   );
@@ -79,14 +77,16 @@ beforeEach(() => {
 
 it.effect("lists only the servers the user belongs to", () =>
   Effect.gen(function* listServers() {
-    const ids = yield* idsOf(callTool({ name: "list_servers", args: {} }));
+    const ids = yield* idsOf("servers")(callTool({ name: "list_servers", args: {} }));
     expect(ids).toStrictEqual([GUILD_A, GUILD_B]);
   }),
 );
 
 it.effect("lists only the channels the user can read", () =>
   Effect.gen(function* listChannels() {
-    const ids = yield* idsOf(callTool({ name: "list_channels", args: { serverId: GUILD_A } }));
+    const ids = yield* idsOf("channels")(
+      callTool({ name: "list_channels", args: { serverId: GUILD_A } }),
+    );
     expect(ids).toStrictEqual([A_OPEN]);
   }),
 );
@@ -105,7 +105,7 @@ it.effect("asks the vector index only for the requested server and its readable 
 
 it.effect("drops other servers and unreadable channels even if the index returns them", () =>
   Effect.gen(function* search() {
-    const ids = yield* messageIdsOf(
+    const ids = yield* idsOf("messages")(
       callTool({ name: "search_messages", args: { serverId: GUILD_A, query: SAME_WORDS } }),
     );
     expect(ids).toStrictEqual([A_OPEN_MESSAGE]);
@@ -149,7 +149,7 @@ it.effect("refuses to read an unreadable channel or one from another server", ()
 
 it.effect("reads a readable channel of the requested server", () =>
   Effect.gen(function* read() {
-    const ids = yield* messageIdsOf(
+    const ids = yield* idsOf("messages")(
       callTool({ name: "read_messages", args: { serverId: GUILD_A, channelId: A_OPEN } }),
     );
     expect(ids).toStrictEqual([A_OPEN_MESSAGE]);
@@ -187,6 +187,21 @@ it.effect("treats a server the user does not belong to as missing", () =>
       name: "search_messages",
       args: { serverId: GUILD_C, query: SAME_WORDS },
     });
-    expect(outcome).toStrictEqual({ text: "Server not found", isError: true });
+    expect(outcome).toStrictEqual({
+      text: "Server not found",
+      isError: true,
+      structured: Option.none(),
+    });
+  }),
+);
+
+it.effect("mirrors the structured result as JSON text for clients that read only text", () =>
+  Effect.gen(function* textFallback() {
+    const { text, structured } = yield* callTool({
+      name: "read_messages",
+      args: { serverId: GUILD_A, channelId: A_OPEN },
+    });
+    const parsed = yield* decodeJsonText(text);
+    expect(Option.some(parsed)).toStrictEqual(structured);
   }),
 );

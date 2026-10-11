@@ -10,7 +10,19 @@
     "plugins": [
       {
         "name": "@effect/language-service",
-        "allowedUnstableApis": ["effect/http/FetchHttpClient#layer", "effect/reactivity/Atom"]
+        "allowedUnstableApis": [
+          "effect/http/FetchHttpClient#layer",
+          "effect/http/HttpClient#HttpClient",
+          "effect/http/HttpClientError#HttpClientError",
+          "effect/http/HttpClientRequest#HttpClientRequest",
+          "effect/http/HttpClientRequest#bodyJsonUnsafe",
+          "effect/http/HttpClientRequest#get",
+          "effect/http/HttpClientRequest#patch",
+          "effect/http/HttpClientRequest#setHeaders",
+          "effect/http/HttpClientResponse#filterStatusOk",
+          "effect/http/HttpClientResponse#schemaBodyJson",
+          "effect/reactivity/Atom"
+        ]
       }
     ]
   }

@@ -7,6 +7,7 @@ import { Chatter } from "#/pages/home/ui/message/chatter";
 import type { ChatLine } from "#/pages/home/ui/message/chatter";
 import { Post } from "#/pages/home/ui/message/post";
 import { SystemMessage } from "#/pages/home/ui/message/system-message";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { SpecList } from "./spec-list";
 
@@ -27,7 +28,7 @@ const CHATTER: readonly ChatLine[] = [
   {
     author: memberAuthor(MEMBERS.yui),
     time: "今日 21:04",
-    text: "ミルを外したら全部消えるのもいいね",
+    text: `${MASCOT_NAME}を外したら全部消えるのもいいね`,
     reactions: [{ emoji: "👍", count: 2, by: "me" }],
   },
 ];

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { MASCOT_NAME, SERVICE_NAME } from "#/shared/config";
+
 import { LegalDocument } from "./legal-document";
 
 const TITLE = "利用規約";
@@ -8,7 +10,7 @@ const SECTIONS = [
   {
     heading: "この規約について",
     paragraphs: [
-      "この規約は mirucord(以下「本サービス」)を使うときの決まりです。本サービスを使った時点で、この規約に同意したものとみなします。",
+      `この規約は ${SERVICE_NAME}(以下「本サービス」)を使うときの決まりです。本サービスを使った時点で、この規約に同意したものとみなします。`,
       "本サービスは masseater が個人で開発し、無料で提供しています。",
     ],
   },
@@ -22,7 +24,7 @@ const SECTIONS = [
   {
     heading: "Discord のデータ",
     paragraphs: [
-      "Bot を招待したサーバーでは、サーバー管理者が管理画面で同意した後にミルが見られるチャンネルだけを読み取ります。サーバー管理者は、サーバーのメンバーに本サービスを使うことを知らせてください。",
+      `Bot を招待したサーバーでは、サーバー管理者が管理画面で同意した後に${MASCOT_NAME}が見られるチャンネルだけを読み取ります。サーバー管理者は、サーバーのメンバーに本サービスを使うことを知らせてください。`,
       "読み取ったデータの扱いはプライバシーポリシーに従います。",
     ],
   },

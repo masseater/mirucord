@@ -1,11 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { HomePage, loadHomePage } from "#/pages/home";
-import { SITE_ORIGIN } from "#/shared/config";
+import { MASCOT_NAME, SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
 
-const TITLE = "mirucord | Discord の思い出をミルと見つけよう";
-const DESCRIPTION =
-  "Discord サーバーの昔の会話や名場面をミルがさがしてきます。Bot を招待するだけで使えます。";
+const TITLE = `${SERVICE_NAME} | Discord の思い出を${MASCOT_NAME}と見つけよう`;
+const DESCRIPTION = `Discord サーバーの昔の会話や名場面を${MASCOT_NAME}がさがしてきます。Bot を招待するだけで使えます。`;
 
 const Route = createFileRoute("/")({
   loader: ({ context }) => loadHomePage(context.queryClient),

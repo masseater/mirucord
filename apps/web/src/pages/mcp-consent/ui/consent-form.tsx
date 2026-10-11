@@ -5,13 +5,14 @@ import type { ReactNode } from "react";
 
 import { clientNameQuery } from "#/pages/mcp-consent/api/consent";
 import { authClient } from "#/shared/auth";
+import { MASCOT_NAME } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 
 import { ConsentActions } from "./consent-actions";
 
-const TIP = "ミルとつなぐよ";
+const TIP = `${MASCOT_NAME}とつなぐよ`;
 const FAILED = "うまくいきませんでした。";
 const SCOPE = "は、あなたが Discord で読めるチャンネルのメッセージを読めるようになります。";
 const ASK = "へのアクセスを許可しますか";

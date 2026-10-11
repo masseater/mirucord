@@ -19,7 +19,7 @@ import {
   ReadMessagesOutput,
   SearchMessagesOutput,
 } from "#/features/mcp/model/tool-output";
-import { SITE_ORIGIN } from "#/shared/config";
+import { SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
 import { CATEGORY_TYPES } from "#/shared/discord";
 
 import { findMessages, readMessages, searchMessages } from "./messages.server";
@@ -30,14 +30,13 @@ const ICONS = [
   { src: `${SITE_ORIGIN}/apple-touch-icon.png`, mimeType: "image/png", sizes: ["180x180"] },
   { src: `${SITE_ORIGIN}/favicon-32x32.png`, mimeType: "image/png", sizes: ["32x32"] },
 ];
-const SERVER_INFO = { name: "mirucord", version: "0.0.0", icons: ICONS, websiteUrl: SITE_ORIGIN };
+const SERVER_INFO = { name: SERVICE_NAME, version: "0.0.0", icons: ICONS, websiteUrl: SITE_ORIGIN };
 const SERVER_NOT_FOUND = "Server not found";
 const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const DEFAULT_LIMIT = 20;
 const CHANNEL_NOT_FOUND = "Channel not found";
 const FORUM_TYPES: ReadonlySet<number> = new Set([ChannelType.GuildForum, ChannelType.GuildMedia]);
-const INGEST_GUIDE =
-  "Each channel carries `ingest`: only `empty` means the channel has no messages in Discord. `notConsented`, `waiting` and `backfilling` mean mirucord has not stored all of its messages yet, so an empty or short result does not mean the channel is empty; say so instead of reporting that there are no messages.";
+const INGEST_GUIDE = `Each channel carries \`ingest\`: only \`empty\` means the channel has no messages in Discord. \`notConsented\`, \`waiting\` and \`backfilling\` mean ${SERVICE_NAME} has not stored all of its messages yet, so an empty or short result does not mean the channel is empty; say so instead of reporting that there are no messages.`;
 
 const structuredResult = (value: Readonly<Record<string, unknown>>): CallToolResult => ({
   content: [{ type: "text", text: JSON.stringify(value) }],
@@ -235,8 +234,7 @@ const TOOL_BASE = { icons: ICONS, annotations: { readOnlyHint: true, openWorldHi
 
 const LIST_SERVERS_TOOL = {
   title: "List servers",
-  description:
-    "List the Discord servers you can read through mirucord. `ingest` is `notConsented` until the server's admin allows mirucord to store its messages; until then every channel reads as empty.",
+  description: `List the Discord servers you can read through ${SERVICE_NAME}. \`ingest\` is \`notConsented\` until the server's admin allows ${SERVICE_NAME} to store its messages; until then every channel reads as empty.`,
   ...TOOL_BASE,
   outputSchema: ListServersOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };

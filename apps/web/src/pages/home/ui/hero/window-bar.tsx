@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
 
+import { SERVICE_NAME } from "#/shared/config";
+
 import { ClaudeMark } from "./claude-mark";
 
 const APP = "Claude";
-const TOOL = "mirucord";
+const TOOL = SERVICE_NAME;
 
 const WindowBar = (): ReactNode => (
   <p className="bg-cream border-line flex items-center gap-2 border-b px-4 py-2 text-sm font-bold">

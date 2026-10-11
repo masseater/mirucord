@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { HeroActions } from "./hero-actions";
 
 const LEAD = "みんなの思い出を";
-const FOCUS = "ミルと見つけよう";
+const FOCUS = `${MASCOT_NAME}と見つけよう`;
 
 const ChannelWelcome = (): ReactNode => (
   <div className="flex flex-col items-start gap-4 px-4 pt-6 pb-2">

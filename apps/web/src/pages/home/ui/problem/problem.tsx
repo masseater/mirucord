@@ -6,6 +6,7 @@ import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
 import { Chatter } from "#/pages/home/ui/message/chatter";
 import type { ChatLine } from "#/pages/home/ui/message/chatter";
 import { Post } from "#/pages/home/ui/message/post";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { CampThread } from "./camp-thread";
 import { ScatterScene } from "./scatter-scene";
@@ -21,7 +22,7 @@ const CHATTER: readonly ChatLine[] = [
   {
     author: BOT,
     time: TIME,
-    text: "まかせて！ミルがさがしてくるね",
+    text: `まかせて！${MASCOT_NAME}がさがしてくるね`,
     reply: { author: ASKER, text: GUIDE },
     reactions: [{ emoji: "🙏", count: 3, by: "others" }],
   },

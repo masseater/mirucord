@@ -1,21 +1,15 @@
 import { env } from "cloudflare:workers";
-import { Array, Boolean, Data, Effect, Layer, Option, Schedule, String } from "effect";
+import { Array, Data, Effect, Layer, Option, Schedule, String } from "effect";
 import { Base64 } from "effect/encoding";
 import { FetchHttpClient, HttpClient } from "effect/http";
 
-import { SITE_ORIGIN } from "#/shared/config";
-
 const DESCRIBE_MODEL = "@cf/google/gemma-4-26b-a4b-it";
-const MAX_SIDE = 768;
-const MIN_SIDE = 1;
 const OK_STATUS = 200;
 const MAX_TOKENS = 160;
 const RETRY_TIMES = 2;
 const RETRY_BASE = "500 millis";
-const USER_AGENT = `DiscordBot (${SITE_ORIGIN}, 1.0)`;
-const MAX_ORIGINAL_BYTES = 4_000_000;
-const ORIGINAL_TYPES: ReadonlySet<string> = new Set(["image/jpeg", "image/png", "image/webp"]);
-const DIAGNOSTIC_HEADERS = ["server", "cf-mitigated", "content-type"];
+const MAX_IMAGE_BYTES = 4_000_000;
+const DESCRIBABLE_TYPES: ReadonlySet<string> = new Set(["image/jpeg", "image/png", "image/webp"]);
 const PROMPT =
   "この画像を検索で見つけられるよう、日本語で1〜2文で説明してください。写っている物や料理の名前、読める文字があればその内容を具体的に書いてください。説明だけを答えてください。";
 
@@ -29,84 +23,27 @@ const reasonOf = (cause: unknown): string =>
     Option.match({ onNone: () => "unknown", onSome: ({ name, message }) => `${name}: ${message}` }),
   );
 
-type ImageSource = Readonly<{
-  proxyUrl: string;
-  originalUrl: string;
-  contentType: string;
-  size: number;
-  width: number;
-  height: number;
-}>;
+type ImageSource = Readonly<{ url: string; contentType: string; size: number }>;
+
+const isDescribable = ({ contentType, size }: ImageSource): boolean =>
+  DESCRIBABLE_TYPES.has(contentType) && size <= MAX_IMAGE_BYTES;
 
 type FetchedImage = Readonly<{ data: string; contentType: string }>;
 
-const fitted = (side: number, scale: number): string =>
-  `${Math.max(MIN_SIDE, Math.round(side * scale))}`;
-
-const resizedUrl = ({ proxyUrl, width, height }: ImageSource): string => {
-  const scale = Math.min(MIN_SIDE, MAX_SIDE / Math.max(width, height));
-  const url = new URL(proxyUrl);
-  url.searchParams.set("width", fitted(width, scale));
-  url.searchParams.set("height", fitted(height, scale));
-  url.searchParams.set("format", "jpeg");
-  return url.toString();
-};
-
-const diagnosticsOf = (headers: Readonly<Record<string, string>>): string =>
-  DIAGNOSTIC_HEADERS.map(
-    (name) => `${name}=${Option.getOrElse(Option.fromUndefinedOr(headers[name]), () => "-")}`,
-  ).join(" ");
-
-const fetchFrom = (
-  url: string,
-  contentType: string,
-): Effect.Effect<FetchedImage, DescribeError, HttpClient.HttpClient> =>
+const fetchImage = ({
+  url,
+  contentType,
+}: ImageSource): Effect.Effect<FetchedImage, DescribeError, HttpClient.HttpClient> =>
   HttpClient.HttpClient.pipe(
-    Effect.flatMap((client) => client.get(url, { headers: { "user-agent": USER_AGENT } })),
+    Effect.flatMap((client) => client.get(url)),
     Effect.filterOrFail(
       ({ status }) => status === OK_STATUS,
-      ({ status, headers }) =>
-        new DescribeError({
-          stage: "fetch",
-          reason: `${new URL(url).host} status ${status} ${diagnosticsOf(headers)}`,
-        }),
+      ({ status }) => new DescribeError({ stage: "fetch", reason: `status ${status}` }),
     ),
     Effect.flatMap((response) => response.arrayBuffer),
     Effect.map((buffer) => ({ data: Base64.encode(new Uint8Array(buffer)), contentType })),
     Effect.catchTag(["HttpClientError"], (cause) =>
       Effect.fail(new DescribeError({ stage: "fetch", reason: cause.reason.name })),
-    ),
-  );
-
-const fetchOriginal = (
-  { originalUrl, contentType, size }: ImageSource,
-  proxyReason: string,
-): Effect.Effect<FetchedImage, DescribeError, HttpClient.HttpClient> =>
-  Boolean.match(ORIGINAL_TYPES.has(contentType) && size <= MAX_ORIGINAL_BYTES, {
-    onFalse: () =>
-      Effect.fail(
-        new DescribeError({
-          stage: "fetch",
-          reason: `${proxyReason}; original skipped ${contentType} ${size}`,
-        }),
-      ),
-    onTrue: () =>
-      fetchFrom(originalUrl, contentType).pipe(
-        Effect.mapError(
-          ({ reason }) =>
-            new DescribeError({ stage: "fetch", reason: `${proxyReason}; ${reason}` }),
-        ),
-      ),
-  });
-
-const fetchImage = (
-  source: ImageSource,
-): Effect.Effect<FetchedImage, DescribeError, HttpClient.HttpClient> =>
-  fetchFrom(resizedUrl(source), "image/jpeg").pipe(
-    Effect.catchTag("DescribeError", ({ reason }) =>
-      fetchOriginal(source, reason).pipe(
-        Effect.tap(() => Effect.logInfo("Fetched the original image")),
-      ),
     ),
   );
 
@@ -158,5 +95,5 @@ const describeImage = (source: ImageSource): Effect.Effect<Option.Option<string>
     ),
   ).pipe(Effect.withSpan("describeImage"));
 
-export { DESCRIBE_MODEL, describeImage };
+export { DESCRIBE_MODEL, describeImage, isDescribable };
 export type { ImageSource };

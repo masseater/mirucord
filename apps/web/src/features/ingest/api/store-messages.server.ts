@@ -9,7 +9,7 @@ import type { MessageBody } from "#/shared/crypto/index.server";
 import { db, message } from "#/shared/db/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
-import { DESCRIBE_MODEL, describeImage } from "./describe-image.server";
+import { DESCRIBE_MODEL, describeImage, isDescribable } from "./describe-image.server";
 import type { ImageSource } from "./describe-image.server";
 import { findStored } from "./message-rows.server";
 import type { StoredMessage } from "./message-rows.server";
@@ -19,7 +19,6 @@ import type { MessageVector, VectorizeError } from "./vectors.server";
 const STORED_TYPES: ReadonlySet<MessageType> = new Set([MessageType.Default, MessageType.Reply]);
 const DESCRIBED_IMAGES_PER_MESSAGE = 4;
 const DESCRIBE_CONCURRENCY = 4;
-const NO_PIXELS = 0;
 
 type StoreError = EmbeddingError | VectorizeError;
 
@@ -57,31 +56,12 @@ type DescribedMessage = Readonly<{
 
 const imageSourceOf = ({
   content_type,
-  proxy_url,
   url,
   size,
-  width,
-  height,
 }: DiscordAttachment): Option.Option<ImageSource> =>
-  Option.all({
-    contentType: Option.fromUndefinedOr(content_type),
-    width: Option.fromNullishOr(width),
-    height: Option.fromNullishOr(height),
-  }).pipe(
-    Option.filter(
-      (image) =>
-        String.startsWith("image/")(image.contentType) &&
-        image.width > NO_PIXELS &&
-        image.height > NO_PIXELS,
-    ),
-    Option.map(({ contentType, width: imageWidth, height: imageHeight }) => ({
-      proxyUrl: proxy_url,
-      originalUrl: url,
-      contentType,
-      size,
-      width: imageWidth,
-      height: imageHeight,
-    })),
+  Option.fromUndefinedOr(content_type).pipe(
+    Option.filter(String.startsWith("image/")),
+    Option.map((contentType) => ({ url, contentType, size })),
   );
 
 const isImage = (attachment: DiscordAttachment): boolean =>
@@ -93,7 +73,9 @@ const describeAttachment = (
 ): Effect.Effect<DescribedAttachment> => {
   const plain = { filename: attachment.filename, url: attachment.url };
   return Option.match(
-    imageSourceOf(attachment).pipe(Option.filter(() => index < DESCRIBED_IMAGES_PER_MESSAGE)),
+    imageSourceOf(attachment).pipe(
+      Option.filter((source) => isDescribable(source) && index < DESCRIBED_IMAGES_PER_MESSAGE),
+    ),
     {
       onNone: () => Effect.succeed({ status: "undescribed", attachment: plain }),
       onSome: (source) =>

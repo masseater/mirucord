@@ -50,11 +50,8 @@ const ArchivedThreadList = Schema.Struct({
 const Attachment = Schema.Struct({
   filename: Schema.String,
   url: Schema.String,
-  proxy_url: Schema.String,
   size: Schema.Finite,
   content_type: Schema.optional(Schema.String),
-  width: Schema.optional(Schema.NullOr(Schema.Finite)),
-  height: Schema.optional(Schema.NullOr(Schema.Finite)),
 });
 
 const Author = Schema.Struct({

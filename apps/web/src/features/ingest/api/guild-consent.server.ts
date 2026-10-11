@@ -2,7 +2,7 @@ import { Boolean, DateTime, Effect, Option } from "effect";
 
 import { isNoticeCandidate } from "#/features/ingest/model/channel-ingest";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
-import { MASCOT_NAME, MCP_URL, PRIVACY_PATH, SAMPLE_PROMPT, SITE_ORIGIN } from "#/shared/config";
+import { MASCOT_NAME, MCP_URL, ONBOARDING_STEPS, PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
 import { db, ingestConsent } from "#/shared/db/index.server";
 import { FORBIDDEN, postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
@@ -34,8 +34,8 @@ const NOTICE = [
   `はじめまして、${MASCOT_NAME}だよ！`,
   "このサーバーのみんなの思い出をさがせるように、過去ログを読ませてもらうね。",
   `読むのは **${MASCOT_NAME}が見られるチャンネル** だけだよ。`,
-  `使うときは、Claude などの MCP に対応したアプリに、この URL をコネクタとして登録してね → ${MCP_URL}`,
-  `登録したら「${SAMPLE_PROMPT}」みたいに話しかけてね。`,
+  `${ONBOARDING_STEPS.register.guide} → ${MCP_URL}`,
+  ONBOARDING_STEPS.ask.guide,
   `${MASCOT_NAME}の使い方はここを見てね → ${SITE_ORIGIN}/#start`,
   `読んだ内容の扱いはここを見てね → ${SITE_ORIGIN}${PRIVACY_PATH}`,
 ].join("\n");

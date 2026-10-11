@@ -9,13 +9,15 @@ import { AccountPanel } from "./account-panel";
 import { ConnectedAppPanel } from "./connected-app-panel";
 import { GuildList } from "./guild-list";
 import { McpUrlPanel } from "./mcp-url-panel";
-import { NextStepsPanel } from "./next-steps-panel";
+import { NextStepsPanel } from "./next-steps/next-steps-panel";
 import { ReadableGuildPanel } from "./readable-guild-panel";
 
 const TITLE = "管理画面";
 const WITHDRAWING_TIP = "削除中だよ！";
 const INGESTING_TIP = "思い出を集めてるよ";
 const NEXT_STEPS_TIP = "次にやることを教えるね！";
+const URL_TITLE = "MCP サーバーの URL";
+const URL_NOTE = "ほかのアプリでも使うときは、この URL をコネクタとして登録してね。";
 const INGESTING: ReadonlySet<GuildIngest> = new Set(["waiting", "backfilling"]);
 
 const tipFor = ({ name, guilds }: ReadyDashboard, steps: NextSteps): string => {
@@ -37,7 +39,7 @@ const stepsOrUrl = (steps: NextSteps, inviteUrl: string): ReactNode => {
       <NextStepsPanel consent={steps.consent} register={steps.register} inviteUrl={inviteUrl} />
     );
   }
-  return <McpUrlPanel />;
+  return <McpUrlPanel title={URL_TITLE} note={URL_NOTE} />;
 };
 
 const DashboardView = ({ dashboard }: Readonly<{ dashboard: ReadyDashboard }>): ReactNode => {

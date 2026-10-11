@@ -9,9 +9,9 @@ import { InviteChip } from "./invite-chip";
 import { PromptBox } from "./prompt-box";
 import { StepItem } from "./step-item";
 
-const INVITE = `1. ${ONBOARDING_STEPS.consent}`;
-const REGISTER = `2. ${ONBOARDING_STEPS.register}`;
-const ASK = `3. ${ONBOARDING_STEPS.ask}`;
+const INVITE = `1. ${ONBOARDING_STEPS.consent.title}`;
+const REGISTER = `2. ${ONBOARDING_STEPS.register.title}`;
+const ASK = `3. ${ONBOARDING_STEPS.ask.title}`;
 const CONSENT = "管理画面で同意する";
 
 const inviteActions = (): ReactNode => (

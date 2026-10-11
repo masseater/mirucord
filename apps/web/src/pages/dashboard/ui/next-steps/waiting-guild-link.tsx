@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
+import { GuildPageLink } from "#/pages/dashboard/ui/guild-page-link";
 import { popButtonVariants } from "#/shared/ui/pop-variants";
-
-import { GuildPageLink } from "./guild-page-link";
 
 const consentLabel = (name: string): string => `「${name}」で同意する`;
 

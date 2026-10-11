@@ -12,4 +12,7 @@ const enqueue = (jobs: readonly IngestJob[]): Effect.Effect<void> =>
     { discard: true },
   );
 
-export { enqueue };
+const enqueueWithdrawal = (guildId: string): Effect.Effect<void> =>
+  Effect.promise(() => env.INGEST.send({ kind: "withdraw", guildId }));
+
+export { enqueue, enqueueWithdrawal };

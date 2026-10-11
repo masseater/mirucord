@@ -16,12 +16,12 @@ const CLEARED = Option.getOrNull(Option.none<string>());
 const loadScope = (guildId: string): Effect.Effect<ConsentScope> =>
   Effect.promise(() =>
     db
-      .select({ guildId: ingestConsent.guildId })
+      .select({ state: ingestConsent.state })
       .from(ingestConsent)
       .where(eq(ingestConsent.guildId, guildId)),
   ).pipe(
     Effect.map((rows) =>
-      Option.match(Array.head(rows), {
+      Option.match(Array.head(rows).pipe(Option.filter(({ state }) => state === "granted")), {
         onNone: (): ConsentScope => ({ status: "awaiting" }),
         onSome: (): ConsentScope => ({ status: "granted" }),
       }),

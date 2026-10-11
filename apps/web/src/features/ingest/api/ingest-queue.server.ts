@@ -1,9 +1,12 @@
 import { Cause, Effect, Exit, Option, Schema } from "effect";
 
-import { INGEST_MAX_RETRIES, IngestJobSchema } from "#/features/ingest/model/ingest-job";
+import { INGEST_MAX_RETRIES, QueueJobSchema } from "#/features/ingest/model/ingest-job";
+import type { QueueJob } from "#/features/ingest/model/ingest-job";
 import { alertOperators } from "#/shared/alert/index.server";
 
 import { ingestChannel } from "./ingest-channel.server";
+import { abandonWithdrawal, withdrawGuild } from "./withdraw-guild.server";
+import type { GuildDataRemainsError } from "./withdraw-guild.server";
 
 type QueueDelivery = Readonly<{
   body: unknown;
@@ -12,15 +15,36 @@ type QueueDelivery = Readonly<{
   retry: () => void;
 }>;
 
-const decodeJob = Schema.decodeUnknownEffect(IngestJobSchema);
+const decodeJob = Schema.decodeUnknownEffect(QueueJobSchema);
+
+type JobError = Effect.Error<ReturnType<typeof ingestChannel>> | GuildDataRemainsError;
+
+const runJob = (job: QueueJob): Effect.Effect<void, JobError> => {
+  if ("kind" in job) {
+    return withdrawGuild(job.guildId);
+  }
+  return ingestChannel(job);
+};
+
+const undoJob = (job: QueueJob): Effect.Effect<void> => {
+  if ("kind" in job) {
+    return abandonWithdrawal(job.guildId);
+  }
+  return Effect.void;
+};
+
+const undoDelivery = (body: unknown): Effect.Effect<void> =>
+  decodeJob(body).pipe(Effect.flatMap(undoJob), Effect.ignore);
 
 const giveUpOrRetry = (delivery: QueueDelivery, cause: Cause.Cause<unknown>): Effect.Effect<void> =>
   Option.match(
     Option.liftPredicate(delivery, ({ attempts }) => attempts > INGEST_MAX_RETRIES),
     {
-      onNone: () => Effect.logWarning("Channel ingest failed; retrying"),
+      onNone: () => Effect.logWarning("Queue job failed; retrying"),
       onSome: ({ body }) =>
-        alertOperators(`Channel ingest gave up after retries: ${JSON.stringify(body)}`),
+        alertOperators(`Queue job gave up after retries: ${JSON.stringify(body)}`).pipe(
+          Effect.andThen(undoDelivery(body)),
+        ),
     },
   ).pipe(
     Effect.annotateLogs({
@@ -32,7 +56,7 @@ const giveUpOrRetry = (delivery: QueueDelivery, cause: Cause.Cause<unknown>): Ef
 
 const processDelivery = (delivery: QueueDelivery): Effect.Effect<void> =>
   decodeJob(delivery.body).pipe(
-    Effect.flatMap(ingestChannel),
+    Effect.flatMap(runJob),
     Effect.exit,
     Effect.flatMap((exit) =>
       Exit.match(exit, {

@@ -59,6 +59,9 @@ const ingestConsent = sqliteTable("ingest_consent", {
   grantedBy: text().notNull(),
   grantedAt: integer({ mode: "timestamp_ms" }).notNull(),
   noticeChannelId: text().notNull(),
+  state: text({ enum: ["granted", "withdrawing"] })
+    .notNull()
+    .default("granted"),
 });
 
 export { channel, guild, ingestConsent, role };

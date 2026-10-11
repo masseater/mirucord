@@ -1,7 +1,6 @@
 import { eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
-import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { db, guild, ingestConsent, loadRolePermissions } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
@@ -9,7 +8,11 @@ import { isGuildManager } from "#/shared/permissions";
 
 const MEMBER_CONCURRENCY = 4;
 
-type ManagedGuild = Readonly<{ id: string; name: string; consent: ConsentScope["status"] }>;
+type ManagedGuild = Readonly<{
+  id: string;
+  name: string;
+  consent: "awaiting" | "granted" | "withdrawing";
+}>;
 
 type GuildMembership = Readonly<{ guildId: string; userId: string }>;
 
@@ -47,23 +50,20 @@ const managedGuild = ({
 const listManagedGuilds = (userId: string): Effect.Effect<readonly ManagedGuild[]> =>
   Effect.promise(() =>
     db
-      .select({ id: guild.id, consentedAt: ingestConsent.grantedAt })
+      .select({ id: guild.id, consent: ingestConsent.state })
       .from(guild)
       .leftJoin(ingestConsent, eq(ingestConsent.guildId, guild.id)),
   ).pipe(
     Effect.flatMap((rows) =>
       Effect.forEach(
         rows,
-        ({ id, consentedAt }) =>
+        ({ id, consent }) =>
           managedGuild({ guildId: id, userId }).pipe(
             Effect.map(
               Option.map(({ name }): ManagedGuild => ({
                 id,
                 name,
-                consent: Option.match(Option.fromNullOr(consentedAt), {
-                  onNone: () => "awaiting",
-                  onSome: () => "granted",
-                }),
+                consent: Option.getOrElse(Option.fromNullOr(consent), () => "awaiting" as const),
               })),
             ),
             Effect.catchTag("DiscordRequestError", () =>

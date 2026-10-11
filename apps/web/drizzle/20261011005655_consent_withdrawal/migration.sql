@@ -1,0 +1,1 @@
+ALTER TABLE `ingest_consent` ADD `state` text DEFAULT 'granted' NOT NULL;

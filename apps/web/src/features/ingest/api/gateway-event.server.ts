@@ -1,12 +1,14 @@
 import { env } from "cloudflare:workers";
 import { Effect, Option, Schema } from "effect";
 
+import { subjectOf } from "#/features/ingest/model/gateway-job";
 import { verifyGatewayEvent } from "#/features/ingest/model/gateway-signature";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 
 import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
 import type { IngestError } from "./message-page.server";
+import { syncJoinedGuild } from "./sync-guilds.server";
 
 const PROCESSED = 200;
 const FAILED = 500;
@@ -16,6 +18,9 @@ const UNAUTHORIZED = 401;
 const decodeJob = Schema.decodeUnknownOption(Schema.fromJsonString(GatewayJobSchema));
 
 const runJob = (job: GatewayJob): Effect.Effect<void, IngestError> => {
+  if (job.kind === "join") {
+    return syncJoinedGuild(job.guildId);
+  }
   if (job.kind === "refresh") {
     return refreshMessages(job);
   }
@@ -30,7 +35,7 @@ const processEvent = (body: string): Effect.Effect<Response> =>
         Effect.as(new Response("Processed", { status: PROCESSED })),
         Effect.catchCause((cause) =>
           Effect.logError("Gateway event failed", cause).pipe(
-            Effect.annotateLogs({ kind: job.kind, channelId: job.channelId }),
+            Effect.annotateLogs(subjectOf(job)),
             Effect.as(new Response("Gateway event failed", { status: FAILED })),
           ),
         ),

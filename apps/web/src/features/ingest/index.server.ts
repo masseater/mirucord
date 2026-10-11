@@ -12,6 +12,7 @@ export { listManagedGuilds } from "./api/managed-guild.server";
 export type { ManagedGuild } from "./api/managed-guild.server";
 export type { GuildIngest } from "./model/channel-ingest";
 export { guildLimit } from "./api/guild-membership.server";
-export { pollGuilds, syncGuilds } from "./api/sync-guilds.server";
+export { pollGuilds } from "./api/poll-guilds.server";
+export { syncGuilds } from "./api/sync-guilds.server";
 export { refreshGuildList, refreshManagedGuild } from "./api/guild-refresh.server";
 export type { GuildRefreshResult, RefreshResult } from "./api/guild-refresh.server";

@@ -4,7 +4,8 @@ import { OAuth2Routes, OAuth2Scopes, PermissionFlagsBits } from "discord-api-typ
 const BOT_PERMISSIONS =
   PermissionFlagsBits.ViewChannel +
   PermissionFlagsBits.ReadMessageHistory +
-  PermissionFlagsBits.SendMessages;
+  PermissionFlagsBits.SendMessages +
+  PermissionFlagsBits.ViewAuditLog;
 
 const botInviteUrl = (): string => {
   const url = new URL(OAuth2Routes.authorizationURL);

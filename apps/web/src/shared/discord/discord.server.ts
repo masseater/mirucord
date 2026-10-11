@@ -1,15 +1,14 @@
-import { createRestManager } from "@discordeno/rest";
-import type { RequestMethods } from "@discordeno/rest";
-import { env } from "cloudflare:workers";
 import { OverwriteType, Routes } from "discord-api-types/v10";
-import { Array, Data, Effect, Function, Option, Schema } from "effect";
+import { Array, Effect, Function, Option, Schema } from "effect";
+
+import { callDiscord } from "./client.server";
+import type { DiscordRequestError } from "./client.server";
 
 const DATA_FIRST_ARITY = 2;
 
 const PAGE_SIZE = 100;
 const NOT_FOUND = 404;
 const FORBIDDEN = 403;
-const WEBHOOK_PATH_PARTS = 2;
 
 const PermissionOverwrite = Schema.Struct({
   id: Schema.String,
@@ -23,6 +22,7 @@ const Guild = Schema.Struct({
   name: Schema.String,
   icon: Schema.optional(Schema.NullOr(Schema.String)),
   owner_id: Schema.String,
+  system_channel_id: Schema.optional(Schema.NullOr(Schema.String)),
   roles: Schema.Array(Schema.Struct({ id: Schema.String, permissions: Schema.String })),
 });
 
@@ -79,89 +79,33 @@ type DiscordChannel = typeof Channel.Type;
 type DiscordMessage = typeof Message.Type;
 type DiscordMember = typeof Member.Type;
 
-class DiscordRequestError extends Data.TaggedError("DiscordRequestError")<{
-  readonly status: Option.Option<number>;
-  readonly cause: unknown;
-}> {}
+const listBotGuilds = callDiscord(Schema.Array(PartialGuild))({
+  method: "GET",
+  route: Routes.userGuilds(),
+});
 
-const RequestFailure = Schema.Struct({ cause: Schema.Struct({ status: Schema.Finite }) });
-const decodeRequestFailure = Schema.decodeUnknownOption(RequestFailure);
-
-const rest = createRestManager({ token: env.DISCORD_BOT_TOKEN });
-
-const send = (
-  method: RequestMethods,
-  route: string,
-  options?: Readonly<{ body: unknown; unauthorized: boolean }>,
-): Promise<unknown> => rest.makeRequest(method, route, { ...options, runThroughQueue: false });
-
-const callDiscord = <Body extends Schema.Top>(
-  schema: Body,
-  load: () => Promise<unknown>,
-): Effect.Effect<Body["Type"], DiscordRequestError, Body["DecodingServices"]> =>
-  Effect.tryPromise({
-    try: load,
-    catch: (cause) =>
-      new DiscordRequestError({
-        status: decodeRequestFailure(cause).pipe(Option.map((failure) => failure.cause.status)),
-        cause,
-      }),
-  }).pipe(Effect.flatMap((body) => Schema.decodeUnknownEffect(schema)(body).pipe(Effect.orDie)));
-
-const listBotGuilds = callDiscord(Schema.Array(PartialGuild), () =>
-  send("GET", Routes.userGuilds()),
-);
-
-const getBotUserId: Effect.Effect<string, DiscordRequestError> = callDiscord(User, () =>
-  send("GET", Routes.user()),
-).pipe(Effect.map(({ id }) => id));
+const getBotUserId: Effect.Effect<string, DiscordRequestError> = callDiscord(User)({
+  method: "GET",
+  route: Routes.user(),
+}).pipe(Effect.map(({ id }) => id));
 
 const leaveGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
-  Effect.asVoid(callDiscord(Schema.Unknown, () => send("DELETE", Routes.userGuild(guildId))));
-
-const postWebhookMessage = ({
-  webhookUrl,
-  content,
-}: Readonly<{ webhookUrl: string; content: string }>): Effect.Effect<void, DiscordRequestError> => {
-  const [webhookId = "", token = ""] = Array.takeRight(
-    new URL(webhookUrl).pathname.split("/"),
-    WEBHOOK_PATH_PARTS,
-  );
-  return Effect.asVoid(
-    callDiscord(Schema.Unknown, () =>
-      send("POST", Routes.webhook(webhookId, token), {
-        body: { content, allowed_mentions: { parse: [] } },
-        unauthorized: true,
-      }),
-    ),
-  );
-};
-
-const postChannelMessage = ({
-  channelId,
-  content,
-}: Readonly<{ channelId: string; content: string }>): Effect.Effect<void, DiscordRequestError> =>
   Effect.asVoid(
-    callDiscord(Schema.Unknown, () =>
-      send("POST", Routes.channelMessages(channelId), {
-        body: { content, allowed_mentions: { parse: [] } },
-        unauthorized: false,
-      }),
-    ),
+    callDiscord(Schema.Unknown)({ method: "DELETE", route: Routes.userGuild(guildId) }),
   );
 
 const getGuild = (guildId: string): Effect.Effect<DiscordGuild, DiscordRequestError> =>
-  callDiscord(Guild, () => send("GET", Routes.guild(guildId)));
+  callDiscord(Guild)({ method: "GET", route: Routes.guild(guildId) });
 
 const listGuildChannels = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
-  callDiscord(Schema.Array(Channel), () => send("GET", Routes.guildChannels(guildId)));
+  callDiscord(Schema.Array(Channel))({ method: "GET", route: Routes.guildChannels(guildId) });
 
 const listActiveThreads = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
-  callDiscord(ThreadList, () => send("GET", Routes.guildActiveThreads(guildId))).pipe(
+  callDiscord(ThreadList)({ method: "GET", route: Routes.guildActiveThreads(guildId) }).pipe(
     Effect.map(({ threads }) => threads),
   );
 
@@ -173,9 +117,10 @@ const listArchivedThreadsBefore = (
   if (Option.isSome(before)) {
     query.set("before", before.value);
   }
-  return callDiscord(ArchivedThreadList, () =>
-    send("GET", `${Routes.channelThreads(channelId, "public")}?${query.toString()}`),
-  ).pipe(
+  return callDiscord(ArchivedThreadList)({
+    method: "GET",
+    route: `${Routes.channelThreads(channelId, "public")}?${query.toString()}`,
+  }).pipe(
     Effect.flatMap(({ threads, has_more }) => {
       const next = Array.last(threads).pipe(
         Option.flatMap(({ thread_metadata }) => Option.fromUndefinedOr(thread_metadata)),
@@ -210,9 +155,10 @@ const listMessagesDataFirst = (
   if (page.direction !== "latest") {
     query.set(page.direction, page.cursor);
   }
-  return callDiscord(Schema.Array(Message), () =>
-    send("GET", `${Routes.channelMessages(channelId)}?${query.toString()}`),
-  );
+  return callDiscord(Schema.Array(Message))({
+    method: "GET",
+    route: `${Routes.channelMessages(channelId)}?${query.toString()}`,
+  });
 };
 
 const listMessages: {
@@ -229,7 +175,7 @@ const findDiscord = <Body extends Schema.Top>(
   schema: Body,
   route: string,
 ): Effect.Effect<Option.Option<Body["Type"]>, DiscordRequestError, Body["DecodingServices"]> =>
-  callDiscord(schema, () => send("GET", route)).pipe(
+  callDiscord(schema)({ method: "GET", route }).pipe(
     Effect.asSome,
     Effect.catchIf(
       (error) => Option.contains(error.status, NOT_FOUND),
@@ -270,7 +216,6 @@ const findMessage: {
 } = Function.dual(DATA_FIRST_ARITY, findMessageDataFirst);
 
 export {
-  DiscordRequestError,
   FORBIDDEN,
   findMember,
   findMessage,
@@ -283,7 +228,5 @@ export {
   listGuildChannels,
   listMessages,
   PAGE_SIZE,
-  postChannelMessage,
-  postWebhookMessage,
 };
 export type { DiscordChannel, DiscordGuild, DiscordMember, DiscordMessage, MessagePage };

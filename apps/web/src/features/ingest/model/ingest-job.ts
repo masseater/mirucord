@@ -25,7 +25,12 @@ const ForgetJobSchema = Schema.Struct({
   messageIds: MessageIdsSchema,
 });
 
-const GatewayJobSchema = Schema.Union([RefreshJobSchema, ForgetJobSchema]);
+const JoinJobSchema = Schema.Struct({
+  kind: Schema.Literal("join"),
+  guildId: Schema.String,
+});
+
+const GatewayJobSchema = Schema.Union([RefreshJobSchema, ForgetJobSchema, JoinJobSchema]);
 
 const QueueJobSchema = Schema.Union([WithdrawJobSchema, IngestJobSchema]);
 
@@ -37,7 +42,9 @@ type RefreshJob = typeof RefreshJobSchema.Type;
 
 type ForgetJob = typeof ForgetJobSchema.Type;
 
+type MessageJob = RefreshJob | ForgetJob;
+
 type QueueJob = typeof QueueJobSchema.Type;
 
 export { GatewayJobSchema, INGEST_MAX_RETRIES, QueueJobSchema };
-export type { ForgetJob, GatewayJob, IngestJob, QueueJob, RefreshJob };
+export type { ForgetJob, GatewayJob, IngestJob, MessageJob, QueueJob, RefreshJob };

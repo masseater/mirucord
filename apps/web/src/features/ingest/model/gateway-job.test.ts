@@ -35,7 +35,13 @@ it("ignores direct messages and other events", () => {
       data: { id: "1", channel_id: "2" },
     }),
   ).toStrictEqual(Option.none());
-  expect(toGatewayJob({ event: GatewayDispatchEvents.GuildCreate, data: MESSAGE })).toStrictEqual(
+  expect(toGatewayJob({ event: GatewayDispatchEvents.TypingStart, data: MESSAGE })).toStrictEqual(
     Option.none(),
   );
+});
+
+it("asks to welcome a server the bot has joined", () => {
+  expect(
+    toGatewayJob({ event: GatewayDispatchEvents.GuildCreate, data: { id: "700", name: "x" } }),
+  ).toStrictEqual(Option.some({ kind: "join", guildId: "700" }));
 });

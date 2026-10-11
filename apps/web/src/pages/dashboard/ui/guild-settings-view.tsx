@@ -6,9 +6,8 @@ import { MascotTip } from "#/shared/ui/mascot-tip";
 
 import { ConsentForm } from "./consent-form";
 import { ConsentRecord } from "./consent-record";
-import { IngestStatus } from "./ingest-status";
+import { GrantedPanels } from "./granted-panels";
 import { RefreshButton } from "./refresh-button";
-import { RevokePanel } from "./revoke-panel";
 
 const TIP = {
   awaiting: "よければ同意してね",
@@ -27,8 +26,7 @@ const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>):
       <RefreshButton target={target} />
       <ConsentRecord consent={settings.consent} />
       {settings.consent.status === "awaiting" && <ConsentForm settings={settings} />}
-      {settings.consent.status === "granted" && <IngestStatus settings={settings} />}
-      {settings.consent.status === "granted" && <RevokePanel guildId={settings.id} />}
+      {settings.consent.status === "granted" && <GrantedPanels settings={settings} />}
     </>
   );
 };

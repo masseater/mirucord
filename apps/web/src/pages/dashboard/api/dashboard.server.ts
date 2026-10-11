@@ -98,7 +98,10 @@ const consentedGuildIds: Effect.Effect<readonly string[]> = Effect.promise(() =>
 ).pipe(Effect.map((rows) => rows.map(({ guildId }) => guildId)));
 
 const listReadable = (discordUserId: string): Effect.Effect<GuildListing> =>
-  Effect.all({ guilds: readableGuilds(discordUserId), consented: consentedGuildIds }).pipe(
+  Effect.all(
+    { guilds: readableGuilds(discordUserId), consented: consentedGuildIds },
+    { concurrency: "unbounded" },
+  ).pipe(
     Effect.map(({ guilds, consented }): GuildListing => ({
       status: "ready",
       guilds: guilds
@@ -113,11 +116,14 @@ const listReadable = (discordUserId: string): Effect.Effect<GuildListing> =>
   );
 
 const loadDashboard: Effect.Effect<Dashboard> = withSignedInAccount((user) =>
-  Effect.all({
-    guilds: listManagedGuilds(user.discordUserId),
-    readable: listReadable(user.discordUserId),
-    apps: listConnectedApps(user.userId),
-  }).pipe(
+  Effect.all(
+    {
+      guilds: listManagedGuilds(user.discordUserId),
+      readable: listReadable(user.discordUserId),
+      apps: listConnectedApps(user.userId),
+    },
+    { concurrency: "unbounded" },
+  ).pipe(
     Effect.map((parts): Dashboard => ({
       status: "ready",
       name: user.name,

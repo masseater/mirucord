@@ -41,7 +41,7 @@ const runGateway = (botToken: string): Effect.Effect<void> =>
   }).pipe(Effect.scoped);
 
 class Gateway extends Service<Gateway>()(
-  "Gateway",
+  "MirucordGateway",
   {
     name: APP_NAME,
     main: import.meta.url,

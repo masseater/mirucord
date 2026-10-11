@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest/index.server";
+import { Pill } from "#/shared/ui/pill";
 
 import { ChannelLabel } from "./channel-label";
-import { Pill } from "./pill";
 import { PurgeChannelButton } from "./purge-channel-button";
 
 const INGEST = {

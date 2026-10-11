@@ -1,13 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { Array, Effect, Option, Schema, pipe } from "effect";
+import { Effect, Option, Schema } from "effect";
 
 import { SITE_ORIGIN } from "#/shared/config";
-import { listGuildIds } from "#/shared/db/index.server";
 import { CATEGORY_TYPES } from "#/shared/discord";
 
 import { readMessages, searchMessages } from "./messages.server";
-import { resolveScope } from "./scope.server";
+import { readableGuilds, resolveScope } from "./scope.server";
 import type { GuildScope } from "./scope.server";
 
 const ICONS = [
@@ -92,20 +91,9 @@ const withChannel = (
 
 const listServers = (discordUserId: string): Promise<CallToolResult> =>
   Effect.runPromise(
-    listGuildIds.pipe(
-      Effect.flatMap((guildIds) =>
-        pipe(
-          guildIds,
-          Effect.forEach((guildId) => resolveScope({ guildId, discordUserId })),
-        ),
-      ),
-      Effect.map((scopes) =>
-        jsonResult(
-          Array.getSomes(scopes).map(({ guild }) => ({
-            id: guild.guildId,
-            name: guild.name,
-          })),
-        ),
+    readableGuilds(discordUserId).pipe(
+      Effect.map((guilds) =>
+        jsonResult(guilds.map(({ guildId, name }) => ({ id: guildId, name }))),
       ),
       Effect.orElseSucceed(() => errorResult(DISCORD_UNAVAILABLE)),
     ),

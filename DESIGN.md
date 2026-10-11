@@ -2,7 +2,7 @@
 
 mirucord の画面は、コミュニティの思い出をミルと一緒に見つける体験として作る。
 パステルの色、丸ゴシック、ステッカーのような太い影で、やわらかく親しみやすい見た目にそろえる。
-LP、ログイン、管理画面、規約、MCP の同意画面はすべてこの文書に従う。
+LP、ログイン、設定、管理画面、規約、MCP の同意画面はすべてこの文書に従う。
 
 ## 土台
 
@@ -83,6 +83,7 @@ SVG の中に置くときは `mascotSrc` を `image` 要素に渡す。
 | `MascotTip`    | `shared/ui/mascot-tip.tsx`    | ミルと吹き出しの組       |
 | `Mascot`       | `shared/brand/mascot.tsx`     | ミル本体                 |
 | `ChannelIcon`  | `shared/ui/channel-icon.tsx`  | チャンネルの種類の印     |
+| `Pill`         | `shared/ui/pill.tsx`          | 状態を示す小さな札       |
 
 新しいページはまずこれらで組み、足りないときだけ部品を足す。
 部品を足したら、この表に追記する。

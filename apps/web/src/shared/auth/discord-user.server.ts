@@ -8,6 +8,8 @@ import { account } from "./generated/auth.table";
 
 const DISCORD_PROVIDER = "discord";
 
+type SignedInUser = Readonly<{ userId: string; name: string; discordUserId: string }>;
+
 const discordUserIdOf = (userId: string): Effect.Effect<Option.Option<string>> =>
   Effect.promise(() =>
     db
@@ -16,14 +18,23 @@ const discordUserIdOf = (userId: string): Effect.Effect<Option.Option<string>> =
       .where(and(eq(account.userId, userId), eq(account.providerId, DISCORD_PROVIDER))),
   ).pipe(Effect.map((rows) => Option.map(Array.head(rows), ({ accountId }) => accountId)));
 
-const signedInDiscordUser = (request: Request): Effect.Effect<Option.Option<string>> =>
+const signedInUser = (request: Request): Effect.Effect<Option.Option<SignedInUser>> =>
   Effect.promise(() => makeAuth().api.getSession({ headers: request.headers })).pipe(
     Effect.flatMap((session) =>
       Option.match(Option.fromNullOr(session), {
         onNone: () => Effect.succeedNone,
-        onSome: ({ user }) => discordUserIdOf(user.id),
+        onSome: ({ user }) =>
+          discordUserIdOf(user.id).pipe(
+            Effect.map(
+              Option.map((discordUserId) => ({ userId: user.id, name: user.name, discordUserId })),
+            ),
+          ),
       }),
     ),
   );
 
-export { discordUserIdOf, signedInDiscordUser };
+const signedInDiscordUser = (request: Request): Effect.Effect<Option.Option<string>> =>
+  signedInUser(request).pipe(Effect.map(Option.map(({ discordUserId }) => discordUserId)));
+
+export { discordUserIdOf, signedInDiscordUser, signedInUser };
+export type { SignedInUser };

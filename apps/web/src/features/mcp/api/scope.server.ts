@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
-import { channel, db, guild, loadRolePermissions } from "#/shared/db/index.server";
+import { channel, db, guild, listGuildIds, loadRolePermissions } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { visibleChannelIds } from "#/shared/permissions";
@@ -86,5 +86,18 @@ const resolveScope = ({
     ),
   );
 
-export { resolveScope };
+const readableGuilds = (
+  discordUserId: string,
+): Effect.Effect<readonly StoredGuild[], DiscordRequestError> =>
+  listGuildIds.pipe(
+    Effect.flatMap((guildIds) =>
+      pipe(
+        guildIds,
+        Effect.forEach((guildId) => resolveScope({ guildId, discordUserId })),
+      ),
+    ),
+    Effect.map((scopes) => Array.getSomes(scopes).map(({ guild: stored }) => stored)),
+  );
+
+export { readableGuilds, resolveScope };
 export type { GuildScope, StoredChannel, StoredGuild };

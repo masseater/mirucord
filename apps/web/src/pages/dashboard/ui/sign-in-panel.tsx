@@ -1,20 +1,12 @@
 import type { ReactNode } from "react";
 
-import { DiscordSignIn } from "#/features/sign-in";
-import { MascotTip } from "#/shared/ui/mascot-tip";
-import { Panel } from "#/shared/ui/panel";
+import { SignInPanel as DiscordSignInPanel } from "#/features/sign-in";
 
 const TIP = "サーバーの管理者さん向けだよ";
 const TITLE = "ログインして管理画面へ";
 
 const SignInPanel = ({ returnTo }: Readonly<{ returnTo: string }>): ReactNode => (
-  <>
-    <MascotTip>{TIP}</MascotTip>
-    <Panel>
-      <h1 className="text-2xl font-black">{TITLE}</h1>
-      <DiscordSignIn callbackURL={returnTo} />
-    </Panel>
-  </>
+  <DiscordSignInPanel tip={TIP} title={TITLE} returnTo={returnTo} />
 );
 
 export { SignInPanel };

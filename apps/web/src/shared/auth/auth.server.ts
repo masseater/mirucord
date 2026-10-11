@@ -55,6 +55,7 @@ const makeAuth = (): Auth<AuthOptions> =>
       },
     }),
     disabledPaths: ["/token"],
+    user: { deleteUser: { enabled: true } },
     socialProviders: {
       discord: {
         clientId: env.DISCORD_CLIENT_ID,

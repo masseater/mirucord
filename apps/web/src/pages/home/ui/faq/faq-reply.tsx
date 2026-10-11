@@ -9,7 +9,7 @@ import type { Question } from "./question";
 
 const FaqReply = ({ question }: Readonly<{ question: Question }>): ReactNode => (
   <Message author={BOT} time={question.time} reply={question.reply}>
-    <FaqAnswer answer={question.answer}>
+    <FaqAnswer answer={question.answer} copies={question.copies}>
       <Reactions items={question.reactions} />
     </FaqAnswer>
   </Message>

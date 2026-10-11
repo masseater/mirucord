@@ -1,5 +1,4 @@
 import { getRequest } from "@tanstack/react-start/server";
-import { eq } from "drizzle-orm";
 import { Cause, Effect, Option } from "effect";
 
 import {
@@ -25,7 +24,6 @@ import type {
 import { readableGuilds } from "#/features/mcp/index.server";
 import { disconnectApp, listConnectedApps, signedInUser } from "#/shared/auth/index.server";
 import type { ConnectedApp, SignedInUser } from "#/shared/auth/index.server";
-import { db, ingestConsent } from "#/shared/db/index.server";
 import { botInviteUrl } from "#/shared/discord/index.server";
 
 type SignedOut = Readonly<{ status: "signedOut" }>;
@@ -90,22 +88,12 @@ const withSignedInUser = <Value, Failure>(
 ): Effect.Effect<Value | SignedOut, Failure> =>
   withSignedInAccount(({ discordUserId }) => use(discordUserId));
 
-const consentedGuildIds: Effect.Effect<readonly string[]> = Effect.promise(() =>
-  db
-    .select({ guildId: ingestConsent.guildId })
-    .from(ingestConsent)
-    .where(eq(ingestConsent.state, "granted")),
-).pipe(Effect.map((rows) => rows.map(({ guildId }) => guildId)));
-
 const listReadable = (discordUserId: string): Effect.Effect<GuildListing> =>
-  Effect.all(
-    { guilds: readableGuilds(discordUserId), consented: consentedGuildIds },
-    { concurrency: "unbounded" },
-  ).pipe(
-    Effect.map(({ guilds, consented }): GuildListing => ({
+  readableGuilds(discordUserId).pipe(
+    Effect.map((guilds): GuildListing => ({
       status: "ready",
       guilds: guilds
-        .filter(({ guildId }) => consented.includes(guildId))
+        .filter(({ consent }) => consent === "consented")
         .map(({ guildId, name, icon }) => ({ id: guildId, name, icon })),
     })),
     Effect.catchTag("DiscordRequestError", () =>

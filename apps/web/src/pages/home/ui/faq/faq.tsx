@@ -20,7 +20,6 @@ const QUESTIONS = [
     time: "今日 21:06",
     reply: { author: memberAuthor(MEMBERS.yui), text: "ねえ、これってお金かかるの？" },
     answer: "かからないよ！いまは無料で使えるの。",
-    copies: [],
     reactions: [{ emoji: "🎉", count: 5, by: "others" }],
   },
   {
@@ -28,7 +27,7 @@ const QUESTIONS = [
     reply: { author: memberAuthor(MEMBERS.kenta), text: "で、ミルにはどこから聞けばいいの？" },
     answer:
       "Claude みたいな、MCP に対応した AI のアプリから呼んでね！手元の AI にこう送ってみてね！",
-    copies: [SETUP_PROMPT],
+    copy: SETUP_PROMPT,
     reactions: [{ emoji: "👀", count: 2, by: "others" }],
   },
   {
@@ -39,7 +38,6 @@ const QUESTIONS = [
     },
     answer:
       "使えるよ！サーバーの管理権限がいるのは、最初に招待するときだけなんだ。そのあとはみんな、自分が読めるチャンネルの中だけさがせるよ。",
-    copies: [],
     reactions: [{ emoji: "🙏", count: 3, by: "me" }],
   },
   {
@@ -47,14 +45,12 @@ const QUESTIONS = [
     reply: { author: memberAuthor(MEMBERS.yui), text: "DM まで読まれちゃったりしない？" },
     answer:
       "読まないよ！ミルが読むのはサーバーのチャンネルとスレッドだけ。DM はのぞかないから安心してね。",
-    copies: [],
     reactions: [{ emoji: "🙆", count: 3, by: "others" }],
   },
   {
     time: "今日 21:10",
     reply: { author: memberAuthor(MEMBERS.tanaka), text: "運営の人って、俺らの会話読めたりする？" },
     answer: "読めないよ！本文は暗号化してしまってあるから、運営さんにも中身は見えないんだ。",
-    copies: [],
     reactions: [
       { emoji: "🔒", count: 4, by: "others" },
       { emoji: "👍", count: 2, by: "me" },

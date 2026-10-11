@@ -7,9 +7,9 @@ const THINKING = "ミルがさがし中…";
 
 const FaqAnswer = ({
   answer,
-  copies,
+  copy,
   children,
-}: Readonly<{ answer: string; copies: readonly string[]; children: ReactNode }>): ReactNode => (
+}: Readonly<{ answer: string; copy?: string | undefined; children: ReactNode }>): ReactNode => (
   <div className="faq-reveal grid">
     <p aria-hidden="true" className="faq-thinking text-dc-muted flex items-center gap-2 text-sm">
       <Mascot className="motion-safe:animate-wiggle size-6" />
@@ -17,9 +17,7 @@ const FaqAnswer = ({
     </p>
     <div className="faq-answer grid gap-2">
       <p>{answer}</p>
-      {copies.map((text) => (
-        <CopyBlock key={text} text={text} />
-      ))}
+      {typeof copy === "string" && <CopyBlock text={copy} />}
       <div className="faq-reactions">{children}</div>
     </div>
   </div>

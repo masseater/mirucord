@@ -160,3 +160,71 @@ it.effect("moves the sweep below a full page of history", () =>
     expect(yield* savedCursor).toStrictEqual(Option.some(String(SWEPT_START)));
   }),
 );
+
+const BACKFILLING = "720";
+const BACKFILL_CURSOR = "60000";
+const OLDER_START = 50_000;
+const BACKFILL_PAGES = 5;
+const STALE_CURSOR = String(OLDER_START - PAGE_SIZE * (BACKFILL_PAGES - UNIT));
+
+const seedBackfilling = Effect.promise(() =>
+  db.insert(channel).values({
+    id: BACKFILLING,
+    guildId: GUILD,
+    name: "backfilling",
+    type: 0,
+    permissionOverwrites: [],
+    newestMessageId: String(LATEST_START),
+    oldestMessageId: BACKFILL_CURSOR,
+    backfill: "pending",
+  }),
+);
+
+const answerHistory = (): void => {
+  network.use(
+    http.get("https://discord.com/api/v10/channels/:channelId/messages", ({ request }) => {
+      const before = new URL(request.url).searchParams.get("before");
+      return HttpResponse.json(
+        Option.match(Option.fromNullOr(before), {
+          onNone: () => fullPage(LATEST_START),
+          onSome: (cursor) => fullPage(Math.min(Number(cursor), OLDER_START) - PAGE_SIZE),
+        }),
+      );
+    }),
+  );
+};
+
+const savedOldest = Effect.promise(() =>
+  db.select({ oldest: channel.oldestMessageId }).from(channel).where(eq(channel.id, BACKFILLING)),
+).pipe(Effect.map((rows) => Option.flatMapNullishOr(Array.head(rows), ({ oldest }) => oldest)));
+
+it.effect("queues the next run of a channel whose history is still pending", () =>
+  Effect.gen(function* chainBackfill() {
+    yield* seedBackfilling;
+    answerHistory();
+    const sendBatch = vi.spyOn(env.INGEST, "sendBatch");
+    yield* ingestChannel({ guildId: GUILD, channelId: BACKFILLING });
+    const oldest = yield* savedOldest;
+    expect(Option.isSome(oldest)).toBe(true);
+    expect(sendBatch).toHaveBeenCalledWith([
+      {
+        body: {
+          guildId: GUILD,
+          channelId: BACKFILLING,
+          resumeBefore: Option.getOrThrow(oldest),
+        },
+      },
+    ]);
+  }),
+);
+
+it.effect("drops a queued run whose history was already advanced by another run", () =>
+  Effect.gen(function* dropSuperseded() {
+    answerHistory();
+    const before = yield* savedOldest;
+    const sendBatch = vi.spyOn(env.INGEST, "sendBatch");
+    yield* ingestChannel({ guildId: GUILD, channelId: BACKFILLING, resumeBefore: STALE_CURSOR });
+    expect(yield* savedOldest).toStrictEqual(before);
+    expect(sendBatch).not.toHaveBeenCalled();
+  }),
+);

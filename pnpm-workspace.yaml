@@ -53,6 +53,7 @@ catalog:
   usehooks-ts: ^3.1.1
   "@discordeno/gateway": 21.0.0
   standardwebhooks: 1.1.1
+  js-base64: 3.9.4
 catalogs:
   stack:
     "@effect/atom-react": 4.0.0

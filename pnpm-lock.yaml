@@ -275,6 +275,9 @@ catalogs:
     jose:
       specifier: 6.2.12
       version: 6.2.12
+    js-base64:
+      specifier: 3.9.4
+      version: 3.9.4
     msw:
       specifier: 3.0.2
       version: 3.0.2
@@ -553,6 +556,9 @@ importers:
       jose:
         specifier: 'catalog:'
         version: 6.2.12
+      js-base64:
+        specifier: 'catalog:'
+        version: 3.9.4
       react:
         specifier: 19.3.0
         version: 19.3.0

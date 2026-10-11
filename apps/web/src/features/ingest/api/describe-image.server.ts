@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import { Array, Data, Effect, Layer, Option, Schedule, Semaphore, String } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
+import { fromUint8Array } from "js-base64";
 
 const DESCRIBE_MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const OK_STATUS = 200;
@@ -8,7 +9,6 @@ const MAX_TOKENS = 160;
 const RETRY_TIMES = 2;
 const RETRY_BASE = "500 millis";
 const MAX_IMAGE_BYTES = 4_000_000;
-const BINARY_CHUNK = 32_768;
 const ONE_AT_A_TIME = 1;
 const IMAGE_SLOTS = Semaphore.makeUnsafe(ONE_AT_A_TIME);
 const DESCRIBABLE_TYPES: ReadonlySet<string> = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -43,14 +43,7 @@ const fetchImage = ({
       ({ status }) => new DescribeError({ stage: "fetch", reason: `status ${status}` }),
     ),
     Effect.flatMap((response) => response.arrayBuffer),
-    Effect.map((buffer) => {
-      const bytes = new Uint8Array(buffer);
-      const binary = Array.makeBy(Math.ceil(bytes.length / BINARY_CHUNK), (index) => {
-        const start = index * BINARY_CHUNK;
-        return globalThis.String.fromCharCode(...bytes.subarray(start, start + BINARY_CHUNK));
-      }).join("");
-      return { data: btoa(binary), contentType };
-    }),
+    Effect.map((buffer) => ({ data: fromUint8Array(new Uint8Array(buffer)), contentType })),
     Effect.catchTag(["HttpClientError"], (cause) =>
       Effect.fail(new DescribeError({ stage: "fetch", reason: cause.reason.name })),
     ),

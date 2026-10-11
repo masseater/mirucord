@@ -13,8 +13,15 @@ import { whenIngestEnabled } from "./ingest-flag.server";
 import { syncChannels } from "./sync-channels.server";
 import type { VectorizeError } from "./sync-channels.server";
 
-const iconOf = ({ icon }: DiscordGuild): string | null =>
-  Option.getOrNull(Option.fromNullishOr(icon));
+const syncedFields = ({
+  name,
+  icon,
+  owner_id,
+}: DiscordGuild): Pick<typeof guild.$inferInsert, "name" | "icon" | "ownerId"> => ({
+  name,
+  icon: Option.getOrNull(Option.fromNullishOr(icon)),
+  ownerId: owner_id,
+});
 
 const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
   Effect.all({ wrappedKey: createGuildKey, now: DateTime.now }).pipe(
@@ -24,19 +31,13 @@ const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
           .insert(guild)
           .values({
             id: discordGuild.id,
-            name: discordGuild.name,
-            icon: iconOf(discordGuild),
-            ownerId: discordGuild.owner_id,
+            ...syncedFields(discordGuild),
             wrappedKey,
             joinedAt: DateTime.toDate(now),
           })
           .onConflictDoUpdate({
             target: guild.id,
-            set: {
-              name: discordGuild.name,
-              icon: iconOf(discordGuild),
-              ownerId: discordGuild.owner_id,
-            },
+            set: syncedFields(discordGuild),
           }),
       ),
     ),
@@ -46,14 +47,7 @@ const upsertGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
 const updateGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
   Effect.asVoid(
     Effect.promise(() =>
-      db
-        .update(guild)
-        .set({
-          name: discordGuild.name,
-          icon: iconOf(discordGuild),
-          ownerId: discordGuild.owner_id,
-        })
-        .where(eq(guild.id, discordGuild.id)),
+      db.update(guild).set(syncedFields(discordGuild)).where(eq(guild.id, discordGuild.id)),
     ),
   );
 

@@ -50,38 +50,38 @@
     .seek-flash {
       animation: seek-flash linear both;
       animation-timeline: --ch-top;
-      animation-range: contain calc(100% - 100dvh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
-        calc(100% - 100dvh - var(--dwell) * (0.69 - var(--seek) * 0.31));
+      animation-range: contain calc(100% - 100svh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
+        calc(100% - 100svh - var(--dwell) * (0.69 - var(--seek) * 0.31));
     }
 
     .seek[data-kind="pass"] .seek-miru {
       animation: seek-pass linear both;
       animation-timeline: --ch-top;
-      animation-range: contain calc(100% - 100dvh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
-        calc(100% - 100dvh - var(--dwell) * (0.69 - var(--seek) * 0.31));
+      animation-range: contain calc(100% - 100svh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
+        calc(100% - 100svh - var(--dwell) * (0.69 - var(--seek) * 0.31));
     }
 
     .seek[data-kind="found"] .seek-miru {
       animation: seek-found linear both;
       animation-timeline: --ch-top;
-      animation-range: contain calc(100% - 100dvh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
-        calc(100% - 100dvh - var(--dwell) * (0.77 - var(--seek) * 0.31));
+      animation-range: contain calc(100% - 100svh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
+        calc(100% - 100svh - var(--dwell) * (0.77 - var(--seek) * 0.31));
     }
 
     .answer-searching {
       opacity: 1;
       animation: fade-hide linear both;
       animation-timeline: --ch-top;
-      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.23) contain
-        calc(100% - 100dvh - var(--dwell) * 0.15);
+      animation-range: contain calc(100% - 100svh - var(--dwell) * 0.23) contain
+        calc(100% - 100svh - var(--dwell) * 0.15);
     }
 
     .answer-done,
     .answer-reveal {
       animation: fade-show linear both;
       animation-timeline: --ch-top;
-      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.15) contain
-        calc(100% - 100dvh - var(--dwell) * 0);
+      animation-range: contain calc(100% - 100svh - var(--dwell) * 0.15) contain
+        calc(100% - 100svh - var(--dwell) * 0);
     }
   }
 }

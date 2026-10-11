@@ -30,10 +30,13 @@ const ORIGINAL = "841";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 const UNIT = 1;
 const NONE = 0;
+const ORIGINAL_BYTES = 100_000;
+const BYTE_VALUES = 256;
 
 const embeddedTexts: string[] = [];
 const resizedRequests: URL[] = [];
 const originalRequests: URL[] = [];
+const modelImages: string[] = [];
 
 const photoMessage = (id: string): unknown => ({
   id,
@@ -79,6 +82,18 @@ const jpeg = (): Response =>
   HttpResponse.arrayBuffer(new Uint8Array([UNIT]).buffer, {
     headers: { "content-type": "image/jpeg" },
   });
+
+const originalBytes = Uint8Array.from(
+  { length: ORIGINAL_BYTES },
+  (_value, index) => index % BYTE_VALUES,
+);
+
+const expectedOriginal = `data:image/jpeg;base64,${btoa(
+  [...originalBytes].map((byte) => String.fromCodePoint(byte)).join(""),
+)}`;
+
+const largeJpeg = (): Response =>
+  HttpResponse.arrayBuffer(originalBytes.buffer, { headers: { "content-type": "image/jpeg" } });
 
 const seedGuild = Effect.gen(function* seed() {
   const wrappedKey = yield* createGuildKey;
@@ -130,7 +145,10 @@ const decodeTexts = Schema.decodeUnknownOption(
 
 const answerModel = (inputs: unknown): Promise<Record<string, unknown>> =>
   Option.match(decodeTexts(inputs), {
-    onNone: () => Promise.resolve({ choices: [{ message: { content: ` ${DESCRIPTION}\n` } }] }),
+    onNone: () => {
+      modelImages.push(JSON.stringify(inputs));
+      return Promise.resolve({ choices: [{ message: { content: ` ${DESCRIPTION}\n` } }] });
+    },
     onSome: ({ text }) => {
       embeddedTexts.push(...text);
       return Promise.resolve({ data: text.map(() => [UNIT]) });
@@ -146,6 +164,7 @@ beforeEach(() => {
   embeddedTexts.length = NONE;
   resizedRequests.length = NONE;
   originalRequests.length = NONE;
+  modelImages.length = NONE;
   vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => answerModel(inputs));
   vi.spyOn(env.MESSAGES, "getByIds").mockResolvedValue([]);
   vi.spyOn(env.MESSAGES, "upsert").mockResolvedValue({ mutationId: "test" });
@@ -188,9 +207,10 @@ it.effect("indexes an image-only message by the description of its image", () =>
 
 it.live("falls back to the original image when the resized one is refused", () =>
   Effect.gen(function* original() {
-    answerWith(ORIGINAL, forbidden, jpeg);
+    answerWith(ORIGINAL, forbidden, largeJpeg);
     yield* ingestChannel({ guildId: GUILD, channelId: ORIGINAL_CHANNEL });
     expect(embeddedTexts).toStrictEqual([DESCRIPTION]);
+    expect(modelImages.join("")).toContain(expectedOriginal);
     expect(originalRequests.map(({ pathname }) => pathname)).toStrictEqual([
       new URL(PHOTO_URL).pathname,
     ]);

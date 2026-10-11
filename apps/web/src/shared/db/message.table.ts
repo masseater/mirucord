@@ -16,6 +16,7 @@ export const message = sqliteTable(
     sealed: text().notNull(),
     createdAt: integer({ mode: "timestamp_ms" }).notNull(),
     editedAt: integer({ mode: "timestamp_ms" }),
+    describedWith: text(),
   },
   (table) => [
     index("message_channel_id_idx").on(table.channelId, table.id),

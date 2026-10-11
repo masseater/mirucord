@@ -1,7 +1,11 @@
 import { Schema } from "effect";
 
 const Ingest = Schema.Literals(["notConsented", "waiting", "backfilling", "done", "empty"]);
-const Attachment = Schema.Struct({ filename: Schema.String, url: Schema.String });
+const Attachment = Schema.Struct({
+  filename: Schema.String,
+  url: Schema.String,
+  description: Schema.optional(Schema.String),
+});
 const Message = Schema.Struct({
   id: Schema.String,
   channelId: Schema.String,

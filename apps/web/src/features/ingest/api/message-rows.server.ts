@@ -9,21 +9,30 @@ import { inIdChunks } from "./id-chunks.server";
 import { deleteVectors } from "./vectors.server";
 import type { VectorizeError } from "./vectors.server";
 
-type StoredMessage = Readonly<{ id: string; editedAt: Option.Option<number> }>;
+type StoredMessage = Readonly<{
+  id: string;
+  editedAt: Option.Option<number>;
+  describedWith: Option.Option<string>;
+}>;
 
 const findStored = (ids: readonly string[]): Effect.Effect<readonly StoredMessage[]> =>
   inIdChunks({
     ids,
     run: (chunk) =>
       db
-        .select({ id: message.id, editedAt: message.editedAt })
+        .select({
+          id: message.id,
+          editedAt: message.editedAt,
+          describedWith: message.describedWith,
+        })
         .from(message)
         .where(inArray(message.id, [...chunk])),
   }).pipe(
     Effect.map((chunks) =>
-      chunks.flat().map(({ id, editedAt }) => ({
+      chunks.flat().map(({ id, editedAt, describedWith }) => ({
         id,
         editedAt: Option.map(Option.fromNullOr(editedAt), (date) => date.getTime()),
+        describedWith: Option.fromNullOr(describedWith),
       })),
     ),
   );

@@ -137,9 +137,11 @@ export default defineConfig({
         "error",
         {
           capIsNewExceptions: [
+            "App",
             "CloudflareApiLive",
             "Resource",
             "Stack",
+            "Secret",
             "Secrets",
             "Service",
             "Variables",

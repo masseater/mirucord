@@ -83,7 +83,13 @@ const fetchOriginal = (
   proxyReason: string,
 ): Effect.Effect<FetchedImage, DescribeError, HttpClient.HttpClient> =>
   Boolean.match(ORIGINAL_TYPES.has(contentType) && size <= MAX_ORIGINAL_BYTES, {
-    onFalse: () => Effect.fail(new DescribeError({ stage: "fetch", reason: proxyReason })),
+    onFalse: () =>
+      Effect.fail(
+        new DescribeError({
+          stage: "fetch",
+          reason: `${proxyReason}; original skipped ${contentType} ${size}`,
+        }),
+      ),
     onTrue: () =>
       fetchFrom(originalUrl, contentType).pipe(
         Effect.mapError(
@@ -97,7 +103,11 @@ const fetchImage = (
   source: ImageSource,
 ): Effect.Effect<FetchedImage, DescribeError, HttpClient.HttpClient> =>
   fetchFrom(resizedUrl(source), "image/jpeg").pipe(
-    Effect.catchTag("DescribeError", ({ reason }) => fetchOriginal(source, reason)),
+    Effect.catchTag("DescribeError", ({ reason }) =>
+      fetchOriginal(source, reason).pipe(
+        Effect.tap(() => Effect.logInfo("Fetched the original image")),
+      ),
+    ),
   );
 
 const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, DescribeError> =>

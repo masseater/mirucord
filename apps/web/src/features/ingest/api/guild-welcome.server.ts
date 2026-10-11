@@ -6,7 +6,6 @@ import {
   MASCOT_NAME,
   MCP_URL,
   ONBOARDING_STEPS,
-  SAMPLE_PROMPT,
   SITE_ORIGIN,
 } from "#/shared/config";
 import { findBotAdder, postChannelMessage, sendDirectMessage } from "#/shared/discord/index.server";
@@ -42,14 +41,14 @@ const welcomeMessage = (addressee: Addressee, discordGuild: DiscordGuild): strin
     GREETING[addressee](discordGuild.name),
     `まだこのサーバーのメッセージは何も読んでないよ。使いはじめるには、次の 3 つをしてね。`,
     "",
-    `**1. ${ONBOARDING_STEPS.consent}**`,
-    `サーバーの管理者さんがログインして、取り込みに同意してね。同意するまで${MASCOT_NAME}は何も読まないよ。`,
+    `**1. ${ONBOARDING_STEPS.consent.title}**`,
+    `サーバーの管理者さんがログインして、取り込みに同意してね。${ONBOARDING_STEPS.consent.guide}`,
     `<${SITE_ORIGIN}${DASHBOARD_PATH}/${discordGuild.id}>`,
-    `**2. ${ONBOARDING_STEPS.register}**`,
-    "Claude などの MCP に対応したアプリに、この URL をコネクタとして登録してね。サーバーのみんなも、それぞれ自分のアプリに登録すれば使えるよ。",
+    `**2. ${ONBOARDING_STEPS.register.title}**`,
+    `${ONBOARDING_STEPS.register.guide}サーバーのみんなも、それぞれ自分のアプリに登録すれば使えるよ。`,
     `<${MCP_URL}>`,
-    `**3. ${ONBOARDING_STEPS.ask}**`,
-    `「${SAMPLE_PROMPT}」みたいに聞いてみてね。`,
+    `**3. ${ONBOARDING_STEPS.ask.title}**`,
+    ONBOARDING_STEPS.ask.guide,
     "",
     `くわしい使い方はここ → <${SITE_ORIGIN}/#start>`,
   ].join("\n");

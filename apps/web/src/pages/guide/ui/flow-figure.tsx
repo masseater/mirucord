@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
+import type { FlowEdge } from "#/pages/guide/model/guide-block";
+
 import { FlowRow } from "./flow-row";
-import type { FlowEdge } from "./guide-block";
 
 const FlowFigure = ({ edges }: Readonly<{ edges: readonly FlowEdge[] }>): ReactNode => (
   <ul className="grid gap-3">

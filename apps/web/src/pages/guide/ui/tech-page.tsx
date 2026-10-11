@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
+import type { GuideSection } from "#/pages/guide/model/guide-block";
 import { MASCOT_NAME, SERVICE_NAME } from "#/shared/config";
 
-import type { GuideSection } from "./guide-block";
 import { GuideDocument } from "./guide-document";
 
 const TITLE = "技術の話";

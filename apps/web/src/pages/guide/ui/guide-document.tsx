@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 
+import { blockKey } from "#/pages/guide/model/guide-block";
+import type { GuideSection } from "#/pages/guide/model/guide-block";
 import { REPOSITORY_URL } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 
-import { blockKey } from "./guide-block";
-import type { GuideSection } from "./guide-block";
 import { GuideBlockView } from "./guide-block-view";
 
 const SOURCE = "ソースコードは GitHub で公開しています。";

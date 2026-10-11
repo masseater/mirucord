@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { FlowEdge } from "./guide-block";
+import type { FlowEdge } from "#/pages/guide/model/guide-block";
 
 const NODE = "bg-dc-input text-dc-bright rounded-2xl px-3 py-2 text-sm font-bold";
 const ARROW = "→";

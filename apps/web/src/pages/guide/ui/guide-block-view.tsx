@@ -1,8 +1,9 @@
 import { Match } from "effect";
 import type { ReactNode } from "react";
 
+import type { GuideBlock } from "#/pages/guide/model/guide-block";
+
 import { FlowFigure } from "./flow-figure";
-import type { GuideBlock } from "./guide-block";
 import { GuideTable } from "./guide-table";
 import { InlineText } from "./inline-text";
 

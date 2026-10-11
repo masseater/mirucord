@@ -119,12 +119,6 @@
       animation-range: contain var(--from) contain var(--to);
     }
 
-    @supports (word-break: auto-phrase) {
-      .scene-caption {
-        word-break: auto-phrase;
-      }
-    }
-
     .scene-caption:nth-child(1) {
       --from: -8.12%;
       --to: 13.53%;
@@ -755,12 +749,60 @@
     }
 
     @media (aspect-ratio < 1) {
-      .finale-miru {
-        height: 62vh;
+      .scene-finale {
+        align-content: start;
+        padding-top: 32vh;
       }
 
-      .finale-frags {
-        --spread: 0.7;
+      .finale-miru {
+        right: -8vw;
+        bottom: -6vh;
+        height: 46vh;
+      }
+
+      .finale-frag {
+        width: min(13rem, 29vw);
+        font-size: clamp(0.75rem, 1.8vw, 1rem);
+      }
+
+      .finale-frag:nth-child(1) {
+        --fx: -32vw;
+        --fy: -40vh;
+      }
+
+      .finale-frag:nth-child(2) {
+        --fx: 0vw;
+        --fy: -41vh;
+      }
+
+      .finale-frag:nth-child(3) {
+        --fx: 32vw;
+        --fy: -39vh;
+      }
+
+      .finale-frag:nth-child(4) {
+        --fx: -32vw;
+        --fy: -27vh;
+      }
+
+      .finale-frag:nth-child(5) {
+        --fx: 0vw;
+        --fy: -28vh;
+      }
+
+      .finale-frag:nth-child(6) {
+        --fx: 32vw;
+        --fy: -26vh;
+      }
+
+      .finale-frag:nth-child(7) {
+        --fx: -30vw;
+        --fy: 42vh;
+      }
+
+      .finale-frag:nth-child(8) {
+        --fx: 32vw;
+        --fy: -15vh;
       }
     }
 
@@ -772,7 +814,7 @@
     }
 
     .finale-title {
-      font-size: clamp(2.25rem, 7vw, 6rem);
+      font-size: clamp(1.75rem, 7vw, 6rem);
       --s: 0.82;
       --e: 0.6;
     }
@@ -811,7 +853,7 @@
 
     .finale-number {
       display: inline-block;
-      font-size: clamp(8rem, 26vw, 18rem);
+      font-size: clamp(6rem, 26vw, 18rem);
       --s: 0.56;
       --e: 0.48;
       --ox: -80vw;

@@ -16,6 +16,12 @@
     color-scheme: light dark;
     line-break: strict;
   }
+
+  @supports (word-break: auto-phrase) {
+    :root {
+      word-break: auto-phrase;
+    }
+  }
 }
 
 :root {

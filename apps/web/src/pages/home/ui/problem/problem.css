@@ -16,14 +16,14 @@
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .scene-track {
-      height: 780dvh;
+      height: 780svh;
       view-timeline: --scene block;
     }
 
     .scene-stage {
       position: sticky;
       top: calc(3rem + var(--title-bar));
-      height: calc(100dvh - 3rem - var(--title-bar));
+      height: calc(100svh - 3rem - var(--title-bar));
       overflow: hidden;
       container-type: size;
     }
@@ -368,7 +368,7 @@
       animation-timeline: --scene, --ch-why;
       animation-range:
         contain 33.82% contain 75%,
-        contain calc(100% - 100dvh - var(--dwell)) contain calc(100% - 100dvh);
+        contain calc(100% - 100svh - var(--dwell)) contain calc(100% - 100svh);
     }
 
     .cutin {
@@ -567,7 +567,7 @@
       pointer-events: none;
       animation: finale-root linear;
       animation-timeline: --ch-why;
-      animation-range: contain calc(100% - 100dvh - var(--dwell)) contain calc(100% - 100dvh);
+      animation-range: contain calc(100% - 100svh - var(--dwell)) contain calc(100% - 100svh);
     }
 
     .finale-part {
@@ -575,10 +575,10 @@
       animation-fill-mode: both, forwards;
       animation-timeline: --ch-why, --ch-why;
       animation-range:
-        contain calc(100% - 100dvh - var(--dwell) * var(--s)) contain
-          calc(100% - 100dvh - var(--dwell) * var(--e)),
-        contain calc(100% - 100dvh - var(--dwell) * 0.14) contain
-          calc(100% - 100dvh - var(--dwell) * 0.02);
+        contain calc(100% - 100svh - var(--dwell) * var(--s)) contain
+          calc(100% - 100svh - var(--dwell) * var(--e)),
+        contain calc(100% - 100svh - var(--dwell) * 0.14) contain
+          calc(100% - 100svh - var(--dwell) * 0.02);
     }
 
     .finale-lines {

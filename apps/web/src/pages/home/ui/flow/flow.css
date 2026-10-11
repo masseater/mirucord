@@ -19,23 +19,23 @@
     }
 
     .flow-carry[data-carry="a"] {
-      animation-range: contain calc(100% - 100dvh - var(--dwell) * 1) contain
-        calc(100% - 100dvh - var(--dwell) * 0.62);
+      animation-range: contain calc(100% - 100svh - var(--dwell) * 1) contain
+        calc(100% - 100svh - var(--dwell) * 0.62);
     }
 
     .flow-carry[data-carry="b"] {
-      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.85) contain
-        calc(100% - 100dvh - var(--dwell) * 0.46);
+      animation-range: contain calc(100% - 100svh - var(--dwell) * 0.85) contain
+        calc(100% - 100svh - var(--dwell) * 0.46);
     }
 
     .flow-carry[data-carry="c"] {
-      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.69) contain
-        calc(100% - 100dvh - var(--dwell) * 0.31);
+      animation-range: contain calc(100% - 100svh - var(--dwell) * 0.69) contain
+        calc(100% - 100svh - var(--dwell) * 0.31);
     }
 
     .flow-carry[data-carry="d"] {
-      animation-range: contain calc(100% - 100dvh - var(--dwell) * 0.38) contain
-        calc(100% - 100dvh - var(--dwell) * 0);
+      animation-range: contain calc(100% - 100svh - var(--dwell) * 0.38) contain
+        calc(100% - 100svh - var(--dwell) * 0);
     }
 
     .flow-column {

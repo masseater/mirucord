@@ -1,22 +1,22 @@
 @supports ((animation-timeline: view()) and (animation-range: 0% 100%)) {
   @media (prefers-reduced-motion: no-preference) {
     .ch-section[id="top"] {
-      --dwell: 100dvh;
+      --dwell: 100svh;
       view-timeline-name: --ch-top;
     }
 
     .ch-section[id="why"] {
-      --dwell: 300dvh;
+      --dwell: 300svh;
       view-timeline-name: --ch-why;
     }
 
     .ch-section[id="forum"] {
-      --dwell: 100dvh;
+      --dwell: 100svh;
       view-timeline-name: --ch-forum;
     }
 
     .ch-section[id="how"] {
-      --dwell: 100dvh;
+      --dwell: 100svh;
       view-timeline-name: --ch-how;
     }
 
@@ -37,17 +37,17 @@
     }
 
     .ch-section {
-      --dwell: 0dvh;
+      --dwell: 0svh;
     }
 
     .ch-section::before {
       display: block;
-      height: calc(100dvh + var(--dwell));
+      height: calc(100svh + var(--dwell));
       content: "";
     }
 
     .ch-section:not(:first-child) {
-      margin-top: -100dvh;
+      margin-top: -100svh;
     }
 
     .ch-section:last-child::before {
@@ -57,7 +57,7 @@
     .ch-pane {
       position: sticky;
       bottom: 0;
-      min-height: 100dvh;
+      min-height: 100svh;
       border-top: 2px solid var(--color-dc-line);
       background-color: var(--color-dc-chat);
     }

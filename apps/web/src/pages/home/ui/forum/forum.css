@@ -11,7 +11,7 @@
       display: block;
       width: 3.5rem;
       pointer-events: none;
-      @media (width >= 48rem) {
+      @media (width >= 64rem) {
         right: -4.5rem;
       }
       animation: forum-track linear both;

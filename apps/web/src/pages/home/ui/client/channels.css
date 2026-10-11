@@ -38,14 +38,14 @@
     .composer-typing {
       animation: composer-typing linear;
       animation-timeline: --ch-top;
-      animation-range: cover 0% contain calc(100% - 38dvh);
+      animation-range: cover 0% contain calc(100% - 3rem);
     }
 
     .ch-link,
     .ch-miru,
     .composer-hint {
       animation-timing-function: linear;
-      animation-range: entry calc(100% - 38dvh) contain calc(100% - 38dvh);
+      animation-range: entry calc(100% - 3rem) contain calc(100% - 3rem);
     }
 
     .ch-link {
@@ -125,7 +125,7 @@
       animation-name: ch-miru, ch-miru-away;
       animation-timeline: --ch-why, --scene;
       animation-range:
-        entry calc(100% - 38dvh) contain calc(100% - 38dvh),
+        entry calc(100% - 3rem) contain calc(100% - 3rem),
         contain 74.5% contain 90.5%;
     }
 

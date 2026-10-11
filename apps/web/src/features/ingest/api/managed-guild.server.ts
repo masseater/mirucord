@@ -28,16 +28,19 @@ const managedGuild = ({
   Option.Option<Readonly<{ name: string }>>,
   DiscordRequestError
 > =>
-  Effect.all({
-    stored: Effect.promise(() =>
-      db
-        .select({ name: guild.name, ownerId: guild.ownerId })
-        .from(guild)
-        .where(eq(guild.id, guildId)),
-    ).pipe(Effect.map(Array.head)),
-    rolePermissions: loadRolePermissions(guildId),
-    member: findMember(guildId, userId),
-  }).pipe(
+  Effect.all(
+    {
+      stored: Effect.promise(() =>
+        db
+          .select({ name: guild.name, ownerId: guild.ownerId })
+          .from(guild)
+          .where(eq(guild.id, guildId)),
+      ).pipe(Effect.map(Array.head)),
+      rolePermissions: loadRolePermissions(guildId),
+      member: findMember(guildId, userId),
+    },
+    { concurrency: "unbounded" },
+  ).pipe(
     Effect.map(({ stored, rolePermissions, member }) =>
       stored.pipe(
         Option.flatMap(({ name, ownerId }) =>
@@ -49,6 +52,21 @@ const managedGuild = ({
           ),
         ),
       ),
+    ),
+  );
+
+const whenManaged = <Value, const Denied, Failure>({
+  membership,
+  denied,
+  use,
+}: Readonly<{
+  membership: GuildMembership;
+  denied: Denied;
+  use: (managed: Readonly<{ name: string }>) => Effect.Effect<Value, Failure>;
+}>): Effect.Effect<Value | Denied, Failure | DiscordRequestError> =>
+  managedGuild(membership).pipe(
+    Effect.flatMap((managed): Effect.Effect<Value | Denied, Failure> =>
+      Option.match(managed, { onNone: () => Effect.succeed(denied), onSome: use }),
     ),
   );
 
@@ -100,5 +118,5 @@ const listManagedGuilds = (userId: string): Effect.Effect<readonly ManagedGuild[
     Effect.map(Array.getSomes),
   );
 
-export { listManagedGuilds, managedGuild };
+export { listManagedGuilds, managedGuild, whenManaged };
 export type { GuildMembership, ManagedGuild };

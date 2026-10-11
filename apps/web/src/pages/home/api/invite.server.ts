@@ -1,5 +1,4 @@
-import { count } from "drizzle-orm";
-import { Array, Effect, Option } from "effect";
+import { Effect, Option } from "effect";
 
 import { guildLimit } from "#/features/ingest/index.server";
 import { db, guild } from "#/shared/db/index.server";
@@ -11,16 +10,7 @@ type Invite =
   | Readonly<{ status: "open"; url: string; remaining: number }>
   | Readonly<{ status: "full"; limit: number }>;
 
-const registeredGuilds: Effect.Effect<number> = Effect.promise(() =>
-  db.select({ total: count() }).from(guild),
-).pipe(
-  Effect.map((rows) =>
-    Option.getOrElse(
-      Option.map(Array.head(rows), ({ total }) => total),
-      () => NO_GUILDS,
-    ),
-  ),
-);
+const registeredGuilds: Effect.Effect<number> = Effect.promise(() => db.$count(guild));
 
 const invite: Effect.Effect<Invite> = Effect.all({
   limit: guildLimit,

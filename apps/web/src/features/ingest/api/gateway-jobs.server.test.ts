@@ -19,6 +19,7 @@ const VANISHED = "712";
 const POSTED = "713";
 const ELSEWHERE = "721";
 const NOT_FOUND = 404;
+const LISTED_FROM = "711";
 const UNKNOWN_MESSAGE = 10_008;
 const DEFAULT_TYPE = 0;
 const EDITED_NEVER: string | null = Option.getOrNull(Option.none<string>());
@@ -34,7 +35,19 @@ const SEEDED = [
   { id: ELSEWHERE, channelId: OTHER_CHANNEL },
 ] as const;
 
+const POSTED_MESSAGE = {
+  id: POSTED,
+  type: DEFAULT_TYPE,
+  content: `message ${POSTED}`,
+  timestamp: "2026-10-01T00:00:00Z",
+  edited_timestamp: EDITED_NEVER,
+  author: { id: OWNER, username: "someone" },
+  attachments: [],
+};
+
 const network = setupNetwork();
+
+const lookups: string[] = [];
 
 const seed = Effect.gen(function* seed() {
   const wrappedKey = yield* createGuildKey;
@@ -101,27 +114,26 @@ beforeEach(() => {
   vi.spyOn(env.MESSAGES, "upsert").mockResolvedValue({ mutationId: "test" });
   vi.spyOn(env.MESSAGES, "deleteByIds").mockResolvedValue({ mutationId: "test" });
   network.use(
-    http.get(`https://discord.com/api/v10/channels/${CHANNEL}/messages/${POSTED}`, () =>
-      HttpResponse.json({
-        id: POSTED,
-        type: DEFAULT_TYPE,
-        content: `message ${POSTED}`,
-        timestamp: "2026-10-01T00:00:00Z",
-        edited_timestamp: EDITED_NEVER,
-        author: { id: OWNER, username: "someone" },
-        attachments: [],
-      }),
-    ),
-    http.get(`https://discord.com/api/v10/channels/${CHANNEL}/messages/${VANISHED}`, () =>
-      HttpResponse.json(
+    http.get(`https://discord.com/api/v10/channels/${CHANNEL}/messages`, ({ request }) => {
+      lookups.push(new URL(request.url).search);
+      return HttpResponse.json([POSTED_MESSAGE]);
+    }),
+    http.get(`https://discord.com/api/v10/channels/${CHANNEL}/messages/${POSTED}`, () => {
+      lookups.push(POSTED);
+      return HttpResponse.json(POSTED_MESSAGE);
+    }),
+    http.get(`https://discord.com/api/v10/channels/${CHANNEL}/messages/${VANISHED}`, () => {
+      lookups.push(VANISHED);
+      return HttpResponse.json(
         { message: "Unknown Message", code: UNKNOWN_MESSAGE },
         { status: NOT_FOUND },
-      ),
-    ),
+      );
+    }),
   );
 });
 
 afterEach(() => {
+  lookups.length = 0;
   network.resetHandlers();
 });
 
@@ -154,5 +166,6 @@ it.effect("stores a refreshed message and forgets one Discord no longer has", ()
     const stored = yield* storedIds;
     expect(stored.has(POSTED)).toBe(true);
     expect(stored.has(VANISHED)).toBe(false);
+    expect(lookups).toStrictEqual([`?limit=100&after=${LISTED_FROM}`, VANISHED]);
   }),
 );

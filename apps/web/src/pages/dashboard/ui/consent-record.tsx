@@ -7,6 +7,9 @@ const AWAITING = "同意待ち";
 const GRANTED = "同意済み";
 const GRANTED_BY = "同意したユーザーの ID";
 const GRANTED_AT = "同意した日時";
+const WITHDRAWING = "削除中";
+const WITHDRAWING_DETAIL =
+  "保存したメッセージと検索用データを削除しています。終わると同意待ちに戻ります。";
 
 const dateFormat = new Intl.DateTimeFormat("ja-JP", {
   dateStyle: "long",
@@ -19,6 +22,14 @@ const ConsentRecord = ({ consent }: Readonly<{ consent: Consent }>): ReactNode =
     return (
       <Panel tone="bg-butter">
         <h2 className="text-xl font-black">{AWAITING}</h2>
+      </Panel>
+    );
+  }
+  if (consent.status === "withdrawing") {
+    return (
+      <Panel tone="bg-pink">
+        <h2 className="text-xl font-black">{WITHDRAWING}</h2>
+        <p>{WITHDRAWING_DETAIL}</p>
       </Panel>
     );
   }

@@ -6,7 +6,7 @@ import type { ChannelIngest } from "#/features/ingest/model/channel-ingest";
 import { channel, db, message } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { loadConsent } from "./guild-settings.server";
+import { loadScope } from "./consent-scope.server";
 import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 
@@ -27,7 +27,7 @@ const loadForumPosts = ({
   channelId,
 }: Omit<ForumPostsRequest, "userId">): Effect.Effect<readonly ForumPost[]> =>
   Effect.all({
-    scope: loadConsent(guildId),
+    scope: loadScope(guildId),
     rows: Effect.promise(() =>
       db
         .select({

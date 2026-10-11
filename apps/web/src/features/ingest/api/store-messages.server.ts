@@ -18,7 +18,6 @@ import type { MessageVector, VectorizeError } from "./vectors.server";
 
 const STORED_TYPES: ReadonlySet<MessageType> = new Set([MessageType.Default, MessageType.Reply]);
 const DESCRIBED_IMAGES_PER_MESSAGE = 4;
-const DESCRIBE_CONCURRENCY = 4;
 
 type StoreError = EmbeddingError | VectorizeError;
 
@@ -111,9 +110,10 @@ const describeMessage = (incoming: DiscordMessage): Effect.Effect<DescribedMessa
 const describeAll = (
   stale: readonly DiscordMessage[],
 ): Effect.Effect<readonly DescribedMessage[]> =>
-  Effect.forEach(stale, (incoming) => describeMessage(incoming), {
-    concurrency: DESCRIBE_CONCURRENCY,
-  });
+  pipe(
+    stale,
+    Effect.forEach((incoming) => describeMessage(incoming)),
+  );
 
 const searchTextOf = ({ incoming, attachments }: DescribedMessage): string =>
   [

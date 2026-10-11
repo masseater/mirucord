@@ -8,7 +8,7 @@ import type { IngestStatus } from "#/features/mcp/model/ingest-status";
 import { SITE_ORIGIN } from "#/shared/config";
 import { CATEGORY_TYPES } from "#/shared/discord";
 
-import { readMessages, searchMessages } from "./messages.server";
+import { findMessages, readMessages, searchMessages } from "./messages.server";
 import { readableGuilds, resolveScope } from "./scope.server";
 import type { GuildScope, StoredChannel } from "./scope.server";
 
@@ -20,12 +20,14 @@ const SERVER_INFO = { name: "mirucord", version: "0.0.0", icons: ICONS, websiteU
 const SERVER_NOT_FOUND = "Server not found";
 const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const DEFAULT_LIMIT = 20;
+const FIRST_OFFSET = 0;
 const MAX_LIMIT = 50;
 const CHANNEL_NOT_FOUND = "Channel not found";
 const FORUM_TYPES: ReadonlySet<number> = new Set([ChannelType.GuildForum, ChannelType.GuildMedia]);
 const INGEST_GUIDE =
   "Each channel carries `ingest`: only `empty` means the channel has no messages in Discord. `notConsented`, `waiting` and `backfilling` mean mirucord has not stored all of its messages yet, so an empty or short result does not mean the channel is empty; say so instead of reporting that there are no messages.";
 
+const Offset = Schema.optionalKey(Schema.Int.check(Schema.isGreaterThanOrEqualTo(FIRST_OFFSET)));
 const Limit = Schema.optionalKey(
   Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: MAX_LIMIT })),
 );
@@ -36,6 +38,13 @@ const SearchMessagesInput = Schema.Struct({
   query: Schema.NonEmptyString,
   channelId: Schema.optionalKey(Schema.String),
   limit: Limit,
+});
+const FindMessagesInput = Schema.Struct({
+  serverId: Schema.String,
+  query: Schema.NonEmptyString,
+  channelId: Schema.optionalKey(Schema.String),
+  limit: Limit,
+  offset: Offset,
 });
 const ReadMessagesInput = Schema.Struct({
   serverId: Schema.String,
@@ -115,6 +124,14 @@ const ingestById = (scope: GuildScope, channelId: string): IngestStatus =>
     onSome: (stored) => ingestOf(scope, stored),
   });
 
+const notFullyIngested = (
+  scope: GuildScope,
+  channelIds: readonly string[],
+): readonly Readonly<{ channelId: string; ingest: IngestStatus }>[] =>
+  channelIds
+    .map((id) => ({ channelId: id, ingest: ingestById(scope, id) }))
+    .filter(({ ingest }) => !isReady(ingest));
+
 const listServers = (discordUserId: string): Promise<CallToolResult> =>
   Effect.runPromise(
     readableGuilds(discordUserId).pipe(
@@ -159,9 +176,36 @@ const search =
           Effect.map((messages) =>
             jsonResult({
               messages,
-              notFullyIngested: channelIds
-                .map((id) => ({ channelId: id, ingest: ingestById(scope, id) }))
-                .filter(({ ingest }) => !isReady(ingest)),
+              notFullyIngested: notFullyIngested(scope, channelIds),
+            }),
+          ),
+        ),
+      ),
+    );
+
+const find =
+  (discordUserId: string) =>
+  ({
+    serverId,
+    query,
+    channelId,
+    limit,
+    offset,
+  }: typeof FindMessagesInput.Type): Promise<CallToolResult> =>
+    withScope({ guildId: serverId, discordUserId }, (scope) =>
+      withChannel(scope, Option.fromUndefinedOr(channelId), (channelIds) =>
+        findMessages({
+          scope,
+          query,
+          channelIds,
+          limit: limitOf(limit),
+          offset: Option.getOrElse(Option.fromUndefinedOr(offset), () => FIRST_OFFSET),
+        }).pipe(
+          Effect.map(({ total, messages }) =>
+            jsonResult({
+              total,
+              messages,
+              notFullyIngested: notFullyIngested(scope, channelIds),
             }),
           ),
         ),
@@ -218,6 +262,15 @@ const buildServer = (discordUserId: string): McpServer => {
       inputSchema: Schema.toStandardJSONSchemaV1(toolInput(SearchMessagesInput)),
     },
     search(discordUserId),
+  );
+  server.registerTool(
+    "find_messages",
+    {
+      description: `Find messages whose text contains \`query\` exactly, ignoring letter case. \`total\` counts every match in the searched channels, so it shows how often a topic comes up; \`messages\` holds up to \`limit\` of them, newest first, starting at \`offset\`. Use search_messages instead to search by meaning. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
+      icons: ICONS,
+      inputSchema: Schema.toStandardJSONSchemaV1(toolInput(FindMessagesInput)),
+    },
+    find(discordUserId),
   );
   server.registerTool(
     "read_messages",

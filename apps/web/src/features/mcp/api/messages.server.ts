@@ -136,6 +136,37 @@ const searchMessages = (request: SearchRequest): Effect.Effect<readonly MessageV
     Effect.flatMap((stored) => openStored(request.scope, stored)),
   );
 
+type FindRequest = Readonly<{
+  scope: GuildScope;
+  query: string;
+  channelIds: readonly string[];
+  limit: number;
+  offset: number;
+}>;
+
+type FoundMessages = Readonly<{ total: number; messages: readonly MessageView[] }>;
+
+const guildStored = ({ scope, channelIds }: FindRequest): Effect.Effect<readonly StoredMessage[]> =>
+  loadStored(() =>
+    db
+      .select(MESSAGE_COLUMNS)
+      .from(message)
+      .where(eq(message.guildId, scope.guild.guildId))
+      .orderBy(desc(message.createdAt), desc(message.id)),
+  ).pipe(Effect.map((stored) => stored.filter(({ channelId }) => channelIds.includes(channelId))));
+
+const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
+  const needle = request.query.toLowerCase();
+  return guildStored(request).pipe(
+    Effect.flatMap((stored) => openStored(request.scope, stored)),
+    Effect.map((views) => views.filter(({ content }) => content.toLowerCase().includes(needle))),
+    Effect.map((found) => ({
+      total: found.length,
+      messages: found.slice(request.offset, request.offset + request.limit),
+    })),
+  );
+};
+
 type ReadRequest = Readonly<{
   scope: GuildScope;
   channelId: string;
@@ -186,5 +217,5 @@ const readMessages = (request: ReadRequest): Effect.Effect<readonly MessageView[
     Effect.flatMap((stored) => openStored(request.scope, stored)),
   );
 
-export { readMessages, searchMessages };
-export type { MessageView, ReadRequest, SearchRequest };
+export { findMessages, readMessages, searchMessages };
+export type { FindRequest, FoundMessages, MessageView, ReadRequest, SearchRequest };

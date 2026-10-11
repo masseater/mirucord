@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
-const LINES = ["ミルが", "ぜんぶ", "見つけてきたよ！"] as const;
+import { MASCOT_NAME } from "#/shared/config";
+
+const LINES = [`${MASCOT_NAME}が`, "ぜんぶ", "見つけてきたよ！"] as const;
 
 const FinaleTitle = (): ReactNode => (
   <p className="finale-title finale-part font-maru grid justify-items-start font-black">

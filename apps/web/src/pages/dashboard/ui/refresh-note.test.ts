@@ -2,6 +2,7 @@ import { Option } from "effect";
 import { expect, it } from "vite-plus/test";
 
 import type { RefreshOutcome } from "#/pages/dashboard/api/dashboard";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { refreshLabel, refreshNote, refreshViewOf } from "./refresh-note";
 
@@ -9,7 +10,7 @@ const NO_RESULT = Option.getOrUndefined(Option.none<RefreshOutcome>());
 
 it("tells the viewer that Mil is looking while the refresh runs", () => {
   const view = { status: "looking" } as const;
-  expect(refreshLabel(view)).toBe("ミルが見てくるね");
+  expect(refreshLabel(view)).toBe(`${MASCOT_NAME}が見てくるね`);
   expect(refreshNote(view)).toBe("");
 });
 

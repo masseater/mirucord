@@ -2,6 +2,7 @@ import { Array } from "effect";
 import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
+import { MASCOT_NAME } from "#/shared/config";
 import { Panel } from "#/shared/ui/panel";
 import { popButtonVariants } from "#/shared/ui/pop-variants";
 
@@ -9,7 +10,7 @@ import { GuildCard } from "./guild-card";
 import { RefreshButton } from "./refresh-button";
 
 const TITLE = "あなたが管理しているサーバー";
-const EMPTY = "ミルが入っていて、あなたが管理権限を持つサーバーはまだありません。";
+const EMPTY = `${MASCOT_NAME}が入っていて、あなたが管理権限を持つサーバーはまだありません。`;
 const INVITE = "Bot をサーバーに招待する";
 const GUILD_LIST = { scope: "guilds" } as const;
 

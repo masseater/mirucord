@@ -1,5 +1,5 @@
 import { and, count, eq } from "drizzle-orm";
-import { Array, Effect, Option, Order } from "effect";
+import { Array, Effect, Order } from "effect";
 
 import { ingestOf } from "#/features/ingest/model/channel-ingest";
 import type { ChannelIngest } from "#/features/ingest/model/channel-ingest";
@@ -7,7 +7,7 @@ import { channel, db, message } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
 import { loadScope } from "./consent-scope.server";
-import { managedGuild } from "./managed-guild.server";
+import { whenManaged } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 
 type ForumPost = Readonly<{ id: string; name: string; ingest: ChannelIngest; messages: number }>;
@@ -60,17 +60,14 @@ const loadForumPosts = ({
 const forumPosts = (
   request: ForumPostsRequest,
 ): Effect.Effect<ForumPostsResult, DiscordRequestError> =>
-  managedGuild(request).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeed<ForumPostsResult>({ status: "forbidden" }),
-        onSome: () =>
-          loadForumPosts(request).pipe(
-            Effect.map((posts): ForumPostsResult => ({ status: "ready", posts })),
-          ),
-      }),
-    ),
-  );
+  whenManaged({
+    membership: request,
+    denied: { status: "forbidden" },
+    use: () =>
+      loadForumPosts(request).pipe(
+        Effect.map((posts): ForumPostsResult => ({ status: "ready", posts })),
+      ),
+  });
 
 export { forumPosts };
 export type { ForumPost, ForumPostsRequest, ForumPostsResult };

@@ -6,11 +6,12 @@ import { memberAuthor, BOT } from "#/pages/home/ui/message/author";
 import { Chatter } from "#/pages/home/ui/message/chatter";
 import type { ChatLine } from "#/pages/home/ui/message/chatter";
 import { Post } from "#/pages/home/ui/message/post";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { ForumPosts } from "./forum-posts";
 
 const LEAD = "フォーラムの投稿も";
-const TAIL = "ミルが返信まで読むよ";
+const TAIL = `${MASCOT_NAME}が返信まで読むよ`;
 const GUIDE = "フォーラムもまかせてね！";
 const CHANNEL = "キャンプ部";
 const TIME = "今日 21:01";
@@ -18,7 +19,7 @@ const TIME = "今日 21:01";
 const RECIPE: ChatLine = {
   author: memberAuthor(MEMBERS.miho),
   time: "今日 21:01",
-  text: "レシピのまとめもミルに聞けば一発じゃん",
+  text: `レシピのまとめも${MASCOT_NAME}に聞けば一発じゃん`,
   reactions: [],
 };
 

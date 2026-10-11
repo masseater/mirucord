@@ -7,10 +7,11 @@ import { Chatter } from "#/pages/home/ui/message/chatter";
 import type { ChatLine } from "#/pages/home/ui/message/chatter";
 import { Post } from "#/pages/home/ui/message/post";
 import { Reactions } from "#/pages/home/ui/message/reactions";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { FlowFigure } from "./flow-figure";
 
-const LEAD = "ミルが";
+const LEAD = `${MASCOT_NAME}が`;
 const TAIL = "思い出をさがしてくる";
 const GUIDE = "まかせてね！";
 const CHANNEL = "しくみ";
@@ -30,7 +31,7 @@ const CHATTER: readonly ChatLine[] = [
   {
     author: BOT,
     time: "今日 21:01",
-    text: "そうだよ！ミルがかわりにさがして、AI にわたすの",
+    text: `そうだよ！${MASCOT_NAME}がかわりにさがして、AI にわたすの`,
     reply: QUESTION,
     reactions: [{ emoji: "👀", count: 2, by: "others" }],
   },

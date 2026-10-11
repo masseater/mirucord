@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
 
+import { SERVICE_NAME } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 
 const TIP = "あれれ、つなぐ相手が見つからないよ";
 const TITLE = "この画面はアプリから開いてね";
-const BODY =
-  "Claude などのアプリで mirucord をつなぐと、ここに戻ってくるよ。もう一度アプリからつないでみてね。";
+const BODY = `Claude などのアプリで ${SERVICE_NAME} をつなぐと、ここに戻ってくるよ。もう一度アプリからつないでみてね。`;
 
 const ConsentMissing = (): ReactNode => (
   <AppFrame>

@@ -5,7 +5,7 @@ import { MEMBERS } from "#/pages/home/ui/common/members";
 import { SETUP_PROMPT } from "#/pages/home/ui/common/setup-prompt";
 import { memberAuthor } from "#/pages/home/ui/message/author";
 import { Post } from "#/pages/home/ui/message/post";
-import { FREE_GUILD_LIMIT } from "#/shared/config";
+import { FREE_GUILD_LIMIT, MASCOT_NAME } from "#/shared/config";
 
 import { Closing } from "./closing";
 import { FaqPair } from "./faq-pair";
@@ -25,7 +25,10 @@ const QUESTIONS = [
   },
   {
     time: "今日 21:07",
-    reply: { author: memberAuthor(MEMBERS.kenta), text: "で、ミルにはどこから聞けばいいの？" },
+    reply: {
+      author: memberAuthor(MEMBERS.kenta),
+      text: `で、${MASCOT_NAME}にはどこから聞けばいいの？`,
+    },
     answer:
       "Claude みたいな、MCP に対応した AI のアプリから呼んでね！手元の AI にこう送ってみてね！",
     copy: SETUP_PROMPT,
@@ -44,8 +47,7 @@ const QUESTIONS = [
   {
     time: "今日 21:09",
     reply: { author: memberAuthor(MEMBERS.yui), text: "DM まで読まれちゃったりしない？" },
-    answer:
-      "読まないよ！ミルが読むのはサーバーのチャンネルとスレッドだけ。DM はのぞかないから安心してね。",
+    answer: `読まないよ！${MASCOT_NAME}が読むのはサーバーのチャンネルとスレッドだけ。DM はのぞかないから安心してね。`,
     reactions: [{ emoji: "🙆", count: 3, by: "others" }],
   },
   {
@@ -59,9 +61,8 @@ const QUESTIONS = [
   },
   {
     time: "今日 21:11",
-    reply: { author: memberAuthor(MEMBERS.kenta), text: "ミルに話しかけても良い？" },
-    answer:
-      "ごめんね！Discord の中で話しかけてもらっても、ミルはお返事できないんだ。Claude みたいな、MCP に対応した AI のアプリから聞いてね！",
+    reply: { author: memberAuthor(MEMBERS.kenta), text: `${MASCOT_NAME}に話しかけても良い？` },
+    answer: `ごめんね！Discord の中で話しかけてもらっても、${MASCOT_NAME}はお返事できないんだ。Claude みたいな、MCP に対応した AI のアプリから聞いてね！`,
     reactions: [{ emoji: "🥲", count: 2, by: "others" }],
   },
 ] as const;

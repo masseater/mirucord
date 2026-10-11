@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
+import { SERVICE_NAME } from "#/shared/config";
 
-const BRAND = "mirucord";
+const BRAND = SERVICE_NAME;
 
 const BrandLink = (): ReactNode => (
   <a

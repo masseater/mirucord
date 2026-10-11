@@ -1,4 +1,4 @@
-import { Array, Option } from "effect";
+import { Option } from "effect";
 import type { ReactNode } from "react";
 
 import type { GuildSettings } from "#/features/ingest/index.server";
@@ -11,19 +11,14 @@ import { ConsentResultMessage } from "./consent-result-message";
 import { NoticeChannelPicker } from "./notice-channel-picker";
 import { ReadableChannelList } from "./readable-channel-list";
 
-const TITLE = "ミルが見られるチャンネル";
-const EMPTY = "ミルが見られるチャンネルがまだありません。";
 const NOTE = "同意すると、選んだチャンネルにお知らせを 1 回投稿します。";
 const SUBMIT = "同意して取り込みを始める";
 
 const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => {
   const { noticeChannelId, canSubmit, pickNotice, submit, mutation } = useConsentForm(settings);
-  const readable = readableChannels(settings);
   return (
     <Panel>
-      <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
-      <ReadableChannelList settings={settings} channels={readable} />
-      {!Array.isReadonlyArrayNonEmpty(readable) && <p className="font-bold">{EMPTY}</p>}
+      <ReadableChannelList settings={settings} channels={readableChannels(settings)} />
       <NoticeChannelPicker
         channels={noticeChannels(settings)}
         value={noticeChannelId}

@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
-import { DASHBOARD_PATH } from "#/shared/config";
+import { DASHBOARD_PATH, SERVICE_NAME } from "#/shared/config";
 
-const BRAND = "mirucord";
+const BRAND = SERVICE_NAME;
 const SIGN_IN = "ログイン";
 const UNOFFICIAL = "Discord 非公式";
 

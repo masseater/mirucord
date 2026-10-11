@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
+import { MASCOT_NAME } from "#/shared/config";
 
-const SEARCHING = "ミルがさがしてるよ";
-const DONE = "ミルが見つけてきたよ";
+const SEARCHING = `${MASCOT_NAME}がさがしてるよ`;
+const DONE = `${MASCOT_NAME}が見つけてきたよ`;
 const DONE_MARK = "✓";
 const DOTS = ["a", "b", "c"] as const;
 

@@ -1,7 +1,9 @@
+import { Array } from "effect";
 import type { ReactNode } from "react";
 
 import type { GuildSettings, SettingsChannel } from "#/features/ingest/index.server";
 import { groupByCategory } from "#/pages/dashboard/model/channel-groups";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { CategoryHeading } from "./category-heading";
 import { ChannelLabel } from "./channel-label";
@@ -9,10 +11,12 @@ import { ForumPillToggle } from "./forum-pill-toggle";
 import { ForumPostPanel } from "./forum-post-panel";
 import { Pill } from "./pill";
 
-const ReadableChannelList = ({
-  settings,
-  channels,
-}: Readonly<{ settings: GuildSettings; channels: readonly SettingsChannel[] }>): ReactNode =>
+const TITLE = `${MASCOT_NAME}が見られるチャンネル`;
+const EMPTY = `${MASCOT_NAME}が見られるチャンネルがまだありません。`;
+
+type Props = Readonly<{ settings: GuildSettings; channels: readonly SettingsChannel[] }>;
+
+const ChannelGroups = ({ settings, channels }: Props): ReactNode =>
   groupByCategory(settings, channels).map((group) => {
     const pills = group.channels.map((channel) => {
       if (channel.kind === "forum") {
@@ -37,5 +41,13 @@ const ReadableChannelList = ({
       </div>
     );
   });
+
+const ReadableChannelList = ({ settings, channels }: Props): ReactNode => (
+  <>
+    <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
+    <ChannelGroups settings={settings} channels={channels} />
+    {!Array.isReadonlyArrayNonEmpty(channels) && <p className="font-bold">{EMPTY}</p>}
+  </>
+);
 
 export { ReadableChannelList };

@@ -1,4 +1,4 @@
-import { count, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
 import { guildIngestOf } from "#/features/ingest/model/channel-ingest";
@@ -11,8 +11,6 @@ import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 import { loadChannels } from "./settings-channels.server";
 import type { SettingsCategory, SettingsChannel } from "./settings-channels.server";
-
-const NO_MESSAGES = 0;
 
 type Consent =
   | Readonly<{ status: "awaiting" }>
@@ -63,16 +61,7 @@ const loadConsent = (guildId: string): Effect.Effect<Consent> =>
   );
 
 const countMessages = (guildId: string): Effect.Effect<number> =>
-  Effect.promise(() =>
-    db.select({ total: count() }).from(message).where(eq(message.guildId, guildId)),
-  ).pipe(
-    Effect.map((rows) =>
-      Option.getOrElse(
-        Option.map(Array.head(rows), ({ total }) => total),
-        () => NO_MESSAGES,
-      ),
-    ),
-  );
+  Effect.promise(() => db.$count(message, eq(message.guildId, guildId)));
 
 const scopeOf = (consent: Consent): ConsentScope => {
   if (consent.status === "granted") {

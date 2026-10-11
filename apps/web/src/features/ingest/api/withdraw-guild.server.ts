@@ -1,5 +1,5 @@
-import { count, eq } from "drizzle-orm";
-import { Array, Data, Effect, Option } from "effect";
+import { eq } from "drizzle-orm";
+import { Data, Effect } from "effect";
 
 import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 
@@ -15,16 +15,7 @@ class GuildDataRemainsError extends Data.TaggedError("GuildDataRemainsError")<{
 const NOTHING_STORED = 0;
 
 const storedCount = (guildId: string): Effect.Effect<number> =>
-  Effect.promise(() =>
-    db.select({ stored: count() }).from(message).where(eq(message.guildId, guildId)),
-  ).pipe(
-    Effect.map((rows) =>
-      Option.match(Array.head(rows), {
-        onNone: () => NOTHING_STORED,
-        onSome: ({ stored }) => stored,
-      }),
-    ),
-  );
+  Effect.promise(() => db.$count(message, eq(message.guildId, guildId)));
 
 const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError | VectorizeError> =>
   Effect.promise(() =>

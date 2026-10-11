@@ -1,12 +1,13 @@
 import type { ReactNode } from "react";
 
+import { MASCOT_NAME, REPOSITORY_URL, SERVICE_NAME } from "#/shared/config";
+
 import type { GuideSection } from "./guide-block";
 import { GuideDocument } from "./guide-document";
 
 const TITLE = "セルフホスト";
-const TIP = "自分のおうちでもミルは働けるよ";
-const LEAD =
-  "mirucord はコードとインフラの定義をすべて公開しています。運営を信用しなくても、自分の Cloudflare アカウントで同じものを動かせます。ここでは例として、ホスト名を `mirucord.example.com` として書きます。";
+const TIP = `自分のおうちでも${MASCOT_NAME}は働けるよ`;
+const LEAD = `${SERVICE_NAME} はコードとインフラの定義をすべて公開しています。運営を信用しなくても、自分の Cloudflare アカウントで同じものを動かせます。ここでは例として、ホスト名を \`${SERVICE_NAME}.example.com\` として書きます。`;
 
 const SECTIONS: readonly GuideSection[] = [
   {
@@ -31,7 +32,7 @@ const SECTIONS: readonly GuideSection[] = [
         type: "steps",
         items: [
           "Discord Developer Portal で New Application からアプリを作ります。",
-          "OAuth2 の Redirects に `https://mirucord.example.com/api/auth/callback/discord` を足します。",
+          `OAuth2 の Redirects に \`https://${SERVICE_NAME}.example.com/api/auth/callback/discord\` を足します。`,
           "OAuth2 の Client ID と Client Secret を控えます。それぞれ `DISCORD_CLIENT_ID` と `DISCORD_CLIENT_SECRET` になります。",
           "Bot の Reset Token でトークンを発行して控えます。これが `DISCORD_BOT_TOKEN` になります。",
           "Bot の Privileged Gateway Intents で Message Content Intent を有効にします。メッセージ本文を読むのに要ります。",
@@ -44,7 +45,7 @@ const SECTIONS: readonly GuideSection[] = [
     blocks: [
       {
         type: "code",
-        code: "git clone https://github.com/masseater/mirucord.git\ncd mirucord\nvp install",
+        code: `git clone ${REPOSITORY_URL}.git\ncd ${SERVICE_NAME}\nvp install`,
       },
       {
         type: "table",
@@ -131,7 +132,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: "`OPENROUTER_API_KEY` は検査の jev-lint が使います。`apps/web/alchemy.ci.ts` を手元からデプロイすると、デプロイに要る権限だけを持つ Cloudflare の API トークン（`mirucord-deploy`）を作り、上の値を GitHub に登録します。API トークンを作るので、このときだけはトークンを作れる強い Cloudflare の認証と、`GITHUB_TOKEN` が要ります。",
+        text: `\`OPENROUTER_API_KEY\` は検査の jev-lint が使います。\`apps/web/alchemy.ci.ts\` を手元からデプロイすると、デプロイに要る権限だけを持つ Cloudflare の API トークン（\`${SERVICE_NAME}-deploy\`）を作り、上の値を GitHub に登録します。API トークンを作るので、このときだけはトークンを作れる強い Cloudflare の認証と、\`GITHUB_TOKEN\` が要ります。`,
       },
       {
         type: "code",
@@ -145,15 +146,15 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "steps",
         items: [
-          "`https://mirucord.example.com` を開き、招待ボタンから Bot をサーバーに入れます。",
-          "`https://mirucord.example.com/dashboard` にログインし、サーバーの取り込みに同意します。",
-          "AI クライアントに `https://mirucord.example.com/mcp` を MCP のコネクタとして登録します。Claude なら、設定のコネクタからカスタムコネクタを追加して URL を入れます。動的クライアント登録に対応しているので、Client ID は要りません。",
+          `\`https://${SERVICE_NAME}.example.com\` を開き、招待ボタンから Bot をサーバーに入れます。`,
+          `\`https://${SERVICE_NAME}.example.com/dashboard\` にログインし、サーバーの取り込みに同意します。`,
+          `AI クライアントに \`https://${SERVICE_NAME}.example.com/mcp\` を MCP のコネクタとして登録します。Claude なら、設定のコネクタからカスタムコネクタを追加して URL を入れます。動的クライアント登録に対応しているので、Client ID は要りません。`,
           "初めて使うときに Discord でログインし、同意の画面で許可します。",
         ],
       },
       {
         type: "text",
-        text: "動いているかは `https://mirucord.example.com/api/health` で確かめられます。デプロイしたバージョンと日時を返します。",
+        text: `動いているかは \`https://${SERVICE_NAME}.example.com/api/health\` で確かめられます。デプロイしたバージョンと日時を返します。`,
       },
     ],
   },

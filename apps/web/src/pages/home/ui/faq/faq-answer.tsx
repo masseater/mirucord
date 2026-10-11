@@ -2,8 +2,9 @@ import type { ReactNode } from "react";
 
 import { CopyBlock } from "#/pages/home/ui/common/copy-block";
 import { Mascot } from "#/shared/brand";
+import { MASCOT_NAME } from "#/shared/config";
 
-const THINKING = "ミルがさがし中…";
+const THINKING = `${MASCOT_NAME}がさがし中…`;
 
 const FaqAnswer = ({
   answer,

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { SERVICE_NAME } from "#/shared/config";
+
 import { LegalDocument } from "./legal-document";
 
 const TITLE = "利用規約";
@@ -8,7 +10,7 @@ const SECTIONS = [
   {
     heading: "第1条（適用）",
     paragraphs: [
-      "1. 本規約は、masseater（以下「運営者」という。）が提供するサービス「mirucord」（以下「本サービス」という。）の利用条件を定めるものである。",
+      `1. 本規約は、masseater（以下「運営者」という。）が提供するサービス「${SERVICE_NAME}」（以下「本サービス」という。）の利用条件を定めるものである。`,
       "2. 利用者は、本サービスを利用した時点で、本規約に同意したものとみなす。",
     ],
   },

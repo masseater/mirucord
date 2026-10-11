@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
 import { mascotSrc } from "#/shared/brand";
+import { SERVICE_NAME } from "#/shared/config";
 
-const NAME = "mirucord";
+const NAME = SERVICE_NAME;
 const CAPTION = "鍵をかけてしまっておく";
 
 const MiruNode = ({ left, top }: Readonly<{ left: string; top: string }>): ReactNode => (

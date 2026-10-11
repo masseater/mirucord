@@ -189,7 +189,7 @@ const mirucordName = (resource: string): Effect.Effect<string, never, Stage> =>
 
 const messagesIndex = Effect.gen(function* messagesIndex() {
   const index = yield* Vectorize.Index("Messages", {
-    name: yield* mirucordName("messages"),
+    name: yield* mirucordName("messages-bge-m3"),
     dimensions: EMBEDDING_DIMENSIONS,
     metric: "cosine",
   });

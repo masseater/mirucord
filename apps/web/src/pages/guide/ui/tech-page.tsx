@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
+import type { GuideSection } from "#/pages/guide/model/guide-block";
 import { MASCOT_NAME, SERVICE_NAME } from "#/shared/config";
 
-import type { GuideSection } from "./guide-block";
 import { GuideDocument } from "./guide-document";
 
 const TITLE = "技術の話";
@@ -10,6 +10,19 @@ const TIP = `${MASCOT_NAME}の中身を見せちゃうよ`;
 const LEAD = `${SERVICE_NAME} の構成、データの流れ、権限と同意の設計、検索の仕組みをまとめました。Cloudflare Workers と MCP をなんとなく知っている人に向けて書いています。`;
 
 const SECTIONS: readonly GuideSection[] = [
+  {
+    heading: `${MASCOT_NAME}がさがしているもの`,
+    blocks: [
+      {
+        type: "text",
+        text: `サイトでは「${MASCOT_NAME}が Discord をさがしに行く」と紹介していますが、検索のたびに Discord を読みに行っているわけではありません。同意済みのサーバーのメッセージを、あらかじめ ${SERVICE_NAME} のデータベース（D1 と Vectorize）に取り込んでおき、検索ではその写しの中をさがしています。`,
+      },
+      {
+        type: "text",
+        text: "そのため、検索できるのは取り込みが済んだメッセージだけです。新しい投稿、編集、削除は Gateway でほぼすぐに写しへ反映し、取りこぼしは毎時の取り込みで拾います。",
+      },
+    ],
+  },
   {
     heading: "全体の構成",
     blocks: [

@@ -13,7 +13,7 @@ const UNIT = "件";
 
 const IngestStatus = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (
   <Panel>
-    <h2 className="text-xl font-black">{TITLE}</h2>
+    <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
     <p className="font-bold">
       {STORED} {settings.storedMessages.toLocaleString("ja-JP")} {UNIT}
     </p>

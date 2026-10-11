@@ -13,7 +13,7 @@ const SignInPanel = ({
   <>
     <MascotTip>{tip}</MascotTip>
     <Panel>
-      <h1 className="text-2xl font-black">{title}</h1>
+      <h1 className="text-dc-bright font-maru text-2xl font-black">{title}</h1>
       <DiscordSignIn callbackURL={returnTo} />
     </Panel>
   </>

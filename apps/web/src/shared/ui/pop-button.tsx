@@ -9,7 +9,7 @@ const PopButton = ({
   onClick,
   children,
 }: Readonly<{
-  tone: "grape" | "milk" | "pink";
+  tone: "primary" | "secondary" | "danger";
   size?: "sm" | "md" | "lg";
   disabled: boolean;
   onClick: () => void;

@@ -23,7 +23,7 @@ const PurgeChannelButton = ({
   }, [channelId, guildId, mutate]);
   return (
     <>
-      <PopButton tone="pink" size="sm" disabled={status === "pending"} onClick={purge}>
+      <PopButton tone="danger" size="sm" disabled={status === "pending"} onClick={purge}>
         {LABEL}
         <span className="sr-only">{`（#${channelName}）`}</span>
       </PopButton>

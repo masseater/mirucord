@@ -8,6 +8,9 @@ const rowKey = (row: SidebarRow): string => {
   if (row.type === "link") {
     return row.channel.id;
   }
+  if (row.type === "page") {
+    return row.page.href;
+  }
   if (row.type === "peek") {
     return row.id;
   }

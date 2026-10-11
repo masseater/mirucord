@@ -4,6 +4,8 @@ export {
   PRIVACY_PATH,
   REPOSITORY_URL,
   SITE_HOST,
+  SELF_HOST_PATH,
   SITE_ORIGIN,
+  TECH_PATH,
   TERMS_PATH,
 } from "./site";

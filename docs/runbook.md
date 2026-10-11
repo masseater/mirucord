@@ -84,11 +84,11 @@ vp exec wrangler tail <Worker 名>
 本番の D1・Workers Logs・Discord API は、クラウドのセッションから直接読む。Mac の Remote Control は使わない。
 クラウド環境の環境変数に次の3つを置く。値を変えたら、新しいセッションから効く。
 
-| 名前                    | 内容                                                                                                 |
-| ----------------------- | ---------------------------------------------------------------------------------------------------- |
-| `CLOUDFLARE_ACCOUNT_ID` | デプロイ先のアカウント                                                                               |
-| `CLOUDFLARE_API_TOKEN`  | 観測用のトークン `mirucord-observer`。D1 Read・Workers Scripts Read・Workers Observability Edit だけ |
-| `DISCORD_BOT_TOKEN`     | 本番の Bot のトークン                                                                                |
+| 名前                    | 内容                                                                                                                 |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `CLOUDFLARE_ACCOUNT_ID` | デプロイ先のアカウント                                                                                               |
+| `CLOUDFLARE_API_TOKEN`  | 観測用のトークン `mirucord-observer`。D1 Read・Vectorize Read・Workers Scripts Read・Workers Observability Edit だけ |
+| `DISCORD_BOT_TOKEN`     | 本番の Bot のトークン                                                                                                |
 
 Workers Observability は、ログを検索する API が書き込み権限を求めるので Edit にする。D1 には書き込めない。
 D1 は wrangler で読む。本番の D1 は名前に `dbapac` を含む方である。

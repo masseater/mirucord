@@ -5,10 +5,10 @@ import { ServerHost } from "alchemy/Server";
 import { GatewayIntentBits } from "discord-api-types/v10";
 import { Config, Effect, Option, Queue, Redacted, Stream } from "effect";
 
+import { toGatewayJob } from "#/features/ingest/api/gateway-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 
 import { makeDeliver } from "./deliver";
-import { toGatewayJob } from "./gateway-job";
 
 const NORMAL_CLOSURE = 1000;
 

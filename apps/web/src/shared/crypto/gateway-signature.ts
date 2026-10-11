@@ -1,61 +1,33 @@
-import { Effect, Result } from "effect";
-import { Hex } from "effect/encoding";
+import { DateTime, Result } from "effect";
+import { Webhook } from "standardwebhooks";
 
-const SIGNATURE_INFO = "mirucord/gateway-signature";
-const GATEWAY_SIGNATURE_HEADER = "x-mirucord-signature";
-const GATEWAY_TIMESTAMP_HEADER = "x-mirucord-timestamp";
+const MILLIS_PER_SECOND = 1000;
 
-const textEncoder = new TextEncoder();
+type SignedEvent = Readonly<{ botToken: string; id: string; sentAt: DateTime.Utc; body: string }>;
 
-type SignedEvent = Readonly<{ botToken: string; timestamp: string; body: string }>;
+type GatewayHeaders = Readonly<{
+  "webhook-id": string;
+  "webhook-timestamp": string;
+  "webhook-signature": string;
+}>;
 
-const signingKey = (botToken: string): Effect.Effect<CryptoKey> =>
-  Effect.promise(() =>
-    crypto.subtle.importKey("raw", textEncoder.encode(botToken), "HKDF", false, ["deriveKey"]),
-  ).pipe(
-    Effect.flatMap((material) =>
-      Effect.promise(() =>
-        crypto.subtle.deriveKey(
-          {
-            name: "HKDF",
-            hash: "SHA-256",
-            salt: new Uint8Array(),
-            info: textEncoder.encode(SIGNATURE_INFO),
-          },
-          material,
-          { name: "HMAC", hash: "SHA-256" },
-          false,
-          ["sign", "verify"],
-        ),
-      ),
-    ),
-  );
+const gatewayWebhook = (botToken: string): Webhook => new Webhook(botToken, { format: "raw" });
 
-const signedBytes = ({ timestamp, body }: SignedEvent): Uint8Array<ArrayBuffer> =>
-  textEncoder.encode(`${timestamp}.${body}`);
+const signGatewayEvent = ({ botToken, id, sentAt, body }: SignedEvent): GatewayHeaders => ({
+  "webhook-id": id,
+  "webhook-timestamp": String(Math.floor(DateTime.toEpochMillis(sentAt) / MILLIS_PER_SECOND)),
+  "webhook-signature": gatewayWebhook(botToken).sign(id, DateTime.toDate(sentAt), body),
+});
 
-const signGatewayEvent = (event: SignedEvent): Effect.Effect<string> =>
-  signingKey(event.botToken).pipe(
-    Effect.flatMap((key) =>
-      Effect.promise(() => crypto.subtle.sign("HMAC", key, signedBytes(event))),
-    ),
-    Effect.map((signature) => Hex.encode(new Uint8Array(signature))),
-  );
+const verifyGatewayEvent = ({
+  botToken,
+  body,
+  headers,
+}: Readonly<{
+  botToken: string;
+  body: string;
+  headers: Readonly<Record<string, string>>;
+}>): boolean => Result.isSuccess(Result.try(() => gatewayWebhook(botToken).verify(body, headers)));
 
-const verifyGatewayEvent = (
-  event: SignedEvent & Readonly<{ signature: string }>,
-): Effect.Effect<boolean> =>
-  Result.match(Hex.decode(event.signature), {
-    onFailure: () => Effect.succeed(false),
-    onSuccess: (signature) =>
-      signingKey(event.botToken).pipe(
-        Effect.flatMap((key) =>
-          Effect.promise(() =>
-            crypto.subtle.verify("HMAC", key, Uint8Array.from(signature), signedBytes(event)),
-          ),
-        ),
-      ),
-  });
-
-export { GATEWAY_SIGNATURE_HEADER, GATEWAY_TIMESTAMP_HEADER, signGatewayEvent, verifyGatewayEvent };
-export type { SignedEvent };
+export { signGatewayEvent, verifyGatewayEvent };
+export type { GatewayHeaders, SignedEvent };

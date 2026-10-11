@@ -1,4 +1,4 @@
-import { DateTime, Effect, Layer, Schedule, Schema } from "effect";
+import { Array, DateTime, Effect, Layer, Schedule, Schema } from "effect";
 import type { Scope } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
@@ -6,11 +6,7 @@ import type { HttpClientError } from "effect/http";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 import { SITE_ORIGIN } from "#/shared/config/site";
-import {
-  GATEWAY_SIGNATURE_HEADER,
-  GATEWAY_TIMESTAMP_HEADER,
-  signGatewayEvent,
-} from "#/shared/crypto/index";
+import { signGatewayEvent } from "#/shared/crypto/index";
 
 const GATEWAY_ENDPOINT = `${SITE_ORIGIN}/api/gateway`;
 const RETRY_TIMES = 5;
@@ -24,13 +20,10 @@ const signedRequest = (
 ): Effect.Effect<HttpClientRequest.HttpClientRequest> =>
   Effect.gen(function* signRequest() {
     const body = yield* encodeJob(job).pipe(Effect.orDie);
-    const timestamp = String(DateTime.toEpochMillis(yield* DateTime.now));
-    const signature = yield* signGatewayEvent({ botToken, timestamp, body });
+    const sentAt = yield* DateTime.now;
+    const id = `${job.kind}-${Array.headNonEmpty(job.messageIds)}-${DateTime.toEpochMillis(sentAt)}`;
     return HttpClientRequest.post(GATEWAY_ENDPOINT).pipe(
-      HttpClientRequest.setHeaders({
-        [GATEWAY_TIMESTAMP_HEADER]: timestamp,
-        [GATEWAY_SIGNATURE_HEADER]: signature,
-      }),
+      HttpClientRequest.setHeaders(signGatewayEvent({ botToken, id, sentAt, body })),
       HttpClientRequest.bodyText(body, "application/json"),
     );
   });

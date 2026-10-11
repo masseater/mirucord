@@ -187,12 +187,19 @@ const seedScenario = (): Promise<void> =>
   Effect.runPromise(Effect.forEach(GUILDS, seedGuild, { discard: true }));
 
 const TextContent = Schema.Struct({ text: Schema.String });
-const ToolResult = Schema.Struct({ content: Schema.Tuple([TextContent]), isError: Schema.Boolean });
+const ToolResult = Schema.Struct({
+  content: Schema.Tuple([TextContent]),
+  structuredContent: Schema.optionalKey(Schema.Unknown),
+  isError: Schema.Boolean,
+});
 const ToolResponse = Schema.fromJsonString(Schema.Struct({ result: ToolResult }));
 const Ids = Schema.Array(Schema.Struct({ id: Schema.String }));
-const IdList = Schema.fromJsonString(Ids);
-const MessageList = Schema.fromJsonString(Schema.Struct({ messages: Ids }));
-const ReadIngest = Schema.fromJsonString(Schema.Struct({ ingest: Schema.String }));
+const Listing = Schema.Struct({
+  servers: Schema.optionalKey(Ids),
+  channels: Schema.optionalKey(Ids),
+  messages: Schema.optionalKey(Ids),
+});
+const ReadIngest = Schema.Struct({ ingest: Schema.String });
 const ToolArguments = Schema.Record(Schema.String, Schema.String);
 const ToolParams = Schema.Struct({ name: Schema.String, arguments: ToolArguments });
 const ToolCall = Schema.fromJsonString(
@@ -205,11 +212,11 @@ const ToolCall = Schema.fromJsonString(
 );
 const encodeToolCall = Schema.encodeEffect(ToolCall);
 const decodeToolResponse = Schema.decodeEffect(ToolResponse);
-const decodeIds = Schema.decodeEffect(IdList);
-const decodeMessages = Schema.decodeEffect(MessageList);
-const decodeReadIngest = Schema.decodeEffect(ReadIngest);
+const decodeListing = Schema.decodeUnknownEffect(Listing);
+const decodeReadIngest = Schema.decodeUnknownEffect(ReadIngest);
 
-type ToolOutcome = Readonly<{ text: string; isError: boolean }>;
+type ToolOutcome = Readonly<{ text: string; isError: boolean; structured: Option.Option<unknown> }>;
+type ListingKey = keyof typeof Listing.Type;
 
 const requestOf = (body: string): Request =>
   new Request("https://mirucord.test/mcp", {
@@ -245,29 +252,26 @@ const callTool = ({
     const {
       result: {
         content: [{ text: answer }],
+        structuredContent,
         isError,
       },
     } = yield* decodeToolResponse(sseData(text));
-    return { text: answer, isError };
+    return { text: answer, isError, structured: Option.fromUndefinedOr(structuredContent) };
   }).pipe(Effect.orDie);
 
-const idsOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<readonly string[]> =>
-  outcome.pipe(
-    Effect.flatMap(({ text }) => decodeIds(text)),
-    Effect.map((items) => items.map(({ id }) => id)),
-    Effect.orDie,
-  );
-
-const messageIdsOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<readonly string[]> =>
-  outcome.pipe(
-    Effect.flatMap(({ text }) => decodeMessages(text)),
-    Effect.map(({ messages }) => messages.map(({ id }) => id)),
-    Effect.orDie,
-  );
+const idsOf =
+  (key: ListingKey) =>
+  (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<readonly string[]> =>
+    outcome.pipe(
+      Effect.flatMap(({ structured }) => decodeListing(Option.getOrUndefined(structured))),
+      Effect.map((listing) => Option.getOrElse(Option.fromUndefinedOr(listing[key]), () => [])),
+      Effect.map((items) => items.map(({ id }) => id)),
+      Effect.orDie,
+    );
 
 const readIngestOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<string> =>
   outcome.pipe(
-    Effect.flatMap(({ text }) => decodeReadIngest(text)),
+    Effect.flatMap(({ structured }) => decodeReadIngest(Option.getOrUndefined(structured))),
     Effect.map(({ ingest }) => ingest),
     Effect.orDie,
   );
@@ -284,10 +288,9 @@ export {
   GUILD_B,
   GUILD_C,
   idsOf,
-  messageIdsOf,
   readIngestOf,
   SAME_WORDS,
   seedScenario,
   USER,
 };
-export type { ToolOutcome };
+export type { ListingKey, ToolOutcome };

@@ -5,6 +5,20 @@ import { Effect, Option, Schema } from "effect";
 
 import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
+import {
+  FindMessagesInput,
+  FIRST_OFFSET,
+  ListChannelsInput,
+  ReadMessagesInput,
+  SearchMessagesInput,
+} from "#/features/mcp/model/tool-input";
+import {
+  FindMessagesOutput,
+  ListChannelsOutput,
+  ListServersOutput,
+  ReadMessagesOutput,
+  SearchMessagesOutput,
+} from "#/features/mcp/model/tool-output";
 import { SITE_ORIGIN } from "#/shared/config";
 import { CATEGORY_TYPES } from "#/shared/discord";
 
@@ -20,44 +34,20 @@ const SERVER_INFO = { name: "mirucord", version: "0.0.0", icons: ICONS, websiteU
 const SERVER_NOT_FOUND = "Server not found";
 const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const DEFAULT_LIMIT = 20;
-const FIRST_OFFSET = 0;
-const MAX_LIMIT = 50;
 const CHANNEL_NOT_FOUND = "Channel not found";
 const FORUM_TYPES: ReadonlySet<number> = new Set([ChannelType.GuildForum, ChannelType.GuildMedia]);
 const INGEST_GUIDE =
   "Each channel carries `ingest`: only `empty` means the channel has no messages in Discord. `notConsented`, `waiting` and `backfilling` mean mirucord has not stored all of its messages yet, so an empty or short result does not mean the channel is empty; say so instead of reporting that there are no messages.";
 
-const Offset = Schema.optionalKey(Schema.Int.check(Schema.isGreaterThanOrEqualTo(FIRST_OFFSET)));
-const Limit = Schema.optionalKey(
-  Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: MAX_LIMIT })),
-);
-
-const ListChannelsInput = Schema.Struct({ serverId: Schema.String });
-const SearchMessagesInput = Schema.Struct({
-  serverId: Schema.String,
-  query: Schema.NonEmptyString,
-  channelId: Schema.optionalKey(Schema.String),
-  limit: Limit,
+const structuredResult = (value: Readonly<Record<string, unknown>>): CallToolResult => ({
+  content: [{ type: "text", text: JSON.stringify(value) }],
+  structuredContent: value,
+  isError: false,
 });
-const FindMessagesInput = Schema.Struct({
-  serverId: Schema.String,
-  query: Schema.NonEmptyString,
-  channelId: Schema.optionalKey(Schema.String),
-  limit: Limit,
-  offset: Offset,
-});
-const ReadMessagesInput = Schema.Struct({
-  serverId: Schema.String,
-  channelId: Schema.String,
-  before: Schema.optionalKey(Schema.String),
-  limit: Limit,
-});
-const textResult = (text: string, isError: boolean): CallToolResult => ({
+const errorResult = (text: string): CallToolResult => ({
   content: [{ type: "text", text }],
-  isError,
+  isError: true,
 });
-const jsonResult = (value: unknown): CallToolResult => textResult(JSON.stringify(value), false);
-const errorResult = (text: string): CallToolResult => textResult(text, true);
 
 type ToolRequest = Readonly<{ guildId: string; discordUserId: string }>;
 type WithinScope = (scope: GuildScope) => Effect.Effect<CallToolResult>;
@@ -136,24 +126,28 @@ const listServers = (discordUserId: string): Promise<CallToolResult> =>
   Effect.runPromise(
     readableGuilds(discordUserId).pipe(
       Effect.map((guilds) =>
-        jsonResult(
-          guilds.map(({ guildId, name, consent }) => ({ id: guildId, name, ingest: consent })),
-        ),
+        structuredResult({
+          servers: guilds.map(({ guildId, name, consent }) => ({
+            id: guildId,
+            name,
+            ingest: consent,
+          })),
+        } satisfies typeof ListServersOutput.Type),
       ),
       Effect.orElseSucceed(() => errorResult(DISCORD_UNAVAILABLE)),
     ),
   );
 
 const visibleChannels = (scope: GuildScope): CallToolResult =>
-  jsonResult(
-    readableChannels(scope).map((stored) => ({
+  structuredResult({
+    channels: readableChannels(scope).map((stored) => ({
       id: stored.id,
       name: stored.name,
       type: stored.type,
       parentId: Option.getOrNull(stored.parentId),
       ingest: ingestOf(scope, stored),
     })),
-  );
+  } satisfies typeof ListChannelsOutput.Type);
 
 const listChannels =
   (discordUserId: string) =>
@@ -174,10 +168,10 @@ const search =
       withChannel(scope, Option.fromUndefinedOr(channelId), (channelIds) =>
         searchMessages({ scope, query, channelIds, limit: limitOf(limit) }).pipe(
           Effect.map((messages) =>
-            jsonResult({
+            structuredResult({
               messages,
               notFullyIngested: notFullyIngested(scope, channelIds),
-            }),
+            } satisfies typeof SearchMessagesOutput.Type),
           ),
         ),
       ),
@@ -202,11 +196,11 @@ const find =
           offset: Option.getOrElse(Option.fromUndefinedOr(offset), () => FIRST_OFFSET),
         }).pipe(
           Effect.map(({ total, messages }) =>
-            jsonResult({
+            structuredResult({
               total,
               messages,
               notFullyIngested: notFullyIngested(scope, channelIds),
-            }),
+            } satisfies typeof FindMessagesOutput.Type),
           ),
         ),
       ),
@@ -228,59 +222,64 @@ const read =
           before: Option.fromUndefinedOr(before),
           limit: limitOf(limit),
         }).pipe(
-          Effect.map((messages) => jsonResult({ ingest: ingestById(scope, channelId), messages })),
+          Effect.map((messages) =>
+            structuredResult({
+              ingest: ingestById(scope, channelId),
+              messages,
+            } satisfies typeof ReadMessagesOutput.Type),
+          ),
         ),
       ),
     );
-const toolInput = Schema.toStandardSchemaV1;
+const TOOL_BASE = { icons: ICONS, annotations: { readOnlyHint: true, openWorldHint: false } };
+
+const LIST_SERVERS_TOOL = {
+  title: "List servers",
+  description:
+    "List the Discord servers you can read through mirucord. `ingest` is `notConsented` until the server's admin allows mirucord to store its messages; until then every channel reads as empty.",
+  ...TOOL_BASE,
+  outputSchema: ListServersOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+};
+
+const LIST_CHANNELS_TOOL = {
+  title: "List channels",
+  description: `List the text, voice, announcement, stage and forum channels and the threads (including forum posts) you can read in a server. ${INGEST_GUIDE}`,
+  ...TOOL_BASE,
+  outputSchema: ListChannelsOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+  inputSchema: ListChannelsInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+};
+
+const SEARCH_MESSAGES_TOOL = {
+  title: "Search messages",
+  description: `Search messages in a server by meaning. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so results from them may be missing. ${INGEST_GUIDE}`,
+  ...TOOL_BASE,
+  outputSchema: SearchMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+  inputSchema: SearchMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+};
+
+const FIND_MESSAGES_TOOL = {
+  title: "Find messages",
+  description: `Find messages whose text contains \`query\` exactly, ignoring letter case. \`total\` counts every match in the searched channels, so it shows how often a topic comes up; \`messages\` holds up to \`limit\` of them, newest first, starting at \`offset\`. Use search_messages instead to search by meaning. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
+  ...TOOL_BASE,
+  outputSchema: FindMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+  inputSchema: FindMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+};
+
+const READ_MESSAGES_TOOL = {
+  title: "Read messages",
+  description: `Read the latest messages of a channel, newest first. ${INGEST_GUIDE}`,
+  ...TOOL_BASE,
+  outputSchema: ReadMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+  inputSchema: ReadMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+};
 
 const buildServer = (discordUserId: string): McpServer => {
   const server = new McpServer(SERVER_INFO);
-  server.registerTool(
-    "list_servers",
-    {
-      description:
-        "List the Discord servers you can read through mirucord. `ingest` is `notConsented` until the server's admin allows mirucord to store its messages; until then every channel reads as empty.",
-      icons: ICONS,
-    },
-    () => listServers(discordUserId),
-  );
-  server.registerTool(
-    "list_channels",
-    {
-      description: `List the text, voice, announcement, stage and forum channels and the threads (including forum posts) you can read in a server. ${INGEST_GUIDE}`,
-      icons: ICONS,
-      inputSchema: Schema.toStandardJSONSchemaV1(toolInput(ListChannelsInput)),
-    },
-    listChannels(discordUserId),
-  );
-  server.registerTool(
-    "search_messages",
-    {
-      description: `Search messages in a server by meaning. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so results from them may be missing. ${INGEST_GUIDE}`,
-      icons: ICONS,
-      inputSchema: Schema.toStandardJSONSchemaV1(toolInput(SearchMessagesInput)),
-    },
-    search(discordUserId),
-  );
-  server.registerTool(
-    "find_messages",
-    {
-      description: `Find messages whose text contains \`query\` exactly, ignoring letter case. \`total\` counts every match in the searched channels, so it shows how often a topic comes up; \`messages\` holds up to \`limit\` of them, newest first, starting at \`offset\`. Use search_messages instead to search by meaning. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
-      icons: ICONS,
-      inputSchema: Schema.toStandardJSONSchemaV1(toolInput(FindMessagesInput)),
-    },
-    find(discordUserId),
-  );
-  server.registerTool(
-    "read_messages",
-    {
-      description: `Read the latest messages of a channel, newest first. ${INGEST_GUIDE}`,
-      icons: ICONS,
-      inputSchema: Schema.toStandardJSONSchemaV1(toolInput(ReadMessagesInput)),
-    },
-    read(discordUserId),
-  );
+  server.registerTool("list_servers", LIST_SERVERS_TOOL, () => listServers(discordUserId));
+  server.registerTool("list_channels", LIST_CHANNELS_TOOL, listChannels(discordUserId));
+  server.registerTool("search_messages", SEARCH_MESSAGES_TOOL, search(discordUserId));
+  server.registerTool("find_messages", FIND_MESSAGES_TOOL, find(discordUserId));
+  server.registerTool("read_messages", READ_MESSAGES_TOOL, read(discordUserId));
   return server;
 };
 

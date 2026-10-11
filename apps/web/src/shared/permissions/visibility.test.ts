@@ -2,7 +2,7 @@ import { ChannelType, OverwriteType, PermissionFlagsBits } from "discord-api-typ
 import { Option } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { visibleChannelIds } from "./visibility";
+import { postableChannelIds, visibleChannelIds } from "./visibility";
 import type { GuildChannel, GuildSnapshot, Member } from "./visibility";
 
 const GUILD = "100";
@@ -15,6 +15,7 @@ const NOTHING = "0";
 const READ = (PermissionFlagsBits.ViewChannel + PermissionFlagsBits.ReadMessageHistory).toString();
 const VIEW = PermissionFlagsBits.ViewChannel.toString();
 const ADMINISTRATOR = PermissionFlagsBits.Administrator.toString();
+const SEND = PermissionFlagsBits.SendMessages.toString();
 
 const textChannel = (
   id: string,
@@ -132,4 +133,29 @@ it("reads the text chat of a voice channel with view and history alone", () => {
     voiceChannel("2", [{ id: GUILD, type: OverwriteType.Role, allow: NOTHING, deny: VIEW }]),
   ]);
   expect([...visibleChannelIds(snapshot, member(USER, []))]).toStrictEqual(["1"]);
+});
+
+it("cannot post where @everyone is denied sending and no role of the reader is allowed", () => {
+  const snapshot = {
+    ...snapshotOf([
+      textChannel("1", []),
+      textChannel("2", [{ id: GUILD, type: OverwriteType.Role, allow: VIEW, deny: SEND }]),
+      textChannel("3", [
+        { id: GUILD, type: OverwriteType.Role, allow: VIEW, deny: SEND },
+        { id: MEMBER_ROLE, type: OverwriteType.Role, allow: SEND, deny: NOTHING },
+      ]),
+    ]),
+    rolePermissions: {
+      [GUILD]: READ,
+      [MEMBER_ROLE]: (
+        PermissionFlagsBits.ViewChannel + PermissionFlagsBits.SendMessages
+      ).toString(),
+    },
+  };
+  expect([...visibleChannelIds(snapshot, member(USER, [MEMBER_ROLE]))]).toStrictEqual([
+    "1",
+    "2",
+    "3",
+  ]);
+  expect([...postableChannelIds(snapshot, member(USER, [MEMBER_ROLE]))]).toStrictEqual(["1", "3"]);
 });

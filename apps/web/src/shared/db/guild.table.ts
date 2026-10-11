@@ -46,6 +46,9 @@ const channel = sqliteTable(
       .notNull()
       .default("readable"),
     hiddenAt: integer(),
+    botPost: text({ enum: ["allowed", "denied"] })
+      .notNull()
+      .default("allowed"),
     position: integer().notNull().default(FIRST_POSITION),
     archive: text({ enum: ["open", "archived"] })
       .notNull()

@@ -13,7 +13,7 @@ import {
 
 import { receiveGatewayEvent } from "./gateway-event.server";
 
-const ACCEPTED = 202;
+const PROCESSED = 200;
 const BAD_REQUEST = 400;
 const UNAUTHORIZED = 401;
 const STALE_BY: Duration.Input = "10 minutes";
@@ -52,14 +52,14 @@ beforeEach(() => {
   });
 });
 
-it.live("queues a signed gateway event", () =>
+it.live("processes a signed gateway event without the queue", () =>
   Effect.gen(function* signedEvent() {
     const now = yield* DateTime.now;
     const send = vi.spyOn(env.INGEST, "send");
     const body = yield* encodeJson(JOB).pipe(Effect.orDie);
     const request = yield* signedRequest(body, now, env.DISCORD_BOT_TOKEN);
-    expect(yield* statusOf(request)).toBe(ACCEPTED);
-    expect(send).toHaveBeenCalledWith(JOB);
+    expect(yield* statusOf(request)).toBe(PROCESSED);
+    expect(send).not.toHaveBeenCalled();
   }),
 );
 

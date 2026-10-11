@@ -1,14 +1,19 @@
 import { env } from "cloudflare:workers";
-import { DateTime, Duration, Effect, Number, Option, Schema } from "effect";
+import { DateTime, Duration, Effect, Exit, Number, Option, Schema } from "effect";
 
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
+import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 import {
   GATEWAY_SIGNATURE_HEADER,
   GATEWAY_TIMESTAMP_HEADER,
   verifyGatewayEvent,
 } from "#/shared/crypto/index";
 
-const ACCEPTED = 202;
+import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
+import type { IngestError } from "./message-page.server";
+
+const PROCESSED = 200;
+const FAILED = 500;
 const BAD_REQUEST = 400;
 const UNAUTHORIZED = 401;
 const ALLOWED_SKEW: Duration.Input = "5 minutes";
@@ -40,12 +45,28 @@ const isAuthentic = (request: Request, body: string): Effect.Effect<boolean> => 
   );
 };
 
-const enqueueEvent = (body: string): Effect.Effect<Response> =>
+const runJob = (job: GatewayJob): Effect.Effect<void, IngestError> => {
+  if (job.kind === "refresh") {
+    return refreshMessages(job);
+  }
+  return forgetMessages(job);
+};
+
+const processEvent = (body: string): Effect.Effect<Response> =>
   Option.match(decodeJob(body), {
     onNone: () => Effect.succeed(new Response("Malformed gateway event", { status: BAD_REQUEST })),
     onSome: (job) =>
-      Effect.promise(() => env.INGEST.send(job)).pipe(
-        Effect.as(new Response("Accepted", { status: ACCEPTED })),
+      runJob(job).pipe(
+        Effect.exit,
+        Effect.flatMap((exit) => {
+          if (Exit.isSuccess(exit)) {
+            return Effect.succeed(new Response("Processed", { status: PROCESSED }));
+          }
+          return Effect.logError("Gateway event failed", exit.cause).pipe(
+            Effect.annotateLogs({ kind: job.kind, channelId: job.channelId }),
+            Effect.as(new Response("Gateway event failed", { status: FAILED })),
+          );
+        }),
       ),
   });
 
@@ -60,7 +81,7 @@ const receiveGatewayEvent = (request: Request): Promise<Response> =>
                 new Response("Invalid gateway signature", { status: UNAUTHORIZED }),
               );
             }
-            return enqueueEvent(body);
+            return processEvent(body);
           }),
         ),
       ),

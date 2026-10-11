@@ -12,7 +12,7 @@
 cd apps/web
 CLOUDFLARE_API_KEY=... CLOUDFLARE_EMAIL=... CLOUDFLARE_ACCOUNT_ID=... GITHUB_TOKEN=... \
 DISCORD_CLIENT_ID=... DISCORD_CLIENT_SECRET=... DISCORD_BOT_TOKEN=... OPENROUTER_API_KEY=... \
-vp run deploy:ci
+vp exec alchemy deploy --config alchemy.ci.ts --stage prod --env-file alchemy.ci.env
 ```
 
 値を変えた後は、`ci` スタックを適用し、Actions から `verify` を手動で動かすとデプロイし直される。main への push でもよい。

@@ -86,7 +86,7 @@
     {
       "name": "alchemy",
       "enablers": ["alchemy"],
-      "entryPoints": ["alchemy.run.ts"],
+      "entryPoints": ["alchemy.run.ts", "alchemy.ci.ts"],
     },
     {
       "name": "vite-plus",

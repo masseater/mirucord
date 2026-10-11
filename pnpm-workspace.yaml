@@ -49,6 +49,7 @@ catalog:
   msw: 3.0.2
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
+  usehooks-ts: ^3.1.1
 catalogs:
   stack:
     "@effect/atom-react": 4.0.0

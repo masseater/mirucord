@@ -20,9 +20,10 @@ import type { HttpClientError } from "effect/http";
 
 import { POLL_CRON, SYNC_CRON } from "./src/features/ingest/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
+import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;
-const WORKER_NAME = "mirucord-web";
+const NAME_PREFIX = "mirucord";
 const PRODUCTION_STAGE = "prod";
 const NOT_FOUND = 404;
 const WORKER_ISSUES = "Mirucord.WorkerIssues";
@@ -175,8 +176,19 @@ const releaseVersion = Config.option(Config.NonEmptyString("GITHUB_SHA")).pipe(
   ),
 );
 
+const mirucordName = (resource: string): Effect.Effect<string, never, Stage> =>
+  Effect.gen(function* resourceName() {
+    const stage = yield* Stage;
+    const name = `${NAME_PREFIX}-${resource}`;
+    return Boolean.match(stage === PRODUCTION_STAGE, {
+      onTrue: () => name,
+      onFalse: () => `${name}-${stage}`,
+    });
+  });
+
 const messagesIndex = Effect.gen(function* messagesIndex() {
   const index = yield* Vectorize.Index("Messages", {
+    name: yield* mirucordName("messages"),
     dimensions: EMBEDDING_DIMENSIONS,
     metric: "cosine",
   });
@@ -202,14 +214,6 @@ const masterKey = Effect.gen(function* masterKey() {
   });
 });
 
-const stageWorkerName = Effect.gen(function* stageWorkerName() {
-  const stage = yield* Stage;
-  return Boolean.match(stage === PRODUCTION_STAGE, {
-    onTrue: () => WORKER_NAME,
-    onFalse: () => `${WORKER_NAME}-${stage}`,
-  });
-});
-
 const settings = Effect.gen(function* settings() {
   const discord = yield* discordEnv;
   const release = yield* releaseVersion;
@@ -217,20 +221,32 @@ const settings = Effect.gen(function* settings() {
   return { discord, release, operations };
 });
 
-const web = Effect.gen(function* web() {
+const storage = Effect.gen(function* storage() {
   const usDb = yield* D1.Database("DB", { migrations: "./drizzle" });
-  const DB = yield* D1.Database("DbApac", {
+  const apacDb = yield* D1.Database("DbApac", {
     primaryLocationHint: "apac",
     clone: usDb,
     migrations: "./drizzle",
   });
+  const DB = yield* D1.Database("MirucordDb", {
+    name: yield* mirucordName("db"),
+    primaryLocationHint: "apac",
+    clone: apacDb,
+    migrations: "./drizzle",
+  });
   const MESSAGES = yield* messagesIndex;
-  const INGEST = yield* Queues.Queue("Ingest");
+  const INGEST = yield* Queues.Queue("Ingest", { name: yield* mirucordName("ingest") });
+  return { DB, MESSAGES, INGEST };
+});
+
+const web = Effect.gen(function* web() {
+  const { DB, MESSAGES, INGEST } = yield* storage;
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* masterKey;
   const { discord, release, operations } = yield* settings;
   const site = yield* Website.Vite("Web", {
-    name: yield* stageWorkerName,
+    name: yield* mirucordName("web"),
+    domain: SITE_HOST,
     main: "src/app/server/index.ts",
     crons: [POLL_CRON, SYNC_CRON],
     compatibility: { flags: ["global_fetch_strictly_public"] },

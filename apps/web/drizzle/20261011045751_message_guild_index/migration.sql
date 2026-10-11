@@ -1,0 +1,1 @@
+CREATE INDEX `message_guild_id_idx` ON `message` (`guildId`,`channelId`);

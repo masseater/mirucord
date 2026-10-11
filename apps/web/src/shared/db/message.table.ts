@@ -17,5 +17,8 @@ export const message = sqliteTable(
     createdAt: integer({ mode: "timestamp_ms" }).notNull(),
     editedAt: integer({ mode: "timestamp_ms" }),
   },
-  (table) => [index("message_channel_id_idx").on(table.channelId, table.id)],
+  (table) => [
+    index("message_channel_id_idx").on(table.channelId, table.id),
+    index("message_guild_id_idx").on(table.guildId, table.channelId),
+  ],
 );

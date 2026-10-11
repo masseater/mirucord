@@ -5,6 +5,7 @@ import type { Overwrite } from "#/shared/permissions";
 const guild = sqliteTable("guild", {
   id: text().primaryKey(),
   name: text().notNull(),
+  icon: text(),
   ownerId: text().notNull(),
   wrappedKey: text().notNull(),
   joinedAt: integer({ mode: "timestamp_ms" }).notNull(),

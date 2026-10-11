@@ -11,6 +11,7 @@ const MEMBER_CONCURRENCY = 4;
 type ManagedGuild = Readonly<{
   id: string;
   name: string;
+  icon: string | null;
   consent: "awaiting" | "granted" | "withdrawing";
 }>;
 
@@ -50,19 +51,20 @@ const managedGuild = ({
 const listManagedGuilds = (userId: string): Effect.Effect<readonly ManagedGuild[]> =>
   Effect.promise(() =>
     db
-      .select({ id: guild.id, consent: ingestConsent.state })
+      .select({ id: guild.id, icon: guild.icon, consent: ingestConsent.state })
       .from(guild)
       .leftJoin(ingestConsent, eq(ingestConsent.guildId, guild.id)),
   ).pipe(
     Effect.flatMap((rows) =>
       Effect.forEach(
         rows,
-        ({ id, consent }) =>
+        ({ id, icon, consent }) =>
           managedGuild({ guildId: id, userId }).pipe(
             Effect.map(
               Option.map(({ name }): ManagedGuild => ({
                 id,
                 name,
+                icon,
                 consent: Option.getOrElse(Option.fromNullOr(consent), () => "awaiting" as const),
               })),
             ),

@@ -20,6 +20,7 @@ type StoredChannel = GuildChannel & ChannelProgress & Readonly<{ name: string }>
 type StoredGuild = Omit<GuildSnapshot, "channels"> &
   Readonly<{
     name: string;
+    icon: string | null;
     wrappedKey: string;
     consent: Consent;
     channels: readonly StoredChannel[];
@@ -69,7 +70,12 @@ const loadConsent = (guildId: string): Effect.Effect<Consent> =>
 const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =>
   Effect.promise(() =>
     db
-      .select({ name: guild.name, ownerId: guild.ownerId, wrappedKey: guild.wrappedKey })
+      .select({
+        name: guild.name,
+        icon: guild.icon,
+        ownerId: guild.ownerId,
+        wrappedKey: guild.wrappedKey,
+      })
       .from(guild)
       .where(eq(guild.id, guildId)),
   ).pipe(

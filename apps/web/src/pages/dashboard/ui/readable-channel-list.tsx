@@ -2,19 +2,28 @@ import type { ReactNode } from "react";
 
 import type { GuildSettings, SettingsChannel } from "#/features/ingest/index.server";
 import { groupByCategory } from "#/pages/dashboard/model/channel-groups";
+import { Pill } from "#/shared/ui/pill";
 
 import { CategoryHeading } from "./category-heading";
+import { ChannelLabel } from "./channel-label";
+import { ForumPillToggle } from "./forum-pill-toggle";
 import { ForumPostPanel } from "./forum-post-panel";
-import { ReadableChannelPill } from "./readable-channel-pill";
 
 const ReadableChannelList = ({
   settings,
   channels,
 }: Readonly<{ settings: GuildSettings; channels: readonly SettingsChannel[] }>): ReactNode =>
   groupByCategory(settings, channels).map((group) => {
-    const pills = group.channels.map((channel) => (
-      <ReadableChannelPill key={channel.id} channel={channel} />
-    ));
+    const pills = group.channels.map((channel) => {
+      if (channel.kind === "forum") {
+        return <ForumPillToggle key={channel.id} channel={channel} />;
+      }
+      return (
+        <Pill key={channel.id} tone="bg-lavender">
+          <ChannelLabel channel={channel} />
+        </Pill>
+      );
+    });
     const forums = group.channels
       .filter(({ kind }) => kind === "forum")
       .map((channel) => (

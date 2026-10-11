@@ -7,3 +7,4 @@ export {
   SITE_ORIGIN,
   TERMS_PATH,
 } from "./site";
+export { FREE_GUILD_LIMIT } from "./plan";

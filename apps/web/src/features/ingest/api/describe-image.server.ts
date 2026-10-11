@@ -3,6 +3,8 @@ import { Array, Data, Effect, Layer, Option, Schedule, String } from "effect";
 import { Base64 } from "effect/encoding";
 import { FetchHttpClient, HttpClient } from "effect/http";
 
+import { SITE_ORIGIN } from "#/shared/config";
+
 const DESCRIBE_MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const MAX_SIDE = 768;
 const MIN_SIDE = 1;
@@ -10,6 +12,8 @@ const OK_STATUS = 200;
 const MAX_TOKENS = 160;
 const RETRY_TIMES = 2;
 const RETRY_BASE = "500 millis";
+const USER_AGENT = `DiscordBot (${SITE_ORIGIN}, 1.0)`;
+const DIAGNOSTIC_HEADERS = ["server", "cf-mitigated", "content-type"];
 const PROMPT =
   "この画像を検索で見つけられるよう、日本語で1〜2文で説明してください。写っている物や料理の名前、読める文字があればその内容を具体的に書いてください。説明だけを答えてください。";
 
@@ -37,14 +41,22 @@ const resizedUrl = ({ proxyUrl, width, height }: ImageSource): string => {
   return url.toString();
 };
 
+const diagnosticsOf = (headers: Readonly<Record<string, string>>): string =>
+  DIAGNOSTIC_HEADERS.map(
+    (name) => `${name}=${Option.getOrElse(Option.fromUndefinedOr(headers[name]), () => "-")}`,
+  ).join(" ");
+
 const fetchImage = (
   source: ImageSource,
 ): Effect.Effect<string, DescribeError, HttpClient.HttpClient> =>
   HttpClient.HttpClient.pipe(
-    Effect.flatMap((client) => client.get(resizedUrl(source))),
+    Effect.flatMap((client) =>
+      client.get(resizedUrl(source), { headers: { "user-agent": USER_AGENT } }),
+    ),
     Effect.filterOrFail(
       ({ status }) => status === OK_STATUS,
-      ({ status }) => new DescribeError({ stage: "fetch", reason: `status ${status}` }),
+      ({ status, headers }) =>
+        new DescribeError({ stage: "fetch", reason: `status ${status} ${diagnosticsOf(headers)}` }),
     ),
     Effect.flatMap((response) => response.arrayBuffer),
     Effect.map((buffer) => Base64.encode(new Uint8Array(buffer))),

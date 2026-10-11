@@ -2,7 +2,7 @@ import { env } from "cloudflare:workers";
 import { and, desc, eq, inArray, lt } from "drizzle-orm";
 import { Array, DateTime, Effect, Option } from "effect";
 
-import { embed } from "#/shared/ai/index.server";
+import { embedQuery } from "#/shared/ai/index.server";
 import { openGuildKey, openMessage } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 import { db, message } from "#/shared/db/index.server";
@@ -126,15 +126,9 @@ const queryVectors = (
   ).pipe(Effect.map(({ matches }) => matches.map(({ id }) => id)));
 
 const searchMessages = (request: SearchRequest): Effect.Effect<readonly MessageView[]> =>
-  embed([request.query]).pipe(
+  embedQuery(request.query).pipe(
     Effect.orDie,
-    Effect.map(Array.head),
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeed([]),
-        onSome: (vector) => queryVectors(request, vector),
-      }),
-    ),
+    Effect.flatMap((vector) => queryVectors(request, vector)),
     Effect.flatMap(findStored),
     Effect.flatMap((stored) => openStored(request.scope, stored)),
   );

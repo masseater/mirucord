@@ -34,7 +34,14 @@ const signedRequest = (
   );
 
 const statusOf = (request: Request): Effect.Effect<number> =>
-  Effect.promise(() => receiveGatewayEvent(request)).pipe(Effect.map(({ status }) => status));
+  Effect.promise(() => request.text()).pipe(
+    Effect.flatMap((body) =>
+      Effect.promise(() =>
+        receiveGatewayEvent({ body, headers: Object.fromEntries(request.headers) }),
+      ),
+    ),
+    Effect.map(({ status }) => status),
+  );
 
 beforeEach(() => {
   vi.spyOn(env.INGEST, "send").mockResolvedValue({

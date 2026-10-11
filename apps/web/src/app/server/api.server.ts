@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { CloudflareAdapter } from "elysia/adapter/cloudflare-worker";
 
 import { receiveGatewayEvent } from "#/features/ingest/index.server";
@@ -12,5 +12,10 @@ export const api = new Elysia({ adapter: CloudflareAdapter, aot: false })
     versionId: env.VERSION.id,
     deployedAt: env.VERSION.timestamp,
   }))
-  .post("/api/gateway", ({ request }) => receiveGatewayEvent(request))
+  .post(
+    "/api/gateway",
+    ({ body, request }) =>
+      receiveGatewayEvent({ body, headers: Object.fromEntries(request.headers) }),
+    { parse: "text", body: t.String() },
+  )
   .mount((request) => makeAuth().handler(request));

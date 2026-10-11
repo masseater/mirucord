@@ -1,4 +1,5 @@
 import { CHANNELS } from "#/pages/home/ui/common/channels";
+import { GUIDE_CHANNELS } from "#/pages/home/ui/common/guide-channels";
 import type { Place, PlaceId } from "#/pages/home/ui/common/places";
 import { SERVICE_NAME } from "#/shared/config";
 
@@ -9,6 +10,7 @@ type Activity =
 
 type SidebarRow =
   | Readonly<{ type: "link"; channel: (typeof CHANNELS)[number] }>
+  | Readonly<{ type: "page"; page: (typeof GUIDE_CHANNELS)[number] }>
   | Readonly<{ type: "peek"; id: PlaceId; activity: Activity }>
   | Readonly<{ type: "idle"; place: Place; activity: Activity }>;
 
@@ -61,6 +63,7 @@ const CATEGORIES: readonly SidebarCategory[] = [
       { type: "link", channel: start },
       { type: "link", channel: safety },
       { type: "link", channel: faq },
+      ...GUIDE_CHANNELS.map((page) => ({ type: "page", page }) as const),
     ],
   },
   { state: "collapsed", name: "イベント" },

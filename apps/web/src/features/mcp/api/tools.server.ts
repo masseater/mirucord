@@ -4,6 +4,13 @@ import { ChannelType } from "discord-api-types/v10";
 import { Effect, Option, Schema } from "effect";
 
 import {
+  FindMessagesInput,
+  FIRST_OFFSET,
+  ListChannelsInput,
+  ReadMessagesInput,
+  SearchMessagesInput,
+} from "#/features/mcp/api/tool-input";
+import {
   FindMessagesOutput,
   ListChannelsOutput,
   ListServersOutput,
@@ -12,13 +19,6 @@ import {
 } from "#/features/mcp/api/tool-output";
 import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
-import {
-  FindMessagesInput,
-  FIRST_OFFSET,
-  ListChannelsInput,
-  ReadMessagesInput,
-  SearchMessagesInput,
-} from "#/features/mcp/model/tool-input";
 import { SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
 import { CATEGORY_TYPES } from "#/shared/discord";
 

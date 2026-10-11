@@ -59,11 +59,13 @@ const ForumToggle = ({
         </span>
       </button>
       <IngestPill ingest={channel.ingest} />
-      {disclosure.status === "open" && (
-        <div id={listId} className="border-line basis-full border-l-2 py-1 pl-4">
-          <ForumPostList guildId={guildId} channelId={channel.id} />
-        </div>
-      )}
+      <div
+        id={listId}
+        hidden={disclosure.status === "closed"}
+        className="border-line basis-full border-l-2 py-1 pl-4"
+      >
+        {disclosure.status === "open" && <ForumPostList guildId={guildId} channelId={channel.id} />}
+      </div>
     </>
   );
 };

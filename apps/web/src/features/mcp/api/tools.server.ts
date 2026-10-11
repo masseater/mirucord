@@ -69,13 +69,18 @@ const withScope = (request: ToolRequest, withinScope: WithinScope): Promise<Call
 
 const limitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_LIMIT);
+const readableChannels = (scope: GuildScope): readonly StoredChannel[] =>
+  scope.guild.channels.filter(
+    ({ id, type }) => scope.visible.includes(id) && !CATEGORY_TYPES.has(type),
+  );
+
 const withChannel = (
   scope: GuildScope,
   channelId: Option.Option<string>,
   withinChannels: (channelIds: readonly string[]) => Effect.Effect<CallToolResult>,
 ): Effect.Effect<CallToolResult> =>
   Option.match(channelId, {
-    onNone: () => withinChannels(scope.visible),
+    onNone: () => withinChannels(readableChannels(scope).map(({ id }) => id)),
     onSome: (id) =>
       Option.match(
         Option.liftPredicate(id, (candidate) => scope.visible.includes(candidate)),
@@ -124,15 +129,13 @@ const listServers = (discordUserId: string): Promise<CallToolResult> =>
 
 const visibleChannels = (scope: GuildScope): CallToolResult =>
   jsonResult(
-    scope.guild.channels
-      .filter(({ id, type }) => scope.visible.includes(id) && !CATEGORY_TYPES.has(type))
-      .map((stored) => ({
-        id: stored.id,
-        name: stored.name,
-        type: stored.type,
-        parentId: Option.getOrNull(stored.parentId),
-        ingest: ingestOf(scope, stored),
-      })),
+    readableChannels(scope).map((stored) => ({
+      id: stored.id,
+      name: stored.name,
+      type: stored.type,
+      parentId: Option.getOrNull(stored.parentId),
+      ingest: ingestOf(scope, stored),
+    })),
   );
 
 const listChannels =

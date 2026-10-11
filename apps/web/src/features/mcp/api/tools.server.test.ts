@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { Effect, Option } from "effect";
+import { Effect, Option, Schema } from "effect";
 import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
 import {
@@ -22,6 +22,7 @@ import {
   seedScenario,
   USER,
 } from "./__tests__/scenario";
+import type { ToolOutcome } from "./__tests__/scenario";
 import { readMessages } from "./messages.server";
 import { resolveScope } from "./scope.server";
 
@@ -38,6 +39,21 @@ const readPastChannelCheck = (channelId: string): Effect.Effect<readonly string[
       readMessages({ scope, channelId, before: Option.none(), limit: READ_LIMIT }),
     ),
     Effect.map((views) => views.map(({ id }) => id)),
+    Effect.orDie,
+  );
+
+const PendingChannel = Schema.Struct({ channelId: Schema.String });
+const SearchIngest = Schema.fromJsonString(
+  Schema.Struct({ notFullyIngested: Schema.Array(PendingChannel) }),
+);
+const decodeSearchIngest = Schema.decodeEffect(SearchIngest);
+
+const notFullyIngestedOf = (
+  outcome: Effect.Effect<ToolOutcome>,
+): Effect.Effect<readonly string[]> =>
+  outcome.pipe(
+    Effect.flatMap(({ text }) => decodeSearchIngest(text)),
+    Effect.map(({ notFullyIngested }) => notFullyIngested.map(({ channelId }) => channelId)),
     Effect.orDie,
   );
 
@@ -93,6 +109,15 @@ it.effect("drops other servers and unreadable channels even if the index returns
       callTool({ name: "search_messages", args: { serverId: GUILD_A, query: SAME_WORDS } }),
     );
     expect(ids).toStrictEqual([A_OPEN_MESSAGE]);
+  }),
+);
+
+it.effect("does not report a category as a channel still being stored", () =>
+  Effect.gen(function* searchIngest() {
+    const pending = yield* notFullyIngestedOf(
+      callTool({ name: "search_messages", args: { serverId: GUILD_A, query: SAME_WORDS } }),
+    );
+    expect(pending).toStrictEqual([]);
   }),
 );
 

@@ -16,6 +16,7 @@ const MEMBER_ROLE = "150";
 const STAFF_ROLE = "160";
 const A_OPEN = "110";
 const A_STAFF = "120";
+const A_CATEGORY = "130";
 const B_OPEN = "210";
 const C_OPEN = "310";
 const A_OPEN_MESSAGE = "1100";
@@ -28,7 +29,11 @@ const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 const SSE_DATA = "data: ";
 
 type Overwrite = (typeof channel.$inferInsert)["permissionOverwrites"][number];
-type ScenarioChannel = Readonly<{ id: string; overwrites: readonly Overwrite[] }>;
+type ScenarioChannel = Readonly<{
+  id: string;
+  type: ChannelType;
+  overwrites: readonly Overwrite[];
+}>;
 type ScenarioMessage = Readonly<{ id: string; channelId: string }>;
 type ScenarioGuild = Readonly<{
   id: string;
@@ -47,7 +52,7 @@ const openGuild = (id: string, channelId: string, messageId: string): ScenarioGu
   id,
   consent: "notConsented",
   roles: { [id]: READ },
-  channels: [{ id: channelId, overwrites: [] }],
+  channels: [{ id: channelId, type: ChannelType.GuildText, overwrites: [] }],
   messages: [{ id: messageId, channelId }],
 });
 
@@ -57,8 +62,9 @@ const GUILDS: readonly ScenarioGuild[] = [
     consent: "consented",
     roles: { [GUILD_A]: READ, [MEMBER_ROLE]: NOTHING, [STAFF_ROLE]: NOTHING },
     channels: [
-      { id: A_OPEN, overwrites: [] },
-      { id: A_STAFF, overwrites: STAFF_ONLY },
+      { id: A_OPEN, type: ChannelType.GuildText, overwrites: [] },
+      { id: A_STAFF, type: ChannelType.GuildText, overwrites: STAFF_ONLY },
+      { id: A_CATEGORY, type: ChannelType.GuildCategory, overwrites: [] },
     ],
     messages: [
       { id: A_OPEN_MESSAGE, channelId: A_OPEN },
@@ -111,9 +117,9 @@ const sealedRows = (
 
 const ingestedProgress = (
   seed: ScenarioGuild,
-  channelId: string,
+  { id: channelId, type }: ScenarioChannel,
 ): Partial<typeof channel.$inferInsert> => {
-  if (seed.consent === "notConsented") {
+  if (seed.consent === "notConsented" || type === ChannelType.GuildCategory) {
     return {};
   }
   const newest = Array.findFirst(seed.messages, (stored) => stored.channelId === channelId);
@@ -149,13 +155,13 @@ const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
     );
     yield* Effect.promise(() =>
       db.insert(channel).values(
-        seed.channels.map(({ id, overwrites }) => ({
-          id,
+        seed.channels.map((seedChannel) => ({
+          id: seedChannel.id,
           guildId: seed.id,
-          name: `channel ${id}`,
-          type: ChannelType.GuildText,
-          permissionOverwrites: overwrites,
-          ...ingestedProgress(seed, id),
+          name: `channel ${seedChannel.id}`,
+          type: seedChannel.type,
+          permissionOverwrites: seedChannel.overwrites,
+          ...ingestedProgress(seed, seedChannel),
         })),
       ),
     );

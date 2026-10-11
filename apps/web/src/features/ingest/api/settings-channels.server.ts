@@ -20,6 +20,7 @@ type SettingsChannel =
       name: string;
       categoryId: string;
       ingest: ChannelIngest;
+      botPost: (typeof channel.$inferSelect)["botPost"];
     }>
   | Readonly<{
       kind: "forum";
@@ -27,13 +28,21 @@ type SettingsChannel =
       name: string;
       categoryId: string;
       ingest: ChannelIngest;
+      botPost: (typeof channel.$inferSelect)["botPost"];
       posts: number;
     }>;
 
 type SettingsCategory = Readonly<{ id: string; name: string }>;
 
 type StoredRow = IngestRow &
-  Readonly<{ id: string; name: string; type: number; position: number; parentId: string | null }>;
+  Readonly<{
+    id: string;
+    name: string;
+    type: number;
+    position: number;
+    parentId: string | null;
+    botPost: (typeof channel.$inferSelect)["botPost"];
+  }>;
 
 type SettingsChannels = Readonly<{
   categories: readonly SettingsCategory[];
@@ -50,6 +59,7 @@ const settingsChannelOf = (
     id: row.id,
     name: row.name,
     categoryId: Option.getOrElse(Option.fromNullOr(row.parentId), () => UNCATEGORIZED),
+    botPost: row.botPost,
   };
   if (kind !== "forum") {
     return { ...base, kind, ingest: ingestOf(scope, row) };
@@ -78,6 +88,7 @@ const loadChannels = ({
         newest: channel.newestMessageId,
         backfill: channel.backfill,
         botAccess: channel.botAccess,
+        botPost: channel.botPost,
       })
       .from(channel)
       .where(eq(channel.guildId, guildId)),

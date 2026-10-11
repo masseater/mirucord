@@ -19,6 +19,7 @@ import type { BotView } from "./bot-readable.server";
 type ChannelListing = Readonly<{
   stored: readonly DiscordChannel[];
   readable: readonly string[];
+  postable: readonly string[];
   archived: readonly string[];
   unlisted: readonly string[];
 }>;
@@ -68,16 +69,18 @@ const listChannelsOf = (view: BotView): Effect.Effect<ChannelListing, DiscordReq
       listActiveThreads(view.discordGuild.id),
       botReader(view),
     ]);
-    const readableParents = readableIn(channels);
+    const readableParents = readableIn(channels).readable;
     const allParents = idsOf(channels.filter(({ type }) => THREAD_PARENT_TYPES.has(type)));
     const parents = allParents.filter((id) => readableParents.has(id));
     const hiddenParents = allParents.filter((id) => !readableParents.has(id));
     const listings = yield* pipe(parents, Effect.forEach(listArchived));
     const archived = archivedThreadsOf(listings);
     const everything = [...channels, ...active, ...archived];
+    const access = readableIn(everything);
     return {
       stored: everything.filter(({ type }) => STORED_TYPES.has(type)),
-      readable: [...readableIn(everything)],
+      readable: [...access.readable],
+      postable: [...access.postable],
       archived: idsOf(archived),
       unlisted: [...hiddenParents, ...unlistedParentsOf(listings)],
     };

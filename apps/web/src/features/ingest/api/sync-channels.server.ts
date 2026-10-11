@@ -18,7 +18,7 @@ const FIRST_POSITION = 0;
 const READABLE: BotAccess = { status: "readable" };
 
 const toChannelRow = (
-  { discordGuild, archived }: ChannelSync,
+  { discordGuild, archived, postable }: ChannelSync,
   discordChannel: DiscordChannel,
 ): ChannelRow => ({
   id: discordChannel.id,
@@ -31,6 +31,10 @@ const toChannelRow = (
     Option.fromNullishOr(discordChannel.permission_overwrites),
     Array.empty,
   ),
+  botPost: Boolean.match(postable.includes(discordChannel.id), {
+    onTrue: () => "allowed" as const,
+    onFalse: () => "denied" as const,
+  }),
   archive: Boolean.match(archived.includes(discordChannel.id), {
     onTrue: () => "archived" as const,
     onFalse: () => "open" as const,
@@ -73,6 +77,7 @@ const upsertChannels = (sync: ChannelSync): Effect.Effect<void> =>
               permissionOverwrites: row.permissionOverwrites,
               botAccess: row.botAccess,
               hiddenAt: row.hiddenAt,
+              botPost: row.botPost,
               archive: row.archive,
             },
           });

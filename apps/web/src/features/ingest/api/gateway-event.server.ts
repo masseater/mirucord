@@ -37,24 +37,20 @@ const processEvent = (body: string): Effect.Effect<Response> =>
       ),
   });
 
-const receiveGatewayEvent = (request: Request): Promise<Response> =>
-  Effect.runPromise(
-    Effect.promise(() => request.text()).pipe(
-      Effect.flatMap((body) => {
-        if (
-          !verifyGatewayEvent({
-            botToken: env.DISCORD_BOT_TOKEN,
-            body,
-            headers: Object.fromEntries(request.headers),
-          })
-        ) {
-          return Effect.succeed(
-            new Response("Invalid gateway signature", { status: UNAUTHORIZED }),
-          );
-        }
-        return processEvent(body);
-      }),
-    ),
-  );
+const receiveGatewayEvent = ({
+  body,
+  headers,
+}: Readonly<{ body: string; headers: Readonly<Record<string, string>> }>): Promise<Response> => {
+  if (
+    !verifyGatewayEvent({
+      botToken: env.DISCORD_BOT_TOKEN,
+      body,
+      headers,
+    })
+  ) {
+    return Promise.resolve(new Response("Invalid gateway signature", { status: UNAUTHORIZED }));
+  }
+  return Effect.runPromise(processEvent(body));
+};
 
 export { receiveGatewayEvent };

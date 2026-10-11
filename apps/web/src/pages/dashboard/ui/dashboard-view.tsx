@@ -24,7 +24,7 @@ const tipFor = ({ name, guilds }: ReadyDashboard): string => {
 const DashboardView = ({ dashboard }: Readonly<{ dashboard: ReadyDashboard }>): ReactNode => (
   <>
     <MascotTip>{tipFor(dashboard)}</MascotTip>
-    <h1 className="text-3xl font-black">{TITLE}</h1>
+    <h1 className="text-dc-bright font-maru text-3xl font-black">{TITLE}</h1>
     <McpUrlPanel />
     <ReadableGuildPanel listing={dashboard.readable} />
     <ConnectedAppPanel apps={dashboard.apps} />

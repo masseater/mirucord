@@ -21,12 +21,12 @@ const DeleteAccount = (): ReactNode => {
     mutate();
   }, [mutate]);
   return (
-    <details className="border-ink rounded-2xl border-2 px-4 py-3">
+    <details className="border-dc-line rounded-2xl border px-4 py-3">
       <summary className="cursor-pointer font-bold">{SUMMARY}</summary>
-      <p className="text-ink-soft mt-3">{DETAIL}</p>
+      <p className="text-dc-muted mt-3">{DETAIL}</p>
       <div className="mt-4">
         <PopButton
-          tone="pink"
+          tone="danger"
           size="sm"
           disabled={status === "pending" || status === "success"}
           onClick={remove}

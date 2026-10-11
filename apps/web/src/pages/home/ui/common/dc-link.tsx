@@ -1,34 +1,19 @@
-import { cva } from "class-variance-authority";
 import type { ReactNode } from "react";
 
-const dcButtonVariants = cva(
-  "text-dc-bright focus-visible:outline-dc-link inline-flex shrink-0 items-center justify-center gap-2 rounded-full font-bold whitespace-nowrap no-underline focus-visible:outline-2 motion-safe:transition-colors",
-  {
-    variants: {
-      tone: {
-        primary: "bg-grape hover:bg-grape/85",
-        secondary: "bg-dc-active hover:bg-dc-line",
-      },
-      size: {
-        md: "h-9 px-4 text-sm",
-        lg: "h-12 px-6",
-      },
-    },
-  },
-);
+import { popButtonVariants } from "#/shared/ui/pop-variants";
 
 const DcLink = ({
   href,
   tone,
-  size = "md",
+  size = "sm",
   children,
 }: Readonly<{
   href: string;
   tone: "primary" | "secondary";
-  size?: "md" | "lg";
+  size?: "sm" | "lg";
   children: ReactNode;
 }>): ReactNode => (
-  <a href={href} className={dcButtonVariants({ tone, size })}>
+  <a href={href} className={popButtonVariants({ tone, size })}>
     {children}
   </a>
 );

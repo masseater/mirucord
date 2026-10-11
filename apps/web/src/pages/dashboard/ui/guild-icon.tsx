@@ -15,7 +15,7 @@ const GuildIcon = ({
     onNone: () => (
       <span
         aria-hidden="true"
-        className="border-ink bg-lavender grid size-10 shrink-0 place-items-center rounded-full border-2 text-sm font-black"
+        className="bg-dc-active text-dc-bright grid size-10 shrink-0 place-items-center rounded-full text-sm font-black"
       >
         {Option.getOrElse(Array.head(Array.fromIterable(name)), () => "")}
       </span>
@@ -27,7 +27,7 @@ const GuildIcon = ({
         width={ICON_SIZE}
         height={ICON_SIZE}
         loading="lazy"
-        className="border-ink size-10 shrink-0 rounded-full border-2"
+        className="size-10 shrink-0 rounded-full"
       />
     ),
   });

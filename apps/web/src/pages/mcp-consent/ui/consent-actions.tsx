@@ -11,10 +11,10 @@ const ConsentActions = ({
   onDeny,
 }: Readonly<{ locked: boolean; onAllow: () => void; onDeny: () => void }>): ReactNode => (
   <div className="flex flex-wrap gap-4">
-    <PopButton tone="grape" disabled={locked} onClick={onAllow}>
+    <PopButton tone="primary" disabled={locked} onClick={onAllow}>
       {ALLOW}
     </PopButton>
-    <PopButton tone="pink" disabled={locked} onClick={onDeny}>
+    <PopButton tone="danger" disabled={locked} onClick={onDeny}>
       {DENY}
     </PopButton>
   </div>

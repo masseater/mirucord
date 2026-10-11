@@ -40,11 +40,11 @@ const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
     mutate(guildId);
   }, [guildId, mutate]);
   return (
-    <details className="border-ink bg-milk shadow-pop-sm rounded-3xl border-2 px-6 py-4">
-      <summary className="cursor-pointer font-black">{SUMMARY}</summary>
-      <p className="text-ink-soft mt-3">{DETAIL}</p>
+    <details className="bg-dc-sidebar border-dc-line rounded-2xl border px-6 py-4">
+      <summary className="text-dc-bright font-maru cursor-pointer font-black">{SUMMARY}</summary>
+      <p className="text-dc-muted mt-3">{DETAIL}</p>
       <div className="mt-4">
-        <PopButton tone="pink" disabled={status === "pending"} onClick={revoke}>
+        <PopButton tone="danger" disabled={status === "pending"} onClick={revoke}>
           {CONFIRM}
         </PopButton>
       </div>

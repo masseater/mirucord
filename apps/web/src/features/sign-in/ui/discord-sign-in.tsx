@@ -21,14 +21,14 @@ const DiscordSignIn = ({
   return (
     <>
       <PopButton
-        tone="grape"
+        tone="primary"
         disabled={status === "pending" || status === "success"}
         onClick={startSignIn}
       >
         {SIGN_IN}
       </PopButton>
       {status === "error" && (
-        <p role="alert" className="bg-pink rounded-2xl px-4 py-2 text-sm font-bold">
+        <p role="alert" className="bg-pink text-ink rounded-2xl px-4 py-2 text-sm font-bold">
           {FAILED}
         </p>
       )}

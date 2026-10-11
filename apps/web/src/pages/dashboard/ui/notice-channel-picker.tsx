@@ -16,7 +16,7 @@ const NoticeChannelPicker = ({
   onChoose: (channelId: string) => void;
 }>): ReactNode => (
   <fieldset className="flex flex-col gap-2">
-    <legend className="mb-2 font-black">{LEGEND}</legend>
+    <legend className="text-dc-bright font-maru mb-2 font-black">{LEGEND}</legend>
     <div className="grid gap-2 sm:grid-cols-2">
       {channels.map((channel) => (
         <NoticeChannelOption

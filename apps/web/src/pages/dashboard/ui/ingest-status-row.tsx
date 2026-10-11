@@ -11,7 +11,7 @@ const IngestStatusRow = ({
   guildId,
   channel,
 }: Readonly<{ guildId: string; channel: SettingsChannel }>): ReactNode => (
-  <li className="border-line flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b-2 border-dashed py-2 font-bold">
+  <li className="border-dc-line flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-dashed py-2 font-bold">
     {channel.kind === "forum" && <ForumToggle guildId={guildId} channel={channel} />}
     {channel.kind !== "forum" && (
       <>

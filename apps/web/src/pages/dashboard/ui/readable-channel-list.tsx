@@ -19,7 +19,7 @@ const ReadableChannelList = ({
         return <ForumPillToggle key={channel.id} channel={channel} />;
       }
       return (
-        <Pill key={channel.id} tone="bg-lavender">
+        <Pill key={channel.id} tone="bg-dc-active text-dc-text">
           <ChannelLabel channel={channel} />
         </Pill>
       );

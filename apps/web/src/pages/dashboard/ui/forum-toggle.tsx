@@ -25,11 +25,11 @@ const ForumToggle = ({
         aria-expanded={disclosure.status === "open"}
         aria-controls={forumPostsId(channel.id)}
         onClick={toggle}
-        className="hover:text-grape flex cursor-pointer flex-wrap items-baseline gap-x-2 text-left"
+        className="hover:text-dc-bright flex cursor-pointer flex-wrap items-baseline gap-x-2 text-left"
       >
         <ForumChevron open={disclosure.status === "open"} />
         <ChannelLabel channel={channel} />
-        <span className="text-ink-soft text-sm">
+        <span className="text-dc-muted text-sm">
           {POSTS} {channel.posts.toLocaleString("ja-JP")} {UNIT}
         </span>
       </button>

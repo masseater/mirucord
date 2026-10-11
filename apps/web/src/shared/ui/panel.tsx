@@ -3,11 +3,14 @@ import type { ReactNode } from "react";
 import { cn } from "#/shared/lib/utils";
 
 const Panel = ({
-  tone = "bg-milk",
+  accent,
   children,
-}: Readonly<{ tone?: string; children: ReactNode }>): ReactNode => (
+}: Readonly<{ accent?: string; children: ReactNode }>): ReactNode => (
   <section
-    className={cn("border-ink shadow-pop-sm flex flex-col gap-4 rounded-3xl border-2 p-6", tone)}
+    className={cn(
+      "bg-dc-sidebar border-dc-line flex flex-col gap-4 rounded-2xl border p-6",
+      accent,
+    )}
   >
     {children}
   </section>

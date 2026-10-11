@@ -21,7 +21,7 @@ const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): React
   const readable = readableChannels(settings);
   return (
     <Panel>
-      <h2 className="text-xl font-black">{TITLE}</h2>
+      <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
       <ReadableChannelList settings={settings} channels={readable} />
       {!Array.isReadonlyArrayNonEmpty(readable) && <p className="font-bold">{EMPTY}</p>}
       <NoticeChannelPicker
@@ -29,8 +29,8 @@ const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): React
         value={noticeChannelId}
         onChoose={pickNotice}
       />
-      <p className="text-ink-soft text-sm">{NOTE}</p>
-      <PopButton tone="grape" disabled={!canSubmit} onClick={submit}>
+      <p className="text-dc-muted text-sm">{NOTE}</p>
+      <PopButton tone="primary" disabled={!canSubmit} onClick={submit}>
         {SUBMIT}
       </PopButton>
       <ConsentResultMessage

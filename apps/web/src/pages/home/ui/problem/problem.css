@@ -22,8 +22,8 @@
 
     .scene-stage {
       position: sticky;
-      top: 3rem;
-      height: calc(100dvh - 3rem);
+      top: calc(3rem + var(--title-bar));
+      height: calc(100dvh - 3rem - var(--title-bar));
       overflow: hidden;
       container-type: size;
     }

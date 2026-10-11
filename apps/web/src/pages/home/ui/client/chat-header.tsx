@@ -4,7 +4,7 @@ import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
 import { CHANNELS } from "#/pages/home/ui/common/channels";
 
 const ChatHeader = (): ReactNode => (
-  <div className="ch-bar bg-dc-chat sticky top-0 z-20 h-12">
+  <div className="ch-bar bg-dc-chat sticky z-20 h-12">
     {CHANNELS.map((channel) => (
       <div
         key={channel.id}

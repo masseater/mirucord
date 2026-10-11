@@ -112,20 +112,25 @@ const SECTIONS: readonly GuideSection[] = [
           ["`list_servers`", "使えるサーバーの一覧"],
           ["`list_channels`", "読めるチャンネル、スレッド、フォーラムの投稿の一覧"],
           ["`search_messages`", "サーバーのメッセージを意味で検索"],
+          ["`find_messages`", "言葉をそのまま含むメッセージを探し、件数も数える"],
           ["`read_messages`", "チャンネルの最新のメッセージを新しい順に読む"],
         ],
       },
       {
         type: "steps",
         items: [
-          "検索の言葉を `@cf/baai/bge-m3` で 1024 次元のベクトルにします。",
+          "`search_messages` では、検索の言葉を `@cf/baai/bge-m3` で 1024 次元のベクトルにします。",
           "Vectorize に、サーバーの `guildId` と、読めるチャンネルの `channelId` で絞りこんだ近傍検索をかけます。",
           "見つかった ID の行を D1 から読み、データ鍵で復号して返します。",
         ],
       },
       {
         type: "text",
-        text: "言葉の意味の近さで探すので、言い回しが違っても見つかります。ツールの結果は `structuredContent` と `outputSchema` で返し、取り込みが終わっていないチャンネルは `notFullyIngested` で知らせます。",
+        text: "`find_messages` は、読めるチャンネルの行を D1 から読んで復号し、Worker の中で大文字と小文字を区別せずに文字列を照合します。本文は暗号化してあるので、データベースの全文検索は使いません。",
+      },
+      {
+        type: "text",
+        text: "`search_messages` は言葉の意味の近さで探すので、言い回しが違っても見つかります。ツールの結果は `structuredContent` と `outputSchema` で返し、取り込みが終わっていないチャンネルは `notFullyIngested` で知らせます。",
       },
       {
         type: "text",

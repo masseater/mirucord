@@ -7,6 +7,7 @@ import { REFRESH_COOLDOWN } from "#/features/ingest";
 import type {
   ConsentResult,
   ForumPostsResult,
+  GuildIngest,
   GuildRefreshResult,
   PurgeResult,
   RevokeResult,
@@ -36,16 +37,16 @@ type GuildPageKey = readonly ["dashboard", string];
 
 type ForumPostsKey = readonly ["dashboard", string, "forum", string];
 
-const WITHDRAWAL_POLL_SECONDS = 5;
-const WITHDRAWAL_POLL = Duration.seconds(WITHDRAWAL_POLL_SECONDS);
+const BUSY_POLL_SECONDS = 5;
+const BUSY_POLL = Duration.seconds(BUSY_POLL_SECONDS);
+const BUSY: ReadonlySet<GuildIngest> = new Set(["withdrawing", "waiting", "backfilling"]);
 
-const pollWhileWithdrawing = (dashboard: Option.Option<Dashboard>): number | false =>
+const pollWhileBusy = (dashboard: Option.Option<Dashboard>): number | false =>
   dashboard.pipe(
     Option.filter(
-      (loaded) =>
-        loaded.status === "ready" && loaded.guilds.some(({ ingest }) => ingest === "withdrawing"),
+      (loaded) => loaded.status === "ready" && loaded.guilds.some(({ ingest }) => BUSY.has(ingest)),
     ),
-    Option.match({ onNone: () => false, onSome: () => Duration.toMillis(WITHDRAWAL_POLL) }),
+    Option.match({ onNone: () => false, onSome: () => Duration.toMillis(BUSY_POLL) }),
   );
 
 const GuildInput = Schema.Struct({ guildId: Schema.String });
@@ -94,7 +95,7 @@ const postRefreshGuild = createServerFn({ method: "POST" })
 const dashboardQuery = queryOptions({
   queryKey: ["dashboard"],
   queryFn: () => getDashboard(),
-  refetchInterval: ({ state }) => pollWhileWithdrawing(Option.fromUndefinedOr(state.data)),
+  refetchInterval: ({ state }) => pollWhileBusy(Option.fromUndefinedOr(state.data)),
 });
 
 const guildPageQuery = (

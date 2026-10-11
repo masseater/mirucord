@@ -13,6 +13,7 @@ const MESSAGES = {
   signedOut: "ログインの期限が切れました。",
 } as const;
 const FAILED = "保存できませんでした。";
+const PENDING = "取り込みを始めています。";
 const SILENT = "";
 
 const messageOf = (
@@ -21,6 +22,9 @@ const messageOf = (
 ): string => {
   if (status === "error") {
     return FAILED;
+  }
+  if (status === "pending") {
+    return PENDING;
   }
   return result.pipe(
     Option.filter(() => status === "success"),

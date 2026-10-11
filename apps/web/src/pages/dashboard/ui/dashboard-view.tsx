@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import type { GuildIngest } from "#/features/ingest/index.server";
 import type { Dashboard } from "#/pages/dashboard/api/dashboard.server";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 
@@ -11,12 +12,17 @@ import { ReadableGuildPanel } from "./readable-guild-panel";
 
 const TITLE = "管理画面";
 const WITHDRAWING_TIP = "削除中だよ！";
+const INGESTING_TIP = "思い出を集めてるよ";
+const INGESTING: ReadonlySet<GuildIngest> = new Set(["waiting", "backfilling"]);
 
 type ReadyDashboard = Extract<Dashboard, Readonly<{ status: "ready" }>>;
 
 const tipFor = ({ name, guilds }: ReadyDashboard): string => {
   if (guilds.some(({ ingest }) => ingest === "withdrawing")) {
     return WITHDRAWING_TIP;
+  }
+  if (guilds.some(({ ingest }) => INGESTING.has(ingest))) {
+    return INGESTING_TIP;
   }
   return `${name}さん、おかえり！`;
 };

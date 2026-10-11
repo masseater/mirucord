@@ -6,11 +6,13 @@ import { fetchAndStore, idsOf, isFullPage, oldestId } from "./message-page.serve
 import type { IngestError, StoreTarget } from "./message-page.server";
 import { channelMessagesBelow, deleteMessages } from "./message-rows.server";
 
+const oldestOfFullPage = (page: readonly DiscordMessage[]): Option.Option<string> =>
+  Option.filter(oldestId(idsOf(page)), () => isFullPage(page));
+
 const sweepStart = (
   sweep: Option.Option<string>,
   latest: readonly DiscordMessage[],
-): Option.Option<string> =>
-  Option.orElse(sweep, () => Option.filter(oldestId(idsOf(latest)), () => isFullPage(latest)));
+): Option.Option<string> => Option.orElse(sweep, () => oldestOfFullPage(latest));
 
 const sweepBelow = (
   target: StoreTarget,
@@ -18,7 +20,7 @@ const sweepBelow = (
 ): Effect.Effect<Option.Option<string>, IngestError> =>
   fetchAndStore({ target, request: { direction: "before", cursor } }).pipe(
     Effect.flatMap((page) => {
-      const next = Option.filter(oldestId(idsOf(page)), () => isFullPage(page));
+      const next = oldestOfFullPage(page);
       const present = new Set(idsOf(page));
       return channelMessagesBelow({
         channelId: target.job.channelId,

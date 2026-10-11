@@ -55,9 +55,6 @@ const timeOf = (id: string): Date => {
   return DateTime.toDate(DateTime.makeUnsafe(millis));
 };
 
-const isAtOrAbove = (id: string, from: Option.Option<string>): boolean =>
-  Option.match(from, { onNone: () => true, onSome: (oldest) => BigInt(id) >= BigInt(oldest) });
-
 const sinceOldest = (from: Option.Option<string>): readonly SQL[] =>
   Option.match(from, {
     onNone: () => [],
@@ -78,7 +75,9 @@ const channelMessagesBelow = ({
     lte(message.createdAt, timeOf(below)),
     ...sinceOldest(from),
   ];
-  const isWithin = (id: string): boolean => BigInt(id) < BigInt(below) && isAtOrAbove(id, from);
+  const isWithin = (id: string): boolean =>
+    BigInt(id) < BigInt(below) &&
+    Option.match(from, { onNone: () => true, onSome: (oldest) => BigInt(id) >= BigInt(oldest) });
   return Effect.promise(() =>
     db
       .select({ id: message.id })

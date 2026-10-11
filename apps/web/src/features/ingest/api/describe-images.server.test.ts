@@ -28,9 +28,12 @@ const LARGE = "841";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 const UNIT = 1;
 const NONE = 0;
+const PHOTO_BYTES = 100_000;
+const BYTE_VALUES = 256;
 
 const embeddedTexts: string[] = [];
 const photoRequests: URL[] = [];
+const modelImages: string[] = [];
 
 const photoMessage = (id: string, size: number): unknown => ({
   id,
@@ -65,10 +68,14 @@ const answerWith = (id: string, image: () => Response, size = PHOTO_SIZE): void 
   );
 };
 
-const jpeg = (): Response =>
-  HttpResponse.arrayBuffer(new Uint8Array([UNIT]).buffer, {
-    headers: { "content-type": "image/jpeg" },
-  });
+const photoBytes = Uint8Array.from({ length: PHOTO_BYTES }, (_value, index) => index % BYTE_VALUES);
+
+const expectedPhoto = `data:image/jpeg;base64,${btoa(
+  [...photoBytes].map((byte) => String.fromCodePoint(byte)).join(""),
+)}`;
+
+const photo = (): Response =>
+  HttpResponse.arrayBuffer(photoBytes.buffer, { headers: { "content-type": "image/jpeg" } });
 
 const seedGuild = Effect.gen(function* seed() {
   const wrappedKey = yield* createGuildKey;
@@ -120,7 +127,10 @@ const decodeTexts = Schema.decodeUnknownOption(
 
 const answerModel = (inputs: unknown): Promise<Record<string, unknown>> =>
   Option.match(decodeTexts(inputs), {
-    onNone: () => Promise.resolve({ choices: [{ message: { content: ` ${DESCRIPTION}\n` } }] }),
+    onNone: () => {
+      modelImages.push(JSON.stringify(inputs));
+      return Promise.resolve({ choices: [{ message: { content: ` ${DESCRIPTION}\n` } }] });
+    },
     onSome: ({ text }) => {
       embeddedTexts.push(...text);
       return Promise.resolve({ data: text.map(() => [UNIT]) });
@@ -135,6 +145,7 @@ beforeAll(() => {
 beforeEach(() => {
   embeddedTexts.length = NONE;
   photoRequests.length = NONE;
+  modelImages.length = NONE;
   vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => answerModel(inputs));
   vi.spyOn(env.MESSAGES, "getByIds").mockResolvedValue([]);
   vi.spyOn(env.MESSAGES, "upsert").mockResolvedValue({ mutationId: "test" });
@@ -151,9 +162,10 @@ afterAll(() => {
 
 it.effect("indexes an image-only message by the description of its image", () =>
   Effect.gen(function* described() {
-    answerWith(PHOTO, jpeg);
+    answerWith(PHOTO, photo);
     yield* ingestChannel({ guildId: GUILD, channelId: PHOTO_CHANNEL });
     expect(embeddedTexts).toStrictEqual([DESCRIPTION]);
+    expect(modelImages.join("")).toContain(expectedPhoto);
     expect(photoRequests.map(({ pathname }) => pathname)).toStrictEqual([
       new URL(PHOTO_URL).pathname,
     ]);
@@ -173,7 +185,7 @@ it.effect("indexes an image-only message by the description of its image", () =>
 
 it.effect("marks an image too large to describe as done without fetching it", () =>
   Effect.gen(function* large() {
-    answerWith(LARGE, jpeg, LARGE_SIZE);
+    answerWith(LARGE, photo, LARGE_SIZE);
     yield* ingestChannel({ guildId: GUILD, channelId: LARGE_CHANNEL });
     expect(photoRequests).toStrictEqual([]);
     expect(embeddedTexts).toStrictEqual([]);

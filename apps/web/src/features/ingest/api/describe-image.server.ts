@@ -1,6 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Array, Data, Effect, Layer, Option, Schedule, String } from "effect";
-import { Base64 } from "effect/encoding";
+import { Array, Data, Effect, Layer, Option, Schedule, Semaphore, String } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 
 const DESCRIBE_MODEL = "@cf/google/gemma-4-26b-a4b-it";
@@ -9,6 +8,9 @@ const MAX_TOKENS = 160;
 const RETRY_TIMES = 2;
 const RETRY_BASE = "500 millis";
 const MAX_IMAGE_BYTES = 4_000_000;
+const BINARY_CHUNK = 32_768;
+const ONE_AT_A_TIME = 1;
+const IMAGE_SLOTS = Semaphore.makeUnsafe(ONE_AT_A_TIME);
 const DESCRIBABLE_TYPES: ReadonlySet<string> = new Set(["image/jpeg", "image/png", "image/webp"]);
 const PROMPT =
   "この画像を検索で見つけられるよう、日本語で1〜2文で説明してください。写っている物や料理の名前、読める文字があればその内容を具体的に書いてください。説明だけを答えてください。";
@@ -41,7 +43,14 @@ const fetchImage = ({
       ({ status }) => new DescribeError({ stage: "fetch", reason: `status ${status}` }),
     ),
     Effect.flatMap((response) => response.arrayBuffer),
-    Effect.map((buffer) => ({ data: Base64.encode(new Uint8Array(buffer)), contentType })),
+    Effect.map((buffer) => {
+      const bytes = new Uint8Array(buffer);
+      const binary = Array.makeBy(Math.ceil(bytes.length / BINARY_CHUNK), (index) => {
+        const start = index * BINARY_CHUNK;
+        return globalThis.String.fromCharCode(...bytes.subarray(start, start + BINARY_CHUNK));
+      }).join("");
+      return { data: btoa(binary), contentType };
+    }),
     Effect.catchTag(["HttpClientError"], (cause) =>
       Effect.fail(new DescribeError({ stage: "fetch", reason: cause.reason.name })),
     ),
@@ -78,6 +87,7 @@ const describeWithClient = (
 ): Effect.Effect<Option.Option<string>, never, HttpClient.HttpClient> =>
   fetchImage(source).pipe(
     Effect.flatMap(runModel),
+    Semaphore.withPermits(IMAGE_SLOTS, ONE_AT_A_TIME),
     Effect.retry({ schedule: Schedule.exponential(RETRY_BASE), times: RETRY_TIMES }),
     Effect.map(Option.liftPredicate(String.isNonEmpty)),
     Effect.catchTag("DescribeError", ({ stage, reason }) =>

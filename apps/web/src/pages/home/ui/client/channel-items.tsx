@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 
 import { CHANNELS } from "#/pages/home/ui/common/channels";
-import { GUIDE_CHANNELS } from "#/pages/home/ui/common/guide-channels";
 import { cn } from "#/shared/lib/utils";
 
 import { ChannelLink } from "./channel-link";
+import { GUIDE_CHANNELS } from "./guide-channels";
 import { PageLink } from "./page-link";
 
 const ChannelItems = ({ className }: Readonly<{ className: string }>): ReactNode => (

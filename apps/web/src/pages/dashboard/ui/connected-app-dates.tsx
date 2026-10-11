@@ -20,7 +20,7 @@ const formatted = (epoch: number | null): string =>
   });
 
 const ConnectedAppDates = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode => (
-  <dl className="text-ink-soft grid w-full grid-cols-2 gap-y-1 text-sm">
+  <dl className="text-dc-muted grid w-full grid-cols-2 gap-y-1 text-sm">
     <dt className="font-bold">{CONNECTED_AT}</dt>
     <dd>{formatted(app.connectedAt)}</dd>
     <dt className="font-bold">{UPDATED_AT}</dt>

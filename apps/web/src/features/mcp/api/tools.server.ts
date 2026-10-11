@@ -1,6 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { ChannelType } from "discord-api-types/v10";
 import { Effect, Option, Schema } from "effect";
 
 import {
@@ -20,7 +19,7 @@ import {
 import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
 import { SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
-import { CATEGORY_TYPES } from "#/shared/discord";
+import { CATEGORY_TYPES, FORUM_TYPES } from "#/shared/discord";
 
 import { findMessages, readMessages, searchMessages } from "./messages.server";
 import { readableGuilds, resolveScope } from "./scope.server";
@@ -35,7 +34,6 @@ const SERVER_NOT_FOUND = "Server not found";
 const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const DEFAULT_LIMIT = 20;
 const CHANNEL_NOT_FOUND = "Channel not found";
-const FORUM_TYPES: ReadonlySet<number> = new Set([ChannelType.GuildForum, ChannelType.GuildMedia]);
 const INGEST_GUIDE = `Each channel carries \`ingest\`: only \`empty\` means the channel has no messages in Discord. \`notConsented\`, \`waiting\` and \`backfilling\` mean ${SERVICE_NAME} has not stored all of its messages yet, so an empty or short result does not mean the channel is empty; say so instead of reporting that there are no messages.`;
 
 const structuredResult = (value: Readonly<Record<string, unknown>>): CallToolResult => ({

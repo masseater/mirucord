@@ -10,7 +10,9 @@ const MESSAGES = {
   saved: "取り込みを始めました。",
   forbidden: "このサーバーを管理する権限が確認できませんでした。",
   invalid: `お知らせを投稿するチャンネルを${MASCOT_NAME}が見られるチャンネルから選んでください。`,
-  noticeFailed: "お知らせを投稿できなかったので、同意はまだ記録していません。",
+  noticeForbidden: `${MASCOT_NAME}がこのチャンネルにメッセージを送る権限がないので、同意はまだ記録していません。Discord のチャンネル設定で${MASCOT_NAME}に「メッセージを送信」を許可するか、別のチャンネルを選んでください。`,
+  noticeFailed:
+    "Discord にお知らせを投稿できなかったので、同意はまだ記録していません。少し待ってからもう一度押してください。",
   signedOut: "ログインの期限が切れました。",
 } as const;
 const FAILED = "保存できませんでした。";

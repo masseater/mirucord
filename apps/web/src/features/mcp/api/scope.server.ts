@@ -60,7 +60,7 @@ const loadConsent = (guildId: string): Effect.Effect<Consent> =>
     db
       .select({ guildId: ingestConsent.guildId })
       .from(ingestConsent)
-      .where(eq(ingestConsent.guildId, guildId)),
+      .where(and(eq(ingestConsent.guildId, guildId), eq(ingestConsent.state, "granted"))),
   ).pipe(
     Effect.map((rows): Consent =>
       Array.match(rows, { onEmpty: () => "notConsented", onNonEmpty: () => "consented" }),

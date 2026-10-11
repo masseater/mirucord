@@ -7,21 +7,23 @@ import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 import {
   A_OPEN,
   A_OPEN_MESSAGE,
+  A_PRIVATE_THREAD,
   A_STAFF,
+  A_STAFF_THREAD,
   B_OPEN,
-  callTool,
   discordMembers,
   EVERY_MESSAGE_ID,
   GUILD_A,
   GUILD_B,
   GUILD_C,
-  idsOf,
-  readIngestOf,
+  GUILD_D,
+  D_OPEN,
   SAME_WORDS,
   seedScenario,
   USER,
 } from "./__tests__/scenario";
-import type { ToolOutcome } from "./__tests__/scenario";
+import { callTool, idsOf, readIngestOf } from "./__tests__/tool-call";
+import type { ToolOutcome } from "./__tests__/tool-call";
 import { readMessages } from "./messages.server";
 import { resolveScope } from "./scope.server";
 
@@ -31,8 +33,11 @@ const UNIT = 1;
 const EMBEDDING = [UNIT];
 const REFUSED = { text: "Channel not found", isError: true, structured: Option.none() };
 
-const readPastChannelCheck = (channelId: string): Effect.Effect<readonly string[]> =>
-  resolveScope({ guildId: GUILD_A, discordUserId: USER }).pipe(
+const readPastChannelCheck = (
+  channelId: string,
+  guildId = GUILD_A,
+): Effect.Effect<readonly string[]> =>
+  resolveScope({ guildId, discordUserId: USER }).pipe(
     Effect.map(Option.getOrThrow),
     Effect.flatMap((scope) =>
       readMessages({ scope, channelId, before: Option.none(), limit: READ_LIMIT }),
@@ -78,7 +83,7 @@ beforeEach(() => {
 it.effect("lists only the servers the user belongs to", () =>
   Effect.gen(function* listServers() {
     const ids = yield* idsOf("servers")(callTool({ name: "list_servers", args: {} }));
-    expect(ids).toStrictEqual([GUILD_A, GUILD_B]);
+    expect(ids).toStrictEqual([GUILD_A, GUILD_B, GUILD_D]);
   }),
 );
 
@@ -137,13 +142,46 @@ it.effect("refuses to search an unreadable channel or one from another server", 
   }),
 );
 
-it.effect("refuses to read an unreadable channel or one from another server", () =>
+it.effect("searches a readable channel without its private threads", () =>
+  Effect.gen(function* searchChannelFilter() {
+    const query = vi.spyOn(env.MESSAGES, "query");
+    yield* callTool({
+      name: "search_messages",
+      args: { serverId: GUILD_A, query: SAME_WORDS, channelId: A_OPEN },
+    });
+    expect(query).toHaveBeenCalledWith(expect.anything(), {
+      topK: DEFAULT_LIMIT,
+      returnMetadata: "none",
+      filter: { guildId: GUILD_A, channelId: { $in: [A_OPEN] } },
+    });
+  }),
+);
+
+it.effect("refuses to read an unreadable channel, its threads or one from another server", () =>
   Effect.gen(function* readRefused() {
-    const outcomes = yield* Effect.all([
-      callTool({ name: "read_messages", args: { serverId: GUILD_A, channelId: A_STAFF } }),
-      callTool({ name: "read_messages", args: { serverId: GUILD_A, channelId: B_OPEN } }),
-    ]);
-    expect(outcomes).toStrictEqual([REFUSED, REFUSED]);
+    const outcomes = yield* Effect.forEach(
+      [A_STAFF, A_STAFF_THREAD, A_PRIVATE_THREAD, B_OPEN],
+      (channelId) => callTool({ name: "read_messages", args: { serverId: GUILD_A, channelId } }),
+    );
+    expect(outcomes).toStrictEqual([REFUSED, REFUSED, REFUSED, REFUSED]);
+  }),
+);
+
+it.effect("returns no messages from a server whose admin has not consented or withdrew", () =>
+  Effect.gen(function* withoutConsent() {
+    const found = yield* Effect.forEach([GUILD_B, GUILD_D], (serverId) =>
+      idsOf("messages")(
+        callTool({ name: "search_messages", args: { serverId, query: SAME_WORDS } }),
+      ),
+    );
+    const read = yield* Effect.forEach(
+      [
+        { serverId: GUILD_B, channelId: B_OPEN },
+        { serverId: GUILD_D, channelId: D_OPEN },
+      ],
+      (args) => idsOf("messages")(callTool({ name: "read_messages", args })),
+    );
+    expect([...found, ...read]).toStrictEqual([[], [], [], []]);
   }),
 );
 
@@ -165,8 +203,11 @@ it.effect("tells a channel without consent apart from one that has no messages",
       readIngestOf(
         callTool({ name: "read_messages", args: { serverId: GUILD_B, channelId: B_OPEN } }),
       ),
+      readIngestOf(
+        callTool({ name: "read_messages", args: { serverId: GUILD_D, channelId: D_OPEN } }),
+      ),
     ]);
-    expect(ingests).toStrictEqual(["done", "notConsented"]);
+    expect(ingests).toStrictEqual(["done", "notConsented", "notConsented"]);
   }),
 );
 
@@ -175,9 +216,12 @@ it.effect("keeps unreadable and foreign messages out of a read past the channel 
     const reads = yield* Effect.all([
       readPastChannelCheck(A_OPEN),
       readPastChannelCheck(A_STAFF),
+      readPastChannelCheck(A_STAFF_THREAD),
+      readPastChannelCheck(A_PRIVATE_THREAD),
       readPastChannelCheck(B_OPEN),
+      readPastChannelCheck(B_OPEN, GUILD_B),
     ]);
-    expect(reads).toStrictEqual([[A_OPEN_MESSAGE], [], []]);
+    expect(reads).toStrictEqual([[A_OPEN_MESSAGE], [], [], [], [], []]);
   }),
 );
 

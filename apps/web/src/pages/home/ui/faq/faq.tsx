@@ -56,6 +56,13 @@ const QUESTIONS = [
       { emoji: "👍", count: 2, by: "me" },
     ],
   },
+  {
+    time: "今日 21:11",
+    reply: { author: memberAuthor(MEMBERS.kenta), text: "ミルに話しかけても良い？" },
+    answer:
+      "ごめんね！Discord の中で話しかけてもらっても、ミルはお返事できないんだ。Claude みたいな、MCP に対応した AI のアプリから聞いてね！",
+    reactions: [{ emoji: "🥲", count: 2, by: "others" }],
+  },
 ] as const;
 
 const Faq = (): ReactNode => (

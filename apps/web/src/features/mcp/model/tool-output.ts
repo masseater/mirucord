@@ -32,6 +32,17 @@ const SearchMessagesOutput = Schema.Struct({
   messages: Schema.Array(Message),
   notFullyIngested: Schema.Array(PendingChannel),
 });
+const FindMessagesOutput = Schema.Struct({
+  total: Schema.Int,
+  messages: Schema.Array(Message),
+  notFullyIngested: Schema.Array(PendingChannel),
+});
 const ReadMessagesOutput = Schema.Struct({ ingest: Ingest, messages: Schema.Array(Message) });
 
-export { ListChannelsOutput, ListServersOutput, ReadMessagesOutput, SearchMessagesOutput };
+export {
+  FindMessagesOutput,
+  ListChannelsOutput,
+  ListServersOutput,
+  ReadMessagesOutput,
+  SearchMessagesOutput,
+};

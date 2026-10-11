@@ -1,10 +1,9 @@
 import { createGatewayManager } from "@discordeno/gateway";
 import { createRestManager } from "@discordeno/rest";
-import { Stage } from "alchemy";
 import { Service } from "alchemy/Fly";
 import { ServerHost } from "alchemy/Server";
 import { GatewayIntentBits } from "discord-api-types/v10";
-import { Boolean, Config, Effect, Option, Queue, Redacted, Stream } from "effect";
+import { Config, Effect, Option, Queue, Redacted, Stream } from "effect";
 
 import { toGatewayJob } from "#/features/ingest";
 import type { GatewayJob } from "#/features/ingest";
@@ -12,7 +11,6 @@ import type { GatewayJob } from "#/features/ingest";
 import { makeDeliver } from "./deliver";
 
 const APP_NAME = "mirucord-gateway";
-const PRODUCTION_STAGE = "prod";
 
 const NORMAL_CLOSURE = 1000;
 
@@ -44,22 +42,13 @@ const runGateway = (botToken: string): Effect.Effect<void> =>
 
 class Gateway extends Service<Gateway>()(
   "Gateway",
-  Effect.serviceOption(Stage).pipe(
-    Effect.map((stage) => ({
-      name: Option.match(stage, {
-        onNone: () => APP_NAME,
-        onSome: (name) =>
-          Boolean.match(name === PRODUCTION_STAGE, {
-            onTrue: () => APP_NAME,
-            onFalse: () => `${APP_NAME}-${name}`,
-          }),
-      }),
-      main: import.meta.url,
-      handler: "Gateway",
-      region: "iad",
-      services: [],
-    })),
-  ),
+  {
+    name: APP_NAME,
+    main: import.meta.url,
+    handler: "Gateway",
+    region: "iad",
+    services: [],
+  },
   Effect.gen(function* gateway() {
     const host = yield* ServerHost;
     const botToken = yield* Config.Redacted("DISCORD_BOT_TOKEN").pipe(Effect.orDie);

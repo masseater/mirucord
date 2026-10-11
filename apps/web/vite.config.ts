@@ -7,6 +7,14 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   resolve: { tsconfigPaths: true },
+  run: {
+    tasks: {
+      "deploy:ci": {
+        command: "alchemy deploy --config alchemy.ci.ts --stage prod --env-file alchemy.ci.env",
+        cache: false,
+      },
+    },
+  },
   plugins: [
     devtools(),
     tailwindcss(),

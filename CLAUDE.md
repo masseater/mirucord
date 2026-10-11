@@ -5,7 +5,7 @@
 ## このリポジトリ
 
 mirucord は、Discord のサーバーを読むだけの MCP サーバーをホスティングで提供するサービスである。本番は `https://mirucord.masseater.dev` で動いている。
-製品の方針と決まったことは docs/roadmap.md、本番の運用は docs/runbook.md、画面と文言は DESIGN.md に従う。
+製品の方針と決まったことは docs/roadmap.md、画面と文言は DESIGN.md に従う。
 
 ## 進め方
 

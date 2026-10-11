@@ -3,9 +3,9 @@ import { useMemo } from "react";
 import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
-import { Pill } from "#/shared/ui/pill";
 
 import { GuildIcon } from "./guild-icon";
+import { Pill } from "./pill";
 
 const CONSENT = {
   awaiting: { label: "同意待ち", tone: "bg-butter" },

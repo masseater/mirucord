@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest/index.server";
-import { Pill } from "#/shared/ui/pill";
+
+import { Pill } from "./pill";
 
 const INGEST = {
   unreadable: { label: "ミルが見られないチャンネル", tone: "bg-milk text-ink-soft" },

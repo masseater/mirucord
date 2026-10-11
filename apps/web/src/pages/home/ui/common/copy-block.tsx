@@ -8,6 +8,12 @@ const LABELS = {
   failed: "コピーできなかったよ",
 } as const;
 
+const ANNOUNCEMENTS = {
+  idle: "",
+  copied: LABELS.copied,
+  failed: LABELS.failed,
+} as const;
+
 const CopyBlock = ({ text }: Readonly<{ text: string }>): ReactNode => {
   const { state, copy } = useCopyText(text);
   return (
@@ -20,8 +26,9 @@ const CopyBlock = ({ text }: Readonly<{ text: string }>): ReactNode => {
         onClick={copy}
         className="bg-grape hover:bg-grape/85 text-dc-bright shrink-0 rounded-sm px-3 py-1.5 text-sm font-bold"
       >
-        <span aria-live="polite">{LABELS[state.status]}</span>
+        {LABELS[state.status]}
       </button>
+      <output className="sr-only">{ANNOUNCEMENTS[state.status]}</output>
     </div>
   );
 };

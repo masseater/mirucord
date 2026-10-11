@@ -3,10 +3,10 @@ import type { Scope } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
+import { signGatewayEvent } from "#/features/ingest/api/gateway-signature";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 import { SITE_ORIGIN } from "#/shared/config/site";
-import { signGatewayEvent } from "#/shared/crypto/index";
 
 const GATEWAY_ENDPOINT = `${SITE_ORIGIN}/api/gateway`;
 const RETRY_TIMES = 5;

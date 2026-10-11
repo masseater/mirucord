@@ -5,9 +5,9 @@ import type { Duration } from "effect";
 import { beforeEach, expect, vi } from "vite-plus/test";
 
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
-import { signGatewayEvent } from "#/shared/crypto/index";
 
 import { receiveGatewayEvent } from "./gateway-event.server";
+import { signGatewayEvent } from "./gateway-signature";
 
 const PROCESSED = 200;
 const BAD_REQUEST = 400;

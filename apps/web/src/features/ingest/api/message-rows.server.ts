@@ -1,4 +1,5 @@
-import { and, eq, gte, inArray } from "drizzle-orm";
+import { and, eq, gte, inArray, lte } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
 
 import { db, message } from "#/shared/db/index.server";
@@ -46,6 +47,46 @@ const channelMessagesSince = ({
       ),
   ).pipe(Effect.map((rows) => rows.map(({ id }) => id)));
 
+const DISCORD_EPOCH = 1_420_070_400_000n;
+const TIMESTAMP_UNIT = 4_194_304n;
+
+const timeOf = (id: string): Date => {
+  const millis = Number(BigInt(id) / TIMESTAMP_UNIT + DISCORD_EPOCH);
+  return DateTime.toDate(DateTime.makeUnsafe(millis));
+};
+
+const isAtOrAbove = (id: string, from: Option.Option<string>): boolean =>
+  Option.match(from, { onNone: () => true, onSome: (oldest) => BigInt(id) >= BigInt(oldest) });
+
+const sinceOldest = (from: Option.Option<string>): readonly SQL[] =>
+  Option.match(from, {
+    onNone: () => [],
+    onSome: (oldest) => [gte(message.createdAt, timeOf(oldest))],
+  });
+
+const channelMessagesBelow = ({
+  channelId,
+  below,
+  from,
+}: Readonly<{
+  channelId: string;
+  below: string;
+  from: Option.Option<string>;
+}>): Effect.Effect<readonly string[]> => {
+  const conditions = [
+    eq(message.channelId, channelId),
+    lte(message.createdAt, timeOf(below)),
+    ...sinceOldest(from),
+  ];
+  const isWithin = (id: string): boolean => BigInt(id) < BigInt(below) && isAtOrAbove(id, from);
+  return Effect.promise(() =>
+    db
+      .select({ id: message.id })
+      .from(message)
+      .where(and(...conditions)),
+  ).pipe(Effect.map((rows) => rows.map(({ id }) => id).filter((id) => isWithin(id))));
+};
+
 const MESSAGE_OWNER = { guild: message.guildId, channel: message.channelId } as const;
 
 const forgetMessagesOf = (
@@ -74,6 +115,7 @@ const deleteMessages = (ids: readonly string[]): Effect.Effect<void, VectorizeEr
   );
 
 export {
+  channelMessagesBelow,
   channelMessagesSince,
   deleteMessages,
   findStored,

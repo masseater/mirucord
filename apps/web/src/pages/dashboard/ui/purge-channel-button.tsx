@@ -1,8 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
-import { dashboardQuery, purgeStoredChannel } from "#/pages/dashboard/api/dashboard";
+import { purgeStoredChannel } from "#/pages/dashboard/api/dashboard";
+import { useReturnToDashboard } from "#/pages/dashboard/model/use-return-to-dashboard";
 import { PopButton } from "#/shared/ui/pop-button";
 
 const LABEL = "今すぐ削除";
@@ -13,10 +14,10 @@ const PurgeChannelButton = ({
   channelId,
   channelName,
 }: Readonly<{ guildId: string; channelId: string; channelName: string }>): ReactNode => {
-  const queryClient = useQueryClient();
+  const returnToDashboard = useReturnToDashboard();
   const { mutate, status } = useMutation({
     mutationFn: purgeStoredChannel,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: dashboardQuery.queryKey }),
+    onSuccess: () => returnToDashboard("stay"),
   });
   const purge = useCallback(() => {
     mutate({ guildId, channelId });

@@ -1,8 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
-import { dashboardQuery, disconnectConnectedApp } from "#/pages/dashboard/api/dashboard";
+import { disconnectConnectedApp } from "#/pages/dashboard/api/dashboard";
+import { useReturnToDashboard } from "#/pages/dashboard/model/use-return-to-dashboard";
 import type { ConnectedApp } from "#/shared/auth/index.server";
 import { PopButton } from "#/shared/ui/pop-button";
 
@@ -12,10 +13,10 @@ const DISCONNECT = "解除";
 const FAILED = "解除できませんでした";
 
 const ConnectedAppRow = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode => {
-  const queryClient = useQueryClient();
+  const returnToDashboard = useReturnToDashboard();
   const { mutate, status } = useMutation({
     mutationFn: disconnectConnectedApp,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: dashboardQuery.queryKey }),
+    onSuccess: () => returnToDashboard("stay"),
   });
   const disconnect = useCallback(() => {
     mutate(app.clientId);

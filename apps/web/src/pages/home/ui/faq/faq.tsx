@@ -5,6 +5,7 @@ import { MEMBERS } from "#/pages/home/ui/common/members";
 import { SETUP_PROMPT } from "#/pages/home/ui/common/setup-prompt";
 import { memberAuthor } from "#/pages/home/ui/message/author";
 import { Post } from "#/pages/home/ui/message/post";
+import { FREE_GUILD_LIMIT } from "#/shared/config";
 
 import { Closing } from "./closing";
 import { FaqPair } from "./faq-pair";
@@ -19,7 +20,7 @@ const QUESTIONS = [
   {
     time: "今日 21:06",
     reply: { author: memberAuthor(MEMBERS.yui), text: "ねえ、これってお金かかるの？" },
-    answer: "かからないよ！いまは無料で使えるの。",
+    answer: `かからないよ！いまは無料で使えるの。ただ、無料で入れるのはいまのところ先着 ${FREE_GUILD_LIMIT} サーバーまでなんだ。`,
     reactions: [{ emoji: "🎉", count: 5, by: "others" }],
   },
   {
@@ -55,6 +56,13 @@ const QUESTIONS = [
       { emoji: "🔒", count: 4, by: "others" },
       { emoji: "👍", count: 2, by: "me" },
     ],
+  },
+  {
+    time: "今日 21:11",
+    reply: { author: memberAuthor(MEMBERS.kenta), text: "ミルに話しかけても良い？" },
+    answer:
+      "ごめんね！Discord の中で話しかけてもらっても、ミルはお返事できないんだ。Claude みたいな、MCP に対応した AI のアプリから聞いてね！",
+    reactions: [{ emoji: "🥲", count: 2, by: "others" }],
   },
 ] as const;
 

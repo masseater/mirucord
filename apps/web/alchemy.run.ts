@@ -20,7 +20,6 @@ import type { HttpClientError } from "effect/http";
 
 import { POLL_CRON, SYNC_CRON } from "./src/features/ingest/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/model/ingest-job.ts";
-import { SITE_HOST } from "./src/shared/config/site.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;
 const WORKER_NAME = "mirucord-web";
@@ -233,7 +232,6 @@ const web = Effect.gen(function* web() {
   const site = yield* Website.Vite("Web", {
     name: yield* stageWorkerName,
     main: "src/app/server/index.ts",
-    domain: SITE_HOST,
     crons: [POLL_CRON, SYNC_CRON],
     compatibility: { flags: ["global_fetch_strictly_public"] },
     env: {

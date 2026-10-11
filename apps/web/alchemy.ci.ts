@@ -45,11 +45,32 @@ const deployToken = Effect.gen(function* deployToken() {
   return { accountId, token };
 });
 
+const observerToken = Effect.gen(function* observerToken() {
+  const { accountId } = yield* yield* CloudflareEnvironment;
+  return yield* ApiToken.AccountApiToken("ObserverToken", {
+    name: "mirucord-observer",
+    accountId,
+    policies: [
+      {
+        effect: "allow",
+        permissionGroups: [
+          "D1 Read",
+          "Vectorize Read",
+          "Workers Scripts Read",
+          "Workers Observability Write",
+        ],
+        resources: { [`com.cloudflare.api.account.${accountId}`]: "*" },
+      },
+    ],
+  });
+});
+
 const ci: Effect.Effect<CompiledStack, ConfigError> & Readonly<{ stackName: string }> = Stack(
   "ci",
   { providers: Layer.mergeAll(providers(), gitHubProviders()), state: state() },
   Effect.gen(function* stack() {
     const { accountId, token } = yield* deployToken;
+    const observer = yield* observerToken;
     yield* Secrets({
       ...repo,
       secrets: {
@@ -67,7 +88,7 @@ const ci: Effect.Effect<CompiledStack, ConfigError> & Readonly<{ stackName: stri
         MAX_GUILDS: "80",
       },
     });
-    return { tokenId: token.tokenId };
+    return { tokenId: token.tokenId, observerTokenId: observer.tokenId };
   }),
 );
 

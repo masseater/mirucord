@@ -79,6 +79,36 @@ Vectorize には戻す仕組みがない。D1 を戻した後は、各チャン�
 vp exec wrangler tail <Worker 名>
 ```
 
+## 本番を観測する
+
+本番の D1・Workers Logs・Discord API は、クラウドのセッションから直接読む。Mac の Remote Control は使わない。
+クラウド環境の環境変数に次の3つを置く。値を変えたら、新しいセッションから効く。
+観測用のトークンは `ci` スタックが作る。手で作らない。`ci` スタックを適用した Mac から、`cloud-env-sync` でクラウドの全環境に入れる。
+
+| 名前                    | 内容                                                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `CLOUDFLARE_ACCOUNT_ID` | デプロイ先のアカウント                                                                                                |
+| `CLOUDFLARE_API_TOKEN`  | 観測用のトークン `mirucord-observer`。D1 Read・Vectorize Read・Workers Scripts Read・Workers Observability Write だけ |
+| `DISCORD_BOT_TOKEN`     | 本番の Bot のトークン                                                                                                 |
+
+Workers Observability は、ログを検索する API が書き込み権限を求めるので Write にする。D1 には書き込めない。
+D1 は wrangler で読む。本番の D1 は名前に `dbapac` を含む方である。
+wrangler には過去のログを検索するコマンドがないので、Workers Logs は API を直接呼ぶ。Discord も同じである。
+
+```sh
+vp dlx -s wrangler d1 list --json | jq -r '.[].name'
+vp dlx -s wrangler d1 execute <データベース名> --remote --json --command "SELECT count(*) AS n FROM message WHERE channel_id = '<チャンネル ID>'"
+
+now=$(date +%s000)
+curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
+  "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/observability/telemetry/query" \
+  -d "{\"queryId\":\"adhoc\",\"view\":\"events\",\"limit\":50,\"timeframe\":{\"from\":$((now - 86400000)),\"to\":$now},\"parameters\":{\"filters\":[{\"key\":\"\$metadata.level\",\"operation\":\"eq\",\"type\":\"string\",\"value\":\"error\"}]}}" | jq '.result.events.events'
+
+curl -sS -H "Authorization: Bot $DISCORD_BOT_TOKEN" "https://discord.com/api/v10/channels/<チャンネル ID>/messages?limit=5" | jq length
+```
+
+デプロイは main の CI に任せる。出し直すときは GitHub の MCP で `verify` ワークフローを `main` に対して動かす。
+
 ## 取り込みを止める
 
 取り込みは `src/features/ingest/api/ingest-flag.server.ts` の `ingest-enabled` フラグで止められる。

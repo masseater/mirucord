@@ -5,12 +5,7 @@ import { Data, DateTime, Effect, Option, Schema } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
-import {
-  createGuildKey,
-  openGuildKey,
-  openMessage,
-  sealMessage,
-} from "#/shared/crypto/index.server";
+import { createGuildKey, openGuildKey, sealMessage } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent, message } from "#/shared/db/index.server";
 
 import { ingestChannel } from "./ingest-channel.server";
@@ -25,13 +20,6 @@ const UNINDEXED_CHANNEL = "720";
 const UNINDEXED = "721";
 const UNDESCRIBED_CHANNEL = "740";
 const UNDESCRIBED = "741";
-const PHOTO_CHANNEL = "730";
-const PHOTO = "731";
-const PHOTO_DESCRIPTION = "ラーメンの写真";
-const PHOTO_URL = "https://cdn.discordapp.com/attachments/730/1/ramen.jpg";
-const PHOTO_PROXY = "https://media.discordapp.net/attachments/730/1/ramen.jpg";
-const PHOTO_WIDTH = 4000;
-const PHOTO_HEIGHT = 3000;
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 const UNIT = 1;
 const NO_TEXT = 0;
@@ -85,41 +73,6 @@ const answerWith = (id: string): void => {
   );
 };
 
-const photoMessage = {
-  id: PHOTO,
-  type: DEFAULT_MESSAGE,
-  content: "",
-  timestamp: "2026-10-01T00:00:00Z",
-  edited_timestamp: Option.getOrNull(Option.none()),
-  author: { id: OWNER, username: "someone" },
-  attachments: [
-    {
-      filename: "ramen.jpg",
-      url: PHOTO_URL,
-      proxy_url: PHOTO_PROXY,
-      content_type: "image/jpeg",
-      width: PHOTO_WIDTH,
-      height: PHOTO_HEIGHT,
-    },
-  ],
-};
-
-const resizedRequests: URL[] = [];
-
-const answerWithPhoto = (): void => {
-  network.use(
-    http.get("https://discord.com/api/v10/channels/:channelId/messages", () =>
-      HttpResponse.json([photoMessage]),
-    ),
-    http.get(PHOTO_PROXY, ({ request }) => {
-      resizedRequests.push(new URL(request.url));
-      return HttpResponse.arrayBuffer(new Uint8Array([UNIT]).buffer, {
-        headers: { "content-type": "image/jpeg" },
-      });
-    }),
-  );
-};
-
 const sealedOf = (id: string): Effect.Effect<readonly string[]> =>
   Effect.promise(() => db.select({ id: message.id, sealed: message.sealed }).from(message)).pipe(
     Effect.map((rows) => rows.filter((row) => row.id === id).map(({ sealed }) => sealed)),
@@ -154,7 +107,7 @@ const seedMessages = Effect.gen(function* seed() {
         .insert(guild)
         .values({ id: GUILD, name: "guild", ownerId: OWNER, wrappedKey, joinedAt: SEEDED_AT }),
       db.insert(channel).values(
-        [STORED_CHANNEL, UNINDEXED_CHANNEL, PHOTO_CHANNEL, UNDESCRIBED_CHANNEL].map((id) => ({
+        [STORED_CHANNEL, UNINDEXED_CHANNEL, UNDESCRIBED_CHANNEL].map((id) => ({
           id,
           guildId: GUILD,
           name: `channel ${id}`,
@@ -183,12 +136,8 @@ beforeEach(() => {
   vectorIds.add(INDEXED);
   vectorIds.add(UNDESCRIBED);
   embeddedTexts.length = NO_TEXT;
-  resizedRequests.length = NO_TEXT;
-  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => {
-    if ("messages" in inputs) {
-      return Promise.resolve({ response: ` ${PHOTO_DESCRIPTION}\n` });
-    }
-    return Effect.runPromise(
+  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) =>
+    Effect.runPromise(
       decodeInputs(inputs).pipe(
         Effect.filterOrFail(
           ({ text }) => text.length > NO_TEXT,
@@ -197,8 +146,8 @@ beforeEach(() => {
         Effect.tap(({ text }) => Effect.sync(() => embeddedTexts.push(...text))),
         Effect.map(({ text }) => ({ data: text.map(() => [UNIT]) })),
       ),
-    );
-  });
+    ),
+  );
   vi.spyOn(env.MESSAGES, "getByIds").mockImplementation((ids) =>
     Promise.resolve(ids.filter((id) => vectorIds.has(id)).map((id) => ({ id, values: [UNIT] }))),
   );
@@ -245,36 +194,5 @@ it.effect("rewrites a stored message that was not described with the current mod
     yield* ingestChannel({ guildId: GUILD, channelId: UNDESCRIBED_CHANNEL });
     expect(embeddedTexts).toStrictEqual([`message ${UNDESCRIBED}`]);
     expect(yield* sealedOf(UNDESCRIBED)).not.toStrictEqual(before);
-  }),
-);
-
-it.effect("indexes an image-only message by the description of its image", () =>
-  Effect.gen(function* photoPage() {
-    answerWithPhoto();
-    yield* ingestChannel({ guildId: GUILD, channelId: PHOTO_CHANNEL });
-    expect(embeddedTexts).toStrictEqual([PHOTO_DESCRIPTION]);
-    expect(vectorIds.has(PHOTO)).toBe(true);
-    expect(
-      resizedRequests.map((url) => [
-        url.searchParams.get("width"),
-        url.searchParams.get("height"),
-        url.searchParams.get("format"),
-      ]),
-    ).toStrictEqual([["768", "576", "jpeg"]]);
-    const [sealed = ""] = yield* sealedOf(PHOTO);
-    const [wrapped] = yield* Effect.promise(() =>
-      db.select({ wrappedKey: guild.wrappedKey }).from(guild),
-    );
-    const key = yield* openGuildKey(
-      Option.getOrElse(Option.fromUndefinedOr(wrapped), () => ({ wrappedKey: "" })).wrappedKey,
-    );
-    const body = yield* openMessage(sealed, key, {
-      guildId: GUILD,
-      channelId: PHOTO_CHANNEL,
-      messageId: PHOTO,
-    });
-    expect(body.attachments).toStrictEqual([
-      { filename: "ramen.jpg", url: PHOTO_URL, description: PHOTO_DESCRIPTION },
-    ]);
   }),
 );

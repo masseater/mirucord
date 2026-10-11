@@ -1,14 +1,16 @@
 import { MessageType } from "discord-api-types/v10";
-import { Array, DateTime, Effect, Equal, Option, String, pipe } from "effect";
+import { Array, Boolean, DateTime, Effect, Equal, Option, String, pipe } from "effect";
 
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
-import { DESCRIBE_MODEL, describeImage, embed } from "#/shared/ai/index.server";
-import type { EmbeddingError, ImageSource } from "#/shared/ai/index.server";
+import { embed } from "#/shared/ai/index.server";
+import type { EmbeddingError } from "#/shared/ai/index.server";
 import { sealMessage } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 import { db, message } from "#/shared/db/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
+import { DESCRIBE_MODEL, describeImage } from "./describe-image.server";
+import type { ImageSource } from "./describe-image.server";
 import { findStored } from "./message-rows.server";
 import type { StoredMessage } from "./message-rows.server";
 import { deleteVectors, indexedIds, upsertVectors } from "./vectors.server";
@@ -42,9 +44,15 @@ type MessageRow = typeof message.$inferInsert;
 type DiscordAttachment = DiscordMessage["attachments"][number];
 type StoredAttachment = MessageBody["attachments"][number];
 
+type DescribedAttachment = Readonly<{
+  status: "described" | "undescribed" | "failed";
+  attachment: StoredAttachment;
+}>;
+
 type DescribedMessage = Readonly<{
   incoming: DiscordMessage;
   attachments: readonly StoredAttachment[];
+  describedWith: string | null;
 }>;
 
 const imageSourceOf = ({
@@ -77,18 +85,21 @@ const isImage = (attachment: DiscordAttachment): boolean =>
 const describeAttachment = (
   attachment: DiscordAttachment,
   index: number,
-): Effect.Effect<StoredAttachment> => {
+): Effect.Effect<DescribedAttachment> => {
   const plain = { filename: attachment.filename, url: attachment.url };
   return Option.match(
     imageSourceOf(attachment).pipe(Option.filter(() => index < DESCRIBED_IMAGES_PER_MESSAGE)),
     {
-      onNone: () => Effect.succeed(plain),
+      onNone: () => Effect.succeed({ status: "undescribed", attachment: plain }),
       onSome: (source) =>
         describeImage(source).pipe(
           Effect.map(
             Option.match({
-              onNone: () => plain,
-              onSome: (description) => ({ ...plain, description }),
+              onNone: (): DescribedAttachment => ({ status: "failed", attachment: plain }),
+              onSome: (description): DescribedAttachment => ({
+                status: "described",
+                attachment: { ...plain, description },
+              }),
             }),
           ),
         ),
@@ -100,7 +111,14 @@ const describeMessage = (incoming: DiscordMessage): Effect.Effect<DescribedMessa
   pipe(
     incoming.attachments,
     Effect.forEach((attachment, index) => describeAttachment(attachment, index)),
-    Effect.map((attachments) => ({ incoming, attachments })),
+    Effect.map((results) => ({
+      incoming,
+      attachments: results.map(({ attachment }) => attachment),
+      describedWith: Boolean.match(
+        results.some(({ status }) => status === "failed"),
+        { onTrue: () => Option.getOrNull(Option.none<string>()), onFalse: () => DESCRIBE_MODEL },
+      ),
+    })),
   );
 
 const describeAll = (
@@ -122,7 +140,7 @@ const searchTextOf = ({ incoming, attachments }: DescribedMessage): string =>
 
 const toRow = (
   { key, job }: StoreTarget,
-  { incoming, attachments }: DescribedMessage,
+  { incoming, attachments, describedWith }: DescribedMessage,
 ): Effect.Effect<MessageRow> =>
   sealMessage(
     {
@@ -138,7 +156,7 @@ const toRow = (
       id: incoming.id,
       authorId: incoming.author.id,
       sealed,
-      describedWith: DESCRIBE_MODEL,
+      describedWith,
       createdAt: DateTime.toDate(incoming.timestamp),
       editedAt: Option.getOrNull(Option.map(editedAtOf(incoming), DateTime.toDate)),
     })),

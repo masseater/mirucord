@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import type { GuideBlock } from "#/pages/guide/model/guide-block";
 
-import { FlowFigure } from "./flow-figure";
+import { GuideFlow } from "./guide-flow";
 import { GuideTable } from "./guide-table";
 import { InlineText } from "./inline-text";
 
@@ -40,7 +40,7 @@ const GuideBlockView = ({ block }: Readonly<{ block: GuideBlock }>): ReactNode =
         </pre>
       ),
       table: ({ head, rows }) => <GuideTable head={head} rows={rows} />,
-      flow: ({ edges }) => <FlowFigure edges={edges} />,
+      flow: ({ edges }) => <GuideFlow edges={edges} />,
     }),
   );
 

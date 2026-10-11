@@ -54,7 +54,7 @@ const refreshNote = (view: RefreshView): string => {
     return OUTCOME_NOTE[view.outcome.status];
   }
   if (view.status === "failed") {
-    return "更新できませんでした";
+    return "更新できなかったよ。少し待ってからもう一度押してね";
   }
   return SILENT;
 };

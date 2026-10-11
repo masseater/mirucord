@@ -29,7 +29,7 @@ it("says nothing for an access outcome the page already shows", () => {
 it("reports a failed refresh once it stops", () => {
   const view = { status: "failed" } as const;
   expect(refreshLabel(view)).toBe("更新");
-  expect(refreshNote(view)).toBe("更新できませんでした");
+  expect(refreshNote(view)).toBe("更新できなかったよ。少し待ってからもう一度押してね");
 });
 
 it("keeps a refetch that is running ahead of an earlier result or failure", () => {

@@ -11,6 +11,7 @@ export {
   listBotGuilds,
   listGuildChannels,
   listMessages,
+  NOT_FOUND,
   PAGE_SIZE,
 } from "./discord.server";
 export type { DiscordChannel, DiscordGuild, DiscordMessage, MessagePage } from "./discord.server";

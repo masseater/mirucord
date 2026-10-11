@@ -1,8 +1,8 @@
 import { Option } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { forumRowOf, ingestOf } from "./channel-ingest";
-import type { IngestRow } from "./channel-ingest";
+import { forumRowOf, guildIngestOf, ingestOf } from "./channel-ingest";
+import type { ChannelIngest, IngestRow } from "./channel-ingest";
 import type { ConsentScope } from "./consent-scope";
 
 const CHANNEL = "100";
@@ -54,4 +54,27 @@ it("follows the posts of a forum", () => {
 it("pauses a forum the bot can no longer see", () => {
   const hidden = forumRowOf({ botAccess: "hidden" }, [DONE_POST]);
   expect(ingestOf(GRANTED, hidden)).toBe("paused");
+});
+
+it("names a server by the consent until it is granted", () => {
+  expect(guildIngestOf("awaiting", ["done"])).toBe("awaiting");
+  expect(guildIngestOf("withdrawing", ["done"])).toBe("withdrawing");
+});
+
+const SERVERS: readonly (readonly ChannelIngest[])[] = [
+  ["done", "paused"],
+  ["done", "waiting"],
+  ["done", "backfilling"],
+  ["waiting", "unreadable"],
+  [],
+];
+
+it("calls a server done only when no channel it reads is still pending", () => {
+  expect(SERVERS.map((channels) => guildIngestOf("granted", channels))).toStrictEqual([
+    "done",
+    "backfilling",
+    "backfilling",
+    "waiting",
+    "done",
+  ]);
 });

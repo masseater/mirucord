@@ -1,10 +1,14 @@
 import { eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
+import { guildIngestOf, SCOPE_OF_CONSENT } from "#/features/ingest/model/channel-ingest";
+import type { GuildConsent, GuildIngest } from "#/features/ingest/model/channel-ingest";
 import { db, guild, ingestConsent, loadRolePermissions } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { isGuildManager } from "#/shared/permissions";
+
+import { loadChannels } from "./settings-channels.server";
 
 const MEMBER_CONCURRENCY = 4;
 
@@ -12,7 +16,7 @@ type ManagedGuild = Readonly<{
   id: string;
   name: string;
   icon: string | null;
-  consent: "awaiting" | "granted" | "withdrawing";
+  ingest: GuildIngest;
 }>;
 
 type GuildMembership = Readonly<{ guildId: string; userId: string }>;
@@ -48,6 +52,19 @@ const managedGuild = ({
     ),
   );
 
+const managedIngest = (guildId: string, consent: GuildConsent): Effect.Effect<GuildIngest> =>
+  loadChannels({
+    guildId,
+    scope: SCOPE_OF_CONSENT[consent],
+  }).pipe(
+    Effect.map(({ channels }) =>
+      guildIngestOf(
+        consent,
+        channels.map(({ ingest }) => ingest),
+      ),
+    ),
+  );
+
 const listManagedGuilds = (userId: string): Effect.Effect<readonly ManagedGuild[]> =>
   Effect.promise(() =>
     db
@@ -60,13 +77,15 @@ const listManagedGuilds = (userId: string): Effect.Effect<readonly ManagedGuild[
         rows,
         ({ id, icon, consent }) =>
           managedGuild({ guildId: id, userId }).pipe(
-            Effect.map(
-              Option.map(({ name }): ManagedGuild => ({
-                id,
-                name,
-                icon,
-                consent: Option.getOrElse(Option.fromNullOr(consent), () => "awaiting" as const),
-              })),
+            Effect.flatMap(
+              Option.match({
+                onNone: () => Effect.succeedNone,
+                onSome: ({ name }) =>
+                  managedIngest(
+                    id,
+                    Option.getOrElse(Option.fromNullOr(consent), (): GuildConsent => "awaiting"),
+                  ).pipe(Effect.map((ingest) => Option.some({ id, name, icon, ingest }))),
+              }),
             ),
             Effect.catchTag("DiscordRequestError", () =>
               Effect.logWarning("Could not check server management").pipe(

@@ -1,6 +1,8 @@
 import { count, eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
+import { guildIngestOf } from "#/features/ingest/model/channel-ingest";
+import type { GuildIngest } from "#/features/ingest/model/channel-ingest";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { db, ingestConsent, message } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
@@ -34,6 +36,7 @@ type GuildSettings = Readonly<{
   categories: readonly SettingsCategory[];
   channels: readonly SettingsChannel[];
   consent: Consent;
+  ingest: GuildIngest;
   storedMessages: number;
 }>;
 
@@ -100,7 +103,16 @@ const guildSettings = (
             storedMessages: countMessages(membership.guildId),
           }).pipe(
             Effect.map(({ consented, storedMessages }) =>
-              Option.some({ ...consented, storedMessages, id: membership.guildId, name }),
+              Option.some({
+                ...consented,
+                ingest: guildIngestOf(
+                  consented.consent.status,
+                  consented.channels.map(({ ingest }) => ingest),
+                ),
+                storedMessages,
+                id: membership.guildId,
+                name,
+              }),
             ),
           ),
       }),

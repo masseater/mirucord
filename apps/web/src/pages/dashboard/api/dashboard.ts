@@ -43,7 +43,7 @@ const pollWhileWithdrawing = (dashboard: Option.Option<Dashboard>): number | fal
   dashboard.pipe(
     Option.filter(
       (loaded) =>
-        loaded.status === "ready" && loaded.guilds.some(({ consent }) => consent === "withdrawing"),
+        loaded.status === "ready" && loaded.guilds.some(({ ingest }) => ingest === "withdrawing"),
     ),
     Option.match({ onNone: () => false, onSome: () => Duration.toMillis(WITHDRAWAL_POLL) }),
   );

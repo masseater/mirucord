@@ -146,19 +146,22 @@ type FindRequest = Readonly<{
 
 type FoundMessages = Readonly<{ total: number; messages: readonly MessageView[] }>;
 
-const guildStored = ({ scope, channelIds }: FindRequest): Effect.Effect<readonly StoredMessage[]> =>
-  loadStored(() =>
+const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
+  const needle = request.query.toLowerCase();
+  const channels = new Set(request.channelIds);
+  return loadStored(() =>
     db
       .select(MESSAGE_COLUMNS)
       .from(message)
-      .where(eq(message.guildId, scope.guild.guildId))
+      .where(eq(message.guildId, request.scope.guild.guildId))
       .orderBy(desc(message.createdAt), desc(message.id)),
-  ).pipe(Effect.map((stored) => stored.filter(({ channelId }) => channelIds.includes(channelId))));
-
-const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
-  const needle = request.query.toLowerCase();
-  return guildStored(request).pipe(
-    Effect.flatMap((stored) => openStored(request.scope, stored)),
+  ).pipe(
+    Effect.flatMap((stored) =>
+      openStored(
+        request.scope,
+        stored.filter(({ channelId }) => channels.has(channelId)),
+      ),
+    ),
     Effect.map((views) => views.filter(({ content }) => content.toLowerCase().includes(needle))),
     Effect.map((found) => ({
       total: found.length,

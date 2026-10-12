@@ -7,6 +7,7 @@
       {
         "name": "@effect/language-service",
         "allowedUnstableApis": [
+          "@effect/platform-node/NodeSocket#layerWebSocketConstructor",
           "effect/http/FetchHttpClient#layer",
           "effect/http/HttpClient#HttpClient",
           "effect/http/HttpClient#execute",

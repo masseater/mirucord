@@ -12,6 +12,9 @@
       {
         "name": "@effect/language-service",
         "allowedUnstableApis": [
+          "@effect/atom-react/Hooks#useAtom",
+          "@effect/atom-react/RegistryContext#RegistryProvider",
+          "@effect/vitest#it",
           "effect/http/FetchHttpClient#layer",
           "effect/http/HttpClient#HttpClient",
           "effect/http/HttpClient#execute",

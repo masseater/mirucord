@@ -59,6 +59,7 @@ catalog:
 catalogs:
   stack:
     "@distilled.cloud/cloudflare": 1.0.0-rc.13
+    "@distilled.cloud/fly-io": 1.0.0-rc.13
     "@effect/atom-react": 4.0.0
     "@effect/tsgo": 0.51.1
     "@effect/vitest": 4.0.0

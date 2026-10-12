@@ -8,7 +8,12 @@ import { Argument, Command } from "effect/cli";
 import { FetchHttpClient } from "effect/http";
 import { OtlpSerialization, OtlpTracer } from "effect/observability";
 
-import { copyStackState, dropStackState, requireStackState } from "./stack-state.ts";
+import {
+  copyStackState,
+  dropStackState,
+  relabelMachines,
+  requireStackState,
+} from "./stack-state.ts";
 
 const move = {
   from: Argument.String("from"),
@@ -38,7 +43,26 @@ const drop = Command.make(
   }),
 );
 
-const cli = Command.make("stack-state").pipe(Command.withSubcommands([copy, drop]));
+const relabel = Command.make(
+  "relabel",
+  {
+    app: Argument.String("app"),
+    from: Argument.String("from"),
+    to: Argument.String("to"),
+    stage: Argument.String("stage"),
+    id: Argument.String("id"),
+  },
+  Effect.fn("relabel")(function* relabel(input) {
+    const result = yield* relabelMachines(input);
+    yield* Effect.logInfo(`${input.app}/${input.id}: ${input.from} -> ${input.to}`).pipe(
+      Effect.annotateLogs(result),
+    );
+  }),
+);
+
+const cli = Command.make("stack-state").pipe(Command.withSubcommands([copy, drop, relabel]));
+
+const program = Command.run(cli, { version: "0.0.0" });
 
 const stateLayer = state().pipe(
   Layer.provide(Layer.succeed(AuthProviders, {})),
@@ -48,8 +72,6 @@ const stateLayer = state().pipe(
 const tracing = OtlpTracer.layerFromConfig({ resource: { serviceName: "stack-state" } }).pipe(
   Layer.provide([FetchHttpClient.layer, OtlpSerialization.layerJson]),
 );
-
-const program = Command.run(cli, { version: "0.0.0" });
 
 const main = Layer.build(Layer.mergeAll(stateLayer, tracing, nodeServices)).pipe(
   Effect.flatMap((context) => Effect.provideContext(program, context)),

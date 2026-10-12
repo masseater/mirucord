@@ -2,8 +2,15 @@ import { ChannelType, OverwriteType, PermissionFlagsBits } from "discord-api-typ
 import { Array, DateTime, Effect, Option, Record } from "effect";
 import { http, HttpResponse } from "msw";
 
-import { createGuildKey, openGuildKey, sealMessage } from "#/shared/crypto/index.server";
-import { channel, db, guild, ingestConsent, message, role } from "#/shared/db/index.server";
+import {
+  createGuildKey,
+  indexTokens,
+  openGuildKeys,
+  sealMessage,
+} from "#/shared/crypto/index.server";
+import { channel, db, guild, ingestConsent, role } from "#/shared/db/index.server";
+import { guildStore } from "#/shared/guild-store/index.server";
+import type { IndexedMessage } from "#/shared/guild-store/index.server";
 
 const USER = "900";
 const OWNER = "901";
@@ -27,7 +34,8 @@ const NOTHING = "0";
 const NOT_FOUND = 404;
 const VIEW = PermissionFlagsBits.ViewChannel.toString();
 const READ = (PermissionFlagsBits.ViewChannel + PermissionFlagsBits.ReadMessageHistory).toString();
-const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
+const SEEDED = DateTime.makeUnsafe("2026-10-01T00:00:00Z");
+const SEEDED_AT = DateTime.toDate(SEEDED);
 
 type Overwrite = (typeof channel.$inferInsert)["permissionOverwrites"][number];
 type ScenarioChannel = Readonly<{
@@ -110,8 +118,6 @@ const GUILDS: readonly ScenarioGuild[] = [
   openGuild({ id: GUILD_D, consent: "withdrawing", channelId: D_OPEN, messageId: "4100" }),
 ];
 
-const EVERY_MESSAGE_ID = GUILDS.flatMap(({ messages }) => messages.map(({ id }) => id));
-
 const ROLES_BY_MEMBERSHIP: Readonly<Record<string, readonly string[]>> = {
   [`${GUILD_A}/${USER}`]: [MEMBER_ROLE],
   [`${GUILD_B}/${USER}`]: [],
@@ -129,23 +135,30 @@ const discordMembers = http.get<Readonly<{ guildId: string; userId: string }>>(
 
 const sealedRows = (
   seed: ScenarioGuild,
-  key: CryptoKey,
-): Effect.Effect<readonly (typeof message.$inferInsert)[]> =>
+  { key, searchKey }: Readonly<{ key: CryptoKey; searchKey: CryptoKey }>,
+): Effect.Effect<readonly IndexedMessage[]> =>
   Effect.forEach(
     seed.messages,
     ({ id, channelId }) =>
-      sealMessage({ authorName: "someone", content: SAME_WORDS, attachments: [] }, key, {
-        guildId: seed.id,
-        channelId,
-        messageId: id,
-      }).pipe(
-        Effect.map((sealed) => ({
-          id,
+      Effect.all({
+        sealed: sealMessage({ authorName: "someone", content: SAME_WORDS, attachments: [] }, key, {
           guildId: seed.id,
           channelId,
-          authorId: OWNER,
-          sealed,
-          createdAt: SEEDED_AT,
+          messageId: id,
+        }),
+        tokens: indexTokens({ key: searchKey, texts: [SAME_WORDS] }),
+      }).pipe(
+        Effect.map(({ sealed, tokens }) => ({
+          row: {
+            id,
+            channelId,
+            authorId: OWNER,
+            sealed,
+            createdAt: DateTime.toEpochMillis(SEEDED),
+            editedAt: Option.getOrNull(Option.none<number>()),
+            describedWith: Option.getOrNull(Option.none<string>()),
+          },
+          tokens,
         })),
       ),
     { concurrency: 1 },
@@ -221,8 +234,8 @@ const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
       ),
     );
     yield* seedConsent(seed);
-    const rows = yield* sealedRows(seed, yield* openGuildKey(wrappedKey));
-    yield* Effect.promise(() => db.insert(message).values([...rows]));
+    const rows = yield* sealedRows(seed, yield* openGuildKeys(wrappedKey));
+    yield* Effect.promise(() => guildStore(seed.id).write(rows, "overwrite"));
   });
 
 const seedScenario = (): Promise<void> =>
@@ -236,7 +249,6 @@ export {
   A_STAFF_THREAD,
   B_OPEN,
   discordMembers,
-  EVERY_MESSAGE_ID,
   GUILD_A,
   GUILD_B,
   GUILD_C,

@@ -13,6 +13,8 @@ const WithdrawJobSchema = Schema.Struct({
   guildId: Schema.String,
 });
 
+const MigrateJobSchema = Schema.Struct({ kind: Schema.Literal("migrate") });
+
 const MessageIdsSchema = Schema.NonEmptyArray(Schema.String);
 
 const RefreshJobSchema = Schema.Struct({
@@ -36,7 +38,7 @@ const JoinJobSchema = Schema.Struct({
 
 const GatewayJobSchema = Schema.Union([RefreshJobSchema, ForgetJobSchema, JoinJobSchema]);
 
-const QueueJobSchema = Schema.Union([WithdrawJobSchema, IngestJobSchema]);
+const QueueJobSchema = Schema.Union([WithdrawJobSchema, MigrateJobSchema, IngestJobSchema]);
 
 type IngestJob = typeof IngestJobSchema.Type;
 

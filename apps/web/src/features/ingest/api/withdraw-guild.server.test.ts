@@ -1,43 +1,30 @@
 import { it } from "@effect/vitest";
 import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
-import { Array, Data, DateTime, Effect, Exit, Fiber } from "effect";
-import { TestClock } from "effect/testing";
+import { Array, DateTime, Effect, Exit } from "effect";
 import { beforeEach, expect, vi } from "vite-plus/test";
 
 import { createGuildKey } from "#/shared/crypto/index.server";
-import { channel, db, guild, ingestConsent, message } from "#/shared/db/index.server";
+import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
+import { putMessages, storedCount, storedMessage } from "./__tests__/guild-messages";
 import { ingestDeliveries } from "./ingest-queue.server";
 import { requestWithdrawal, withdrawGuild } from "./withdraw-guild.server";
 
 const OWNER = "901";
-const MAX_DELETE_IDS = 100;
 const STORED = 150;
-const ROWS_PER_INSERT = 10;
-const RETRY_WINDOW = "1 minute";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 
-class VectorizeRejected extends Data.TaggedError("VectorizeRejected") {}
-
-const deletedVectors = new Set<string>();
-const flaky = { failures: 0 };
-const NO_FAILURE = 0;
-const ONE_FAILURE = 1;
 const FIRST_ATTEMPT = 1;
 const LAST_ATTEMPT = 6;
 const handled = { acked: 0, retried: 0 };
 const ONCE = 1;
 const NEVER = 0;
 
-const messageIdsOf = (guildId: string): readonly string[] =>
-  Array.makeBy(STORED, (index) => `${guildId}-${String(index)}`);
-
 const seedGuild = (guildId: string): Effect.Effect<void> =>
   Effect.gen(function* seed() {
     const wrappedKey = yield* createGuildKey;
     const channelId = `${guildId}0`;
-    const ids = messageIdsOf(guildId);
     yield* Effect.promise(() =>
       db.batch([
         db
@@ -58,23 +45,10 @@ const seedGuild = (guildId: string): Effect.Effect<void> =>
         }),
       ]),
     );
-    yield* Effect.forEach(
-      Array.chunksOf(ids, ROWS_PER_INSERT),
-      (chunk) =>
-        Effect.promise(() =>
-          db.insert(message).values(
-            chunk.map((id) => ({
-              id,
-              guildId,
-              channelId,
-              authorId: OWNER,
-              sealed: "sealed",
-              createdAt: SEEDED_AT,
-            })),
-          ),
-        ),
-      { discard: true },
+    const messages = Array.makeBy(STORED, (index) =>
+      storedMessage({ id: `${guildId}-${String(index)}`, channelId }),
     );
+    yield* putMessages({ guildId, messages });
   });
 
 const rowsOf = (guildId: string): Effect.Effect<Readonly<{ consents: number; messages: number }>> =>
@@ -82,24 +56,17 @@ const rowsOf = (guildId: string): Effect.Effect<Readonly<{ consents: number; mes
     consents: Effect.promise(() =>
       db.select().from(ingestConsent).where(eq(ingestConsent.guildId, guildId)),
     ),
-    messages: Effect.promise(() => db.select().from(message).where(eq(message.guildId, guildId))),
+    messages: storedCount(guildId),
   }).pipe(
     Effect.map(({ consents, messages }) => ({
       consents: consents.length,
-      messages: messages.length,
+      messages,
     })),
   );
 
-const acceptDeletes = (): void => {
-  vi.spyOn(env.MESSAGES, "deleteByIds").mockImplementation((ids) => {
-    if (ids.length > MAX_DELETE_IDS || flaky.failures > NO_FAILURE) {
-      flaky.failures = Math.max(NO_FAILURE, flaky.failures - ONE_FAILURE);
-      return Promise.reject(new VectorizeRejected());
-    }
-    for (const id of ids) {
-      deletedVectors.add(id);
-    }
-    return Promise.resolve({ mutationId: "test" });
+const breakGuildStore = (): void => {
+  vi.spyOn(env.GUILD_STORE, "getByName").mockImplementation(() => {
+    throw new Error("guild store unavailable");
   });
 };
 
@@ -126,20 +93,16 @@ const deliverWithdrawal = (guildId: string, attempts: number): Effect.Effect<voi
   ]);
 
 beforeEach(() => {
-  deletedVectors.clear();
-  flaky.failures = NO_FAILURE;
   handled.acked = NEVER;
   handled.retried = NEVER;
 });
 
-it.effect("removes every message and vector before the consent goes away", () =>
+it.effect("removes every message before the consent goes away", () =>
   Effect.gen(function* withdrawn() {
     const guildId = "800";
     yield* seedGuild(guildId);
-    acceptDeletes();
     yield* withdrawGuild(guildId);
     expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 0, messages: 0 });
-    expect(deletedVectors).toStrictEqual(new Set(messageIdsOf(guildId)));
   }),
 );
 
@@ -147,26 +110,11 @@ it.effect("keeps the consent when the stored data could not be removed", () =>
   Effect.gen(function* failed() {
     const guildId = "810";
     yield* seedGuild(guildId);
-    vi.spyOn(env.MESSAGES, "deleteByIds").mockRejectedValue(new VectorizeRejected());
-    const fiber = yield* Effect.forkChild(Effect.exit(withdrawGuild(guildId)));
-    yield* TestClock.adjust(RETRY_WINDOW);
-    const exit = yield* Fiber.join(fiber);
+    breakGuildStore();
+    const exit = yield* Effect.exit(withdrawGuild(guildId));
+    vi.restoreAllMocks();
     expect(Exit.isFailure(exit)).toBe(true);
     expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 1, messages: STORED });
-  }),
-);
-
-it.effect("retries a Vectorize call that fails once", () =>
-  Effect.gen(function* retried() {
-    const guildId = "820";
-    yield* seedGuild(guildId);
-    acceptDeletes();
-    flaky.failures = ONE_FAILURE;
-    const fiber = yield* Effect.forkChild(withdrawGuild(guildId));
-    yield* TestClock.adjust(RETRY_WINDOW);
-    yield* Fiber.join(fiber);
-    expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 0, messages: 0 });
-    expect(deletedVectors).toStrictEqual(new Set(messageIdsOf(guildId)));
   }),
 );
 
@@ -186,7 +134,6 @@ it.effect("deletes everything when the queued withdrawal runs", () =>
   Effect.gen(function* queued() {
     const guildId = "840";
     yield* seedGuild(guildId);
-    acceptDeletes();
     yield* requestWithdrawal(guildId);
     yield* deliverWithdrawal(guildId, FIRST_ATTEMPT);
     expect(handled).toStrictEqual({ acked: ONCE, retried: NEVER });
@@ -198,11 +145,10 @@ it.effect("gives the consent back when the queued withdrawal keeps failing", () 
   Effect.gen(function* abandoned() {
     const guildId = "850";
     yield* seedGuild(guildId);
-    vi.spyOn(env.MESSAGES, "deleteByIds").mockRejectedValue(new VectorizeRejected());
     yield* requestWithdrawal(guildId);
-    const fiber = yield* Effect.forkChild(deliverWithdrawal(guildId, LAST_ATTEMPT));
-    yield* TestClock.adjust(RETRY_WINDOW);
-    yield* Fiber.join(fiber);
+    breakGuildStore();
+    yield* deliverWithdrawal(guildId, LAST_ATTEMPT);
+    vi.restoreAllMocks();
     expect(handled).toStrictEqual({ acked: NEVER, retried: ONCE });
     expect(yield* stateOf(guildId)).toStrictEqual(["granted"]);
     expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 1, messages: STORED });

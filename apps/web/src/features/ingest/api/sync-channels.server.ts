@@ -10,7 +10,6 @@ import { accessOf, columnsOf } from "./bot-access.server";
 import type { ChannelSync } from "./channel-listing.server";
 import { refreshIngest } from "./consent-scope.server";
 import { settleStoredChannels } from "./settle-channels.server";
-import type { VectorizeError } from "./vectors.server";
 
 type ChannelRow = typeof channel.$inferInsert;
 
@@ -92,11 +91,10 @@ const upsertChannels = (sync: ChannelSync): Effect.Effect<void> =>
     ),
   );
 
-const syncChannels = (sync: ChannelSync): Effect.Effect<void, VectorizeError> =>
+const syncChannels = (sync: ChannelSync): Effect.Effect<void> =>
   settleStoredChannels(sync).pipe(
     Effect.andThen(upsertChannels(sync)),
     Effect.andThen(refreshIngest(sync.discordGuild.id)),
   );
 
 export { syncChannels };
-export type { VectorizeError } from "./vectors.server";

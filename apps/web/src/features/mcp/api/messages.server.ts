@@ -1,31 +1,18 @@
-import { env } from "cloudflare:workers";
-import { and, desc, eq, inArray, lt } from "drizzle-orm";
-import { Array, DateTime, Effect, Option } from "effect";
+import { DateTime, Effect, Option } from "effect";
 
-import { embed } from "#/shared/ai/index.server";
-import { openGuildKey, openMessage } from "#/shared/crypto/index.server";
+import {
+  containsQuery,
+  openGuildKey,
+  openMessage,
+  openSearchKey,
+  queryTokens,
+  searchableTexts,
+} from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
-import { db, message } from "#/shared/db/index.server";
+import { guildStore } from "#/shared/guild-store/index.server";
+import type { SealedMessage } from "#/shared/guild-store/index.server";
 
 import type { GuildScope } from "./scope.server";
-
-type StoredMessage = Readonly<{
-  id: string;
-  guildId: string;
-  channelId: string;
-  sealed: string;
-  createdAt: DateTime.Utc;
-  edited: boolean;
-}>;
-
-type MessageRow = Readonly<{
-  id: string;
-  guildId: string;
-  channelId: string;
-  sealed: string;
-  createdAt: Date;
-  editedAt: Date | null;
-}>;
 
 type MessageView = Readonly<{
   id: string;
@@ -38,106 +25,39 @@ type MessageView = Readonly<{
   url: string;
 }>;
 
-const MESSAGE_COLUMNS = {
-  id: message.id,
-  guildId: message.guildId,
-  channelId: message.channelId,
-  sealed: message.sealed,
-  createdAt: message.createdAt,
-  editedAt: message.editedAt,
-};
+const holdsMessage = (scope: GuildScope, { channelId }: SealedMessage): boolean =>
+  scope.guild.consent === "consented" && scope.visible.includes(channelId);
 
-const loadStored = (
-  load: () => Promise<readonly MessageRow[]>,
-): Effect.Effect<readonly StoredMessage[]> =>
-  Effect.promise(load).pipe(
-    Effect.map((rows) =>
-      rows.map(({ createdAt, editedAt, ...row }) => ({
-        ...row,
-        createdAt: DateTime.fromDateUnsafe(createdAt),
-        edited: Option.isSome(Option.fromNullOr(editedAt)),
-      })),
-    ),
-  );
-
-const holdsMessage = (scope: GuildScope, { guildId, channelId }: StoredMessage): boolean =>
-  scope.guild.consent === "consented" &&
-  guildId === scope.guild.guildId &&
-  scope.visible.includes(channelId);
+const viewOf = (guildId: string, row: SealedMessage, body: MessageBody): MessageView => ({
+  id: row.id,
+  channelId: row.channelId,
+  author: body.authorName,
+  content: body.content,
+  attachments: body.attachments,
+  createdAt: DateTime.formatIso(DateTime.makeUnsafe(row.createdAt)),
+  edited: Option.isSome(Option.fromNullOr(row.editedAt)),
+  url: `https://discord.com/channels/${guildId}/${row.channelId}/${row.id}`,
+});
 
 const openStored = (
   scope: GuildScope,
-  stored: readonly StoredMessage[],
-): Effect.Effect<readonly MessageView[]> =>
-  openGuildKey(scope.guild.wrappedKey).pipe(
+  stored: readonly SealedMessage[],
+): Effect.Effect<readonly MessageView[]> => {
+  const { guildId, wrappedKey } = scope.guild;
+  return openGuildKey(wrappedKey).pipe(
     Effect.flatMap((key) =>
       Effect.forEach(
         stored.filter((row) => holdsMessage(scope, row)),
         (row) =>
           openMessage(row.sealed, key, {
-            guildId: row.guildId,
+            guildId,
             channelId: row.channelId,
             messageId: row.id,
-          }).pipe(
-            Effect.map((body) => ({
-              id: row.id,
-              channelId: row.channelId,
-              author: body.authorName,
-              content: body.content,
-              attachments: body.attachments,
-              createdAt: DateTime.formatIso(row.createdAt),
-              edited: row.edited,
-              url: `https://discord.com/channels/${row.guildId}/${row.channelId}/${row.id}`,
-            })),
-          ),
+          }).pipe(Effect.map((body) => viewOf(guildId, row, body))),
       ),
     ),
   );
-
-const findStored = (ids: readonly string[]): Effect.Effect<readonly StoredMessage[]> =>
-  loadStored(() =>
-    db
-      .select(MESSAGE_COLUMNS)
-      .from(message)
-      .where(inArray(message.id, [...ids])),
-  ).pipe(
-    Effect.map((stored) =>
-      ids.flatMap((id) => Option.toArray(Array.findFirst(stored, (row) => row.id === id))),
-    ),
-  );
-
-type SearchRequest = Readonly<{
-  scope: GuildScope;
-  query: string;
-  channelIds: readonly string[];
-  limit: number;
-}>;
-
-const queryVectors = (
-  { scope, channelIds, limit }: SearchRequest,
-  vector: readonly number[],
-): Effect.Effect<readonly string[]> =>
-  Effect.promise(() =>
-    env.MESSAGES.query([...vector], {
-      topK: limit,
-      returnMetadata: "none",
-      filter: { guildId: scope.guild.guildId, channelId: { $in: [...channelIds] } },
-    }),
-  ).pipe(Effect.map(({ matches }) => matches.map(({ id }) => id)));
-
-const searchMessages = (request: SearchRequest): Effect.Effect<readonly MessageView[]> =>
-  embed([request.query]).pipe(
-    Effect.orDie,
-    Effect.map(Array.head),
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeed([]),
-        onSome: (vector) => queryVectors(request, vector),
-      }),
-    ),
-    Effect.flatMap(findStored),
-    Effect.flatMap((stored) => openStored(request.scope, stored)),
-  );
+};
 
 type FindRequest = Readonly<{
   scope: GuildScope;
@@ -150,22 +70,16 @@ type FindRequest = Readonly<{
 type FoundMessages = Readonly<{ total: number; messages: readonly MessageView[] }>;
 
 const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
-  const needle = request.query.toLowerCase();
-  const channels = new Set(request.channelIds);
-  return loadStored(() =>
-    db
-      .select(MESSAGE_COLUMNS)
-      .from(message)
-      .where(eq(message.guildId, request.scope.guild.guildId))
-      .orderBy(desc(message.createdAt), desc(message.id)),
-  ).pipe(
-    Effect.flatMap((stored) =>
-      openStored(
-        request.scope,
-        stored.filter(({ channelId }) => channels.has(channelId)),
-      ),
+  const { guildId, wrappedKey } = request.scope.guild;
+  return openSearchKey(wrappedKey).pipe(
+    Effect.flatMap((key) => queryTokens({ key, query: request.query })),
+    Effect.flatMap((tokens) =>
+      Effect.promise(() => guildStore(guildId).candidates(tokens, request.channelIds)),
     ),
-    Effect.map((views) => views.filter(({ content }) => content.toLowerCase().includes(needle))),
+    Effect.flatMap((candidates) => openStored(request.scope, candidates)),
+    Effect.map((views) =>
+      views.filter((view) => containsQuery({ texts: searchableTexts(view), query: request.query })),
+    ),
     Effect.map((found) => ({
       total: found.length,
       messages: found.slice(request.offset, request.offset + request.limit),
@@ -180,48 +94,13 @@ type ReadRequest = Readonly<{
   limit: number;
 }>;
 
-const createdAtOf = (
-  channelId: string,
-  messageId: string,
-): Effect.Effect<Option.Option<DateTime.Utc>> =>
-  Effect.promise(() =>
-    db
-      .select({ createdAt: message.createdAt })
-      .from(message)
-      .where(and(eq(message.id, messageId), eq(message.channelId, channelId))),
-  ).pipe(
-    Effect.map((rows) =>
-      Option.map(Array.head(rows), ({ createdAt }) => DateTime.fromDateUnsafe(createdAt)),
-    ),
-  );
-
-const readStored = (
-  { channelId, limit }: ReadRequest,
-  before: Option.Option<DateTime.Utc>,
-): Effect.Effect<readonly StoredMessage[]> =>
-  loadStored(() =>
-    db
-      .select(MESSAGE_COLUMNS)
-      .from(message)
-      .where(
-        Option.match(before, {
-          onNone: () => eq(message.channelId, channelId),
-          onSome: (date) =>
-            and(eq(message.channelId, channelId), lt(message.createdAt, DateTime.toDate(date))),
-        }),
-      )
-      .orderBy(desc(message.createdAt))
-      .limit(limit),
-  );
-
 const readMessages = (request: ReadRequest): Effect.Effect<readonly MessageView[]> =>
-  Option.match(request.before, {
-    onNone: () => Effect.succeed(Option.none<DateTime.Utc>()),
-    onSome: (messageId) => createdAtOf(request.channelId, messageId),
-  }).pipe(
-    Effect.flatMap((before) => readStored(request, before)),
-    Effect.flatMap((stored) => openStored(request.scope, stored)),
-  );
+  Effect.promise(() =>
+    guildStore(request.scope.guild.guildId).read(request.channelId, {
+      before: Option.getOrNull(request.before),
+      limit: request.limit,
+    }),
+  ).pipe(Effect.flatMap((stored) => openStored(request.scope, stored)));
 
-export { findMessages, readMessages, searchMessages };
-export type { FindRequest, FoundMessages, MessageView, ReadRequest, SearchRequest };
+export { findMessages, readMessages };
+export type { FindRequest, FoundMessages, MessageView, ReadRequest };

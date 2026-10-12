@@ -15,7 +15,7 @@ const SECTIONS: readonly GuideSection[] = [
     blocks: [
       {
         type: "text",
-        text: `サイトでは「${MASCOT_NAME}が Discord をさがしに行く」と紹介していますが、検索のたびに Discord を読みに行っているわけではありません。同意済みのサーバーのメッセージを、あらかじめ ${SERVICE_NAME} のデータベース（D1 と Vectorize）に取り込んでおき、検索ではその写しの中をさがしています。`,
+        text: `サイトでは「${MASCOT_NAME}が Discord をさがしに行く」と紹介していますが、検索のたびに Discord を読みに行っているわけではありません。同意済みのサーバーのメッセージを、あらかじめ ${SERVICE_NAME} のデータベースに取り込んでおき、検索ではその写しの中をさがしています。`,
       },
       {
         type: "text",
@@ -38,9 +38,13 @@ const SECTIONS: readonly GuideSection[] = [
           { from: "fly.io の Gateway", label: "署名付きの POST", to: "Worker の /api/gateway" },
           { from: "Worker", label: "REST で読む", to: "Discord の API" },
           { from: "Worker", label: "取り込みのジョブ", to: "Queues" },
-          { from: "Worker", label: "暗号化して保存", to: "D1" },
-          { from: "Worker", label: "埋め込みを作る", to: "Workers AI（bge-m3）" },
-          { from: "Worker", label: "ベクトルを保存・検索", to: "Vectorize" },
+          { from: "Worker", label: "サーバーと同意の情報", to: "D1" },
+          {
+            from: "Worker",
+            label: "暗号化したメッセージと索引",
+            to: "サーバーごとの Durable Object",
+          },
+          { from: "Worker", label: "画像の説明を作る", to: "Workers AI" },
           { from: "Worker", label: "マスター鍵を読む", to: "Secrets Store" },
         ],
       },
@@ -50,8 +54,8 @@ const SECTIONS: readonly GuideSection[] = [
         rows: [
           ["Web と API", "Cloudflare Workers の上の TanStack Start と Elysia"],
           ["データベース", "Cloudflare D1（APAC に配置）と Drizzle ORM"],
-          ["ベクトル検索", "Cloudflare Vectorize（1024 次元、cosine）"],
-          ["埋め込み", "Workers AI の `@cf/baai/bge-m3`"],
+          ["メッセージと索引", "サーバーごとに 1 つの Durable Object（SQLite と FTS5）"],
+          ["画像の説明", "Workers AI の `@cf/google/gemma-4-26b-a4b-it`"],
           ["取り込みの待ち行列", "Cloudflare Queues"],
           ["鍵の保管", "Cloudflare Secrets Store"],
           ["Gateway の常駐", "fly.io の Machine（shared-cpu-1x、256MB、1 台）"],
@@ -70,14 +74,14 @@ const SECTIONS: readonly GuideSection[] = [
         items: [
           "サーバーの管理者が Bot を招待し、管理画面でサーバー単位に同意します。同意するまでは 1 件も読みません。",
           "Cron で毎時 2 分に参加サーバーとチャンネルの一覧を同期し、毎時 32 分に取り込みのジョブを Queue に積みます。",
-          "Queue のコンシューマーが Discord の REST からメッセージを 1 ページずつ読み、本文と投稿者名を暗号化して D1 に保存します。あわせて本文の埋め込みを Workers AI で作り、Vectorize に入れます。",
-          "新しいメッセージ、編集、削除は fly.io の Gateway が受けます。Gateway はメッセージの ID だけを署名付きで Worker に送り、Worker は REST で最新の内容を読み直して保存するか、行とベクトルを消します。",
+          "Queue のコンシューマーが Discord の REST からメッセージを 1 ページずつ読み、本文と投稿者名を暗号化して、サーバーごとの Durable Object に保存します。あわせて検索用の索引を作って同じ場所に入れます。",
+          "新しいメッセージ、編集、削除は fly.io の Gateway が受けます。Gateway はメッセージの ID だけを署名付きで Worker に送り、Worker は REST で最新の内容を読み直して保存するか、行と索引を消します。",
           "Gateway が切れていた間の取りこぼしは、取り込みのたびに古い履歴を 1 ページずつ巡回して拾います。",
         ],
       },
       {
         type: "text",
-        text: "Gateway からの通知は Standard Webhooks の形式で、Bot トークンを鍵にして署名します。署名が合わない通知は捨てます。Durable Object は無料枠をすぐに超えるため使わず、Gateway だけを fly.io に置いています。",
+        text: "Gateway からの通知は Standard Webhooks の形式で、Bot トークンを鍵にして署名します。署名が合わない通知は捨てます。Gateway への常時接続は Durable Object に置くと無料枠をすぐに超えるため、Gateway だけを fly.io に置いています。",
       },
     ],
   },
@@ -90,7 +94,7 @@ const SECTIONS: readonly GuideSection[] = [
           "マスター鍵は Secrets Store の `MIRUCORD_MASTER_KEY` にあり、デプロイのときに Alchemy が乱数で作ります。",
           "サーバーごとに 256 ビットのデータ鍵を作り、マスター鍵から HKDF で導いた鍵で包んで（AES-KW）D1 に保存します。",
           "メッセージ本文、投稿者名、添付ファイルの名前と URL は、データ鍵で AES-256-GCM の JWE にして保存します。暗号文には「サーバー / チャンネル / メッセージ」の ID を結びつけてあり、別の行に貼り替えると開けません。",
-          "Vectorize に置くのはベクトルと `guildId`・`channelId` だけで、本文は置きません。",
+          "検索用の索引には、本文を 1〜3 文字ずつに区切り、データ鍵から導いた HMAC 鍵でハッシュにした値だけを置きます。本文そのものは置きません。",
           "メッセージ本文と検索の言葉は、ログ、トレース、エラーメッセージに出しません。",
           "運営が本文を見る機能はありません。",
         ],
@@ -107,7 +111,7 @@ const SECTIONS: readonly GuideSection[] = [
           "Bot が求める権限は「チャンネルを見る」「メッセージ履歴を読む」「メッセージを送信」「監査ログを表示」の 4 つです。Bot がサーバーに参加したとき、監査ログから招待した人を調べ、その人に使い方の案内を DM で 1 回送ります。DM を送れないときはチャンネルに投稿します。送信はこの案内と、同意したときにサーバーへお知らせを 1 回投稿するためだけに使います。",
           "取り込みに同意できるのは、サーバーの管理権限か管理者権限を持つ人です。",
           "取り込む範囲は、Bot が Discord で見られるチャンネルそのものです。Bot から見えなくなったチャンネルは取り込みを止め、30 日後に消します。",
-          "Bot がサーバーから外れたら、そのサーバーの行とベクトルを消します。",
+          "Bot がサーバーから外れたら、そのサーバーの行と索引を消します。",
         ],
       },
       {
@@ -125,7 +129,6 @@ const SECTIONS: readonly GuideSection[] = [
         rows: [
           ["`list_servers`", "使えるサーバーの一覧"],
           ["`list_channels`", "読めるチャンネル、スレッド、フォーラムの投稿の一覧"],
-          ["`search_messages`", "サーバーのメッセージを意味で検索"],
           ["`find_messages`", "言葉をそのまま含むメッセージを探し、件数も数える"],
           ["`read_messages`", "チャンネルの最新のメッセージを新しい順に読む"],
         ],
@@ -133,18 +136,18 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "steps",
         items: [
-          "`search_messages` では、検索の言葉を `@cf/baai/bge-m3` で 1024 次元のベクトルにします。",
-          "Vectorize に、サーバーの `guildId` と、読めるチャンネルの `channelId` で絞りこんだ近傍検索をかけます。",
-          "見つかった ID の行を D1 から読み、データ鍵で復号して返します。",
+          "`find_messages` では、検索の言葉を索引と同じ方法で区切ってハッシュにします。",
+          "サーバーの Durable Object で、そのハッシュをすべて含む行を FTS5 から引き、読めるチャンネルの行だけに絞ります。",
+          "見つかった行をデータ鍵で復号し、大文字と小文字を区別せずに言葉をそのまま含むかを確かめてから返します。",
         ],
       },
       {
         type: "text",
-        text: "`find_messages` は、読めるチャンネルの行を D1 から読んで復号し、Worker の中で大文字と小文字を区別せずに文字列を照合します。本文は暗号化してあるので、データベースの全文検索は使いません。",
+        text: "ハッシュの索引なので、運営も索引から本文を読めません。照合は文字どおりなので、言い回しが違うメッセージは見つかりません。画像は、Workers AI が付けた説明文も検索の対象にします。",
       },
       {
         type: "text",
-        text: "`search_messages` は言葉の意味の近さで探すので、言い回しが違っても見つかります。ツールの結果は `structuredContent` と `outputSchema` で返し、取り込みが終わっていないチャンネルは `notFullyIngested` で知らせます。",
+        text: "ツールの結果は `structuredContent` と `outputSchema` で返し、取り込みが終わっていないチャンネルは `notFullyIngested` で知らせます。",
       },
       {
         type: "text",

@@ -1,7 +1,7 @@
 import { Effect, Option } from "effect";
 
 import type { ForgetJob, RefreshJob } from "#/features/ingest/model/ingest-job";
-import { openGuildKey } from "#/shared/crypto/index.server";
+import { openGuildKeys } from "#/shared/crypto/index.server";
 import { FORBIDDEN, findMessage } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
@@ -9,15 +9,16 @@ import { loadChannelKey } from "./ingest-channel.server";
 import { storeConsented } from "./message-page.server";
 import type { IngestError } from "./message-page.server";
 import { deleteMessages, storedInChannel } from "./message-rows.server";
-import type { VectorizeError } from "./message-rows.server";
+import type { ChannelRef } from "./message-rows.server";
 
 type Lookup = Readonly<{ id: string; found: Option.Option<DiscordMessage> }>;
 
-const forgetIn = (channelId: string, ids: readonly string[]): Effect.Effect<void, VectorizeError> =>
-  storedInChannel({ channelId, ids }).pipe(Effect.flatMap(deleteMessages));
+const forgetIn = (ref: ChannelRef, ids: readonly string[]): Effect.Effect<void> =>
+  storedInChannel({ ...ref, ids }).pipe(
+    Effect.flatMap((stored) => deleteMessages({ guildId: ref.guildId, ids: stored })),
+  );
 
-const forgetMessages = (job: ForgetJob): Effect.Effect<void, VectorizeError> =>
-  forgetIn(job.channelId, job.messageIds);
+const forgetMessages = (job: ForgetJob): Effect.Effect<void> => forgetIn(job, job.messageIds);
 
 const lookUp = (job: RefreshJob): Effect.Effect<readonly Lookup[], IngestError> =>
   Effect.all(
@@ -28,16 +29,16 @@ const lookUp = (job: RefreshJob): Effect.Effect<readonly Lookup[], IngestError> 
 
 const refreshWith = (job: RefreshJob, wrappedKey: string): Effect.Effect<void, IngestError> =>
   Effect.gen(function* refresh() {
-    const key = yield* openGuildKey(wrappedKey);
+    const keys = yield* openGuildKeys(wrappedKey);
     const lookups = yield* lookUp(job);
     const page = lookups.flatMap(({ found }) => Option.toArray(found));
     const gone = lookups.filter(({ found }) => Option.isNone(found)).map(({ id }) => id);
     yield* storeConsented({
-      key,
+      ...keys,
       job: { guildId: job.guildId, channelId: job.channelId },
       page,
     });
-    yield* forgetIn(job.channelId, gone);
+    yield* forgetIn(job, gone);
   });
 
 const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>

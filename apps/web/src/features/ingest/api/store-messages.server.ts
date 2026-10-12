@@ -2,26 +2,21 @@ import { MessageType } from "discord-api-types/v10";
 import { Array, Boolean, DateTime, Effect, Equal, Option, String, pipe } from "effect";
 
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
-import { embed } from "#/shared/ai/index.server";
-import type { EmbeddingError } from "#/shared/ai/index.server";
-import { sealMessage } from "#/shared/crypto/index.server";
+import { indexTokens, sealMessage, searchableTexts } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
-import { db, message } from "#/shared/db/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
+import { guildStore } from "#/shared/guild-store/index.server";
+import type { IndexedMessage } from "#/shared/guild-store/index.server";
 
 import { DESCRIBE_MODEL, describeImage, isDescribable } from "./describe-image.server";
 import type { ImageSource } from "./describe-image.server";
 import { findStored } from "./message-rows.server";
 import type { StoredMessage } from "./message-rows.server";
-import { deleteVectors, indexedIds, upsertVectors } from "./vectors.server";
-import type { MessageVector, VectorizeError } from "./vectors.server";
 
 const STORED_TYPES: ReadonlySet<MessageType> = new Set([MessageType.Default, MessageType.Reply]);
 const DESCRIBED_IMAGES_PER_MESSAGE = 4;
 
-type StoreError = EmbeddingError | VectorizeError;
-
-type StoreTarget = Readonly<{ key: CryptoKey; job: IngestJob }>;
+type StoreTarget = Readonly<{ key: CryptoKey; searchKey: CryptoKey; job: IngestJob }>;
 
 const editedAtOf = ({ edited_timestamp }: DiscordMessage): Option.Option<DateTime.Utc> =>
   Option.fromNullOr(edited_timestamp);
@@ -36,8 +31,6 @@ const isChanged = (previous: Option.Option<StoredMessage>, incoming: DiscordMess
 
 const authorNameOf = ({ author }: DiscordMessage): string =>
   Option.getOrElse(Option.fromNullishOr(author.global_name), () => author.username);
-
-type MessageRow = typeof message.$inferInsert;
 
 type DiscordAttachment = DiscordMessage["attachments"][number];
 type StoredAttachment = MessageBody["attachments"][number];
@@ -62,9 +55,6 @@ const imageSourceOf = ({
     Option.filter(String.startsWith("image/")),
     Option.map((contentType) => ({ url, contentType, size })),
   );
-
-const isImage = (attachment: DiscordAttachment): boolean =>
-  Option.isSome(imageSourceOf(attachment));
 
 const describeAttachment = (
   attachment: DiscordAttachment,
@@ -115,134 +105,63 @@ const describeAll = (
     Effect.forEach((incoming) => describeMessage(incoming)),
   );
 
-const searchTextOf = ({ incoming, attachments }: DescribedMessage): string =>
-  [
-    incoming.content,
-    ...attachments.flatMap(({ description }) =>
-      Option.toArray(Option.fromUndefinedOr(description)),
-    ),
-  ]
-    .filter((text) => String.isNonEmpty(text))
-    .join("\n");
-
-const toRow = (
-  { key, job }: StoreTarget,
+const toIndexed = (
+  { key, searchKey, job }: StoreTarget,
   { incoming, attachments, describedWith }: DescribedMessage,
-): Effect.Effect<MessageRow> =>
-  sealMessage(
-    {
-      authorName: authorNameOf(incoming),
-      content: incoming.content,
-      attachments,
-    },
-    key,
-    { ...job, messageId: incoming.id },
-  ).pipe(
-    Effect.map((sealed) => ({
-      ...job,
-      id: incoming.id,
-      authorId: incoming.author.id,
-      sealed,
-      describedWith,
-      createdAt: DateTime.toDate(incoming.timestamp),
-      editedAt: Option.getOrNull(Option.map(editedAtOf(incoming), DateTime.toDate)),
+): Effect.Effect<IndexedMessage> => {
+  const body = { authorName: authorNameOf(incoming), content: incoming.content, attachments };
+  return Effect.all({
+    sealed: sealMessage(body, key, { ...job, messageId: incoming.id }),
+    tokens: indexTokens({ key: searchKey, texts: searchableTexts(body) }),
+  }).pipe(
+    Effect.map(({ sealed, tokens }) => ({
+      row: {
+        id: incoming.id,
+        channelId: job.channelId,
+        authorId: incoming.author.id,
+        sealed,
+        describedWith,
+        createdAt: DateTime.toEpochMillis(incoming.timestamp),
+        editedAt: Option.getOrNull(Option.map(editedAtOf(incoming), DateTime.toEpochMillis)),
+      },
+      tokens,
     })),
   );
+};
 
-const writeRows = (
+const writeMessages = (
   target: StoreTarget,
   changed: readonly DescribedMessage[],
 ): Effect.Effect<void> =>
   pipe(
     changed,
-    Effect.forEach((described) => toRow(target, described)),
-    Effect.map((rows) =>
-      rows.map((row) =>
-        db
-          .insert(message)
-          .values(row)
-          .onConflictDoUpdate({
-            target: message.id,
-            set: { sealed: row.sealed, editedAt: row.editedAt, describedWith: row.describedWith },
-          }),
-      ),
-    ),
-    Effect.flatMap((statements) =>
-      Array.match(statements, {
+    Effect.forEach((described) => toIndexed(target, described)),
+    Effect.flatMap((messages) =>
+      Array.match(messages, {
         onEmpty: () => Effect.void,
-        onNonEmpty: (batch) => Effect.asVoid(Effect.promise(() => db.batch(batch))),
+        onNonEmpty: (batch) =>
+          Effect.promise(() => guildStore(target.job.guildId).write(batch, "overwrite")),
       }),
     ),
   );
 
-const toVector = (
-  job: IngestJob,
-  { id }: DiscordMessage,
-  values: readonly number[],
-): MessageVector => ({ ...job, id, values });
-
-const writeVectors = (
-  { job }: StoreTarget,
-  changed: readonly DescribedMessage[],
-): Effect.Effect<void, EmbeddingError | VectorizeError> => {
-  const texts = changed.map((described) => ({
-    incoming: described.incoming,
-    text: searchTextOf(described),
-  }));
-  const blank = texts.filter(({ text }) => String.isEmpty(text));
-  const indexable = texts.filter(({ text }) => String.isNonEmpty(text));
-  return Effect.all(
-    [
-      deleteVectors(blank.map(({ incoming }) => incoming.id)),
-      embed(indexable.map(({ text }) => text)),
-    ],
-    { concurrency: "unbounded" },
-  ).pipe(
-    Effect.map(([, embeddings]) =>
-      Array.zipWith(indexable, embeddings, ({ incoming }, values) =>
-        toVector(job, incoming, values),
-      ),
-    ),
-    Effect.flatMap((vectors) => upsertVectors(vectors)),
-  );
-};
-
-const withoutVectors = (
-  unchanged: readonly DiscordMessage[],
-): Effect.Effect<readonly DiscordMessage[], VectorizeError> => {
-  const indexable = unchanged.filter(
-    ({ content, attachments }) =>
-      String.isNonEmpty(content) || attachments.some((attachment) => isImage(attachment)),
-  );
-  return indexedIds(indexable.map(({ id }) => id)).pipe(
-    Effect.map((indexed) => indexable.filter(({ id }) => !indexed.has(id))),
-  );
-};
-
 const storeMessages = ({
   page,
   ...target
-}: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<
-  void,
-  EmbeddingError | VectorizeError
-> => {
+}: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<void> => {
   const kept = page.filter(({ type }) => STORED_TYPES.has(type));
-  return findStored(kept.map(({ id }) => id)).pipe(
+  return findStored({ guildId: target.job.guildId, ids: kept.map(({ id }) => id) }).pipe(
     Effect.flatMap((stored) => {
       const byId = new Map(stored.map((row) => [row.id, row]));
-      const changedOf = (incoming: DiscordMessage): boolean =>
-        isChanged(Option.fromUndefinedOr(byId.get(incoming.id)), incoming);
-      const changed = kept.filter((incoming) => changedOf(incoming));
-      const unchanged = kept.filter((incoming) => !changedOf(incoming));
-      return withoutVectors(unchanged).pipe(
-        Effect.map((missing) => [...changed, ...missing]),
-        Effect.flatMap(describeAll),
-        Effect.tap((stale) => writeVectors(target, stale)),
-        Effect.flatMap((stale) => writeRows(target, stale)),
+      return describeAll(
+        kept.filter((incoming) =>
+          isChanged(Option.fromUndefinedOr(byId.get(incoming.id)), incoming),
+        ),
       );
     }),
+    Effect.flatMap((stale) => writeMessages(target, stale)),
   );
 };
 
 export { storeMessages };
-export type { StoreError, StoreTarget };
+export type { StoreTarget };

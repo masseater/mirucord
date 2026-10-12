@@ -3,7 +3,7 @@ import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
 import { Array, DateTime, Effect } from "effect";
 import { http, HttpResponse } from "msw";
-import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
+import { afterAll, afterEach, beforeAll, expect, vi } from "vite-plus/test";
 
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
@@ -124,11 +124,6 @@ afterEach(() => {
 
 afterAll(() => {
   network.disable();
-});
-
-beforeEach(() => {
-  vi.spyOn(env.AI, "run").mockResolvedValue({ data: [] });
-  vi.spyOn(env.MESSAGES, "upsert").mockResolvedValue({ mutationId: "test" });
 });
 
 it.effect("queues nothing for a server that has not consented", () =>

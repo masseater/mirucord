@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import { Data, Effect } from "effect";
 
-import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
+import { channel, db, ingestConsent } from "#/shared/db/index.server";
+import { guildStore } from "#/shared/guild-store/index.server";
 
 import { purgeChannel } from "./consent-scope.server";
 import { enqueueWithdrawal } from "./enqueue.server";
-import type { VectorizeError } from "./vectors.server";
 
 class GuildDataRemainsError extends Data.TaggedError("GuildDataRemainsError")<{
   readonly guildId: string;
@@ -15,13 +15,17 @@ class GuildDataRemainsError extends Data.TaggedError("GuildDataRemainsError")<{
 const NOTHING_STORED = 0;
 
 const storedCount = (guildId: string): Effect.Effect<number> =>
-  Effect.promise(() => db.$count(message, eq(message.guildId, guildId)));
+  Effect.promise(() => guildStore(guildId).count());
 
-const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError | VectorizeError> =>
+const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError> =>
   Effect.promise(() =>
     db.select({ id: channel.id }).from(channel).where(eq(channel.guildId, guildId)),
   ).pipe(
-    Effect.flatMap((rows) => Effect.forEach(rows, ({ id }) => purgeChannel(id), { discard: true })),
+    Effect.flatMap((rows) =>
+      Effect.forEach(rows, ({ id }) => purgeChannel({ guildId, channelId: id }), {
+        discard: true,
+      }),
+    ),
     Effect.andThen(storedCount(guildId)),
     Effect.filterOrFail(
       (remaining) => remaining === NOTHING_STORED,
@@ -30,9 +34,7 @@ const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError 
     Effect.asVoid,
   );
 
-const withdrawGuild = (
-  guildId: string,
-): Effect.Effect<void, GuildDataRemainsError | VectorizeError> =>
+const withdrawGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError> =>
   purgeGuild(guildId).pipe(
     Effect.andThen(
       Effect.promise(() => db.delete(ingestConsent).where(eq(ingestConsent.guildId, guildId))),
@@ -53,4 +55,3 @@ const abandonWithdrawal = (guildId: string): Effect.Effect<void> =>
 
 export { abandonWithdrawal, requestWithdrawal, withdrawGuild };
 export type { GuildDataRemainsError };
-export type { VectorizeError } from "./vectors.server";

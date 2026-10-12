@@ -2,13 +2,18 @@ import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
-import { Array, Boolean, DateTime, Effect, Option, Schema } from "effect";
+import { Array, Boolean, DateTime, Effect, Option } from "effect";
 import { http, HttpResponse } from "msw";
-import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
+import { afterAll, afterEach, beforeAll, expect, vi } from "vite-plus/test";
 
-import { createGuildKey, openGuildKey, sealMessage } from "#/shared/crypto/index.server";
-import { channel, db, guild, ingestConsent, message } from "#/shared/db/index.server";
+import { channel, db } from "#/shared/db/index.server";
 
+import {
+  consentedGuild,
+  putMessages,
+  storedIdsIn,
+  storedMessage,
+} from "./__tests__/guild-messages";
 import { ingestChannel } from "./ingest-channel.server";
 
 const OWNER = "901";
@@ -24,9 +29,6 @@ const UNIT = 1;
 const PAGE_SIZE = 100;
 const DEFAULT_TYPE = 0;
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2015-01-01T00:00:00Z"));
-const decodeInputs = Schema.decodeUnknownEffect(
-  Schema.Struct({ text: Schema.Array(Schema.String) }),
-);
 
 const discordMessage = (id: string): unknown => ({
   id,
@@ -57,51 +59,26 @@ const answer = (swept: readonly unknown[]): void => {
 };
 
 const seed: Effect.Effect<void> = Effect.gen(function* seedChannel() {
-  const wrappedKey = yield* createGuildKey;
-  const key = yield* openGuildKey(wrappedKey);
-  const rows = yield* Effect.forEach([DELETED, KEPT, ABOVE_CURSOR], (id) =>
-    sealMessage({ authorName: "someone", content: `message ${id}`, attachments: [] }, key, {
-      guildId: GUILD,
-      channelId: CHANNEL,
-      messageId: id,
-    }).pipe(
-      Effect.map((sealed) => ({
-        id,
-        guildId: GUILD,
-        channelId: CHANNEL,
-        authorId: OWNER,
-        sealed,
-        createdAt: SEEDED_AT,
-      })),
-    ),
-  );
+  yield* consentedGuild({ guildId: GUILD, channelId: CHANNEL });
   yield* Effect.promise(() =>
-    db.batch([
-      db
-        .insert(guild)
-        .values({ id: GUILD, name: "guild", ownerId: OWNER, wrappedKey, joinedAt: SEEDED_AT }),
-      db.insert(channel).values({
-        id: CHANNEL,
-        guildId: GUILD,
-        name: "channel",
-        type: 0,
-        permissionOverwrites: [],
-        backfill: "done",
-        sweepCursor: CURSOR,
-      }),
-      db.insert(ingestConsent).values({
-        guildId: GUILD,
-        grantedBy: OWNER,
-        grantedAt: SEEDED_AT,
-        noticeChannelId: CHANNEL,
-      }),
-      db.insert(message).values([...rows]),
-    ]),
+    db.insert(channel).values({
+      id: CHANNEL,
+      guildId: GUILD,
+      name: "channel",
+      type: 0,
+      permissionOverwrites: [],
+      backfill: "done",
+      sweepCursor: CURSOR,
+    }),
   );
+  const messages = [DELETED, KEPT, ABOVE_CURSOR].map((id) =>
+    storedMessage({ id, channelId: CHANNEL, createdAt: SEEDED_AT.getTime() }),
+  );
+  yield* putMessages({ guildId: GUILD, messages });
 });
 
-const storedIds = Effect.promise(() => db.select({ id: message.id }).from(message)).pipe(
-  Effect.map((rows) => new Set(rows.map(({ id }) => id))),
+const storedIds = storedIdsIn({ guildId: GUILD, channelId: CHANNEL }).pipe(
+  Effect.map((ids) => new Set(ids)),
 );
 
 const savedCursor = Effect.promise(() =>
@@ -120,17 +97,6 @@ beforeAll(() => {
   return Effect.runPromise(seed);
 });
 
-beforeEach(() => {
-  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) =>
-    Effect.runPromise(
-      decodeInputs(inputs).pipe(Effect.map(({ text }) => ({ data: text.map(() => [UNIT]) }))),
-    ),
-  );
-  vi.spyOn(env.MESSAGES, "getByIds").mockResolvedValue([]);
-  vi.spyOn(env.MESSAGES, "upsert").mockResolvedValue({ mutationId: "test" });
-  vi.spyOn(env.MESSAGES, "deleteByIds").mockResolvedValue({ mutationId: "test" });
-});
-
 afterEach(() => {
   network.resetHandlers();
 });
@@ -141,13 +107,11 @@ afterAll(() => {
 
 it.effect("forgets an old message deleted in Discord and restarts the sweep at the start", () =>
   Effect.gen(function* sweepToStart() {
-    const deleteByIds = vi.spyOn(env.MESSAGES, "deleteByIds");
     answer([discordMessage(KEPT)]);
     yield* ingestChannel({ guildId: GUILD, channelId: CHANNEL });
     const stored = yield* storedIds;
     expect(stored.has(DELETED)).toBe(false);
     expect(stored.has(KEPT)).toBe(true);
-    expect(deleteByIds).toHaveBeenCalledWith([DELETED]);
     expect(Option.isNone(yield* savedCursor)).toBe(true);
   }),
 );

@@ -1,8 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
-import { env } from "cloudflare:workers";
 import { Array, Effect, Option, Schema } from "effect";
-import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
+import { afterAll, beforeAll, expect } from "vite-plus/test";
 
 import {
   A_OPEN,
@@ -12,7 +11,6 @@ import {
   A_STAFF_THREAD,
   B_OPEN,
   discordMembers,
-  EVERY_MESSAGE_ID,
   GUILD_A,
   GUILD_B,
   GUILD_C,
@@ -27,10 +25,7 @@ import type { ToolOutcome } from "./__tests__/tool-call";
 import { readMessages } from "./messages.server";
 import { resolveScope } from "./scope.server";
 
-const DEFAULT_LIMIT = 20;
 const READ_LIMIT = 50;
-const UNIT = 1;
-const EMBEDDING = [UNIT];
 const REFUSED = { text: "Channel not found", isError: true, structured: Option.none() };
 
 const readPastChannelCheck = (
@@ -85,14 +80,6 @@ afterAll(() => {
   network.disable();
 });
 
-beforeEach(() => {
-  vi.spyOn(env.AI, "run").mockResolvedValue({ data: [EMBEDDING] });
-  vi.spyOn(env.MESSAGES, "query").mockResolvedValue({
-    matches: EVERY_MESSAGE_ID.map((id) => ({ id, score: 1 })),
-    count: EVERY_MESSAGE_ID.length,
-  });
-});
-
 it.effect("lists only the servers the user belongs to", () =>
   Effect.gen(function* listServers() {
     const ids = yield* idsOf("servers")(callTool({ name: "list_servers", args: {} }));
@@ -109,31 +96,10 @@ it.effect("lists only the channels the user can read", () =>
   }),
 );
 
-it.effect("asks the vector index only for the requested server and its readable channels", () =>
-  Effect.gen(function* searchFilter() {
-    const query = vi.spyOn(env.MESSAGES, "query");
-    yield* callTool({ name: "search_messages", args: { serverId: GUILD_A, query: SAME_WORDS } });
-    expect(query).toHaveBeenCalledWith(expect.anything(), {
-      topK: DEFAULT_LIMIT,
-      returnMetadata: "none",
-      filter: { guildId: GUILD_A, channelId: { $in: [A_OPEN] } },
-    });
-  }),
-);
-
-it.effect("drops other servers and unreadable channels even if the index returns them", () =>
-  Effect.gen(function* search() {
-    const ids = yield* idsOf("messages")(
-      callTool({ name: "search_messages", args: { serverId: GUILD_A, query: SAME_WORDS } }),
-    );
-    expect(ids).toStrictEqual([A_OPEN_MESSAGE]);
-  }),
-);
-
 it.effect("does not report a category as a channel still being stored", () =>
   Effect.gen(function* searchIngest() {
     const pending = yield* notFullyIngestedOf(
-      callTool({ name: "search_messages", args: { serverId: GUILD_A, query: SAME_WORDS } }),
+      callTool({ name: "find_messages", args: { serverId: GUILD_A, query: SAME_WORDS } }),
     );
     expect(pending).toStrictEqual([]);
   }),
@@ -142,12 +108,10 @@ it.effect("does not report a category as a channel still being stored", () =>
 it.effect("refuses to search an unreadable channel, its threads or one from another server", () =>
   Effect.gen(function* searchRefused() {
     const outcomes = yield* Effect.forEach(
-      ["search_messages", "find_messages"].flatMap((name) =>
-        [A_STAFF, A_STAFF_THREAD, A_PRIVATE_THREAD, B_OPEN].map((channelId) => ({
-          name,
-          args: { serverId: GUILD_A, query: SAME_WORDS, channelId },
-        })),
-      ),
+      [A_STAFF, A_STAFF_THREAD, A_PRIVATE_THREAD, B_OPEN].map((channelId) => ({
+        name: "find_messages",
+        args: { serverId: GUILD_A, query: SAME_WORDS, channelId },
+      })),
       callTool,
     );
     expect(outcomes).toStrictEqual(Array.replicate(REFUSED, outcomes.length));
@@ -156,16 +120,13 @@ it.effect("refuses to search an unreadable channel, its threads or one from anot
 
 it.effect("searches a readable channel without its private threads", () =>
   Effect.gen(function* searchChannelFilter() {
-    const query = vi.spyOn(env.MESSAGES, "query");
-    yield* callTool({
-      name: "search_messages",
-      args: { serverId: GUILD_A, query: SAME_WORDS, channelId: A_OPEN },
-    });
-    expect(query).toHaveBeenCalledWith(expect.anything(), {
-      topK: DEFAULT_LIMIT,
-      returnMetadata: "none",
-      filter: { guildId: GUILD_A, channelId: { $in: [A_OPEN] } },
-    });
+    const found = yield* foundOf(
+      callTool({
+        name: "find_messages",
+        args: { serverId: GUILD_A, query: SAME_WORDS, channelId: A_OPEN },
+      }),
+    );
+    expect(found).toStrictEqual({ total: 1, ids: [A_OPEN_MESSAGE] });
   }),
 );
 
@@ -174,8 +135,12 @@ it.effect("counts keyword matches only in the channels the user can read", () =>
     const found = yield* Effect.all([
       foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "オフ会" } })),
       foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "飲み会" } })),
+      foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "週" } })),
+      foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "所の" } })),
     ]);
     expect(found).toStrictEqual([
+      { total: 1, ids: [A_OPEN_MESSAGE] },
+      { total: 0, ids: [] },
       { total: 1, ids: [A_OPEN_MESSAGE] },
       { total: 0, ids: [] },
     ]);
@@ -194,11 +159,6 @@ it.effect("refuses to read an unreadable channel, its threads or one from anothe
 
 it.effect("returns no messages from a server whose admin has not consented or withdrew", () =>
   Effect.gen(function* withoutConsent() {
-    const found = yield* Effect.forEach([GUILD_B, GUILD_D], (serverId) =>
-      idsOf("messages")(
-        callTool({ name: "search_messages", args: { serverId, query: SAME_WORDS } }),
-      ),
-    );
     const read = yield* Effect.forEach(
       [
         { serverId: GUILD_B, channelId: B_OPEN },
@@ -209,7 +169,7 @@ it.effect("returns no messages from a server whose admin has not consented or wi
     const counted = yield* Effect.forEach([GUILD_B, GUILD_D], (serverId) =>
       foundOf(callTool({ name: "find_messages", args: { serverId, query: "オフ会" } })),
     );
-    expect([...found, ...read]).toStrictEqual([[], [], [], []]);
+    expect(read).toStrictEqual([[], []]);
     expect(counted).toStrictEqual([
       { total: 0, ids: [] },
       { total: 0, ids: [] },
@@ -260,7 +220,7 @@ it.effect("keeps unreadable and foreign messages out of a read past the channel 
 it.effect("treats a server the user does not belong to as missing", () =>
   Effect.gen(function* foreignServer() {
     const outcome = yield* callTool({
-      name: "search_messages",
+      name: "find_messages",
       args: { serverId: GUILD_C, query: SAME_WORDS },
     });
     expect(outcome).toStrictEqual({

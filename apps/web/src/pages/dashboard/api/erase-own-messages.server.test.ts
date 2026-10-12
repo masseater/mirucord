@@ -29,8 +29,12 @@ const messageBy = (id: string, authorId: string): IndexedMessage => ({
   tokens: [],
 });
 
-const seedGuild = (guildId: string): Effect.Effect<void> =>
-  createGuildKey.pipe(
+const writeMessages = (guildId: string, messages: readonly IndexedMessage[]): Effect.Effect<void> =>
+  Effect.promise(() => guildStore(guildId).write(messages, "overwrite"));
+
+const seedGuild = (guildId: string): Effect.Effect<void> => {
+  const seeded = [messageBy(`${guildId}-mine`, AUTHOR), messageBy(`${guildId}-theirs`, OTHER)];
+  return createGuildKey.pipe(
     Effect.flatMap((wrappedKey) =>
       Effect.promise(() =>
         db.insert(guild).values({
@@ -42,38 +46,50 @@ const seedGuild = (guildId: string): Effect.Effect<void> =>
         }),
       ),
     ),
-    Effect.andThen(
-      Effect.promise(() =>
-        guildStore(guildId).write(
-          [messageBy(`${guildId}-mine`, AUTHOR), messageBy(`${guildId}-theirs`, OTHER)],
-          "overwrite",
-        ),
-      ),
-    ),
+    Effect.andThen(writeMessages(guildId, seeded)),
   );
+};
 
 const storedIds = (guildId: string): Effect.Effect<readonly string[]> =>
   Effect.promise(() =>
     guildStore(guildId).idsBetween(CHANNEL, { from: UNBOUNDED, upTo: UNBOUNDED }),
   );
 
-it.effect("removes the author's messages from every server and keeps the others", () =>
+it.effect("removes the author's messages only from the chosen server", () =>
   Effect.gen(function* erased() {
     yield* seedGuild("810");
     yield* seedGuild("820");
-    yield* eraseOwnMessages(AUTHOR);
+    expect(yield* eraseOwnMessages({ guildId: "810", authorId: AUTHOR })).toStrictEqual({
+      status: "erased",
+    });
     expect(yield* storedIds("810")).toStrictEqual(["810-theirs"]);
-    expect(yield* storedIds("820")).toStrictEqual(["820-theirs"]);
+    expect(yield* storedIds("820")).toStrictEqual(["820-mine", "820-theirs"]);
   }),
 );
 
-it.effect("does not store the author's messages again after the erasure", () =>
+it.effect("does not store the author's messages again in that server", () =>
   Effect.gen(function* stayErased() {
     yield* seedGuild("830");
-    yield* eraseOwnMessages(AUTHOR);
-    yield* Effect.promise(() =>
-      guildStore("830").write([messageBy("830-again", AUTHOR)], "overwrite"),
-    );
+    yield* eraseOwnMessages({ guildId: "830", authorId: AUTHOR });
+    yield* writeMessages("830", [messageBy("830-again", AUTHOR)]);
     expect(yield* storedIds("830")).toStrictEqual(["830-theirs"]);
+  }),
+);
+
+it.effect("keeps the erasure after the server's messages are cleared", () =>
+  Effect.gen(function* afterClear() {
+    yield* seedGuild("840");
+    yield* eraseOwnMessages({ guildId: "840", authorId: AUTHOR });
+    yield* Effect.promise(() => guildStore("840").clear());
+    yield* writeMessages("840", [messageBy("840-again", AUTHOR)]);
+    expect(yield* storedIds("840")).toStrictEqual([]);
+  }),
+);
+
+it.effect("refuses an unknown server", () =>
+  Effect.gen(function* unknown() {
+    expect(yield* eraseOwnMessages({ guildId: "850", authorId: AUTHOR })).toStrictEqual({
+      status: "notFound",
+    });
   }),
 );

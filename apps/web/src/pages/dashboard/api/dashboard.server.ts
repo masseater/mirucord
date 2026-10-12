@@ -131,7 +131,8 @@ const disconnectFor = (clientId: string): Effect.Effect<DisconnectResult> =>
     ),
   );
 
-const eraseMessagesFor: Effect.Effect<EraseResult | SignedOut> = withSignedInUser(eraseOwnMessages);
+const eraseMessagesFor = (guildId: string): Effect.Effect<EraseResult | SignedOut> =>
+  withSignedInUser((authorId) => eraseOwnMessages({ guildId, authorId }));
 
 const loadGuildPage = (guildId: string): Effect.Effect<GuildPage> =>
   withSignedInUser((userId) =>

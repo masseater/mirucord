@@ -236,6 +236,9 @@ catalogs:
     '@vitejs/plugin-rsc':
       specifier: 0.5.36
       version: 0.5.36
+    '@yarnpkg/parsers':
+      specifier: 3.1.0
+      version: 3.1.0
     class-variance-authority:
       specifier: 0.7.1
       version: 0.7.1
@@ -300,6 +303,9 @@ catalogs:
       specifier: npm:@voidzero-dev/vite-plus-core@1.1.0
       version: 1.1.0
   stack:
+    '@distilled.cloud/cloudflare':
+      specifier: 1.0.0-rc.13
+      version: 1.0.0-rc.13
     '@effect/atom-react':
       specifier: 4.0.0
       version: 4.0.0
@@ -459,9 +465,15 @@ importers:
 
   .claude:
     dependencies:
+      '@distilled.cloud/cloudflare':
+        specifier: catalog:stack
+        version: 1.0.0-rc.13(effect@4.0.0)
       '@effect/platform-node':
         specifier: 'catalog:'
         version: 4.0.0(effect@4.0.0)(redis@6.2.1(@opentelemetry/api@1.9.1))
+      '@yarnpkg/parsers':
+        specifier: 'catalog:'
+        version: 3.1.0
       alchemy:
         specifier: catalog:stack
         version: 2.0.0-beta.81(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.2.1(@opentelemetry/api@1.9.1)))(@effect/vitest@4.0.0(effect@4.0.0)(vitest@5.0.3))(@types/node@26.6.4)(@types/react@19.3.0)(drizzle-kit@1.0.0-rc.5-ab785fc)(drizzle-orm@1.0.0-rc.5-ab785fc(@cloudflare/workers-types@5.20261008.1)(@effect/sql-d1@4.0.0(effect@4.0.0))(@effect/sql-sqlite-do@4.0.0(effect@4.0.0))(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.4)(@opentelemetry/api@1.9.1)(@sinclair/typebox@0.34.52)(effect@4.0.0)(valibot@1.2.0(typescript@5.9.3))(zod@4.6.5))(effect@4.0.0)(esbuild@0.28.2)(hono@4.11.4)(jiti@2.7.0)(terser@5.51.2)(typescript@5.9.3)(ws@8.22.0)

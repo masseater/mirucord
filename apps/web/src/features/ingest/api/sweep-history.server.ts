@@ -5,7 +5,7 @@ import type { DiscordMessage } from "#/shared/discord/index.server";
 import { fetchAndStore, idsOf, isFullPage, oldestId } from "./message-page.server";
 import type { IngestError, StoreTarget } from "./message-page.server";
 import { channelMessagesBelow, channelMessagesSince, deleteMessages } from "./message-rows.server";
-import type { VectorizeError } from "./message-rows.server";
+import type { ChannelRef } from "./message-rows.server";
 
 const oldestTimestamp = (page: readonly DiscordMessage[]): Option.Option<DateTime.DateTime> =>
   Array.match(page, {
@@ -20,20 +20,20 @@ const oldestTimestamp = (page: readonly DiscordMessage[]): Option.Option<DateTim
   });
 
 const removeDeleted = ({
-  channelId,
+  ref,
   latest,
 }: Readonly<{
-  channelId: string;
+  ref: ChannelRef;
   latest: readonly DiscordMessage[];
-}>): Effect.Effect<void, VectorizeError> => {
+}>): Effect.Effect<void> => {
   const since = Option.some(latest).pipe(
     Option.filter(isFullPage),
     Option.flatMap(oldestTimestamp),
   );
   const present = new Set(idsOf(latest));
-  return channelMessagesSince({ channelId, since }).pipe(
+  return channelMessagesSince({ ...ref, since }).pipe(
     Effect.map((stored) => stored.filter((id) => !present.has(id))),
-    Effect.flatMap(deleteMessages),
+    Effect.flatMap((gone) => deleteMessages({ guildId: ref.guildId, ids: gone })),
   );
 };
 
@@ -54,12 +54,13 @@ const sweepBelow = (
       const next = oldestOfFullPage(page);
       const present = new Set(idsOf(page));
       return channelMessagesBelow({
+        guildId: target.job.guildId,
         channelId: target.job.channelId,
         below: cursor,
         from: next,
       }).pipe(
         Effect.map((stored) => stored.filter((id) => !present.has(id))),
-        Effect.flatMap(deleteMessages),
+        Effect.flatMap((gone) => deleteMessages({ guildId: target.job.guildId, ids: gone })),
         Effect.as(next),
       );
     }),

@@ -6,8 +6,9 @@ import { http, HttpResponse } from "msw";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
 import { createGuildKey } from "#/shared/crypto/index.server";
-import { channel, db, guild, ingestConsent, message } from "#/shared/db/index.server";
+import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
+import { putMessages, storedMessage } from "./__tests__/guild-messages";
 import { forumPosts } from "./forum-posts.server";
 
 const OWNER = "901";
@@ -20,6 +21,8 @@ const TEXT = "604";
 const TEXT_THREAD = "605";
 const DISCORD = "https://discord.com/api/v10";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
+
+const LIVELY_MESSAGES = ["701", "702"].map((id) => storedMessage({ id, channelId: LIVELY_POST }));
 
 const network = setupNetwork();
 
@@ -34,15 +37,6 @@ const channelRow = (id: string, type: number): typeof channel.$inferInsert => ({
 const postRow = (id: string, parentId: string): typeof channel.$inferInsert => ({
   ...channelRow(id, ChannelType.PublicThread),
   parentId,
-});
-
-const messageRow = (id: string): typeof message.$inferInsert => ({
-  id,
-  guildId: GUILD,
-  channelId: LIVELY_POST,
-  authorId: OWNER,
-  sealed: "sealed",
-  createdAt: SEEDED_AT,
 });
 
 const seed = createGuildKey.pipe(
@@ -69,10 +63,10 @@ const seed = createGuildKey.pipe(
           },
           postRow(TEXT_THREAD, TEXT),
         ]),
-        db.insert(message).values([messageRow("701"), messageRow("702")]),
       ]),
     ),
   ),
+  Effect.andThen(putMessages({ guildId: GUILD, messages: LIVELY_MESSAGES })),
 );
 
 beforeAll(() => {

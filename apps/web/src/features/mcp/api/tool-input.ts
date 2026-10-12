@@ -9,12 +9,6 @@ const Limit = Schema.optionalKey(
 );
 
 const ListChannelsInput = Schema.Struct({ serverId: Schema.String });
-const SearchMessagesInput = Schema.Struct({
-  serverId: Schema.String,
-  query: Schema.NonEmptyString,
-  channelId: Schema.optionalKey(Schema.String),
-  limit: Limit,
-});
 const FindMessagesInput = Schema.Struct({
   serverId: Schema.String,
   query: Schema.NonEmptyString,
@@ -29,10 +23,4 @@ const ReadMessagesInput = Schema.Struct({
   limit: Limit,
 });
 
-export {
-  FindMessagesInput,
-  FIRST_OFFSET,
-  ListChannelsInput,
-  ReadMessagesInput,
-  SearchMessagesInput,
-};
+export { FindMessagesInput, FIRST_OFFSET, ListChannelsInput, ReadMessagesInput };

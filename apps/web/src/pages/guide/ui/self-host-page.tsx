@@ -16,7 +16,7 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "list",
         items: [
-          "Cloudflare のアカウントと、そこで管理しているドメイン。Workers、D1、Vectorize、Queues、Workers AI、Secrets Store を使います。Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
+          "Cloudflare のアカウントと、そこで管理しているドメイン。Workers、D1、Durable Objects、Queues、Workers AI、Secrets Store を使います。Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
           "Discord Developer Portal のアプリケーション。",
           "fly.io のアカウント。編集と削除をすぐに反映させるための Gateway に使います。なくても、1日1回の取り込みだけで動きます。",
           "GitHub のアカウント。CI からデプロイするときに使います。",
@@ -108,7 +108,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: "1 つ目のコマンドで Worker、D1、Vectorize、Queues、Secrets Store がそろい、D1 のマイグレーションも流れます。2 つ目は fly.io に Gateway を置くコマンドで、使わないなら要りません。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
+        text: "1 つ目のコマンドで Worker、D1、Durable Objects、Queues、Secrets Store がそろい、D1 のマイグレーションも流れます。2 つ目は fly.io に Gateway を置くコマンドで、使わないなら要りません。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
       },
     ],
   },

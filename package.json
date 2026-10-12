@@ -5,11 +5,9 @@
   "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
-    "verify": "vp check && vp run -r test && NODE_OPTIONS=--max-old-space-size=4096 eslint --max-warnings 0 . && syncpack lint && vp run textlint && vp run yomiyasu && vp run renovate && vp run actions-lint && vp run -r steiger && vp run -r db:check && vp run -r fallow",
-    "textlint": "textlint \"**/*.md\"",
-    "yomiyasu": "node -e \"const { execFileSync, spawnSync } = require('node:child_process'); const { path } = JSON.parse(execFileSync('skills', ['ls', '--json'])).find(({ name }) => name === 'yomiyasu'); const statuses = JSON.parse(spawnSync('textlint', ['--format', 'json', '**/*.md']).stdout).map(({ filePath }) => spawnSync('python3', [require('node:path').join(path, 'scripts', 'yomiyasu_lint.py'), '--strict', filePath], { stdio: 'inherit' }).status); process.exitCode = statuses.every((status) => status === 0) ? 0 : 1\"",
+    "markdown-lint": "textlint \"**/*.md\" && git ls-files -co --exclude-standard '*.md' | git -c core.excludesFile=.textlintignore check-ignore --no-index --stdin -nv | awk '$1 == \"::\" { print $2 }' | xargs -r -n 1 -P 4 python3 \"$(skills ls --json | jq -r '.[] | select(.name == \"yomiyasu\").path')/scripts/yomiyasu_lint.py\" --strict",
     "renovate": "renovate-config-validator --strict",
-    "fallow": "fallow --production --fail-on-issues --quiet --format compact && fallow dead-code --no-production --fail-on-issues --quiet --format compact && fallow dupes --fail-on-issues --quiet --format compact && fallow security --fail-on-issues --quiet",
+    "fallow": "fallow --skip dupes --fail-on-issues --quiet --format compact && fallow dead-code --no-production --fail-on-issues --quiet --format compact && fallow dead-code --no-production --quiet --format json | jq -e '[.prop_drilling_chains, .thin_wrappers, .duplicate_prop_shapes] | all(length == 0)' > /dev/null && fallow dupes --fail-on-issues --quiet --format compact && fallow security --fail-on-issues --quiet",
     "prepare": "vp config && skills experimental_install --force"
   },
   "devDependencies": {

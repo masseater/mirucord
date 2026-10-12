@@ -85,7 +85,7 @@ Paid に含まれる D1・Queues・Workers AI・Durable Objects などの無料�
 ## レビューとCI
 
 - PRのレビューは行わない。PRは作ったらすぐマージする。
-- PR単位のCIは走らせない。`pull_request` トリガーのワークフローを追加しない。
+- PR単位のCIは走らせない。`pull_request` トリガーのワークフローは、最新の main を取り込んでいない PR のマージをルールセットで拒むための `up-to-date`（何も検査しない）だけにする。
 - CIはmainへのpushで必ず走らせる。ワークフローは `.github/workflows/verify.yml` である。
 - デプロイやリリースのジョブは、同じワークフローで `needs: verify` を指定し、mainの必須CIが通ってから実行する。
 - マージ前の確認は手元の `vp run verify` で行う。

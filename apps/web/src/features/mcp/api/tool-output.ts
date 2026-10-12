@@ -1,17 +1,17 @@
 import { Schema } from "effect";
 
+import { AttachmentSchema, EmbedSchema, PollSchema } from "#/shared/crypto/index.server";
+
 const Ingest = Schema.Literals(["notConsented", "waiting", "backfilling", "done", "empty"]);
-const Attachment = Schema.Struct({
-  filename: Schema.String,
-  url: Schema.String,
-  description: Schema.optional(Schema.String),
-});
 const Message = Schema.Struct({
   id: Schema.String,
   channelId: Schema.String,
   author: Schema.String,
   content: Schema.String,
-  attachments: Schema.Array(Attachment),
+  attachments: Schema.Array(AttachmentSchema),
+  embeds: Schema.Array(EmbedSchema),
+  stickers: Schema.Array(Schema.String),
+  poll: Schema.optional(PollSchema),
   createdAt: Schema.String,
   edited: Schema.Boolean,
   url: Schema.String,

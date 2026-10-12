@@ -1,6 +1,6 @@
+import type { ForgetJob, RefreshJob, StoreJob } from "@repo/ingest-util-gateway-contract";
 import { Effect, Option, pipe } from "effect";
 
-import type { ForgetJob, RefreshJob, StoreJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKeys } from "#/shared/crypto/index.server";
 import { FORBIDDEN, NOT_FOUND, findMessage, listMessages } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";

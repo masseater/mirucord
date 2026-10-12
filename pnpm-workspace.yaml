@@ -1,6 +1,6 @@
 packages:
   - apps/*
-  - libs/*
+  - libs/*/*
   - infra/*
   - tools/*
   - .claude

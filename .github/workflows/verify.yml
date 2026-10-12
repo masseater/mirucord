@@ -133,8 +133,8 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - if: steps.fly.outputs.enabled == 'true'
-        working-directory: apps/web
-        run: vp exec alchemy deploy alchemy.gateway.ts --stage prod --yes --no-input
+        working-directory: apps/gateway
+        run: vp exec alchemy deploy --stage prod --yes --no-input
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -19,7 +19,7 @@ const QUESTIONS = [
   {
     time: "今日 21:06",
     reply: { author: memberAuthor(MEMBERS.yui), text: "ねえ、これってお金かかるの？" },
-    answer: `かからないよ！いまは無料で使えるの。ただ、無料で入れるのはいまのところ先着 ${FREE_GUILD_LIMIT} サーバーまでなんだ。`,
+    answer: `かからないよ！いまは無料なんだ。ただ、入れるのは先着 ${FREE_GUILD_LIMIT} サーバーまでだよ。`,
     reactions: [{ emoji: "🎉", count: 5, by: "others" }],
   },
   {
@@ -28,8 +28,7 @@ const QUESTIONS = [
       author: memberAuthor(MEMBERS.kenta),
       text: `で、${MASCOT_NAME}にはどこから聞けばいいの？`,
     },
-    answer:
-      "Claude みたいな、MCP に対応した AI のアプリから呼んでね！手元の AI にこう送ってみてね！",
+    answer: "Claude みたいに MCP に対応した AI アプリから呼んでね！手元の AI にこう送ってみて！",
     copy: SETUP_PROMPT,
     reactions: [{ emoji: "👀", count: 2, by: "others" }],
   },
@@ -46,7 +45,7 @@ const QUESTIONS = [
   {
     time: "今日 21:09",
     reply: { author: memberAuthor(MEMBERS.yui), text: "DM まで読まれちゃったりしない？" },
-    answer: `読まないよ！${MASCOT_NAME}が読むのはサーバーのチャンネルとスレッドだけ。DM はのぞかないから安心してね。`,
+    answer: `読まないよ！${MASCOT_NAME}が読むのはサーバーのチャンネルとスレッドだけなんだ。`,
     reactions: [{ emoji: "🙆", count: 3, by: "others" }],
   },
   {
@@ -61,7 +60,7 @@ const QUESTIONS = [
   {
     time: "今日 21:11",
     reply: { author: memberAuthor(MEMBERS.kenta), text: `${MASCOT_NAME}に話しかけても良い？` },
-    answer: `ごめんね！Discord の中で話しかけてもらっても、${MASCOT_NAME}はお返事できないんだ。Claude みたいな、MCP に対応した AI のアプリから聞いてね！`,
+    answer: `ごめんね！Discord の中で話しかけてもらっても、${MASCOT_NAME}はお返事できないんだ。Claude みたいに MCP に対応した AI アプリから聞いてね！`,
     reactions: [{ emoji: "🥲", count: 2, by: "others" }],
   },
 ] as const;

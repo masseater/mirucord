@@ -228,6 +228,7 @@ const web = Effect.gen(function* web() {
     domain: SITE_HOST,
     main: "src/app/server/index.ts",
     compatibility: { flags: ["global_fetch_strictly_public"] },
+    logpush: true,
     env: {
       ...discord,
       ...operations,
@@ -260,6 +261,7 @@ const ciTelemetry = Effect.gen(function* ciTelemetry() {
   return yield* Workers.Worker("CiTelemetry", {
     name: yield* mirucordName("ci-telemetry"),
     main: "./ci-telemetry.worker.ts",
+    logpush: true,
     env: { GITHUB_REPOSITORY },
     observability: {
       enabled: true,

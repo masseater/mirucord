@@ -11,8 +11,7 @@ import { ConsentResultMessage } from "./consent-result-message";
 import { NoticeChannelPicker } from "./notice-channel-picker";
 import { ReadableChannelList } from "./readable-channel-list";
 
-const NOTE = "同意すると、選んだチャンネルにお知らせを 1 回投稿します。";
-const SUBMIT = "同意して取り込みを始める";
+const SUBMIT = "取り込みに同意する";
 
 const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => {
   const { noticeChannelId, canSubmit, pickNotice, submit, mutation } = useConsentForm(settings);
@@ -24,7 +23,6 @@ const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): React
         value={noticeChannelId}
         onChoose={pickNotice}
       />
-      <p className="text-dc-muted text-sm">{NOTE}</p>
       <PopButton tone="primary" disabled={!canSubmit} onClick={submit}>
         {SUBMIT}
       </PopButton>

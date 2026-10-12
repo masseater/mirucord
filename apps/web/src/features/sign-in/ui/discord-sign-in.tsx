@@ -3,10 +3,11 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 
 import { authClient } from "#/shared/auth";
+import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
 
 const SIGN_IN = "Discord でログイン";
-const FAILED = "ログインできませんでした。";
+const FAILED = "ログインできませんでした";
 
 const DiscordSignIn = ({
   callbackURL,
@@ -28,9 +29,9 @@ const DiscordSignIn = ({
         {SIGN_IN}
       </PopButton>
       {status === "error" && (
-        <p role="alert" className="bg-pink text-ink rounded-2xl px-4 py-2 text-sm font-bold">
+        <IconLine icon="alert" role="alert" tone="strong" size="sm">
           {FAILED}
-        </p>
+        </IconLine>
       )}
     </>
   );

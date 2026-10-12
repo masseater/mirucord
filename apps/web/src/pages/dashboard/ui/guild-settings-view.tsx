@@ -19,7 +19,7 @@ const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>):
   <>
     <MascotTip>{TIP[settings.ingest]}</MascotTip>
     <h1 className="text-dc-bright font-maru text-3xl font-black">{settings.name}</h1>
-    <ConsentRecord consent={settings.consent} />
+    {settings.consent.status !== "awaiting" && <ConsentRecord consent={settings.consent} />}
     {settings.consent.status === "awaiting" && <ConsentForm settings={settings} />}
     {settings.consent.status === "granted" && <GrantedPanels settings={settings} />}
   </>

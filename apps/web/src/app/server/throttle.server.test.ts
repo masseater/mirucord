@@ -2,8 +2,7 @@ import { it } from "@effect/vitest";
 import { Array, Effect, Option } from "effect";
 import { expect } from "vite-plus/test";
 
-import { MCP_RATE_LIMIT } from "./rate-limit";
-import { mcpRejection, tokenOrIp } from "./throttle.server";
+import { MCP_RATE_LIMIT, mcpRejection, tokenOrIp } from "./throttle.server";
 
 const FIRST_ATTEMPT = 1;
 const TOO_MANY_REQUESTS = 429;

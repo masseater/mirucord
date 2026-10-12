@@ -4,27 +4,32 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 
 import { eraseMyMessages } from "#/pages/dashboard/api/dashboard";
-import { mutationMessage } from "#/pages/dashboard/lib/mutation-message";
+import {
+  failure,
+  mutationFeedback,
+  progress,
+  SIGNED_OUT,
+  success,
+} from "#/pages/dashboard/lib/feedback";
+import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
 
+import { FeedbackLine } from "./feedback-line";
+
 const SUMMARY = "自分の投稿を削除する";
-const DETAIL =
-  "このサーバーで保存したあなたの投稿を削除し、これからも保存しません。Discord の投稿は消えません。元に戻せません。";
-const CONFIRM = "削除する";
-const MESSAGES = {
-  idle: "",
-  pending: "削除しています。",
-  error: "削除できませんでした。少し待ってからもう一度押してください。",
-} as const;
-const RESULT_MESSAGES = {
-  erased: "削除しました。",
-  notFound: "このサーバーは見つかりませんでした。",
-  signedOut: "ログインの期限が切れたので、削除できませんでした。もう一度ログインしてください。",
+const IRREVERSIBLE = "元に戻せません";
+const DISCORD_KEPT = "Discord の投稿は残ります";
+const CONFIRM = "自分の投稿を削除";
+const RESULTS = {
+  erased: success("削除しました"),
+  notFound: failure("このサーバーは見つかりません"),
+  signedOut: SIGNED_OUT,
 } as const;
 
-const eraseMessage = mutationMessage({
-  messages: MESSAGES,
-  resultMessage: (status: keyof typeof RESULT_MESSAGES) => RESULT_MESSAGES[status],
+const eraseFeedback = mutationFeedback({
+  pending: progress("削除しています"),
+  failed: "削除できませんでした",
+  result: (status: keyof typeof RESULTS) => RESULTS[status],
 });
 
 const EraseOwnMessages = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
@@ -35,7 +40,10 @@ const EraseOwnMessages = ({ guildId }: Readonly<{ guildId: string }>): ReactNode
   return (
     <details>
       <summary className="text-dc-muted cursor-pointer text-sm font-bold">{SUMMARY}</summary>
-      <p className="text-dc-muted mt-3">{DETAIL}</p>
+      <div className="text-dc-muted mt-3 flex flex-col gap-1">
+        <IconLine icon="warning">{IRREVERSIBLE}</IconLine>
+        <IconLine icon="message">{DISCORD_KEPT}</IconLine>
+      </div>
       <div className="mt-4">
         <PopButton
           tone="danger"
@@ -46,9 +54,9 @@ const EraseOwnMessages = ({ guildId }: Readonly<{ guildId: string }>): ReactNode
           {CONFIRM}
         </PopButton>
       </div>
-      <output className="mt-3 block text-sm font-bold">
-        {eraseMessage(status, Option.fromUndefinedOr(data))}
-      </output>
+      <div className="mt-3">
+        <FeedbackLine feedback={eraseFeedback(status, Option.fromUndefinedOr(data))} />
+      </div>
     </details>
   );
 };

@@ -2,10 +2,10 @@ import { DateTime, Effect, Option } from "effect";
 
 import { isNoticeCandidate } from "#/features/ingest/model/channel-ingest";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
-import { MASCOT_NAME, MCP_URL, ONBOARDING_STEPS, PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
+import { MASCOT_NAME, MCP_URL, PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
 import { db, ingestConsent } from "#/shared/db/index.server";
 import { FORBIDDEN, NOT_FOUND, postChannelMessage } from "#/shared/discord/index.server";
-import type { DiscordRequestError } from "#/shared/discord/index.server";
+import type { DiscordRequestError, OutgoingMessage } from "#/shared/discord/index.server";
 
 import { refreshIngest } from "./consent-scope.server";
 import { loadConsentedChannels } from "./guild-settings.server";
@@ -31,15 +31,19 @@ type ConsentResult =
 
 type RevokeResult = Readonly<{ status: "withdrawing" }> | Readonly<{ status: "forbidden" }>;
 
-const NOTICE = [
-  `はじめまして、${MASCOT_NAME}だよ！`,
-  "このサーバーのみんなの思い出をさがせるように、過去ログを読ませてもらうね。",
-  `読むのは **${MASCOT_NAME}が見られるチャンネル** だけだよ。`,
-  `${ONBOARDING_STEPS.register.guide} → ${MCP_URL}`,
-  ONBOARDING_STEPS.ask.guide,
-  `${MASCOT_NAME}の使い方はここを見てね → ${SITE_ORIGIN}/#start`,
-  `読んだ内容の扱いはここを見てね → ${SITE_ORIGIN}${PRIVACY_PATH}`,
-].join("\n");
+const NOTICE: OutgoingMessage = {
+  content: [
+    `はじめまして、${MASCOT_NAME}だよ！`,
+    `このサーバーの過去ログを読ませてもらうね。読むのは **${MASCOT_NAME}が見られるチャンネル** だけだよ。`,
+    "",
+    "アプリに登録する URL",
+    MCP_URL,
+  ].join("\n"),
+  links: [
+    { label: "使い方", url: `${SITE_ORIGIN}/#start` },
+    { label: "プライバシーポリシー", url: `${SITE_ORIGIN}${PRIVACY_PATH}` },
+  ],
+};
 
 const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean =>
   channels.some((channel) => isNoticeCandidate(channel) && channel.id === request.noticeChannelId);
@@ -64,10 +68,7 @@ const postNoticeOnce = (
   if (scope.status === "granted") {
     return Effect.succeed("posted");
   }
-  return postChannelMessage({
-    channelId: request.noticeChannelId,
-    content: NOTICE,
-  }).pipe(
+  return postChannelMessage({ channelId: request.noticeChannelId, ...NOTICE }).pipe(
     Effect.as<NoticePost>("posted"),
     Effect.catchTag("DiscordRequestError", ({ status }) =>
       Effect.logWarning("Could not post the ingest notice").pipe(

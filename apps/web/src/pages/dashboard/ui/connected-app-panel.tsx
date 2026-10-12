@@ -7,18 +7,17 @@ import { Panel } from "#/shared/ui/panel";
 import { ConnectedAppRow } from "./connected-app-row";
 
 const TITLE = "つないでいるアプリ";
-const EMPTY = "つないでいるアプリはまだありません。";
 
-const ConnectedAppPanel = ({ apps }: Readonly<{ apps: readonly ConnectedApp[] }>): ReactNode => (
-  <Panel>
-    <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
-    {Array.isReadonlyArrayEmpty(apps) && <p className="text-dc-muted">{EMPTY}</p>}
-    <ul className="flex flex-col gap-3">
-      {apps.map((app) => (
-        <ConnectedAppRow key={app.clientId} app={app} />
-      ))}
-    </ul>
-  </Panel>
-);
+const ConnectedAppPanel = ({ apps }: Readonly<{ apps: readonly ConnectedApp[] }>): ReactNode =>
+  Array.isReadonlyArrayNonEmpty(apps) && (
+    <Panel>
+      <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
+      <ul className="flex flex-col gap-3">
+        {apps.map((app) => (
+          <ConnectedAppRow key={app.clientId} app={app} />
+        ))}
+      </ul>
+    </Panel>
+  );
 
 export { ConnectedAppPanel };

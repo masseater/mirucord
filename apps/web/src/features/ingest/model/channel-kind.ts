@@ -9,17 +9,17 @@ const VOICE_TYPES: ReadonlySet<ChannelType> = new Set([
   ChannelType.GuildStageVoice,
 ]);
 
-const THREAD_PARENT_TYPES: ReadonlySet<ChannelType> = new Set([
+const TEXT_TYPES: ReadonlySet<ChannelType> = new Set([
   ChannelType.GuildText,
   ChannelType.GuildAnnouncement,
-  ...FORUM_TYPES,
 ]);
+
+const THREAD_PARENT_TYPES: ReadonlySet<ChannelType> = new Set([...TEXT_TYPES, ...FORUM_TYPES]);
 
 const LISTED_TYPES: ReadonlySet<ChannelType> = new Set([...THREAD_PARENT_TYPES, ...VOICE_TYPES]);
 
 const MESSAGE_TYPES: ReadonlySet<ChannelType> = new Set([
-  ChannelType.GuildText,
-  ChannelType.GuildAnnouncement,
+  ...TEXT_TYPES,
   ...VOICE_TYPES,
   ...THREAD_TYPES,
 ]);
@@ -42,4 +42,12 @@ const kindOf = (type: ChannelType): ChannelKind =>
     Match.orElse((): ChannelKind => "text"),
   );
 
-export { kindOf, LISTED_TYPES, MESSAGE_TYPES, STORED_TYPES, THREAD_PARENT_TYPES, VOICE_TYPES };
+export {
+  kindOf,
+  LISTED_TYPES,
+  MESSAGE_TYPES,
+  STORED_TYPES,
+  TEXT_TYPES,
+  THREAD_PARENT_TYPES,
+  VOICE_TYPES,
+};

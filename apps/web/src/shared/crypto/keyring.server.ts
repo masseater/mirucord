@@ -6,6 +6,7 @@ const KEY_BITS = 256;
 const KEY_BYTES = 32;
 const WRAP_INFO = "mirucord/guild-key-wrap";
 const SEARCH_INFO = "mirucord/message-search";
+const COMMON_PHRASE_INFO = "mirucord/common-phrase";
 const GUILD_KEY_ALGORITHMS = { alg: "A256KW", enc: "A256GCM" } as const;
 
 const textEncoder = new TextEncoder();
@@ -26,6 +27,11 @@ const DERIVED_KEYS = {
   },
   search: {
     info: SEARCH_INFO,
+    algorithm: { name: "HMAC", hash: "SHA-256", length: KEY_BITS },
+    usages: ["sign"],
+  },
+  common: {
+    info: COMMON_PHRASE_INFO,
     algorithm: { name: "HMAC", hash: "SHA-256", length: KEY_BITS },
     usages: ["sign"],
   },
@@ -63,14 +69,19 @@ const deriveFrom = (
   );
 };
 
-const wrappingKeyOf = (masterKey: Effect.Effect<SecretsStoreSecret>): Effect.Effect<CryptoKey> =>
-  deriveFrom(
-    masterKey.pipe(
-      Effect.flatMap((secret) => Effect.promise(() => secret.get())),
-      Effect.map((text) => textEncoder.encode(text)),
-    ),
-    "wrap",
+const materialOf = (masterKey: Effect.Effect<SecretsStoreSecret>): Effect.Effect<Uint8Array> =>
+  masterKey.pipe(
+    Effect.flatMap((secret) => Effect.promise(() => secret.get())),
+    Effect.map((text) => textEncoder.encode(text)),
   );
+
+const wrappingKeyOf = (masterKey: Effect.Effect<SecretsStoreSecret>): Effect.Effect<CryptoKey> =>
+  deriveFrom(materialOf(masterKey), "wrap");
+
+const openCommonPhraseKey: Effect.Effect<CryptoKey> = deriveFrom(
+  materialOf(currentMasterKey),
+  "common",
+);
 
 const wrapWithCurrent = (rawKey: Effect.Effect<Uint8Array>): Effect.Effect<string> =>
   Effect.all([rawKey, wrappingKeyOf(currentMasterKey)]).pipe(
@@ -135,8 +146,12 @@ const openSearchKey = (wrappedKey: string): Effect.Effect<CryptoKey> =>
 
 const openGuildKeys = (
   wrappedKey: string,
-): Effect.Effect<Readonly<{ key: CryptoKey; searchKey: CryptoKey }>> =>
-  Effect.all({ key: openGuildKey(wrappedKey), searchKey: openSearchKey(wrappedKey) });
+): Effect.Effect<Readonly<{ key: CryptoKey; searchKey: CryptoKey; commonKey: CryptoKey }>> =>
+  Effect.all({
+    key: openGuildKey(wrappedKey),
+    searchKey: openSearchKey(wrappedKey),
+    commonKey: openCommonPhraseKey,
+  });
 
 const rewrapGuildKey = (wrappedKey: string): Effect.Effect<Option.Option<string>> =>
   unwrapWith(currentMasterKey, wrappedKey).pipe(

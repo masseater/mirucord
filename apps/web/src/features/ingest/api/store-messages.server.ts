@@ -1,8 +1,13 @@
 import { Discord } from "dfx";
 import { Array, Boolean, DateTime, Effect, Equal, Option, String, pipe } from "effect";
 
-import { guildStore, indexTokens, searchableTexts } from "#/entities/guild-message/index.server";
-import type { IndexedMessage } from "#/entities/guild-message/index.server";
+import {
+  guildStore,
+  indexTokens,
+  phraseHashes,
+  searchableTexts,
+} from "#/entities/guild-message/index.server";
+import type { IndexedMessage, PhraseState } from "#/entities/guild-message/index.server";
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { sealMessage } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
@@ -22,7 +27,12 @@ const STORED_TYPES: ReadonlySet<number> = new Set([
 const DESCRIBED_IMAGES_PER_MESSAGE = 4;
 const WITH_RICH_BODY = `${DESCRIBE_MODEL}+rich`;
 
-type StoreTarget = Readonly<{ key: CryptoKey; searchKey: CryptoKey; job: IngestJob }>;
+type StoreTarget = Readonly<{
+  key: CryptoKey;
+  searchKey: CryptoKey;
+  commonKey: CryptoKey;
+  job: IngestJob;
+}>;
 
 const editedAtOf = ({ edited_timestamp }: DiscordMessage): Option.Option<DateTime.Utc> =>
   Option.fromNullOr(edited_timestamp);
@@ -35,6 +45,22 @@ const isChanged = (previous: Option.Option<StoredMessage>, incoming: DiscordMess
       Option.isNone(describedWith) ||
       (hasRichBody(incoming) && !Option.contains(describedWith, WITH_RICH_BODY)),
   });
+
+const isAutomated = ({ author, webhook_id }: DiscordMessage): boolean =>
+  author.bot === true || Option.isSome(Option.fromUndefinedOr(webhook_id));
+
+const phrasesOf = (
+  { searchKey, commonKey }: StoreTarget,
+  incoming: DiscordMessage,
+  body: Pick<MessageBody, "content" | "stickers">,
+): Effect.Effect<PhraseState> =>
+  Effect.map(
+    Boolean.match(isAutomated(incoming), {
+      onTrue: () => Effect.succeed([]),
+      onFalse: () => phraseHashes({ searchKey, commonKey, source: body }),
+    }),
+    (hashes) => ({ status: "extracted", hashes }),
+  );
 
 const authorNameOf = ({ author }: DiscordMessage): string =>
   Option.getOrElse(Option.fromNullishOr(author.global_name), () => author.username);
@@ -121,15 +147,17 @@ const describeAll = (
   );
 
 const toIndexed = (
-  { key, searchKey, job }: StoreTarget,
+  target: StoreTarget,
   { incoming, attachments, describedWith }: DescribedMessage,
 ): Effect.Effect<IndexedMessage> => {
+  const { key, searchKey, job } = target;
   const body = { authorName: authorNameOf(incoming), ...bodyOf({ incoming, attachments }) };
   return Effect.all({
     sealed: sealMessage(body, key, { ...job, messageId: incoming.id }),
     tokens: indexTokens({ key: searchKey, texts: searchableTexts(body) }),
+    phrases: phrasesOf(target, incoming, body),
   }).pipe(
-    Effect.map(({ sealed, tokens }) => ({
+    Effect.map(({ sealed, tokens, phrases }) => ({
       row: {
         id: incoming.id,
         channelId: job.channelId,
@@ -140,6 +168,7 @@ const toIndexed = (
         editedAt: Option.getOrNull(Option.map(editedAtOf(incoming), DateTime.toEpochMillis)),
       },
       tokens,
+      phrases,
     })),
   );
 };

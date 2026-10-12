@@ -11,6 +11,7 @@ import {
 import {
   FindMessagesOutput,
   ListChannelsOutput,
+  ListServerPhrasesOutput,
   ListServersOutput,
   ReadMessagesOutput,
 } from "#/features/mcp/api/tool-output";
@@ -20,6 +21,7 @@ import { SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
 import { CATEGORY_TYPES, FORUM_TYPES } from "#/shared/discord";
 
 import { findMessages, readMessages } from "./messages.server";
+import { PHRASES_DESCRIPTION, serverPhrases } from "./phrases.server";
 import { readableGuilds, resolveScope } from "./scope.server";
 import type { GuildScope, StoredChannel } from "./scope.server";
 
@@ -33,6 +35,9 @@ const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const DEFAULT_LIMIT = 20;
 const CHANNEL_NOT_FOUND = "Channel not found";
 const INGEST_GUIDE = `Each channel carries \`ingest\`: only \`empty\` means the channel has no messages in Discord. \`notConsented\`, \`waiting\` and \`backfilling\` mean ${SERVICE_NAME} has not stored all of its messages yet, so an empty or short result does not mean the channel is empty; say so instead of reporting that there are no messages.`;
+
+const PHRASES_TOOL_NAME = "list_server_phrases";
+const PHRASES_HINT = `Before reading messages, call \`${PHRASES_TOOL_NAME}\` once for this server: it lists the phrases, custom emoji and stickers its members keep repeating, so you can read them as the server's own in-jokes and greetings instead of working out each one.`;
 
 const structuredResult = (value: Readonly<Record<string, unknown>>): CallToolResult => ({
   content: [{ type: "text", text: JSON.stringify(value) }],
@@ -142,6 +147,7 @@ const visibleChannels = (scope: GuildScope): CallToolResult =>
       parentId: Option.getOrNull(stored.parentId),
       ingest: ingestOf(scope, stored),
     })),
+    hint: PHRASES_HINT,
   } satisfies typeof ListChannelsOutput.Type);
 
 const listChannels =
@@ -149,6 +155,17 @@ const listChannels =
   ({ serverId }: typeof ListChannelsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: serverId, discordUserId }, (scope) =>
       Effect.succeed(visibleChannels(scope)),
+    );
+
+const phrases =
+  (discordUserId: string) =>
+  ({ serverId }: typeof ListChannelsInput.Type): Promise<CallToolResult> =>
+    withScope({ guildId: serverId, discordUserId }, (scope) =>
+      serverPhrases({ scope, channelIds: readableChannels(scope).map(({ id }) => id) }).pipe(
+        Effect.map((found) =>
+          structuredResult(found satisfies typeof ListServerPhrasesOutput.Type),
+        ),
+      ),
     );
 
 const find =
@@ -209,7 +226,7 @@ const TOOL_BASE = { icons: ICONS, annotations: { readOnlyHint: true, openWorldHi
 
 const LIST_SERVERS_TOOL = {
   title: "List servers",
-  description: `List the Discord servers you can read through ${SERVICE_NAME}. \`ingest\` is \`notConsented\` until the server's admin allows ${SERVICE_NAME} to store its messages; until then every channel reads as empty.`,
+  description: `List the Discord servers you can read through ${SERVICE_NAME}. \`ingest\` is \`notConsented\` until the server's admin allows ${SERVICE_NAME} to store its messages; until then every channel reads as empty. ${PHRASES_HINT}`,
   ...TOOL_BASE,
   outputSchema: ListServersOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
@@ -219,6 +236,17 @@ const LIST_CHANNELS_TOOL = {
   description: `List the text, voice, announcement, stage and forum channels and the threads (including forum posts) you can read in a server. ${INGEST_GUIDE}`,
   ...TOOL_BASE,
   outputSchema: ListChannelsOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+  inputSchema: ListChannelsInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+};
+
+const LIST_SERVER_PHRASES_TOOL = {
+  title: "List server phrases",
+  description: PHRASES_DESCRIPTION,
+  ...TOOL_BASE,
+  outputSchema: ListServerPhrasesOutput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
   inputSchema: ListChannelsInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
@@ -242,6 +270,7 @@ const buildServer = (discordUserId: string): McpServer => {
   const server = new McpServer(SERVER_INFO);
   server.registerTool("list_servers", LIST_SERVERS_TOOL, () => listServers(discordUserId));
   server.registerTool("list_channels", LIST_CHANNELS_TOOL, listChannels(discordUserId));
+  server.registerTool(PHRASES_TOOL_NAME, LIST_SERVER_PHRASES_TOOL, phrases(discordUserId));
   server.registerTool("find_messages", FIND_MESSAGES_TOOL, find(discordUserId));
   server.registerTool("read_messages", READ_MESSAGES_TOOL, read(discordUserId));
   return server;

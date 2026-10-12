@@ -2,17 +2,12 @@ import { Array, Effect, Number, Option, String } from "effect";
 
 import type { MessageBody } from "#/shared/crypto/index.server";
 
+import { hmacToken } from "./hmac.server";
+
 const SHORTEST_GRAM = 1;
 const LONGEST_GRAM = 3;
 const NEXT = 1;
 const NONE = 0;
-const TOKEN_START = 0;
-const TOKEN_BYTES = 8;
-const HEX_RADIX = 16;
-const HEX_WIDTH = 2;
-
-const textEncoder = new TextEncoder();
-
 const charsOf = (text: string): readonly string[] => Array.fromIterable(text.toLowerCase());
 
 const gramsOfSize = (chars: readonly string[], size: number): readonly string[] =>
@@ -20,18 +15,10 @@ const gramsOfSize = (chars: readonly string[], size: number): readonly string[] 
     chars.slice(start, start + size).join(""),
   );
 
-const tokenOf = (key: CryptoKey, gram: string): Effect.Effect<string> =>
-  Effect.promise(() => crypto.subtle.sign("HMAC", key, textEncoder.encode(gram))).pipe(
-    Effect.map((signature) =>
-      Array.fromIterable(new Uint8Array(signature, TOKEN_START, TOKEN_BYTES)),
-    ),
-    Effect.map((bytes) =>
-      bytes.map((byte) => byte.toString(HEX_RADIX).padStart(HEX_WIDTH, "0")).join(""),
-    ),
-  );
-
 const tokensOf = (key: CryptoKey, grams: readonly string[]): Effect.Effect<readonly string[]> =>
-  Effect.forEach(Array.dedupe(grams), (gram) => tokenOf(key, gram), { concurrency: "unbounded" });
+  Effect.forEach(Array.dedupe(grams), (gram) => hmacToken({ key, text: gram }), {
+    concurrency: "unbounded",
+  });
 
 const GRAM_SIZES = Array.range(SHORTEST_GRAM, LONGEST_GRAM);
 

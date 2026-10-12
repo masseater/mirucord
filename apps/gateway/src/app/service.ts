@@ -1,5 +1,5 @@
 import { NodeSocket } from "@effect/platform-node";
-import type { GatewayJob } from "@repo/ingest-util-gateway-contract";
+import { ENV_PREFIX, PREFIX } from "@repo/shared-util-app-name/app-name";
 import { App, Service } from "alchemy/Fly";
 import { ServerHost } from "alchemy/Server";
 import { Discord, DiscordConfig } from "dfx";
@@ -10,9 +10,10 @@ import { FetchHttpClient } from "effect/http";
 import { makeDeliver } from "./deliver";
 import { mergeJobs, toGatewayJob } from "./gateway-job";
 
-const GatewayApp = App("MirucordGatewayApp", { name: "mirucord-gateway-app" });
+const GatewayApp = App("MirucordGatewayApp", { name: `${PREFIX}gateway-app` });
 
-const BOT_TOKEN_SECRET = "DISCORD_BOT_TOKEN";
+const BOT_TOKEN_ENV = "DISCORD_BOT_TOKEN";
+const BOT_TOKEN_SECRET = `${ENV_PREFIX}${BOT_TOKEN_ENV}`;
 const FLUSH_EVENTS = 1000;
 const FLUSH_INTERVAL = "5 seconds";
 const INTENTS =
@@ -20,7 +21,9 @@ const INTENTS =
   Discord.GatewayIntentBits.GuildMessages +
   Discord.GatewayIntentBits.MessageContent;
 
-const mergeBatch = (batch: readonly GatewayJob[]): Effect.Effect<readonly GatewayJob[]> => {
+type GatewayJobs = ReturnType<typeof mergeJobs>;
+
+const mergeBatch = (batch: GatewayJobs): Effect.Effect<GatewayJobs> => {
   const merged = mergeJobs(batch);
   return Effect.logInfo("Gateway events merged").pipe(
     Effect.annotateLogs({ events: batch.length, jobs: merged.length }),
@@ -62,7 +65,7 @@ class Gateway extends Service<Gateway>()(
   "MirucordGateway",
   {
     app: GatewayApp,
-    name: "mirucord-gateway",
+    name: `${PREFIX}gateway`,
     main: import.meta.url,
     handler: "Gateway",
     region: "iad",
@@ -80,4 +83,4 @@ class Gateway extends Service<Gateway>()(
   }),
 ) {}
 
-export { BOT_TOKEN_SECRET, Gateway, GatewayApp };
+export { BOT_TOKEN_ENV, BOT_TOKEN_SECRET, Gateway, GatewayApp };

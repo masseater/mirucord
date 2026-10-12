@@ -5,13 +5,14 @@ import { Panel } from "#/shared/ui/panel";
 
 import { DiscordSignIn } from "./discord-sign-in";
 
+const SIGN_IN_TIP = "おかえり！";
+
 const SignInPanel = ({
-  tip,
   title,
   returnTo,
-}: Readonly<{ tip: string; title: string; returnTo: string }>): ReactNode => (
+}: Readonly<{ title: string; returnTo: string }>): ReactNode => (
   <>
-    <MascotTip>{tip}</MascotTip>
+    <MascotTip>{SIGN_IN_TIP}</MascotTip>
     <Panel>
       <h1 className="text-dc-bright font-maru text-2xl font-black">{title}</h1>
       <DiscordSignIn callbackURL={returnTo} />
@@ -19,4 +20,4 @@ const SignInPanel = ({
   </>
 );
 
-export { SignInPanel };
+export { SIGN_IN_TIP, SignInPanel };

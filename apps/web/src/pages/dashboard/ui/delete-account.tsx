@@ -1,15 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { Option } from "effect";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
+import { fixable } from "#/pages/dashboard/lib/feedback";
 import { authClient } from "#/shared/auth";
+import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
 
+import { FeedbackLine } from "./feedback-line";
+
 const SUMMARY = "アカウントを削除する";
-const DETAIL = "ログイン情報とアプリとのつながりを削除します。元に戻せません。";
-const CONFIRM = "削除する";
-const FAILED = "削除できませんでした。ログインし直してからもう一度試してください。";
+const DETAIL = "元に戻せません";
+const CONFIRM = "アカウントを削除";
+const FAILED = fixable("signIn")("削除できませんでした");
 
 const DeleteAccount = (): ReactNode => {
   const navigate = useNavigate();
@@ -23,7 +28,11 @@ const DeleteAccount = (): ReactNode => {
   return (
     <details className="border-dc-line rounded-2xl border px-4 py-3">
       <summary className="cursor-pointer font-bold">{SUMMARY}</summary>
-      <p className="text-dc-muted mt-3">{DETAIL}</p>
+      <div className="mt-3">
+        <IconLine icon="warning" tone="muted">
+          {DETAIL}
+        </IconLine>
+      </div>
       <div className="mt-4">
         <PopButton
           tone="danger"
@@ -34,11 +43,9 @@ const DeleteAccount = (): ReactNode => {
           {CONFIRM}
         </PopButton>
       </div>
-      {status === "error" && (
-        <p role="alert" className="mt-3 text-sm font-bold">
-          {FAILED}
-        </p>
-      )}
+      <div className="mt-3">
+        <FeedbackLine feedback={FAILED.pipe(Option.filter(() => status === "error"))} />
+      </div>
     </details>
   );
 };

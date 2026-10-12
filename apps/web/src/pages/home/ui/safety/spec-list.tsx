@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { Embed } from "#/pages/home/ui/message/embed";
+import { MASCOT_NAME } from "#/shared/config";
 
 import { SpecField } from "./spec-field";
 
@@ -9,19 +10,19 @@ const SPECS = [
     label: "Discord への操作",
     tags: ["読み取りのみ"],
     accent: false,
-    detail: "投稿や削除の機能はありません",
+    detail: "",
   },
   {
     label: "見える範囲",
     tags: ["ロール", "チャンネル権限"],
     accent: false,
-    detail: "質問のたびに計算し直します",
+    detail: "",
   },
   {
     label: "メッセージ本文",
-    tags: ["AES-GCM"],
+    tags: ["暗号化"],
     accent: true,
-    detail: "暗号化して保存します",
+    detail: "",
   },
   {
     label: "ログイン",
@@ -30,10 +31,10 @@ const SPECS = [
     detail: "メールアドレスは集めません",
   },
   {
-    label: "Bot を外したとき",
+    label: `${MASCOT_NAME}を外したとき`,
     tags: ["すぐ削除"],
     accent: true,
-    detail: "メッセージと索引をすべて消します",
+    detail: "",
   },
   {
     label: "ソースコード",

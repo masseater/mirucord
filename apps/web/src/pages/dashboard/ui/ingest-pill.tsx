@@ -10,11 +10,11 @@ const INGEST = {
   awaiting: { label: "同意待ち", tone: "bg-dc-active text-dc-muted" },
   withdrawing: { label: "削除中", tone: "bg-pink" },
   paused: {
-    label: `${MASCOT_NAME}が見られないため停止中（30 日後に保存分を削除）`,
+    label: "30 日後に削除",
     tone: "bg-pink",
   },
   cleared: {
-    label: `${MASCOT_NAME}が見られないため停止中（保存分は削除済み）`,
+    label: "停止中",
     tone: "bg-dc-active text-dc-text",
   },
   waiting: { label: "取り込み待ち", tone: "bg-butter" },

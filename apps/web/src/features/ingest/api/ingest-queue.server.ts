@@ -2,8 +2,8 @@ import { Cause, Effect, Exit, Option, Schema } from "effect";
 
 import { INGEST_MAX_RETRIES, QueueJobSchema } from "#/features/ingest/model/ingest-job";
 import type { QueueJob } from "#/features/ingest/model/ingest-job";
-import { alertOperators } from "#/shared/alert/index.server";
 
+import { alertOperators } from "./alert-operators.server";
 import { ingestChannel } from "./ingest-channel.server";
 import { migrateMessages } from "./migrate-messages.server";
 import { catchUpGuild } from "./resync.server";

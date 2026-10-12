@@ -17,8 +17,8 @@ import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { r2BenchWorker } from "./r2-bench.stack.ts";
-import type { GuildStore, RequestCounter } from "./src/app/server/index.ts";
+import type { RequestCounter } from "./src/app/server/request-counter.server.ts";
+import type { GuildStore } from "./src/entities/guild-message/api/guild-store.server.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
 import { APP_NAME, PREFIX, requireAppPrefix } from "./stack-prefix.ts";
@@ -261,15 +261,12 @@ const ciTelemetry = Effect.gen(function* ciTelemetry() {
   });
 });
 
-const r2Bench = Effect.flatMap(mirucordName("r2bench"), r2BenchWorker);
-
 const stackProviders = workerIssuesProvider.pipe(Layer.provideMerge(providers()));
 
 type WebEnv = InferEnv<typeof web>;
 type CiTelemetryEnv = InferEnv<typeof ciTelemetry>;
-type R2BenchEnv = InferEnv<typeof r2Bench>;
 
-export type { CiTelemetryEnv, R2BenchEnv, WebEnv };
+export type { CiTelemetryEnv, WebEnv };
 export default Stack(
   APP_NAME,
   {
@@ -280,7 +277,6 @@ export default Stack(
     const { url, workerName, hash } = yield* web;
     yield* WorkerIssues("WorkerIssues", { workerName, deployment: hash });
     yield* ciTelemetry;
-    yield* r2Bench;
     yield* requireAppPrefix;
     return { url };
   }),

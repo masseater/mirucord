@@ -2,13 +2,12 @@ import { useLocation } from "@tanstack/react-router";
 import { Option } from "effect";
 import type { ReactNode } from "react";
 
-import { DiscordSignIn } from "#/features/sign-in";
+import { DiscordSignIn, SIGN_IN_TIP } from "#/features/sign-in";
 import { SERVICE_NAME, SIGN_IN_LANDING } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 
-const TIP = "おかえり！";
 const TITLE = `${SERVICE_NAME} にログイン`;
 
 const callbackUrlOf = (search: string): string | undefined =>
@@ -18,9 +17,9 @@ const SignInPage = (): ReactNode => {
   const search = useLocation({ select: ({ searchStr }) => searchStr });
   return (
     <AppFrame>
-      <MascotTip>{TIP}</MascotTip>
+      <MascotTip>{SIGN_IN_TIP}</MascotTip>
       <Panel>
-        <h1 className="text-dc-bright font-maru text-3xl font-black">{TITLE}</h1>
+        <h1 className="sr-only">{TITLE}</h1>
         <DiscordSignIn callbackURL={callbackUrlOf(search)} />
       </Panel>
     </AppFrame>

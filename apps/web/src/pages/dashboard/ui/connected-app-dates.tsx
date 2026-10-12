@@ -1,7 +1,7 @@
 import { Option } from "effect";
 import type { ReactNode } from "react";
 
-import { dateFormat } from "#/pages/dashboard/model/date-format";
+import { dateFormat } from "#/pages/dashboard/model/format";
 import type { ConnectedApp } from "#/shared/auth/index.server";
 
 const CONNECTED_AT = "つないだ日時";

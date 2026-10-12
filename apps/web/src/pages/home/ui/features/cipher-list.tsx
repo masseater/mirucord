@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
 
+import { MASCOT_NAME } from "#/shared/config";
+
 import { CipherRow } from "./cipher-row";
 
 const ROWS = [
   { before: "カレー焦がさない", after: "q7Vb2…Xe9=" },
-  { before: "Bot を外す", after: "ぜんぶ削除" },
+  { before: `${MASCOT_NAME}を外す`, after: "ぜんぶ削除" },
 ] as const;
 
 const CipherList = (): ReactNode => (

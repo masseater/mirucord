@@ -5,9 +5,11 @@ import type { ReactNode } from "react";
 import { inviteQuery } from "#/pages/home/api/invite";
 import { DcLink } from "#/pages/home/ui/common/dc-link";
 import { DiscordMark } from "#/pages/home/ui/common/discord-mark";
+import { MASCOT_NAME } from "#/shared/config";
+import { IconLine } from "#/shared/ui/icon-line";
 
-const LABEL = "サーバーに追加する";
-const FULL = "登録できるサーバー数の上限に達しています。";
+const LABEL = `${MASCOT_NAME}をサーバーに招待`;
+const FULL = "招待の受付を締め切りました";
 
 const InviteChip = (): ReactNode => {
   const { data } = useSuspenseQuery(inviteQuery);
@@ -20,9 +22,9 @@ const InviteChip = (): ReactNode => {
         </DcLink>
       ),
       full: () => (
-        <p role="alert" className="text-sm">
+        <IconLine icon="lock" role="alert" size="sm">
           {FULL}
-        </p>
+        </IconLine>
       ),
     }),
   );

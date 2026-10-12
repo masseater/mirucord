@@ -1,5 +1,7 @@
 import { Array, Boolean, Function, Option, pipe } from "effect";
 
+import type { ChannelKind } from "#/shared/discord";
+
 import type { BotAccess } from "./bot-access";
 import type { ConsentScope } from "./consent-scope";
 
@@ -69,14 +71,17 @@ const forumRowOf: {
   (forum: Pick<IngestRow, "botAccess">, posts: readonly IngestRow[]): IngestRow;
 } = Function.dual(DATA_FIRST_ARITY, forumRowOfDataFirst);
 
-const NOTICE_KINDS: ReadonlySet<string> = new Set(["text", "announcement"]);
+const NOTICE_KINDS: ReadonlySet<ChannelKind> = new Set(["text", "announcement"]);
 
 const isNoticeCandidate = ({
   kind,
   ingest,
   botPost,
-}: Readonly<{ kind: string; ingest: ChannelIngest; botPost: "allowed" | "denied" }>): boolean =>
-  NOTICE_KINDS.has(kind) && ingest !== "unreadable" && botPost === "allowed";
+}: Readonly<{
+  kind: ChannelKind;
+  ingest: ChannelIngest;
+  botPost: "allowed" | "denied";
+}>): boolean => NOTICE_KINDS.has(kind) && ingest !== "unreadable" && botPost === "allowed";
 
 type GuildIngest = "awaiting" | "withdrawing" | "waiting" | "backfilling" | "done";
 

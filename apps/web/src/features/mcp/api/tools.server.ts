@@ -224,7 +224,7 @@ const LIST_CHANNELS_TOOL = {
 
 const FIND_MESSAGES_TOOL = {
   title: "Find messages",
-  description: `Find messages whose text or image description contains \`query\` exactly, ignoring letter case. Matching is literal, so try other wordings and synonyms yourself when a search finds little. \`total\` counts every match in the searched channels, so it shows how often a topic comes up; \`messages\` holds up to \`limit\` of them, newest first, starting at \`offset\`. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
+  description: `Find messages whose text, image description, embed, sticker name or poll contains \`query\` exactly, ignoring letter case. Matching is literal, so try other wordings and synonyms yourself when a search finds little. \`total\` counts every match in the searched channels, so it shows how often a topic comes up; \`messages\` holds up to \`limit\` of them, newest first, starting at \`offset\`. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
   ...TOOL_BASE,
   outputSchema: FindMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: FindMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),

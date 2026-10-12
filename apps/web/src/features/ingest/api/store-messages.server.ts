@@ -10,25 +10,19 @@ import type { DiscordMessage } from "#/shared/discord/index.server";
 
 import { DESCRIBE_MODEL, describeImage, isDescribable } from "./describe-image.server";
 import type { ImageSource } from "./describe-image.server";
+import { attachmentsOf, bodyOf, hasRichBody } from "./message-body.server";
+import type { DiscordAttachment } from "./message-body.server";
 import { findStored } from "./message-rows.server";
 import type { StoredMessage } from "./message-rows.server";
 
 const STORED_TYPES: ReadonlySet<MessageType> = new Set([MessageType.Default, MessageType.Reply]);
 const DESCRIBED_IMAGES_PER_MESSAGE = 4;
-const WITH_FORWARDS = `${DESCRIBE_MODEL}+forwards`;
+const WITH_RICH_BODY = `${DESCRIBE_MODEL}+rich`;
 
 type StoreTarget = Readonly<{ key: CryptoKey; searchKey: CryptoKey; job: IngestJob }>;
 
 const editedAtOf = ({ edited_timestamp }: DiscordMessage): Option.Option<DateTime.Utc> =>
   Option.fromNullOr(edited_timestamp);
-
-type Forwarded = NonNullable<DiscordMessage["message_snapshots"]>[number]["message"];
-
-const forwardsOf = ({ message_snapshots }: DiscordMessage): readonly Forwarded[] =>
-  (message_snapshots ?? []).map(({ message }) => message);
-
-const isForward = (incoming: DiscordMessage): boolean =>
-  Array.isReadonlyArrayNonEmpty(forwardsOf(incoming));
 
 const isChanged = (previous: Option.Option<StoredMessage>, incoming: DiscordMessage): boolean =>
   Option.match(previous, {
@@ -36,23 +30,12 @@ const isChanged = (previous: Option.Option<StoredMessage>, incoming: DiscordMess
     onSome: ({ editedAt, describedWith }) =>
       !Equal.equals(editedAt, Option.map(editedAtOf(incoming), DateTime.toEpochMillis)) ||
       Option.isNone(describedWith) ||
-      (isForward(incoming) && !Option.contains(describedWith, WITH_FORWARDS)),
+      (hasRichBody(incoming) && !Option.contains(describedWith, WITH_RICH_BODY)),
   });
-
-const contentOf = (incoming: DiscordMessage): string =>
-  [incoming.content, ...forwardsOf(incoming).map(({ content }) => content)]
-    .filter((content) => String.isNonEmpty(content))
-    .join("\n");
-
-const attachmentsOf = (incoming: DiscordMessage): readonly DiscordAttachment[] => [
-  ...incoming.attachments,
-  ...forwardsOf(incoming).flatMap(({ attachments }) => attachments),
-];
 
 const authorNameOf = ({ author }: DiscordMessage): string =>
   Option.getOrElse(Option.fromNullishOr(author.global_name), () => author.username);
 
-type DiscordAttachment = DiscordMessage["attachments"][number];
 type StoredAttachment = MessageBody["attachments"][number];
 
 type DescribedAttachment = Readonly<{
@@ -104,8 +87,8 @@ const describeAttachment = (
 };
 
 const describedModelOf = (incoming: DiscordMessage): string =>
-  Boolean.match(isForward(incoming), {
-    onTrue: () => WITH_FORWARDS,
+  Boolean.match(hasRichBody(incoming), {
+    onTrue: () => WITH_RICH_BODY,
     onFalse: () => DESCRIBE_MODEL,
   });
 
@@ -138,7 +121,7 @@ const toIndexed = (
   { key, searchKey, job }: StoreTarget,
   { incoming, attachments, describedWith }: DescribedMessage,
 ): Effect.Effect<IndexedMessage> => {
-  const body = { authorName: authorNameOf(incoming), content: contentOf(incoming), attachments };
+  const body = { authorName: authorNameOf(incoming), ...bodyOf({ incoming, attachments }) };
   return Effect.all({
     sealed: sealMessage(body, key, { ...job, messageId: incoming.id }),
     tokens: indexTokens({ key: searchKey, texts: searchableTexts(body) }),

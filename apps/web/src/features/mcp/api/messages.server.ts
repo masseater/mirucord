@@ -18,6 +18,9 @@ type MessageView = Readonly<{
   author: string;
   content: string;
   attachments: MessageBody["attachments"];
+  embeds: MessageBody["embeds"];
+  stickers: MessageBody["stickers"];
+  poll: MessageBody["poll"];
   createdAt: string;
   edited: boolean;
   url: string;
@@ -32,6 +35,9 @@ const viewOf = (guildId: string, row: SealedMessage, body: MessageBody): Message
   author: body.authorName,
   content: body.content,
   attachments: body.attachments,
+  embeds: body.embeds,
+  stickers: body.stickers,
+  poll: body.poll,
   createdAt: DateTime.formatIso(DateTime.makeUnsafe(row.createdAt)),
   edited: Option.isSome(Option.fromNullOr(row.editedAt)),
   url: `https://discord.com/channels/${guildId}/${row.channelId}/${row.id}`,

@@ -46,10 +46,33 @@ const AttachmentSchema = Schema.Struct({
   description: Schema.optional(Schema.String),
 });
 
+const EmbedSchema = Schema.Struct({
+  title: Schema.optional(Schema.String),
+  description: Schema.optional(Schema.String),
+  url: Schema.optional(Schema.String),
+  fields: Schema.Array(Schema.Struct({ name: Schema.String, value: Schema.String })),
+});
+
+const PollSchema = Schema.Struct({
+  question: Schema.String,
+  answers: Schema.Array(Schema.String),
+});
+
+const NOTHING: readonly never[] = [];
+
+const nothingYet = Effect.succeed(NOTHING);
+
+const StoredEmbeds = Schema.Array(EmbedSchema).pipe(Schema.withDecodingDefaultKey(nothingYet));
+
+const Stickers = Schema.Array(Schema.String).pipe(Schema.withDecodingDefaultKey(nothingYet));
+
 const MessageBodySchema = Schema.Struct({
   authorName: Schema.String,
   content: Schema.String,
   attachments: Schema.Array(AttachmentSchema),
+  embeds: StoredEmbeds,
+  stickers: Stickers,
+  poll: Schema.optional(PollSchema),
 });
 
 type MessageBody = typeof MessageBodySchema.Type;

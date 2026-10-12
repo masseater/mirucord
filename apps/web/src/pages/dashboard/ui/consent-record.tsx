@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { Consent } from "#/features/ingest/index.server";
-import { dateFormat } from "#/pages/dashboard/model/date-format";
+import { dateFormat } from "#/pages/dashboard/model/format";
 import { Panel } from "#/shared/ui/panel";
 
 const GRANTED = "同意済み";

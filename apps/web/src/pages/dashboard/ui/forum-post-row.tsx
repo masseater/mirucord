@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { ForumPost } from "#/features/ingest/index.server";
+import { countFormat } from "#/pages/dashboard/model/format";
 
 import { IngestPill } from "./ingest-pill";
 
@@ -14,7 +15,7 @@ const ForumPostRow = ({ post }: Readonly<{ post: ForumPost }>): ReactNode => (
     <span className="flex flex-wrap items-center gap-2">
       {!UNCOUNTED.has(post.ingest) && (
         <span className="text-dc-muted">
-          {MESSAGES} {post.messages.toLocaleString("ja-JP")} {UNIT}
+          {MESSAGES} {countFormat.format(post.messages)} {UNIT}
         </span>
       )}
       {post.ingest !== "awaiting" && <IngestPill ingest={post.ingest} />}

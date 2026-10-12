@@ -1,4 +1,9 @@
-import { GatewayJobSchema, signGatewayEvent, subjectOf } from "@repo/ingest-util-gateway-contract";
+import {
+  GATEWAY_PATH,
+  GatewayJobSchema,
+  signGatewayEvent,
+  subjectOf,
+} from "@repo/ingest-util-gateway-contract";
 import type { GatewayJob } from "@repo/ingest-util-gateway-contract";
 import { DateTime, Effect, Layer, Schedule, Schema } from "effect";
 import type { Scope } from "effect";
@@ -7,7 +12,7 @@ import type { HttpClientError } from "effect/http";
 
 import { jobKeyOf } from "./gateway-job";
 
-const GATEWAY_ENDPOINT = "https://mirucord.masseater.dev/api/gateway";
+const GATEWAY_ENDPOINT = `https://mirucord.masseater.dev${GATEWAY_PATH}`;
 const RETRY_TIMES = 5;
 const RETRY_BASE = "1 second";
 

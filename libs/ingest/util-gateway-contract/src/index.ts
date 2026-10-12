@@ -1,3 +1,4 @@
+export { GATEWAY_PATH } from "./gateway-path";
 export { GatewayJobSchema } from "./gateway-job-schema";
 export type { ForgetJob, GatewayJob, RefreshJob, StoreJob } from "./gateway-job-schema";
 export { signGatewayEvent, verifyGatewayEvent } from "./gateway-signature";

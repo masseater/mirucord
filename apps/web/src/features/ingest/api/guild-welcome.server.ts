@@ -1,6 +1,6 @@
-import { ChannelType } from "discord-api-types/v10";
 import { Array, Effect, Option, Order } from "effect";
 
+import { TEXT_TYPES } from "#/features/ingest/model/channel-kind";
 import { DASHBOARD_PATH, MASCOT_NAME, SITE_ORIGIN } from "#/shared/config";
 import { findBotAdder, postChannelMessage, sendDirectMessage } from "#/shared/discord/index.server";
 import type { DiscordChannel, DiscordGuild, OutgoingMessage } from "#/shared/discord/index.server";
@@ -17,10 +17,6 @@ type Addressee = "inviter" | "channel";
 
 type Delivery = Addressee | "nowhere";
 
-const WELCOME_TYPES: ReadonlySet<ChannelType> = new Set([
-  ChannelType.GuildText,
-  ChannelType.GuildAnnouncement,
-]);
 const CHANNEL_ATTEMPTS = 3;
 const FIRST_POSITION = 0;
 
@@ -50,7 +46,7 @@ const byPosition: Order.Order<DiscordChannel> = Order.mapInput(
 
 const welcomeChannels = ({ discordGuild, listing }: Welcome): readonly string[] => {
   const writable = listing.stored.filter(
-    ({ id, type }) => WELCOME_TYPES.has(type) && listing.readable.includes(id),
+    ({ id, type }) => TEXT_TYPES.has(type) && listing.readable.includes(id),
   );
   const ordered = Array.sort(writable, byPosition).map(({ id }) => id);
   const system = Option.fromNullishOr(discordGuild.system_channel_id).pipe(

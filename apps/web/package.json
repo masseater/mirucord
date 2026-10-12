@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "alchemy dev",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "test": "vp exec vp test run",
     "steiger": "steiger ./src",
     "db:generate": "drizzle-kit generate && drizzle-kit generate --config drizzle.guild.config.ts",

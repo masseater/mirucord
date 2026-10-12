@@ -10,6 +10,7 @@
     "test": "vp exec vp test run"
   },
   "dependencies": {
+    "@distilled.cloud/fly-io": "catalog:stack",
     "@effect/platform-node": "catalog:",
     "alchemy": "catalog:stack",
     "effect": "catalog:stack"

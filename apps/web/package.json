@@ -28,6 +28,7 @@
     "@openfeature/core": "1.12.0",
     "@openfeature/server-sdk": "catalog:stack",
     "@repo/ingest-util-gateway-contract": "workspace:*",
+    "@repo/shared-util-app-name": "workspace:*",
     "@repo/shared-util-discord": "workspace:*",
     "@sapphire/bitfield": "catalog:",
     "@tanstack/react-devtools": "0.10.13",

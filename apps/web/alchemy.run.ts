@@ -17,11 +17,11 @@ import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { PREFIX } from "./app-name.ts";
 import { r2BenchWorker } from "./r2-bench.stack.ts";
 import type { GuildStore, RequestCounter } from "./src/app/server/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
+import { APP_NAME, PREFIX, requireAppPrefix } from "./stack-prefix.ts";
 
 const PRODUCTION_STAGE = "prod";
 const NOT_FOUND = 404;
@@ -190,7 +190,7 @@ const masterKey = Effect.gen(function* masterKey() {
   const store = yield* SecretsStore.Store("Secrets");
   return yield* SecretsStore.Secret("MasterKeySecret", {
     store,
-    name: "MIRUCORD_MASTER_KEY",
+    name: `${PREFIX}master-key`,
     value: yield* makeRandom("MasterKey"),
   });
 });
@@ -271,7 +271,7 @@ type R2BenchEnv = InferEnv<typeof r2Bench>;
 
 export type { CiTelemetryEnv, R2BenchEnv, WebEnv };
 export default Stack(
-  "web",
+  APP_NAME,
   {
     providers: stackProviders,
     state: state(),
@@ -281,6 +281,7 @@ export default Stack(
     yield* WorkerIssues("WorkerIssues", { workerName, deployment: hash });
     yield* ciTelemetry;
     yield* r2Bench;
+    yield* requireAppPrefix;
     return { url };
   }),
 );

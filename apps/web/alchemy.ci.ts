@@ -5,9 +5,9 @@ import { Secrets, Variables, providers as gitHubProviders } from "alchemy/GitHub
 import { Config, Effect, Layer, Schema } from "effect";
 import type { ConfigError } from "effect/Config";
 
-import { PREFIX } from "./app-name.ts";
 import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
+import { PREFIX, requireAppPrefix } from "./stack-prefix.ts";
 
 const repo = { owner: "masseater", repository: "mirucord" };
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);
@@ -69,7 +69,7 @@ const observerToken = Effect.gen(function* observerToken() {
 });
 
 const ci: Effect.Effect<CompiledStack, ConfigError> & Readonly<{ stackName: string }> = Stack(
-  "ci",
+  `${PREFIX}ci`,
   { providers: Layer.mergeAll(providers(), gitHubProviders()), state: state() },
   Effect.gen(function* stack() {
     const { accountId, token } = yield* deployToken;
@@ -91,6 +91,7 @@ const ci: Effect.Effect<CompiledStack, ConfigError> & Readonly<{ stackName: stri
         MAX_GUILDS: String(FREE_GUILD_LIMIT),
       },
     });
+    yield* requireAppPrefix;
     return { tokenId: token.tokenId, observerTokenId: observer.tokenId };
   }),
 );

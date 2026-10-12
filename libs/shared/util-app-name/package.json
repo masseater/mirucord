@@ -1,0 +1,19 @@
+{
+  "name": "@repo/shared-util-app-name",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vp exec vp test run"
+  },
+  "dependencies": {
+    "alchemy": "catalog:stack",
+    "effect": "catalog:stack"
+  },
+  "devDependencies": {
+    "vite-plus": "catalog:stack"
+  }
+}

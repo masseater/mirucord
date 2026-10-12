@@ -38,6 +38,11 @@ release. Add a tool name to select part of the graph. For example, run
 
 <!--VITE PLUS END-->
 
+## 運用の段階
+
+2026-10-12 時点では、本運用も本リリースもしていない。masseater 自身とその友人だけが試している。
+そのため、データベースの破壊やアーキテクチャの再構築は好きなだけやってよい。
+
 ## Cloudflare のプラン
 
 本番の Cloudflare は Workers Paid（月 5 ドル）を契約している前提で考える。2026-10-11 に Free から切り替えた。

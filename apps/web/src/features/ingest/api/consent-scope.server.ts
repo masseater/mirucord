@@ -75,31 +75,45 @@ const purgeOutOfScope = (guildId: string, scope: ConsentScope): Effect.Effect<vo
     ),
   );
 
-const NEEDS_INGEST = and(
+const READABLE_MESSAGES = and(
   eq(channel.botAccess, "readable"),
   inArray(channel.type, [...MESSAGE_TYPES]),
-  or(eq(channel.archive, "open"), eq(channel.backfill, "pending")),
 );
 
-const enqueueReadable = (guildId: string): Effect.Effect<void> =>
+const INGEST_REACH = {
+  all: and(READABLE_MESSAGES, or(eq(channel.archive, "open"), eq(channel.backfill, "pending"))),
+  pending: and(READABLE_MESSAGES, eq(channel.backfill, "pending")),
+} as const;
+
+type IngestReach = keyof typeof INGEST_REACH;
+
+type IngestRefresh = Readonly<{ guildId: string; reach: IngestReach }>;
+
+const enqueueReadable = ({ guildId, reach }: IngestRefresh): Effect.Effect<void> =>
   Effect.promise(() =>
     db
       .select({ id: channel.id })
       .from(channel)
-      .where(and(eq(channel.guildId, guildId), NEEDS_INGEST)),
+      .where(and(eq(channel.guildId, guildId), INGEST_REACH[reach])),
   ).pipe(Effect.flatMap((rows) => enqueue(rows.map(({ id }) => ({ guildId, channelId: id })))));
 
-const enqueueInScope = (guildId: string, scope: ConsentScope): Effect.Effect<void> => {
+const enqueueInScope = (refresh: IngestRefresh, scope: ConsentScope): Effect.Effect<void> => {
   if (scope.status === "awaiting") {
     return Effect.void;
   }
-  return enqueueReadable(guildId);
+  return enqueueReadable(refresh);
 };
 
-const refreshIngest = (guildId: string): Effect.Effect<void> =>
-  loadScope(guildId).pipe(
-    Effect.tap((scope) => purgeOutOfScope(guildId, scope)),
-    Effect.flatMap((scope) => enqueueInScope(guildId, scope)),
+const refreshIngestOf = (refresh: IngestRefresh): Effect.Effect<void> =>
+  loadScope(refresh.guildId).pipe(
+    Effect.tap((scope) => purgeOutOfScope(refresh.guildId, scope)),
+    Effect.flatMap((scope) => enqueueInScope(refresh, scope)),
   );
 
-export { loadScope, purgeChannel, refreshIngest };
+const refreshIngest = (guildId: string): Effect.Effect<void> =>
+  refreshIngestOf({ guildId, reach: "all" });
+
+const refreshPendingIngest = (guildId: string): Effect.Effect<void> =>
+  refreshIngestOf({ guildId, reach: "pending" });
+
+export { loadScope, purgeChannel, refreshIngest, refreshPendingIngest };

@@ -8,7 +8,7 @@ import type { DiscordChannel } from "#/shared/discord/index.server";
 
 import { accessOf, columnsOf } from "./bot-access.server";
 import type { ChannelSync } from "./channel-listing.server";
-import { refreshIngest } from "./consent-scope.server";
+import { refreshPendingIngest } from "./consent-scope.server";
 import { settleStoredChannels } from "./settle-channels.server";
 
 type ChannelRow = typeof channel.$inferInsert;
@@ -94,7 +94,7 @@ const upsertChannels = (sync: ChannelSync): Effect.Effect<void> =>
 const syncChannels = (sync: ChannelSync): Effect.Effect<void> =>
   settleStoredChannels(sync).pipe(
     Effect.andThen(upsertChannels(sync)),
-    Effect.andThen(refreshIngest(sync.discordGuild.id)),
+    Effect.andThen(refreshPendingIngest(sync.discordGuild.id)),
   );
 
 export { syncChannels };

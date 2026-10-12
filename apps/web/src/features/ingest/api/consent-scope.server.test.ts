@@ -8,7 +8,7 @@ import { afterAll, afterEach, beforeAll, expect, vi } from "vite-plus/test";
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
-import { refreshIngest } from "./consent-scope.server";
+import { refreshIngest, refreshPendingIngest } from "./consent-scope.server";
 import { ingestChannel } from "./ingest-channel.server";
 
 const OWNER = "901";
@@ -19,12 +19,18 @@ const AWAITING_CHANNEL = "410";
 const READABLE = "510";
 const HIDDEN = "520";
 const OTHER_CHANNEL = "610";
+const CAUGHT_UP = "700";
+const CAUGHT_UP_CHANNEL = "710";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 
 type ScenarioGuild = Readonly<{
   id: string;
   consented: boolean;
-  channels: readonly Readonly<{ id: string; botAccess: "readable" | "hidden" }>[];
+  channels: readonly Readonly<{
+    id: string;
+    botAccess: "readable" | "hidden";
+    backfill?: "pending" | "done";
+  }>[];
 }>;
 
 const GUILDS: readonly ScenarioGuild[] = [
@@ -38,6 +44,11 @@ const GUILDS: readonly ScenarioGuild[] = [
     ],
   },
   { id: OTHER, consented: true, channels: [{ id: OTHER_CHANNEL, botAccess: "readable" }] },
+  {
+    id: CAUGHT_UP,
+    consented: true,
+    channels: [{ id: CAUGHT_UP_CHANNEL, botAccess: "readable", backfill: "done" }],
+  },
 ];
 
 const JOBS_OUTSIDE_SCOPE = [
@@ -60,8 +71,9 @@ const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
           joinedAt: SEEDED_AT,
         }),
         db.insert(channel).values(
-          seed.channels.map(({ id, botAccess }) => ({
+          seed.channels.map(({ id, botAccess, backfill }) => ({
             id,
+            backfill,
             guildId: seed.id,
             name: `channel ${id}`,
             type: 0,
@@ -83,10 +95,14 @@ const seedConsents = (): Promise<unknown> =>
     })),
   );
 
-const queuedBy = (guildId: string): Effect.Effect<readonly unknown[]> =>
+const queuedBy = (
+  guildId: string,
+  refresh: typeof refreshIngest = refreshIngest,
+): Effect.Effect<readonly unknown[]> =>
   Effect.gen(function* queued() {
     const sendBatch = vi.spyOn(env.INGEST, "sendBatch");
-    yield* refreshIngest(guildId).pipe(Effect.orDie);
+    sendBatch.mockClear();
+    yield* refresh(guildId).pipe(Effect.orDie);
     return sendBatch.mock.calls.flatMap(([messages]) =>
       Array.fromIterable(messages).map(({ body }) => body),
     );
@@ -153,5 +169,14 @@ it.effect("fetches a readable channel of a consenting server", () =>
       ingestChannel({ guildId: GRANTED, channelId: READABLE }),
     );
     expect(paths).toStrictEqual([`/api/v10/channels/${READABLE}/messages`]);
+  }),
+);
+
+it.effect("leaves channels whose history is complete to the daily poll", () =>
+  Effect.gen(function* pendingOnly() {
+    expect(yield* queuedBy(CAUGHT_UP, refreshPendingIngest)).toStrictEqual([]);
+    expect(yield* queuedBy(CAUGHT_UP)).toStrictEqual([
+      { guildId: CAUGHT_UP, channelId: CAUGHT_UP_CHANNEL },
+    ]);
   }),
 );

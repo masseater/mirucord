@@ -9,12 +9,11 @@
     "test": "vp exec vp test run"
   },
   "dependencies": {
-    "@discordeno/gateway": "catalog:",
-    "@discordeno/rest": "catalog:",
+    "@effect/platform-node": "catalog:",
     "@repo/ingest-util-gateway-contract": "workspace:*",
     "@repo/shared-util-discord": "workspace:*",
     "alchemy": "catalog:stack",
-    "discord-api-types": "catalog:",
+    "dfx": "catalog:",
     "effect": "catalog:stack"
   },
   "devDependencies": {

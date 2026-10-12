@@ -8,7 +8,7 @@ import { PopButton } from "#/shared/ui/pop-button";
 
 const SUMMARY = "自分の投稿を削除する";
 const DETAIL =
-  "どのサーバーでも、保存したあなたの投稿を削除し、これからも保存しません。Discord の投稿は消えません。元に戻せません。";
+  "このサーバーで保存したあなたの投稿を削除し、これからも保存しません。Discord の投稿は消えません。元に戻せません。";
 const CONFIRM = "削除する";
 const MESSAGES = {
   idle: "",
@@ -17,6 +17,7 @@ const MESSAGES = {
 } as const;
 const RESULT_MESSAGES = {
   erased: "削除しました。",
+  notFound: "このサーバーは見つかりませんでした。",
   signedOut: "ログインの期限が切れたので、削除できませんでした。もう一度ログインしてください。",
 } as const;
 
@@ -33,14 +34,14 @@ const eraseMessage = (
   });
 };
 
-const EraseOwnMessages = (): ReactNode => {
+const EraseOwnMessages = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
   const { mutate, status, data } = useMutation({ mutationFn: eraseMyMessages });
   const erase = useCallback(() => {
-    mutate();
-  }, [mutate]);
+    mutate(guildId);
+  }, [guildId, mutate]);
   return (
-    <details className="border-dc-line rounded-2xl border px-4 py-3">
-      <summary className="cursor-pointer font-bold">{SUMMARY}</summary>
+    <details>
+      <summary className="text-dc-muted cursor-pointer text-sm font-bold">{SUMMARY}</summary>
       <p className="text-dc-muted mt-3">{DETAIL}</p>
       <div className="mt-4">
         <PopButton

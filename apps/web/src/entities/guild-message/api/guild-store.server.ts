@@ -6,26 +6,15 @@ import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { migrate } from "drizzle-orm/durable-sqlite/migrator";
 import { Array, Effect, Option } from "effect";
 
+import { erasedAuthor } from "#/entities/guild-message/model/erased-author.schema";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { messageSearch } from "#/entities/guild-message/model/message-search.fts";
-import { erasedAmong } from "#/shared/db/index.server";
 
-const MIGRATION_FILES: Readonly<Record<string, string>> = import.meta.glob(
-  "/drizzle-guild/*/migration.sql",
-  { query: "?raw", import: "default", eager: true },
-);
+import { GUILD_MIGRATIONS } from "./guild-migrations.server";
 
-const FOLDER_FROM_END = -2;
 const BOUND_LIMIT = 90;
 const NO_MESSAGES = 0;
 const TOKEN_SEPARATOR = " ";
-
-const MIGRATIONS = Object.fromEntries(
-  Object.entries(MIGRATION_FILES).map(([path, query]) => [
-    path.split("/").at(FOLDER_FROM_END) ?? path,
-    query,
-  ]),
-);
 
 type StoredRow = Readonly<{
   id: string;
@@ -81,11 +70,11 @@ class GuildStore extends DurableObject {
 
   #open(): DrizzleSqliteDODatabase {
     const db = drizzle(this.ctx.storage);
-    migrate(db, { migrations: MIGRATIONS });
+    migrate(db, { migrations: GUILD_MIGRATIONS });
     return db;
   }
 
-  readonly #remigrate = Effect.sync(() => migrate(this.#db, { migrations: MIGRATIONS }));
+  readonly #remigrate = Effect.sync(() => migrate(this.#db, { migrations: GUILD_MIGRATIONS }));
 
   #unindex(rows: readonly Seq[]): void {
     const seqs = rows.map(({ seq }) => seq);
@@ -125,19 +114,17 @@ class GuildStore extends DurableObject {
     }
   }
 
-  public write(messages: readonly IndexedMessage[], mode: WriteMode): Promise<void> {
-    return Effect.runPromise(
-      erasedAmong(messages.map(({ row }) => row.authorId)).pipe(
-        Effect.map((erased) => messages.filter(({ row }) => !erased.has(row.authorId))),
-        Effect.flatMap((kept) =>
-          Effect.sync(() => {
-            for (const message of kept) {
-              this.#write(message, mode);
-            }
-          }),
-        ),
-      ),
-    );
+  #erasedAuthors(): readonly Readonly<{ id: string }>[] {
+    return this.#db.select().from(erasedAuthor).all();
+  }
+
+  public write(messages: readonly IndexedMessage[], mode: WriteMode): void {
+    const erased = new Set(this.#erasedAuthors().map(({ id }) => id));
+    for (const message of messages) {
+      if (!erased.has(message.row.authorId)) {
+        this.#write(message, mode);
+      }
+    }
   }
 
   public stored(ids: readonly string[]): readonly StoredState[] {
@@ -199,7 +186,8 @@ class GuildStore extends DurableObject {
     );
   }
 
-  public removeAuthor(authorId: string): void {
+  public eraseAuthor(authorId: string): void {
+    this.#db.insert(erasedAuthor).values({ id: authorId }).onConflictDoNothing().run();
     this.#removeMatching("authorId", authorId);
   }
 
@@ -208,10 +196,19 @@ class GuildStore extends DurableObject {
   }
 
   public clear(): Promise<void> {
+    const erased = this.#erasedAuthors();
+    const restore = Effect.sync(() => {
+      if (Array.isReadonlyArrayNonEmpty(erased)) {
+        this.#db
+          .insert(erasedAuthor)
+          .values([...erased])
+          .run();
+      }
+    });
     return Effect.runPromise(
       Effect.promise(() => this.ctx.storage.deleteAll()).pipe(
         Effect.andThen(this.#remigrate),
-        Effect.asVoid,
+        Effect.andThen(restore),
       ),
     );
   }

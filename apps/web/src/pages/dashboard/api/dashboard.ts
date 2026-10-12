@@ -169,11 +169,12 @@ const postDisconnect = createServerFn({ method: "POST" })
 const disconnectConnectedApp = (clientId: string): Promise<DisconnectResult> =>
   postDisconnect({ data: { clientId } });
 
-const postEraseMessages = createServerFn({ method: "POST" }).handler(() =>
-  Effect.runPromise(eraseMessagesFor),
-);
+const postEraseMessages = createServerFn({ method: "POST" })
+  .validator(Schema.toStandardSchemaV1(GuildInput))
+  .handler(({ data }) => Effect.runPromise(eraseMessagesFor(data.guildId)));
 
-const eraseMyMessages = (): Promise<EraseResult | SignedOut> => postEraseMessages();
+const eraseMyMessages = (guildId: string): Promise<EraseResult | SignedOut> =>
+  postEraseMessages({ data: { guildId } });
 
 const purgeStoredChannel = (input: typeof ChannelInput.Type): Promise<PurgeResult | SignedOut> =>
   postPurge({ data: input });

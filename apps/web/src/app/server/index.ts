@@ -37,8 +37,19 @@ const route = (request: Request): Response | Promise<Response> => {
   return handler.fetch(request);
 };
 
+const unindexed = (request: Request): Promise<Response> =>
+  Effect.runPromise(
+    Effect.promise(() => Promise.resolve(route(request))).pipe(
+      Effect.map((indexed) => {
+        const response = new Response(indexed.body, indexed);
+        response.headers.set("X-Robots-Tag", "noindex");
+        return response;
+      }),
+    ),
+  );
+
 const worker: ExportedHandler = {
-  fetch: route,
+  fetch: unindexed,
   queue: (batch): Promise<void> => Effect.runPromise(ingestDeliveries(batch.messages)),
 };
 

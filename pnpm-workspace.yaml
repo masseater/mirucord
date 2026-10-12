@@ -10,7 +10,7 @@ catalogMode: prefer
 catalog:
   "@ast-grep/cli": 0.50.0
   "@cloudflare/workers-types": 5.20261009.1
-  "@effect/platform-node": 4.0.0
+  "@effect/platform-node": 4.0.2
   "@eslint-react/eslint-plugin": 5.24.10
   "@shadcn/lint": 0.2.0
   "@tanstack/eslint-plugin-query": 5.104.1
@@ -59,9 +59,9 @@ catalog:
 catalogs:
   stack:
     "@distilled.cloud/cloudflare": 1.0.0-rc.13
-    "@effect/atom-react": 4.0.0
+    "@effect/atom-react": 4.0.2
     "@effect/tsgo": 0.51.1
-    "@effect/vitest": 4.0.0
+    "@effect/vitest": 4.0.2
     "@openfeature/server-sdk": 1.23.0
     "@tanstack/react-query": 5.104.1
     "@tanstack/react-start": 1.168.60
@@ -69,9 +69,9 @@ catalogs:
     better-auth: 1.7.7
     drizzle-kit: 1.0.0-rc.5-ab785fc
     drizzle-orm: 1.0.0-rc.5-ab785fc
-    effect: 4.0.0
+    effect: 4.0.2
     elysia: 1.4.30
-    fallow: 3.32.0
+    fallow: 3.33.0
     renovate: 44.148.5
     steiger: 0.7.0
     tailwindcss: 4.3.3
@@ -80,12 +80,20 @@ catalogs:
     vite-plus: 1.1.0
 overrides:
   effect: "catalog:stack"
-  "@effect/platform-node-shared": 4.0.0
-  "@effect/sql-d1": 4.0.0
-  "@effect/sql-sqlite-do": 4.0.0
+  "@effect/platform-node-shared": 4.0.2
+  "@effect/sql-d1": 4.0.2
+  "@effect/sql-sqlite-do": 4.0.2
   "@effect/vitest": "catalog:stack"
   vite@*: "catalog:"
   eslint-plugin-react-hooks>zod-validation-error: ^5.0.0
+  "@hono/node-server@<1.19.15": ^1.19.15
+  hono@<4.13.7: ^4.13.7
+  http-cache-semantics@<=4.2.0: ^4.3.0
+  lodash@<=4.17.23: ^4.18.1
+  seroval@<=1.6.2: ^1.6.3
+  shell-quote@>=1.8.4 <1.11.0: ^1.11.0
+  source-map-js@>=1.0.0 <1.2.2: ^1.2.2
+  valibot@<=1.4.1: ^1.4.2
 peerDependencyRules:
   allowAny:
     - vite
@@ -105,3 +113,7 @@ patchedDependencies:
   "@better-auth/oauth-provider@1.7.7": patches/@better-auth__oauth-provider@1.7.7.patch
   "@tanstack/eslint-plugin-start@0.1.0": patches/@tanstack__eslint-plugin-start@0.1.0.patch
   jev-lint@0.7.0: patches/jev-lint@0.7.0.patch
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
+    - GHSA-hp3w-g68c-fv3c

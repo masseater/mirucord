@@ -116,6 +116,11 @@ export default defineConfig({
               from: "lib",
               name: ["Request", "CryptoKey", "Int8Array", "Float32Array", "Uint8Array"],
             },
+            {
+              from: "package",
+              package: "@cloudflare/workers-types",
+              name: "AnalyticsEngineDataset",
+            },
             { from: "package", package: "@tanstack/query-core", name: "QueryClient" },
             { from: "package", package: "drizzle-orm", name: ["DrizzleSqliteDODatabase", "SQL"] },
             {
@@ -152,7 +157,7 @@ export default defineConfig({
             "WorkerIssues",
           ],
           capIsNewExceptionPattern:
-            "^(ApiToken|Config|Context|Data|Schema|D1|Queues|R2|Rules|SecretsStore|Vectorize|Website|Workers)\\.",
+            "^(ApiToken|Config|Context|Data|Schema|AnalyticsEngine|D1|Queues|R2|Ruleset|Rules|SecretsStore|Vectorize|Website|Workers|Zone)\\.",
         },
       ],
       "typescript/no-empty-interface": ["error", { allowSingleExtends: true }],
@@ -224,6 +229,7 @@ export default defineConfig({
           "db-check-all",
           "fallow-all",
           "gitleaks",
+          "audit",
         ],
       },
       "test-all": "vp run -r test",
@@ -234,6 +240,10 @@ export default defineConfig({
       "fallow-all": "vp run -r fallow",
       "jev-lint": {
         command: "jev-lint review --base origin/main",
+        cache: false,
+      },
+      audit: {
+        command: "vp pm audit",
         cache: false,
       },
       gitleaks: {

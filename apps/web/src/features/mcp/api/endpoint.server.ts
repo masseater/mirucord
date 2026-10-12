@@ -2,7 +2,7 @@ import { requireMcpAuth } from "@better-auth/mcp";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { Effect, Option } from "effect";
 
-import { discordUserIdOf, makeAuth } from "#/shared/auth/index.server";
+import { discordUserIdOf, getAuth } from "#/shared/auth/index.server";
 import { MCP_URL } from "#/shared/config";
 
 import { buildServer } from "./tools.server";
@@ -26,7 +26,7 @@ const respond = (request: Request, discordUserId: Option.Option<string>): Effect
 
 const serveMcp = (request: Request): Promise<Response> =>
   requireMcpAuth(
-    makeAuth(),
+    getAuth(),
     (authorized, claims) =>
       Effect.runPromise(
         linkedDiscordUser(Option.fromNullishOr(claims.sub)).pipe(

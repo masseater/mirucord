@@ -5,6 +5,7 @@ import type { Auth, BetterAuthOptions } from "better-auth";
 import { jwt } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { env } from "cloudflare:workers";
+import { Function } from "effect";
 
 import { MCP_URL, SITE_ORIGIN } from "#/shared/config";
 import { db } from "#/shared/db/client.server";
@@ -33,7 +34,11 @@ type AuthOptions = BetterAuthOptions & {
   ];
 };
 
-const makeAuth = (): Auth<AuthOptions> =>
+type AuthBindings = Readonly<
+  Pick<typeof env, "BETTER_AUTH_SECRET" | "DISCORD_CLIENT_ID" | "DISCORD_CLIENT_SECRET">
+>;
+
+const authFor = Function.memoize((bindings: AuthBindings): Auth<AuthOptions> =>
   betterAuth<AuthOptions>({
     baseURL: SITE_ORIGIN,
     database: drizzleAdapter(db, {
@@ -58,8 +63,8 @@ const makeAuth = (): Auth<AuthOptions> =>
     user: { deleteUser: { enabled: true } },
     socialProviders: {
       discord: {
-        clientId: env.DISCORD_CLIENT_ID,
-        clientSecret: env.DISCORD_CLIENT_SECRET,
+        clientId: bindings.DISCORD_CLIENT_ID,
+        clientSecret: bindings.DISCORD_CLIENT_SECRET,
         disableDefaultScope: true,
         scope: ["identify"],
         mapProfileToUser: (profile) => ({
@@ -81,8 +86,11 @@ const makeAuth = (): Auth<AuthOptions> =>
         allowUnauthenticatedClientRegistration: true,
       }),
     ],
-    secret: env.BETTER_AUTH_SECRET,
-  });
+    secret: bindings.BETTER_AUTH_SECRET,
+  }),
+);
 
-export { makeAuth };
+const getAuth = (): Auth<AuthOptions> => authFor(env);
+
+export { getAuth };
 export type { AuthOptions };

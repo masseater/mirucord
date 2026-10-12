@@ -1,3 +1,3 @@
-import { makeAuth } from "./src/shared/auth/index.server";
+import { getAuth } from "./src/shared/auth/index.server";
 
-export const auth = makeAuth();
+export const auth = getAuth();

@@ -19,7 +19,7 @@ const GuildList = ({
   <Panel>
     <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
     {Array.isReadonlyArrayEmpty(guilds) && <p className="text-dc-muted">{EMPTY}</p>}
-    <ul className="flex flex-col gap-4">
+    <ul className="grid gap-4 sm:grid-cols-2">
       {guilds.map((guild) => (
         <GuildCard key={guild.id} guild={guild} />
       ))}

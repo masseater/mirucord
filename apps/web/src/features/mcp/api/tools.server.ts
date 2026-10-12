@@ -4,124 +4,51 @@ import { Effect, Option, Schema } from "effect";
 
 import {
   FindMessagesInput,
+  FindSimilarMessagesInput,
   FIRST_OFFSET,
   ListChannelsInput,
   ReadMessagesInput,
 } from "#/features/mcp/api/tool-input";
 import {
   FindMessagesOutput,
+  FindSimilarMessagesOutput,
   ListChannelsOutput,
   ListServerPhrasesOutput,
   ListServersOutput,
   ReadMessagesOutput,
 } from "#/features/mcp/api/tool-output";
-import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
-import type { IngestStatus } from "#/features/mcp/model/ingest-status";
 import { SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
-import { CATEGORY_TYPES, FORUM_TYPES } from "#/shared/discord";
 
 import { findMessages, readMessages } from "./messages.server";
 import { PHRASES_DESCRIPTION, serverPhrases } from "./phrases.server";
-import { readableGuilds, resolveScope } from "./scope.server";
-import type { GuildScope, StoredChannel } from "./scope.server";
+import { readableGuilds } from "./scope.server";
+import type { GuildScope } from "./scope.server";
+import { findSimilar } from "./similar.server";
+import {
+  DISCORD_UNAVAILABLE,
+  errorResult,
+  ingestById,
+  ingestOf,
+  notFullyIngested,
+  readableChannels,
+  structuredResult,
+  withChannel,
+  withScope,
+} from "./tool-scope.server";
 
 const ICONS = [
   { src: `${SITE_ORIGIN}/apple-touch-icon.png`, mimeType: "image/png", sizes: ["180x180"] },
   { src: `${SITE_ORIGIN}/favicon-32x32.png`, mimeType: "image/png", sizes: ["32x32"] },
 ];
 const SERVER_INFO = { name: SERVICE_NAME, version: "0.0.0", icons: ICONS, websiteUrl: SITE_ORIGIN };
-const SERVER_NOT_FOUND = "Server not found";
-const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const DEFAULT_LIMIT = 20;
-const CHANNEL_NOT_FOUND = "Channel not found";
 const INGEST_GUIDE = `Each channel carries \`ingest\`: only \`empty\` means the channel has no messages in Discord. \`notConsented\`, \`waiting\` and \`backfilling\` mean ${SERVICE_NAME} has not stored all of its messages yet, so an empty or short result does not mean the channel is empty; say so instead of reporting that there are no messages.`;
 
 const PHRASES_TOOL_NAME = "list_server_phrases";
 const PHRASES_HINT = `Before reading messages, call \`${PHRASES_TOOL_NAME}\` once for this server: it lists the phrases, custom emoji and stickers its members keep repeating, so you can read them as the server's own in-jokes and greetings instead of working out each one.`;
 
-const structuredResult = (value: Readonly<Record<string, unknown>>): CallToolResult => ({
-  content: [{ type: "text", text: JSON.stringify(value) }],
-  structuredContent: value,
-  isError: false,
-});
-const errorResult = (text: string): CallToolResult => ({
-  content: [{ type: "text", text }],
-  isError: true,
-});
-
-type ToolRequest = Readonly<{ guildId: string; discordUserId: string }>;
-type WithinScope = (scope: GuildScope) => Effect.Effect<CallToolResult>;
-
-const scoped = (request: ToolRequest, withinScope: WithinScope): Effect.Effect<CallToolResult> =>
-  resolveScope(request).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeed(errorResult(SERVER_NOT_FOUND)),
-        onSome: withinScope,
-      }),
-    ),
-    Effect.orElseSucceed(() => errorResult(DISCORD_UNAVAILABLE)),
-  );
-
-const withScope = (request: ToolRequest, withinScope: WithinScope): Promise<CallToolResult> =>
-  Effect.runPromise(scoped(request, withinScope));
-
 const limitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_LIMIT);
-const readableChannels = (scope: GuildScope): readonly StoredChannel[] =>
-  scope.guild.channels.filter(
-    ({ id, type }) => scope.visible.includes(id) && !CATEGORY_TYPES.has(type),
-  );
-
-const withChannel = (
-  scope: GuildScope,
-  channelId: Option.Option<string>,
-  withinChannels: (channelIds: readonly string[]) => Effect.Effect<CallToolResult>,
-): Effect.Effect<CallToolResult> =>
-  Option.match(channelId, {
-    onNone: () => withinChannels(readableChannels(scope).map(({ id }) => id)),
-    onSome: (id) =>
-      Option.match(
-        Option.liftPredicate(id, (candidate) => scope.visible.includes(candidate)),
-        {
-          onNone: () => Effect.succeed(errorResult(CHANNEL_NOT_FOUND)),
-          onSome: (visible) =>
-            withinChannels([
-              visible,
-              ...scope.guild.channels
-                .filter(
-                  ({ id: threadId, parentId }) =>
-                    Option.contains(parentId, visible) && scope.visible.includes(threadId),
-                )
-                .map(({ id: threadId }) => threadId),
-            ]),
-        },
-      ),
-  });
-
-const ingestOf = (scope: GuildScope, stored: StoredChannel): IngestStatus => {
-  const { consent, channels } = scope.guild;
-  if (!FORUM_TYPES.has(stored.type)) {
-    return ingestStatus({ consent, kind: "channel", progress: stored });
-  }
-  const posts = channels.filter(({ parentId }) => Option.contains(parentId, stored.id));
-  return ingestStatus({ consent, kind: "forum", posts });
-};
-
-const ingestById = (scope: GuildScope, channelId: string): IngestStatus =>
-  Option.match(Option.fromUndefinedOr(scope.guild.channels.find(({ id }) => id === channelId)), {
-    onNone: () => "waiting" as const,
-    onSome: (stored) => ingestOf(scope, stored),
-  });
-
-const notFullyIngested = (
-  scope: GuildScope,
-  channelIds: readonly string[],
-): readonly Readonly<{ channelId: string; ingest: IngestStatus }>[] =>
-  channelIds
-    .map((id) => ({ channelId: id, ingest: ingestById(scope, id) }))
-    .filter(({ ingest }) => !isReady(ingest));
-
 const listServers = (discordUserId: string): Promise<CallToolResult> =>
   Effect.runPromise(
     readableGuilds(discordUserId).pipe(
@@ -145,7 +72,7 @@ const visibleChannels = (scope: GuildScope): CallToolResult =>
       name: stored.name,
       type: stored.type,
       parentId: Option.getOrNull(stored.parentId),
-      ingest: ingestOf(scope, stored),
+      ingest: ingestOf({ scope, stored }),
     })),
     hint: PHRASES_HINT,
   } satisfies typeof ListChannelsOutput.Type);
@@ -153,14 +80,14 @@ const visibleChannels = (scope: GuildScope): CallToolResult =>
 const listChannels =
   (discordUserId: string) =>
   ({ serverId }: typeof ListChannelsInput.Type): Promise<CallToolResult> =>
-    withScope({ guildId: serverId, discordUserId }, (scope) =>
+    withScope({ guildId: serverId, discordUserId })((scope) =>
       Effect.succeed(visibleChannels(scope)),
     );
 
 const phrases =
   (discordUserId: string) =>
   ({ serverId }: typeof ListChannelsInput.Type): Promise<CallToolResult> =>
-    withScope({ guildId: serverId, discordUserId }, (scope) =>
+    withScope({ guildId: serverId, discordUserId })((scope) =>
       serverPhrases({ scope, channelIds: readableChannels(scope).map(({ id }) => id) }).pipe(
         Effect.map((found) =>
           structuredResult(found satisfies typeof ListServerPhrasesOutput.Type),
@@ -177,8 +104,8 @@ const find =
     limit,
     offset,
   }: typeof FindMessagesInput.Type): Promise<CallToolResult> =>
-    withScope({ guildId: serverId, discordUserId }, (scope) =>
-      withChannel(scope, Option.fromUndefinedOr(channelId), (channelIds) =>
+    withScope({ guildId: serverId, discordUserId })((scope) =>
+      withChannel({ scope, channelId: Option.fromUndefinedOr(channelId) })((channelIds) =>
         findMessages({
           scope,
           query,
@@ -190,9 +117,43 @@ const find =
             structuredResult({
               total,
               messages,
-              notFullyIngested: notFullyIngested(scope, channelIds),
+              notFullyIngested: notFullyIngested({ scope, channelIds }),
             } satisfies typeof FindMessagesOutput.Type),
           ),
+        ),
+      ),
+    );
+
+const SIMILAR_LIMIT = 10;
+const OVER_BUDGET = `${SERVICE_NAME} has used up today's allowance for meaning-based search; use find_messages, or try again after 00:00 UTC`;
+
+const findLike =
+  (discordUserId: string) =>
+  ({
+    serverId,
+    query,
+    channelId,
+    limit,
+  }: typeof FindSimilarMessagesInput.Type): Promise<CallToolResult> =>
+    withScope({ guildId: serverId, discordUserId })((scope) =>
+      withChannel({ scope, channelId: Option.fromUndefinedOr(channelId) })((channelIds) =>
+        findSimilar({
+          scope,
+          query,
+          channelIds,
+          limit: Option.getOrElse(Option.fromUndefinedOr(limit), () => SIMILAR_LIMIT),
+        }).pipe(
+          Effect.map((found) => {
+            if (found.status === "overBudget") {
+              return errorResult(OVER_BUDGET);
+            }
+            return structuredResult({
+              messages: found.messages,
+              embedded: found.coverage.embedded,
+              stored: found.coverage.stored,
+              notFullyIngested: notFullyIngested({ scope, channelIds }),
+            } satisfies typeof FindSimilarMessagesOutput.Type);
+          }),
         ),
       ),
     );
@@ -205,8 +166,8 @@ const read =
     before,
     limit,
   }: typeof ReadMessagesInput.Type): Promise<CallToolResult> =>
-    withScope({ guildId: serverId, discordUserId }, (scope) =>
-      withChannel(scope, Option.some(channelId), () =>
+    withScope({ guildId: serverId, discordUserId })((scope) =>
+      withChannel({ scope, channelId: Option.some(channelId) })(() =>
         readMessages({
           scope,
           channelId,
@@ -215,7 +176,7 @@ const read =
         }).pipe(
           Effect.map((messages) =>
             structuredResult({
-              ingest: ingestById(scope, channelId),
+              ingest: ingestById({ scope, channelId }),
               messages,
             } satisfies typeof ReadMessagesOutput.Type),
           ),
@@ -258,6 +219,20 @@ const FIND_MESSAGES_TOOL = {
   inputSchema: FindMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
+const FIND_SIMILAR_MESSAGES_TOOL = {
+  title: "Find similar messages",
+  description: `Find messages whose meaning is close to \`query\`, even when they share no words with it, most similar first. Write \`query\` as a sentence or a few words describing what you are looking for. Use it when \`find_messages\` finds nothing because people worded things differently; use \`find_messages\` for exact words, names and counts. \`score\` is the cosine similarity. \`embedded\` of \`stored\` messages can be searched this way so far; older messages are added a day's share at a time, so say so when \`embedded\` is below \`stored\`. ${INGEST_GUIDE}`,
+  ...TOOL_BASE,
+  outputSchema: FindSimilarMessagesOutput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+  inputSchema: FindSimilarMessagesInput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+};
+
 const READ_MESSAGES_TOOL = {
   title: "Read messages",
   description: `Read the latest messages of a channel, newest first. ${INGEST_GUIDE}`,
@@ -272,6 +247,7 @@ const buildServer = (discordUserId: string): McpServer => {
   server.registerTool("list_channels", LIST_CHANNELS_TOOL, listChannels(discordUserId));
   server.registerTool(PHRASES_TOOL_NAME, LIST_SERVER_PHRASES_TOOL, phrases(discordUserId));
   server.registerTool("find_messages", FIND_MESSAGES_TOOL, find(discordUserId));
+  server.registerTool("find_similar_messages", FIND_SIMILAR_MESSAGES_TOOL, findLike(discordUserId));
   server.registerTool("read_messages", READ_MESSAGES_TOOL, read(discordUserId));
   return server;
 };

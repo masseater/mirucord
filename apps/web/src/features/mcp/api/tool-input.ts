@@ -16,6 +16,12 @@ const FindMessagesInput = Schema.Struct({
   limit: Limit,
   offset: Offset,
 });
+const FindSimilarMessagesInput = Schema.Struct({
+  serverId: Schema.String,
+  query: Schema.NonEmptyString,
+  channelId: Schema.optionalKey(Schema.String),
+  limit: Limit,
+});
 const ReadMessagesInput = Schema.Struct({
   serverId: Schema.String,
   channelId: Schema.String,
@@ -23,4 +29,10 @@ const ReadMessagesInput = Schema.Struct({
   limit: Limit,
 });
 
-export { FindMessagesInput, FIRST_OFFSET, ListChannelsInput, ReadMessagesInput };
+export {
+  FindMessagesInput,
+  FindSimilarMessagesInput,
+  FIRST_OFFSET,
+  ListChannelsInput,
+  ReadMessagesInput,
+};

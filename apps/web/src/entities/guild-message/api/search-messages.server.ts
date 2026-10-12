@@ -144,7 +144,10 @@ const entryAt = (
   );
 };
 
-const loadPage = (guildId: string, page: readonly Hit[]): Effect.Effect<LoadedPage, MissingFile> =>
+const loadPage = ({
+  guildId,
+  page,
+}: Readonly<{ guildId: string; page: readonly Hit[] }>): Effect.Effect<LoadedPage, MissingFile> =>
   Effect.forEach(
     Array.dedupeWith(
       page.map(({ segment, ordinal }) => ({ segment, chunk: chunkOf(ordinal) })),
@@ -203,7 +206,7 @@ const searchOnce = (request: SearchRequest): Effect.Effect<SearchResult, Missing
       const page = newestFirst({ segments, take: request.offset + request.limit }).slice(
         request.offset,
       );
-      return timed(loadPage(request.guildId, page)).pipe(
+      return timed(loadPage({ guildId: request.guildId, page })).pipe(
         Effect.map(([loaded, bodyMs]) => ({
           total: Number.sumAll(segments.map(({ ordinals }) => ordinals.length)),
           entries: loaded.entries,
@@ -251,5 +254,5 @@ const searchMessages = (request: SearchRequest): Effect.Effect<SearchResult> =>
     Effect.withSpan("search.messages", { attributes: { guildId: request.guildId } }),
   );
 
-export { searchMessages };
-export type { SearchRequest, SearchResult, SearchStats };
+export { loadPage, searchMessages };
+export type { LoadedPage, MissingFile, SearchRequest, SearchResult, SearchStats };

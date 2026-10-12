@@ -11,6 +11,7 @@ import {
   deleteSegments,
   metaKey,
   shardKey,
+  vectorsOfRow,
   writeFiles,
   writeHead,
 } from "./search-files.server";
@@ -207,7 +208,15 @@ const rebuildRecent = (
   });
 };
 
-const entryOf = ({ name, count, shards }: Segment): SegmentEntry => ({ name, count, shards });
+const entryOf = (segment: Segment): SegmentEntry => ({
+  name: segment.name,
+  count: segment.count,
+  shards: segment.shards,
+  ...Option.match(vectorsOfRow(segment), {
+    onNone: () => ({}),
+    onSome: (vectors) => ({ vectors }),
+  }),
+});
 
 type InvalidRow = Readonly<{ segment: string; ordinal: number }>;
 

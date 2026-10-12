@@ -1,4 +1,4 @@
-import { Effect, Option } from "effect";
+import { Clock, Effect, Option } from "effect";
 
 import { backfillPhrases } from "./phrase-backfill.server";
 import { PhraseStore } from "./phrase-store.server";
@@ -12,6 +12,8 @@ import type {
   SavedStats,
   UnphrasedMessage,
 } from "./store-types";
+import { vectorLedger } from "./vector-ledger.server";
+import type { Coverage } from "./vector-ledger.server";
 
 class GuildStore extends PhraseStore {
   public phraseStats({
@@ -60,6 +62,16 @@ class GuildStore extends PhraseStore {
     this.forgetStats();
   }
 
+  public vectorCoverage(): Coverage {
+    return vectorLedger(this.db).coverage();
+  }
+
+  public refreshVectors(): Promise<void> {
+    return Effect.runPromise(
+      Clock.currentTimeMillis.pipe(Effect.flatMap((now) => this.search.scheduleAt(now))),
+    );
+  }
+
   public override alarm(): Promise<void> {
     const { guildId: claimed } = this.ledgerOf();
     const phrases = Option.match(Option.fromNullOr(claimed), {
@@ -74,7 +86,10 @@ class GuildStore extends PhraseStore {
           again: (at) => this.search.scheduleAt(at),
         }),
     });
-    const published = phrases.pipe(Effect.andThen(this.search.publish()));
+    const published = phrases.pipe(
+      Effect.andThen(this.search.publish()),
+      Effect.andThen(this.search.vectors()),
+    );
     return Effect.runPromise(published);
   }
 }

@@ -112,7 +112,10 @@ export default defineConfig({
         {
           ignoreInferredTypes: true,
           allow: [
-            { from: "lib", name: ["Request", "CryptoKey"] },
+            {
+              from: "lib",
+              name: ["Request", "CryptoKey", "Int8Array", "Float32Array", "Uint8Array"],
+            },
             {
               from: "package",
               package: "@cloudflare/workers-types",

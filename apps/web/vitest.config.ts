@@ -23,6 +23,7 @@ export default defineConfig({
               durableObjects: {
                 GUILD_STORE: { className: "GuildStore", useSQLite: true },
                 REQUEST_COUNTER: { className: "RequestCounter", useSQLite: true },
+                NEURON_BUDGET: { className: "NeuronBudget", useSQLite: true },
               },
               ai: { binding: "AI" },
               secretsStoreSecrets: { MASTER_KEY: { store_id: "test", secret_name: "master-key" } },

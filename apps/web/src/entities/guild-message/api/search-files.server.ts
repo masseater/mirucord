@@ -9,11 +9,16 @@ const CACHE_NAME = "search-files";
 const WRITE_CONCURRENCY = 16;
 const DELETE_BATCH = 1000;
 
+const SegmentVectorsSchema = Schema.Struct({ through: Schema.Int, clusters: Schema.Int });
+
 const SegmentEntrySchema = Schema.Struct({
   name: Schema.String,
   count: Schema.Int,
   shards: Schema.Int,
+  vectors: Schema.optionalKey(SegmentVectorsSchema),
 });
+
+type SegmentVectors = typeof SegmentVectorsSchema.Type;
 
 type SegmentEntry = typeof SegmentEntrySchema.Type;
 
@@ -37,7 +42,77 @@ const shardKey = ({ guildId, segment, shard }: SegmentFile & Readonly<{ shard: n
 const chunkKey = ({ guildId, segment, chunk }: SegmentFile & Readonly<{ chunk: number }>): string =>
   `${guildId}/${segment}/b${chunk}`;
 
-const segmentKeys = (guildId: string, { name, count, shards }: SegmentEntry): readonly string[] => [
+const CENTROIDS = "c";
+
+const vectorFileKey = ({
+  guildId,
+  segment,
+  file,
+}: SegmentFile & Readonly<{ file: string }>): string => `${guildId}/${segment}/${file}`;
+
+const centroidsKey = ({
+  guildId,
+  segment,
+  through,
+}: SegmentFile & Readonly<{ through: number }>): string =>
+  vectorFileKey({ guildId, segment, file: `v${through}${CENTROIDS}` });
+
+const clusterKey = ({
+  guildId,
+  segment,
+  through,
+  cluster,
+}: SegmentFile & Readonly<{ through: number; cluster: number }>): string =>
+  vectorFileKey({ guildId, segment, file: `v${through}-${cluster}` });
+
+const SINGLE_CLUSTER = 1;
+
+const keysOfVectors = (
+  guildId: string,
+  segment: string,
+  { through, clusters }: SegmentVectors,
+): readonly string[] => [
+  ...Array.makeBy(clusters, (cluster) => clusterKey({ guildId, segment, through, cluster })),
+  ...Array.filter([centroidsKey({ guildId, segment, through })], () => clusters > SINGLE_CLUSTER),
+];
+
+const vectorsOfRow = ({
+  vectorThrough,
+  vectorClusters,
+}: Readonly<{
+  name: string;
+  vectorThrough: number | null;
+  vectorClusters: number | null;
+}>): Option.Option<SegmentVectors> =>
+  Option.all({
+    through: Option.fromNullOr(vectorThrough),
+    clusters: Option.fromNullOr(vectorClusters),
+  });
+
+const vectorKeys = ({
+  guildId,
+  row,
+}: Readonly<{
+  guildId: string;
+  row: Readonly<{
+    name: string;
+    vectorThrough: number | null;
+    vectorClusters: number | null;
+  }>;
+}>): readonly string[] =>
+  Option.match(vectorsOfRow(row), {
+    onNone: () => [],
+    onSome: (vectors) => keysOfVectors(guildId, row.name, vectors),
+  });
+
+const segmentKeys = (
+  guildId: string,
+  { name, count, shards, vectors }: SegmentEntry,
+): readonly string[] => [
+  ...Option.match(Option.fromUndefinedOr(vectors), {
+    onNone: () => [],
+    onSome: (found) => keysOfVectors(guildId, name, found),
+  }),
   metaKey({ guildId, segment: name }),
   ...Array.makeBy(shards, (shard) => shardKey({ guildId, segment: name, shard })),
   ...Array.makeBy(chunkCountOf(count), (chunk) => chunkKey({ guildId, segment: name, chunk })),
@@ -183,13 +258,27 @@ const deleteSegments = ({
 
 export {
   cachedBytes,
+  centroidsKey,
   chunkKey,
+  clusterKey,
+  deleteKeys,
   deletePrefix,
   deleteSegments,
   metaKey,
   readHead,
   shardKey,
+  vectorFileKey,
+  vectorKeys,
+  vectorsOfRow,
   writeFiles,
   writeHead,
 };
-export type { Bucketed, FileRead, SearchHead, SegmentEntry, SegmentFile, StoredFile };
+export type {
+  Bucketed,
+  FileRead,
+  SearchHead,
+  SegmentEntry,
+  SegmentFile,
+  SegmentVectors,
+  StoredFile,
+};

@@ -22,6 +22,7 @@ import type {
   StoredState,
   WriteMode,
 } from "#/entities/guild-message/model/stored-message";
+import { erasedAmong } from "#/shared/db/index.server";
 
 const MIGRATION_FILES: Readonly<Record<string, string>> = import.meta.glob(
   "/drizzle-guild/*/migration.sql",
@@ -69,7 +70,8 @@ class GuildStore extends DurableObject {
 
   readonly #remigrate = Effect.sync(() => migrate(this.#db, { migrations: MIGRATIONS }));
 
-  #unindex(seqs: readonly number[]): void {
+  #unindex(rows: readonly Seq[]): void {
+    const seqs = rows.map(({ seq }) => seq);
     for (const chunk of Array.chunksOf(seqs, BOUND_LIMIT)) {
       this.#db
         .delete(messageSearch)
@@ -84,15 +86,11 @@ class GuildStore extends DurableObject {
       .from(guildMessage)
       .where(eq(guildMessage.seq, seq))
       .get();
-    return Option.match(Option.fromUndefinedOr(holder), {
-      onNone: () => seq,
-      onSome: (taken) => {
-        if (taken.id === id) {
-          return seq;
-        }
-        return this.#freeSeq(id, seq + NEXT_SEQ);
-      },
-    });
+    const taken = Option.fromUndefinedOr(holder).pipe(Option.exists((other) => other.id !== id));
+    if (taken) {
+      return this.#freeSeq(id, seq + NEXT_SEQ);
+    }
+    return seq;
   }
 
   #upsert(row: StoredRow, mode: WriteMode): readonly Seq[] {
@@ -114,7 +112,7 @@ class GuildStore extends DurableObject {
 
   #write({ row, tokens }: IndexedMessage, mode: WriteMode): void {
     for (const { seq } of this.#upsert(row, mode)) {
-      this.#unindex([seq]);
+      this.#unindex([{ seq }]);
       if (Array.isReadonlyArrayNonEmpty(tokens)) {
         this.#db
           .insert(messageSearch)
@@ -124,14 +122,19 @@ class GuildStore extends DurableObject {
     }
   }
 
-  #removeWhere(seqs: readonly Seq[]): void {
-    this.#unindex(seqs.map(({ seq }) => seq));
-  }
-
-  public write(messages: readonly IndexedMessage[], mode: WriteMode): void {
-    for (const message of messages) {
-      this.#write(message, mode);
-    }
+  public write(messages: readonly IndexedMessage[], mode: WriteMode): Promise<void> {
+    return Effect.runPromise(
+      erasedAmong(messages.map(({ row }) => row.authorId)).pipe(
+        Effect.map((erased) => messages.filter(({ row }) => !erased.has(row.authorId))),
+        Effect.flatMap((kept) =>
+          Effect.sync(() => {
+            for (const message of kept) {
+              this.#write(message, mode);
+            }
+          }),
+        ),
+      ),
+    );
   }
 
   public stored(ids: readonly string[]): readonly StoredState[] {
@@ -173,7 +176,7 @@ class GuildStore extends DurableObject {
 
   public remove(ids: readonly string[]): void {
     for (const chunk of Array.chunksOf(ids, BOUND_LIMIT)) {
-      this.#removeWhere(
+      this.#unindex(
         this.#db
           .delete(guildMessage)
           .where(inArray(guildMessage.id, [...chunk]))
@@ -183,14 +186,22 @@ class GuildStore extends DurableObject {
     }
   }
 
-  public removeChannel(channelId: string): void {
-    this.#removeWhere(
+  #removeMatching(column: "authorId" | "channelId", value: string): void {
+    this.#unindex(
       this.#db
         .delete(guildMessage)
-        .where(eq(guildMessage.channelId, channelId))
+        .where(eq(guildMessage[column], value))
         .returning({ seq: guildMessage.seq })
         .all(),
     );
+  }
+
+  public removeAuthor(authorId: string): void {
+    this.#removeMatching("authorId", authorId);
+  }
+
+  public removeChannel(channelId: string): void {
+    this.#removeMatching("channelId", channelId);
   }
 
   public clear(): Promise<void> {

@@ -1,11 +1,11 @@
 {
-  "id": "63d15355-5c1c-4842-b939-bd9c2818bd91",
+  "version": "7",
+  "dialect": "sqlite",
+  "id": "59e6b616-b203-426a-a3a2-97b516dc0db9",
   "prevIds": [
     "12cf95bb-6f11-4e71-a343-c0567a1e4897",
     "a8dc8f1f-e730-4731-9071-fac0b47604e0"
   ],
-  "version": "7",
-  "dialect": "sqlite",
   "ddl": [
     {
       "name": "account",
@@ -56,6 +56,10 @@
       "entityType": "tables"
     },
     {
+      "name": "erased_author",
+      "entityType": "tables"
+    },
+    {
       "name": "channel",
       "entityType": "tables"
     },
@@ -80,1797 +84,1826 @@
       "entityType": "tables"
     },
     {
-      "table": "account",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "account_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "provider_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "user_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "access_token",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "refresh_token",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id_token",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "access_token_expires_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "refresh_token_expires_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "scope",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "password",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "account",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "updated_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "account"
     },
     {
-      "table": "jwks",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "jwks"
     },
     {
-      "table": "jwks",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "public_key",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "jwks"
     },
     {
-      "table": "jwks",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "private_key",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "jwks"
     },
     {
-      "table": "jwks",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "jwks"
     },
     {
-      "table": "jwks",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "expires_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "jwks"
     },
     {
-      "table": "jwks",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "alg",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "jwks"
     },
     {
-      "table": "jwks",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "crv",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "jwks"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "token",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "client_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "session_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "user_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "reference_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "authorization_code_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "resources",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "requested_user_info_claims",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "refresh_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "expires_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "revoked",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "confirmation",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "scopes",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "client_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "client_secret",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "client_discovery_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": "false",
       "generated": null,
       "name": "disabled",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "skip_consent",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "enable_end_session",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "subject_type",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "scopes",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": "'[]'",
       "generated": null,
       "name": "client_credentials_scopes",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "user_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "updated_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "name",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "uri",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "icon",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "contacts",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "tos",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "policy",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "software_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "software_version",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "software_statement",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "redirect_uris",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "post_logout_redirect_uris",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "backchannel_logout_uri",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "backchannel_logout_session_required",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "token_endpoint_auth_method",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "application_type",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "jwks",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "jwks_uri",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "grant_types",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "response_types",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "require_pkce",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": "false",
       "generated": null,
       "name": "dpop_bound_access_tokens",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "reference_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "metadata",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client_assertion",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client_assertion"
     },
     {
-      "table": "oauth_client_assertion",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "expires_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client_assertion"
     },
     {
-      "table": "oauth_client_resource",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_client_resource",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "client_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_client_resource",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "resource_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_client_resource",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "metadata",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_client_resource",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_consent",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "client_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "user_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "reference_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "resources",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "requested_user_info_claims",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "scopes",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "updated_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "token",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "client_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "session_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "user_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "reference_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "authorization_code_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "resources",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "requested_user_info_claims",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "expires_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "revoked",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "rotated_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "rotation_replay_response",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "rotation_replay_expires_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "auth_time",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "confirmation",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "scopes",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_resource",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "identifier",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "name",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "access_token_ttl",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "refresh_token_ttl",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "signing_algorithm",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "signing_key_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "allowed_scopes",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "custom_claims",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": "false",
       "generated": null,
       "name": "dpop_bound_access_tokens_required",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": "false",
       "generated": null,
       "name": "disabled",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "updated_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": "1",
       "generated": null,
       "name": "policy_version",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "oauth_resource",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "metadata",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "oauth_resource"
     },
     {
-      "table": "session",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "session"
     },
     {
-      "table": "session",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "expires_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "session"
     },
     {
-      "table": "session",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "token",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "session"
     },
     {
-      "table": "session",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "session"
     },
     {
-      "table": "session",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "updated_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "session"
     },
     {
-      "table": "session",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "ip_address",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "session"
     },
     {
-      "table": "session",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "user_agent",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "session"
     },
     {
-      "table": "session",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "user_id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "session"
     },
     {
-      "table": "user",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "user"
     },
     {
-      "table": "user",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "name",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "user"
     },
     {
-      "table": "user",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "email",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "user"
     },
     {
-      "table": "user",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": "false",
       "generated": null,
       "name": "email_verified",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "user"
     },
     {
-      "table": "user",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "image",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "user"
     },
     {
-      "table": "user",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "user"
     },
     {
-      "table": "user",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
       "generated": null,
       "name": "updated_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "user"
     },
     {
-      "table": "verification",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "verification"
     },
     {
-      "table": "verification",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "identifier",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "verification"
     },
     {
-      "table": "verification",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "value",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "verification"
     },
     {
-      "table": "verification",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "expires_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "verification"
     },
     {
-      "table": "verification",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
       "generated": null,
       "name": "created_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "verification"
     },
     {
-      "table": "verification",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
       "generated": null,
       "name": "updated_at",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "verification"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "erased_author"
     },
     {
-      "table": "channel",
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "erasedAt",
+      "entityType": "columns",
+      "table": "erased_author"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "channel"
+    },
+    {
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "guildId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "parentId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "name",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "type",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "permissionOverwrites",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "newestMessageId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "oldestMessageId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "sweepCursor",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": "'pending'",
       "generated": null,
       "name": "backfill",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": "'readable'",
       "generated": null,
       "name": "botAccess",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "hiddenAt",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "'allowed'",
+      "generated": null,
+      "name": "botPost",
+      "entityType": "columns",
+      "table": "channel"
+    },
+    {
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": "0",
       "generated": null,
       "name": "position",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "channel",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": "'open'",
       "generated": null,
       "name": "archive",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "channel"
     },
     {
-      "table": "guild",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "guild"
     },
     {
-      "table": "guild",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "name",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "guild"
     },
     {
-      "table": "guild",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "icon",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "guild"
     },
     {
-      "table": "guild",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "ownerId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "guild"
     },
     {
-      "table": "guild",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "wrappedKey",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "guild"
     },
     {
-      "table": "guild",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "joinedAt",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "guild"
     },
     {
-      "table": "ingest_consent",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "guildId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "ingest_consent"
     },
     {
-      "table": "ingest_consent",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "grantedBy",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "ingest_consent"
     },
     {
-      "table": "ingest_consent",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "grantedAt",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "ingest_consent"
     },
     {
-      "table": "ingest_consent",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "noticeChannelId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "ingest_consent"
     },
     {
-      "table": "ingest_consent",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": "'granted'",
       "generated": null,
       "name": "state",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "ingest_consent"
     },
     {
-      "table": "role",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "role"
     },
     {
-      "table": "role",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "guildId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "role"
     },
     {
-      "table": "role",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "permissions",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "role"
     },
     {
-      "table": "message",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "message"
     },
     {
-      "table": "message",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "guildId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "message"
     },
     {
-      "table": "message",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "channelId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "message"
     },
     {
-      "table": "message",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "authorId",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "message"
     },
     {
-      "table": "message",
       "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "sealed",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "message"
     },
     {
-      "table": "message",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "createdAt",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "message"
     },
     {
-      "table": "message",
       "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "editedAt",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "message"
     },
     {
-      "table": "message",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "describedWith",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "message"
     },
     {
-      "table": "sync_run",
       "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "scope",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "sync_run"
     },
     {
-      "table": "sync_run",
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "ranAt",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "sync_run"
     },
     {
-      "table": "account",
       "columns": [
         "user_id"
       ],
@@ -1882,10 +1915,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_account_user_id_user_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "account"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         "client_id"
       ],
@@ -1897,10 +1930,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_access_token_client_id_oauth_client_client_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         "session_id"
       ],
@@ -1912,10 +1945,10 @@
       "onDelete": "SET NULL",
       "nameExplicit": false,
       "name": "fk_oauth_access_token_session_id_session_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         "user_id"
       ],
@@ -1927,10 +1960,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_access_token_user_id_user_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         "refresh_id"
       ],
@@ -1942,10 +1975,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_access_token_refresh_id_oauth_refresh_token_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_client",
       "columns": [
         "user_id"
       ],
@@ -1957,10 +1990,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_client_user_id_user_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client_resource",
       "columns": [
         "client_id"
       ],
@@ -1972,10 +2005,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_client_resource_client_id_oauth_client_client_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_client_resource",
       "columns": [
         "resource_id"
       ],
@@ -1987,10 +2020,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_client_resource_resource_id_oauth_resource_identifier_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_consent",
       "columns": [
         "client_id"
       ],
@@ -2002,10 +2035,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_consent_client_id_oauth_client_client_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "columns": [
         "user_id"
       ],
@@ -2017,10 +2050,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_consent_user_id_user_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_refresh_token",
       "columns": [
         "client_id"
       ],
@@ -2032,10 +2065,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_refresh_token_client_id_oauth_client_client_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "columns": [
         "session_id"
       ],
@@ -2047,10 +2080,10 @@
       "onDelete": "SET NULL",
       "nameExplicit": false,
       "name": "fk_oauth_refresh_token_session_id_session_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "columns": [
         "user_id"
       ],
@@ -2062,10 +2095,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_oauth_refresh_token_user_id_user_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "session",
       "columns": [
         "user_id"
       ],
@@ -2077,10 +2110,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_session_user_id_user_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "session"
     },
     {
-      "table": "channel",
       "columns": [
         "guildId"
       ],
@@ -2092,10 +2125,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_channel_guildId_guild_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "channel"
     },
     {
-      "table": "ingest_consent",
       "columns": [
         "guildId"
       ],
@@ -2107,10 +2140,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_ingest_consent_guildId_guild_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "ingest_consent"
     },
     {
-      "table": "role",
       "columns": [
         "guildId"
       ],
@@ -2122,10 +2155,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_role_guildId_guild_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "role"
     },
     {
-      "table": "message",
       "columns": [
         "guildId"
       ],
@@ -2137,10 +2170,10 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_message_guildId_guild_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "message"
     },
     {
-      "table": "message",
       "columns": [
         "channelId"
       ],
@@ -2152,172 +2185,181 @@
       "onDelete": "CASCADE",
       "nameExplicit": false,
       "name": "fk_message_channelId_channel_id_fk",
-      "entityType": "fks"
+      "entityType": "fks",
+      "table": "message"
     },
     {
-      "table": "account",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "account_pk",
+      "table": "account",
       "entityType": "pks"
     },
     {
-      "table": "jwks",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "jwks_pk",
+      "table": "jwks",
       "entityType": "pks"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "oauth_access_token_pk",
+      "table": "oauth_access_token",
       "entityType": "pks"
     },
     {
-      "table": "oauth_client",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "oauth_client_pk",
+      "table": "oauth_client",
       "entityType": "pks"
     },
     {
-      "table": "oauth_client_assertion",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "oauth_client_assertion_pk",
+      "table": "oauth_client_assertion",
       "entityType": "pks"
     },
     {
-      "table": "oauth_client_resource",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "oauth_client_resource_pk",
+      "table": "oauth_client_resource",
       "entityType": "pks"
     },
     {
-      "table": "oauth_consent",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "oauth_consent_pk",
+      "table": "oauth_consent",
       "entityType": "pks"
     },
     {
-      "table": "oauth_refresh_token",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "oauth_refresh_token_pk",
+      "table": "oauth_refresh_token",
       "entityType": "pks"
     },
     {
-      "table": "oauth_resource",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "oauth_resource_pk",
+      "table": "oauth_resource",
       "entityType": "pks"
     },
     {
-      "table": "session",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "session_pk",
+      "table": "session",
       "entityType": "pks"
     },
     {
-      "table": "user",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "user_pk",
+      "table": "user",
       "entityType": "pks"
     },
     {
-      "table": "verification",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "verification_pk",
+      "table": "verification",
       "entityType": "pks"
     },
     {
-      "table": "channel",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "erased_author_pk",
+      "table": "erased_author",
+      "entityType": "pks"
+    },
+    {
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "channel_pk",
+      "table": "channel",
       "entityType": "pks"
     },
     {
-      "table": "guild",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "guild_pk",
+      "table": "guild",
       "entityType": "pks"
     },
     {
-      "table": "ingest_consent",
       "columns": [
         "guildId"
       ],
       "nameExplicit": false,
       "name": "ingest_consent_pk",
+      "table": "ingest_consent",
       "entityType": "pks"
     },
     {
-      "table": "role",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "role_pk",
+      "table": "role",
       "entityType": "pks"
     },
     {
-      "table": "message",
       "columns": [
         "id"
       ],
       "nameExplicit": false,
       "name": "message_pk",
+      "table": "message",
       "entityType": "pks"
     },
     {
-      "table": "sync_run",
       "columns": [
         "scope"
       ],
       "nameExplicit": false,
       "name": "sync_run_pk",
+      "table": "sync_run",
       "entityType": "pks"
     },
     {
-      "table": "account",
       "columns": [
         {
           "value": "user_id",
@@ -2328,10 +2370,10 @@
       "where": null,
       "origin": "manual",
       "name": "account_userId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "account"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         {
           "value": "client_id",
@@ -2342,10 +2384,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthAccessToken_clientId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         {
           "value": "session_id",
@@ -2356,10 +2398,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthAccessToken_sessionId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         {
           "value": "user_id",
@@ -2370,10 +2412,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthAccessToken_userId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         {
           "value": "authorization_code_id",
@@ -2384,10 +2426,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthAccessToken_authorizationCodeId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         {
           "value": "refresh_id",
@@ -2398,10 +2440,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthAccessToken_refreshId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_client",
       "columns": [
         {
           "value": "user_id",
@@ -2412,10 +2454,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthClient_userId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_client_resource",
       "columns": [
         {
           "value": "client_id",
@@ -2430,10 +2472,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthClientResource_clientId_resourceId_uidx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_client_resource",
       "columns": [
         {
           "value": "client_id",
@@ -2444,10 +2486,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthClientResource_clientId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_client_resource",
       "columns": [
         {
           "value": "resource_id",
@@ -2458,10 +2500,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthClientResource_resourceId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_client_resource"
     },
     {
-      "table": "oauth_consent",
       "columns": [
         {
           "value": "client_id",
@@ -2472,10 +2514,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthConsent_clientId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_consent",
       "columns": [
         {
           "value": "user_id",
@@ -2486,10 +2528,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthConsent_userId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_consent"
     },
     {
-      "table": "oauth_refresh_token",
       "columns": [
         {
           "value": "client_id",
@@ -2500,10 +2542,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthRefreshToken_clientId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "columns": [
         {
           "value": "session_id",
@@ -2514,10 +2556,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthRefreshToken_sessionId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "columns": [
         {
           "value": "user_id",
@@ -2528,10 +2570,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthRefreshToken_userId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_refresh_token",
       "columns": [
         {
           "value": "authorization_code_id",
@@ -2542,10 +2584,10 @@
       "where": null,
       "origin": "manual",
       "name": "oauthRefreshToken_authorizationCodeId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "session",
       "columns": [
         {
           "value": "user_id",
@@ -2556,10 +2598,10 @@
       "where": null,
       "origin": "manual",
       "name": "session_userId_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "session"
     },
     {
-      "table": "verification",
       "columns": [
         {
           "value": "identifier",
@@ -2570,10 +2612,10 @@
       "where": null,
       "origin": "manual",
       "name": "verification_identifier_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "verification"
     },
     {
-      "table": "channel",
       "columns": [
         {
           "value": "guildId",
@@ -2584,10 +2626,10 @@
       "where": null,
       "origin": "manual",
       "name": "channel_guild_id_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "channel"
     },
     {
-      "table": "role",
       "columns": [
         {
           "value": "guildId",
@@ -2598,10 +2640,10 @@
       "where": null,
       "origin": "manual",
       "name": "role_guild_id_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "role"
     },
     {
-      "table": "message",
       "columns": [
         {
           "value": "channelId",
@@ -2616,10 +2658,10 @@
       "where": null,
       "origin": "manual",
       "name": "message_channel_id_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "message"
     },
     {
-      "table": "message",
       "columns": [
         {
           "value": "guildId",
@@ -2634,71 +2676,62 @@
       "where": null,
       "origin": "manual",
       "name": "message_guild_id_idx",
-      "entityType": "indexes"
+      "entityType": "indexes",
+      "table": "message"
     },
     {
-      "table": "oauth_access_token",
       "columns": [
         "token"
       ],
       "nameExplicit": false,
       "name": "oauth_access_token_token_unique",
-      "entityType": "uniques"
+      "entityType": "uniques",
+      "table": "oauth_access_token"
     },
     {
-      "table": "oauth_client",
       "columns": [
         "client_id"
       ],
       "nameExplicit": false,
       "name": "oauth_client_client_id_unique",
-      "entityType": "uniques"
+      "entityType": "uniques",
+      "table": "oauth_client"
     },
     {
-      "table": "oauth_refresh_token",
       "columns": [
         "token"
       ],
       "nameExplicit": false,
       "name": "oauth_refresh_token_token_unique",
-      "entityType": "uniques"
+      "entityType": "uniques",
+      "table": "oauth_refresh_token"
     },
     {
-      "table": "oauth_resource",
       "columns": [
         "identifier"
       ],
       "nameExplicit": false,
       "name": "oauth_resource_identifier_unique",
-      "entityType": "uniques"
+      "entityType": "uniques",
+      "table": "oauth_resource"
     },
     {
-      "table": "session",
       "columns": [
         "token"
       ],
       "nameExplicit": false,
       "name": "session_token_unique",
-      "entityType": "uniques"
+      "entityType": "uniques",
+      "table": "session"
     },
     {
-      "table": "user",
       "columns": [
         "email"
       ],
       "nameExplicit": false,
       "name": "user_email_unique",
-      "entityType": "uniques"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "'allowed'",
-      "generated": null,
-      "name": "botPost",
-      "entityType": "columns",
-      "table": "channel"
+      "entityType": "uniques",
+      "table": "user"
     }
   ],
   "renames": []

@@ -46,3 +46,7 @@ cd apps/web
 vp run dev
 vp run deploy
 ```
+
+## ライセンス
+
+[GNU Affero General Public License v3.0](LICENSE) で公開している。

@@ -5,6 +5,7 @@ import {
   guildStore,
   queryTokens,
   searchableTexts,
+  searchMessages,
 } from "#/entities/guild-message/index.server";
 import type { SealedMessage } from "#/entities/guild-message/index.server";
 import { openGuildKey, openMessage, openSearchKey } from "#/shared/crypto/index.server";
@@ -73,21 +74,34 @@ type FindRequest = Readonly<{
 
 type FoundMessages = Readonly<{ total: number; messages: readonly MessageView[] }>;
 
+const NOTHING_FOUND: FoundMessages = { total: 0, messages: [] };
+
 const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
-  const { guildId, wrappedKey } = request.scope.guild;
+  const { guildId, wrappedKey, consent } = request.scope.guild;
+  if (consent !== "consented") {
+    return Effect.succeed(NOTHING_FOUND);
+  }
   return openSearchKey(wrappedKey).pipe(
     Effect.flatMap((key) => queryTokens({ key, query: request.query })),
     Effect.flatMap((tokens) =>
-      Effect.promise(() => guildStore(guildId).candidates(tokens, request.channelIds)),
+      searchMessages({
+        guildId,
+        tokens,
+        channelIds: request.channelIds,
+        offset: request.offset,
+        limit: request.limit,
+      }),
     ),
-    Effect.flatMap((candidates) => openStored(request.scope, candidates)),
-    Effect.map((views) =>
-      views.filter((view) => containsQuery({ texts: searchableTexts(view), query: request.query })),
+    Effect.flatMap(({ total, entries }) =>
+      openStored(request.scope, entries).pipe(
+        Effect.map((views) => ({
+          total,
+          messages: views.filter((view) =>
+            containsQuery({ texts: searchableTexts(view), query: request.query }),
+          ),
+        })),
+      ),
     ),
-    Effect.map((found) => ({
-      total: found.length,
-      messages: found.slice(request.offset, request.offset + request.limit),
-    })),
   );
 };
 

@@ -16,7 +16,7 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "list",
         items: [
-          "Cloudflare のアカウントと、そこで管理しているドメイン。Workers、D1、Durable Objects、Queues、Workers AI、Secrets Store を使います。Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
+          "Cloudflare のアカウントと、そこで管理しているドメイン。Workers、D1、Durable Objects、R2、Queues、Workers AI、Secrets Store を使います。Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
           "Discord Developer Portal のアプリケーション。",
           "fly.io のアカウント。Discord の Gateway につなぎっぱなしにするプロセスを置きます。メッセージの取り込みと、サーバーやチャンネルの変化の反映はこの Gateway が起点なので、必須です。",
           "GitHub のアカウント。CI からデプロイするときに使います。",
@@ -112,7 +112,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: "`apps/web` の deploy で Worker、D1、Durable Objects、Queues、Secrets Store がそろい、D1 のマイグレーションも流れます。`apps/gateway` の deploy は fly.io に Gateway を置きます。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
+        text: "`apps/web` の deploy で Worker、D1、Durable Objects、R2、Queues、Secrets Store がそろい、D1 のマイグレーションも流れます。`apps/gateway` の deploy は fly.io に Gateway を置きます。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
       },
     ],
   },

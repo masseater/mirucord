@@ -1,4 +1,13 @@
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { customType, index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { Array } from "effect";
+
+const tokenColumn = customType<{ data: readonly number[]; driverData: ArrayBuffer }>({
+  dataType: () => "blob",
+  toDriver: (tokens) => Uint32Array.from(Array.dedupe(tokens)).buffer,
+  fromDriver: (blob) => Array.fromIterable(new Uint32Array(blob)),
+});
+
+const UNPUBLISHED = 0;
 
 const guildMessage = sqliteTable(
   "message",
@@ -11,8 +20,14 @@ const guildMessage = sqliteTable(
     createdAt: integer().notNull(),
     editedAt: integer(),
     describedWith: text(),
+    tokens: tokenColumn(),
+    version: integer().notNull().default(UNPUBLISHED),
   },
-  (table) => [index("message_channel_created_idx").on(table.channelId, table.createdAt)],
+  (table) => [
+    index("message_channel_created_idx").on(table.channelId, table.createdAt),
+    index("message_created_idx").on(table.createdAt),
+    index("message_version_idx").on(table.version),
+  ],
 );
 
 export { guildMessage };

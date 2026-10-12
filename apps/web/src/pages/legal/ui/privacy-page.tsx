@@ -47,7 +47,7 @@ const SECTIONS = [
     heading: "第5条（委託先及び保管場所）",
     paragraphs: [
       "1. 運営者は、情報の保存及び処理を次の各号に掲げる事業者に委託する。",
-      "(1) Cloudflare, Inc.：本サービスの実行基盤、データベース（D1 及び Durable Objects）並びに画像の説明文の生成（Workers AI）",
+      "(1) Cloudflare, Inc.：本サービスの実行基盤、データベース及び保存領域（D1、Durable Objects 及び R2）並びに画像の説明文の生成（Workers AI）",
       "(2) Fly.io, Inc.：Discord からメッセージの作成、編集及び削除の通知を受け取り、Cloudflare 上の本サービスへ中継する処理。この処理においてメッセージは保存しない。",
       "2. 前項の事業者はいずれも米国の事業者であり、情報は日本国外のサーバーで処理されることがある。",
     ],

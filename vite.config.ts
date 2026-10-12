@@ -86,8 +86,8 @@ export default defineConfig({
       "no-comments/disallowComments": ["error", { allow: ["oxlint-disable", "eslint-disable"] }],
       ...allRulesOf("tanstack-query", tanstackQuery),
       ...allRulesOf("tanstack-router", tanstackRouter),
-      "drizzle/enforce-delete-with-where": "error",
-      "drizzle/enforce-update-with-where": "error",
+      "drizzle/enforce-delete-with-where": ["error", { drizzleObjectName: ["db"] }],
+      "drizzle/enforce-update-with-where": ["error", { drizzleObjectName: ["db"] }],
       ...allRulesOf("shadcn", shadcn),
       ...allRulesOf("baseline-js", baselineJs),
       ...baselineJs.configs.recommended().rules,
@@ -114,6 +114,7 @@ export default defineConfig({
           allow: [
             { from: "lib", name: ["Request", "CryptoKey"] },
             { from: "package", package: "@tanstack/query-core", name: "QueryClient" },
+            { from: "package", package: "drizzle-orm", name: ["DrizzleSqliteDODatabase", "SQL"] },
             {
               from: "package",
               package: "react",

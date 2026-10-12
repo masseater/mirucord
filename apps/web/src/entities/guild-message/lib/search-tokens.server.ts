@@ -7,9 +7,6 @@ const LONGEST_GRAM = 3;
 const NEXT = 1;
 const NONE = 0;
 const TOKEN_START = 0;
-const TOKEN_BYTES = 8;
-const HEX_RADIX = 16;
-const HEX_WIDTH = 2;
 
 const textEncoder = new TextEncoder();
 
@@ -20,17 +17,12 @@ const gramsOfSize = (chars: readonly string[], size: number): readonly string[] 
     chars.slice(start, start + size).join(""),
   );
 
-const tokenOf = (key: CryptoKey, gram: string): Effect.Effect<string> =>
+const tokenOf = (key: CryptoKey, gram: string): Effect.Effect<number> =>
   Effect.promise(() => crypto.subtle.sign("HMAC", key, textEncoder.encode(gram))).pipe(
-    Effect.map((signature) =>
-      Array.fromIterable(new Uint8Array(signature, TOKEN_START, TOKEN_BYTES)),
-    ),
-    Effect.map((bytes) =>
-      bytes.map((byte) => byte.toString(HEX_RADIX).padStart(HEX_WIDTH, "0")).join(""),
-    ),
+    Effect.map((signature) => new DataView(signature).getUint32(TOKEN_START)),
   );
 
-const tokensOf = (key: CryptoKey, grams: readonly string[]): Effect.Effect<readonly string[]> =>
+const tokensOf = (key: CryptoKey, grams: readonly string[]): Effect.Effect<readonly number[]> =>
   Effect.forEach(Array.dedupe(grams), (gram) => tokenOf(key, gram), { concurrency: "unbounded" });
 
 const GRAM_SIZES = Array.range(SHORTEST_GRAM, LONGEST_GRAM);
@@ -38,7 +30,7 @@ const GRAM_SIZES = Array.range(SHORTEST_GRAM, LONGEST_GRAM);
 const indexTokens = ({
   key,
   texts,
-}: Readonly<{ key: CryptoKey; texts: readonly string[] }>): Effect.Effect<readonly string[]> =>
+}: Readonly<{ key: CryptoKey; texts: readonly string[] }>): Effect.Effect<readonly number[]> =>
   tokensOf(
     key,
     texts.flatMap((text) => {
@@ -50,7 +42,7 @@ const indexTokens = ({
 const queryTokens = ({
   key,
   query,
-}: Readonly<{ key: CryptoKey; query: string }>): Effect.Effect<readonly string[]> => {
+}: Readonly<{ key: CryptoKey; query: string }>): Effect.Effect<readonly number[]> => {
   const chars = charsOf(query);
   return tokensOf(key, gramsOfSize(chars, Number.min(chars.length, LONGEST_GRAM)));
 };

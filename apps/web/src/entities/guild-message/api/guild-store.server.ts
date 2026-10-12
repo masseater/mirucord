@@ -8,45 +8,23 @@ import { Array, Effect, Option } from "effect";
 
 import { erasedAuthor } from "#/entities/guild-message/model/erased-author.schema";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
-import { messageSearch } from "#/entities/guild-message/model/message-search.fts";
+import type {
+  ChannelCount,
+  CreatedRange,
+  IndexedMessage,
+  ReadPage,
+  SealedMessage,
+  StoredRow,
+  StoredState,
+  TrackedRow,
+  WriteMode,
+} from "#/entities/guild-message/model/stored-message";
+import { BOUND_LIMIT, TRACKED_COLUMNS } from "#/entities/guild-message/model/stored-message";
 
 import { GUILD_MIGRATIONS } from "./guild-migrations.server";
+import { nextVersion, searchHooks } from "./search-hooks.server";
 
-const BOUND_LIMIT = 90;
 const NO_MESSAGES = 0;
-const TOKEN_SEPARATOR = " ";
-
-type StoredRow = Readonly<{
-  id: string;
-  channelId: string;
-  authorId: string;
-  sealed: string;
-  createdAt: number;
-  editedAt: number | null;
-  describedWith: string | null;
-}>;
-
-type IndexedMessage = Readonly<{ row: StoredRow; tokens: readonly string[] }>;
-
-type WriteMode = "overwrite" | "adopt";
-
-type StoredState = Readonly<{ id: string; editedAt: number | null; describedWith: string | null }>;
-
-type SealedMessage = Readonly<{
-  id: string;
-  channelId: string;
-  sealed: string;
-  createdAt: number;
-  editedAt: number | null;
-}>;
-
-type ChannelCount = Readonly<{ channelId: string; messages: number }>;
-
-type CreatedRange = Readonly<{ from: number | null; upTo: number | null }>;
-
-type ReadPage = Readonly<{ before: string | null; limit: number }>;
-
-type Seq = Readonly<{ seq: number }>;
 
 const SEALED_COLUMNS = {
   id: guildMessage.id,
@@ -55,9 +33,6 @@ const SEALED_COLUMNS = {
   createdAt: guildMessage.createdAt,
   editedAt: guildMessage.editedAt,
 };
-
-const matchOf = (tokens: readonly string[]): string =>
-  tokens.map((token) => `"${token}"`).join(TOKEN_SEPARATOR);
 
 const boundsOf = ({ from, upTo }: CreatedRange): readonly SQL[] => {
   const lower = Option.map(Option.fromNullOr(from), (time) => gte(guildMessage.createdAt, time));
@@ -76,55 +51,84 @@ class GuildStore extends DurableObject {
 
   readonly #remigrate = Effect.sync(() => migrate(this.#db, { migrations: GUILD_MIGRATIONS }));
 
-  #unindex(rows: readonly Seq[]): void {
-    const seqs = rows.map(({ seq }) => seq);
-    for (const chunk of Array.chunksOf(seqs, BOUND_LIMIT)) {
+  readonly #search = searchHooks({
+    db: this.#db,
+    alarms: {
+      current: () => this.ctx.storage.getAlarm(),
+      set: (at) => this.ctx.storage.setAlarm(at),
+    },
+    bucket: this.env.SEARCH,
+    guildId: Option.fromUndefinedOr(this.ctx.id.name),
+  });
+
+  #tracked(ids: readonly string[]): readonly TrackedRow[] {
+    return Array.chunksOf(ids, BOUND_LIMIT).flatMap((chunk) =>
       this.#db
-        .delete(messageSearch)
-        .where(inArray(messageSearch.rowid, [...chunk]))
-        .run();
-    }
+        .select(TRACKED_COLUMNS)
+        .from(guildMessage)
+        .where(inArray(guildMessage.id, [...chunk]))
+        .all(),
+    );
   }
 
-  #upsert(row: StoredRow, mode: WriteMode): readonly Seq[] {
+  #upsert(
+    row: StoredRow & Readonly<{ tokens: readonly number[]; version: number }>,
+    mode: WriteMode,
+  ): void {
     const insert = this.#db.insert(guildMessage).values(row);
     if (mode === "adopt") {
-      return insert.onConflictDoNothing().returning({ seq: guildMessage.seq }).all();
+      insert.onConflictDoNothing().run();
+      return;
     }
-    const changes = {
-      sealed: row.sealed,
-      editedAt: row.editedAt,
-      describedWith: row.describedWith,
-    };
-    return insert
-      .onConflictDoUpdate({ target: guildMessage.id, set: changes })
-      .returning({ seq: guildMessage.seq })
-      .all();
-  }
-
-  #write({ row, tokens }: IndexedMessage, mode: WriteMode): void {
-    for (const { seq } of this.#upsert(row, mode)) {
-      this.#unindex([{ seq }]);
-      if (Array.isReadonlyArrayNonEmpty(tokens)) {
-        this.#db
-          .insert(messageSearch)
-          .values({ rowid: seq, tokens: tokens.join(TOKEN_SEPARATOR) })
-          .run();
-      }
-    }
+    insert
+      .onConflictDoUpdate({
+        target: guildMessage.id,
+        set: {
+          sealed: row.sealed,
+          editedAt: row.editedAt,
+          describedWith: row.describedWith,
+          tokens: row.tokens,
+          version: row.version,
+        },
+      })
+      .run();
   }
 
   #erasedAuthors(): readonly Readonly<{ id: string }>[] {
     return this.#db.select().from(erasedAuthor).all();
   }
 
-  public write(messages: readonly IndexedMessage[], mode: WriteMode): void {
-    const erased = new Set(this.#erasedAuthors().map(({ id }) => id));
-    for (const message of messages) {
-      if (!erased.has(message.row.authorId)) {
-        this.#write(message, mode);
-      }
+  #previous(kept: readonly IndexedMessage[], mode: WriteMode): readonly TrackedRow[] {
+    if (mode === "adopt") {
+      return [];
     }
+    return this.#tracked(kept.map(({ row }) => row.id));
+  }
+
+  #writeKept(messages: readonly IndexedMessage[], mode: WriteMode): Effect.Effect<void> {
+    const erased = new Set(this.#erasedAuthors().map(({ id }) => id));
+    const kept = messages.filter(({ row }) => !erased.has(row.authorId));
+    if (Array.isReadonlyArrayEmpty(kept)) {
+      return Effect.void;
+    }
+    const previous = this.#previous(kept, mode);
+    const version = nextVersion(this.#db);
+    for (const { row, tokens } of kept) {
+      this.#upsert({ ...row, tokens, version }, mode);
+    }
+    return this.#search.forget(previous).pipe(Effect.andThen(this.#search.flushLater()));
+  }
+
+  public write(messages: readonly IndexedMessage[], mode: WriteMode): Promise<void> {
+    return Effect.runPromise(Effect.suspend(() => this.#writeKept(messages, mode)));
+  }
+
+  public publish(): Promise<void> {
+    return Effect.runPromise(this.#search.publish());
+  }
+
+  public override alarm(): Promise<void> {
+    return this.publish();
   }
 
   public stored(ids: readonly string[]): readonly StoredState[] {
@@ -164,35 +168,39 @@ class GuildStore extends DurableObject {
       .map(({ id }) => id);
   }
 
-  public remove(ids: readonly string[]): void {
-    for (const chunk of Array.chunksOf(ids, BOUND_LIMIT)) {
-      this.#unindex(
-        this.#db
-          .delete(guildMessage)
-          .where(inArray(guildMessage.id, [...chunk]))
-          .returning({ seq: guildMessage.seq })
-          .all(),
-      );
+  #deleteWhere(conditions: readonly SQL[]): void {
+    for (const condition of conditions) {
+      this.#db.delete(guildMessage).where(condition).run();
     }
   }
 
-  #removeMatching(column: "authorId" | "channelId", value: string): void {
-    this.#unindex(
-      this.#db
-        .delete(guildMessage)
-        .where(eq(guildMessage[column], value))
-        .returning({ seq: guildMessage.seq })
-        .all(),
+  #removeWhere(rows: readonly TrackedRow[], conditions: readonly SQL[]): Promise<void> {
+    const deleted = Effect.sync(() => {
+      this.#deleteWhere(conditions);
+    });
+    return Effect.runPromise(this.#search.forget(rows).pipe(Effect.andThen(deleted)));
+  }
+
+  public remove(ids: readonly string[]): Promise<void> {
+    const listed = Array.chunksOf(ids, BOUND_LIMIT).map((chunk) =>
+      inArray(guildMessage.id, [...chunk]),
     );
+    return this.#removeWhere(this.#tracked(ids), listed);
   }
 
-  public eraseAuthor(authorId: string): void {
+  #removeMatching(column: "authorId" | "channelId", value: string): Promise<void> {
+    const matching = eq(guildMessage[column], value);
+    const rows = this.#db.select(TRACKED_COLUMNS).from(guildMessage).where(matching).all();
+    return this.#removeWhere(rows, [matching]);
+  }
+
+  public eraseAuthor(authorId: string): Promise<void> {
     this.#db.insert(erasedAuthor).values({ id: authorId }).onConflictDoNothing().run();
-    this.#removeMatching("authorId", authorId);
+    return this.#removeMatching("authorId", authorId);
   }
 
-  public removeChannel(channelId: string): void {
-    this.#removeMatching("channelId", channelId);
+  public removeChannel(channelId: string): Promise<void> {
+    return this.#removeMatching("channelId", channelId);
   }
 
   public clear(): Promise<void> {
@@ -205,11 +213,10 @@ class GuildStore extends DurableObject {
           .run();
       }
     });
+    const files = this.#search.clearFiles();
+    const wiped = Effect.promise(() => this.ctx.storage.deleteAll());
     return Effect.runPromise(
-      Effect.promise(() => this.ctx.storage.deleteAll()).pipe(
-        Effect.andThen(this.#remigrate),
-        Effect.andThen(restore),
-      ),
+      files.pipe(Effect.andThen(wiped), Effect.andThen(this.#remigrate), Effect.andThen(restore)),
     );
   }
 
@@ -240,24 +247,6 @@ class GuildStore extends DurableObject {
     );
   }
 
-  public candidates(
-    tokens: readonly string[],
-    channelIds: readonly string[],
-  ): readonly SealedMessage[] {
-    const matched = this.#db
-      .select({ seq: messageSearch.rowid })
-      .from(messageSearch)
-      .where(eq(messageSearch.messageSearch, matchOf(tokens)));
-    const channels = new Set(channelIds);
-    return this.#db
-      .select(SEALED_COLUMNS)
-      .from(guildMessage)
-      .where(inArray(guildMessage.seq, matched))
-      .orderBy(desc(guildMessage.createdAt), desc(guildMessage.id))
-      .all()
-      .filter(({ channelId }) => channels.has(channelId));
-  }
-
   #createdAtOf(channelId: string, id: string): Option.Option<number> {
     const target = and(eq(guildMessage.id, id), eq(guildMessage.channelId, channelId));
     const found = this.#db
@@ -285,13 +274,3 @@ class GuildStore extends DurableObject {
 }
 
 export { GuildStore };
-export type {
-  ChannelCount,
-  CreatedRange,
-  IndexedMessage,
-  ReadPage,
-  SealedMessage,
-  StoredRow,
-  StoredState,
-  WriteMode,
-};

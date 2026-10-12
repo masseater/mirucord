@@ -6,6 +6,8 @@ import type { ReactNode } from "react";
 import { eraseMyMessages } from "#/pages/dashboard/api/dashboard";
 import { PopButton } from "#/shared/ui/pop-button";
 
+import { mutationMessage } from "./mutation-message";
+
 const SUMMARY = "自分の投稿を削除する";
 const DETAIL =
   "このサーバーで保存したあなたの投稿を削除し、これからも保存しません。Discord の投稿は消えません。元に戻せません。";
@@ -21,18 +23,10 @@ const RESULT_MESSAGES = {
   signedOut: "ログインの期限が切れたので、削除できませんでした。もう一度ログインしてください。",
 } as const;
 
-const eraseMessage = (
-  status: keyof typeof MESSAGES | "success",
-  result: Option.Option<Readonly<{ status: keyof typeof RESULT_MESSAGES }>>,
-): string => {
-  if (status !== "success") {
-    return MESSAGES[status];
-  }
-  return Option.match(result, {
-    onNone: () => MESSAGES.idle,
-    onSome: (answered) => RESULT_MESSAGES[answered.status],
-  });
-};
+const eraseMessage = mutationMessage({
+  messages: MESSAGES,
+  resultMessage: (status: keyof typeof RESULT_MESSAGES) => RESULT_MESSAGES[status],
+});
 
 const EraseOwnMessages = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
   const { mutate, status, data } = useMutation({ mutationFn: eraseMyMessages });

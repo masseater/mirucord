@@ -47,18 +47,21 @@
       display: flex;
     }
 
-    .seek-flash {
-      animation: seek-flash linear both;
+    .seek-flash,
+    .seek[data-kind="pass"] .seek-miru {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: --ch-top;
       animation-range: contain calc(100% - 100svh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
         calc(100% - 100svh - var(--dwell) * (0.69 - var(--seek) * 0.31));
     }
 
+    .seek-flash {
+      animation-name: seek-flash;
+    }
+
     .seek[data-kind="pass"] .seek-miru {
-      animation: seek-pass linear both;
-      animation-timeline: --ch-top;
-      animation-range: contain calc(100% - 100svh - var(--dwell) * (1 - var(--seek) * 0.31)) contain
-        calc(100% - 100svh - var(--dwell) * (0.69 - var(--seek) * 0.31));
+      animation-name: seek-pass;
     }
 
     .seek[data-kind="found"] .seek-miru {

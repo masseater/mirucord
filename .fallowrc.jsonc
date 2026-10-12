@@ -91,7 +91,25 @@
     {
       "name": "cloudflare-durable-objects",
       "enablers": ["alchemy"],
-      "usedClassMembers": [{ "extends": "DurableObject", "members": ["*"] }],
+      "usedClassMembers": [
+        {
+          "extends": "DurableObject",
+          "members": [
+            "write",
+            "stored",
+            "idsInChannel",
+            "idsBetween",
+            "remove",
+            "removeChannel",
+            "clear",
+            "channels",
+            "count",
+            "countByChannel",
+            "candidates",
+            "read",
+          ],
+        },
+      ],
     },
     {
       "name": "cloudflare-vitest-plugin",

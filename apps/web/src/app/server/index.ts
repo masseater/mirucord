@@ -24,5 +24,5 @@ const worker: ExportedHandler = {
   queue: (batch): Promise<void> => Effect.runPromise(ingestDeliveries(batch.messages)),
 };
 
-export { GuildStore } from "#/shared/guild-store/index.server";
+export { GuildStore } from "#/entities/guild-message/index.server";
 export default worker;

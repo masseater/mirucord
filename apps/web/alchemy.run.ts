@@ -18,10 +18,10 @@ import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
+import type { GuildStore } from "./src/entities/guild-message/api/guild-store.server.ts";
 import { INGEST_MAX_RETRIES, POLL_CRON, SYNC_CRON } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
-import type { GuildStore } from "./src/shared/guild-store/guild-store.server.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;
 const NAME_PREFIX = "mirucord";

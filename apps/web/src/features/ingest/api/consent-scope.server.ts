@@ -1,11 +1,11 @@
 import { and, eq, inArray, or } from "drizzle-orm";
 import { Array, DateTime, Effect, Option } from "effect";
 
+import { guildStore } from "#/entities/guild-message/index.server";
 import { isPastRetention } from "#/features/ingest/model/bot-access";
 import { MESSAGE_TYPES } from "#/features/ingest/model/channel-kind";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { channel, db, ingestConsent } from "#/shared/db/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
 
 import { accessOf } from "./bot-access.server";
 import { enqueue } from "./enqueue.server";

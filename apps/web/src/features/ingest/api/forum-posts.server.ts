@@ -1,11 +1,11 @@
 import { and, eq } from "drizzle-orm";
 import { Array, Effect, Order } from "effect";
 
+import { guildStore } from "#/entities/guild-message/index.server";
 import { ingestOf } from "#/features/ingest/model/channel-ingest";
 import type { ChannelIngest } from "#/features/ingest/model/channel-ingest";
 import { channel, db } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
 
 import { loadScope } from "./consent-scope.server";
 import { whenManaged } from "./managed-guild.server";

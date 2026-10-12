@@ -2,15 +2,10 @@ import { ChannelType, OverwriteType, PermissionFlagsBits } from "discord-api-typ
 import { Array, DateTime, Effect, Option, Record } from "effect";
 import { http, HttpResponse } from "msw";
 
-import {
-  createGuildKey,
-  indexTokens,
-  openGuildKeys,
-  sealMessage,
-} from "#/shared/crypto/index.server";
+import { guildStore, indexTokens } from "#/entities/guild-message/index.server";
+import type { IndexedMessage } from "#/entities/guild-message/index.server";
+import { createGuildKey, openGuildKeys, sealMessage } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent, role } from "#/shared/db/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
-import type { IndexedMessage } from "#/shared/guild-store/index.server";
 
 const USER = "900";
 const OWNER = "901";

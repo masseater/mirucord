@@ -1,15 +1,10 @@
 import { eq, inArray } from "drizzle-orm";
 import { Array, Effect, Option, pipe } from "effect";
 
-import {
-  indexTokens,
-  openGuildKeys,
-  openMessage,
-  searchableTexts,
-} from "#/shared/crypto/index.server";
+import { guildStore, indexTokens, searchableTexts } from "#/entities/guild-message/index.server";
+import type { IndexedMessage, StoredRow } from "#/entities/guild-message/index.server";
+import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
 import { db, guild, message } from "#/shared/db/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
-import type { IndexedMessage, StoredRow } from "#/shared/guild-store/index.server";
 
 import { enqueueMigration } from "./enqueue.server";
 import { inIdChunks } from "./id-chunks.server";

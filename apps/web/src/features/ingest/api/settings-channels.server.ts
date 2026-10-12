@@ -1,3 +1,4 @@
+import type { ChannelType } from "discord-api-types/v10";
 import { eq } from "drizzle-orm";
 import { Effect, Option } from "effect";
 
@@ -38,7 +39,7 @@ type StoredRow = IngestRow &
   Readonly<{
     id: string;
     name: string;
-    type: number;
+    type: ChannelType;
     position: number;
     parentId: string | null;
     botPost: (typeof channel.$inferSelect)["botPost"];

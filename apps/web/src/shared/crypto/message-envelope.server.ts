@@ -56,7 +56,7 @@ type MessageBody = typeof MessageBodySchema.Type;
 
 const MessageBodyJson = Schema.fromJsonString(MessageBodySchema);
 const encodeBody = Schema.encodeEffect(MessageBodyJson);
-const decodeBody = Schema.decodeUnknownEffect(MessageBodyJson);
+const decodeBody = Schema.decodeEffect(MessageBodyJson);
 
 type MessageAddress = Readonly<{ guildId: string; channelId: string; messageId: string }>;
 

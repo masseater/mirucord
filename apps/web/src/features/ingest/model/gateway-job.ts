@@ -1,9 +1,13 @@
-import { GatewayDispatchEvents } from "discord-api-types/v10";
-import { Array, Option, Schema } from "effect";
+import { GatewayDispatchEvents, GatewayOpcodes } from "discord-api-types/v10";
+import type {
+  GatewayDispatchPayload,
+  GatewayMessageCreateDispatchData,
+} from "discord-api-types/v10";
+import { Array, Match, Option, Schema } from "effect";
 
 import type { GatewayJob, MessageJob } from "./ingest-job";
 
-type GatewayEvent = Readonly<{ event: string | null; data: unknown }>;
+type GatewayPayload = Readonly<{ op: GatewayOpcodes }>;
 
 type JobKind = MessageJob["kind"];
 
@@ -12,29 +16,32 @@ const MESSAGES_PER_JOB = 100;
 const MessageEvent = Schema.Struct({
   id: Schema.String,
   channel_id: Schema.String,
-  guild_id: Schema.optional(Schema.String),
+  guild_id: Schema.optionalKey(Schema.String),
 });
 
 const BulkDeleteEvent = Schema.Struct({
-  ids: Schema.NonEmptyArray(Schema.String),
+  ids: Schema.Array(Schema.String),
   channel_id: Schema.String,
-  guild_id: Schema.optional(Schema.String),
+  guild_id: Schema.optionalKey(Schema.String),
 });
 
 const GuildEvent = Schema.Struct({ id: Schema.String });
 
-const GuildChangeEvent = Schema.Struct({ guild_id: Schema.String });
+const GuildChangeEvent = Schema.Struct({ guild_id: Schema.optionalKey(Schema.String) });
 
-const decodeGuild = Schema.decodeUnknownOption(GuildEvent);
-const decodeGuildChange = Schema.decodeUnknownOption(GuildChangeEvent);
-const decodeMessage = Schema.decodeUnknownOption(MessageEvent);
-const decodeBulkDelete = Schema.decodeUnknownOption(BulkDeleteEvent);
+const decodeGuild = Schema.decodeOption(GuildEvent);
+const decodeGuildChange = Schema.decodeOption(GuildChangeEvent);
+const decodeMessage = Schema.decodeOption(MessageEvent);
+const decodeBulkDelete = Schema.decodeOption(BulkDeleteEvent);
 
-type Target = Readonly<{
-  channel_id: string;
-  guild_id?: string | undefined;
-  messageIds: readonly [string, ...string[]];
-}>;
+const isDispatch = (payload: GatewayPayload): payload is GatewayDispatchPayload =>
+  payload.op === GatewayOpcodes.Dispatch;
+
+type Target = Readonly<
+  Pick<GatewayMessageCreateDispatchData, "channel_id" | "guild_id"> & {
+    messageIds: readonly [string, ...string[]];
+  }
+>;
 
 const jobFor = (kind: JobKind, target: Target): Option.Option<GatewayJob> =>
   Option.fromUndefinedOr(target.guild_id).pipe(
@@ -46,55 +53,67 @@ const jobFor = (kind: JobKind, target: Target): Option.Option<GatewayJob> =>
     })),
   );
 
-const singleJob = (kind: JobKind, data: unknown): Option.Option<GatewayJob> =>
+const singleJob = (kind: JobKind, data: typeof MessageEvent.Encoded): Option.Option<GatewayJob> =>
   decodeMessage(data).pipe(
     Option.flatMap((event) => jobFor(kind, { ...event, messageIds: [event.id] })),
   );
 
-const bulkJob = (data: unknown): Option.Option<GatewayJob> =>
+const bulkJob = (data: typeof BulkDeleteEvent.Encoded): Option.Option<GatewayJob> =>
   decodeBulkDelete(data).pipe(
-    Option.flatMap((event) => jobFor("forget", { ...event, messageIds: event.ids })),
+    Option.flatMap(({ ids, ...event }) =>
+      Option.liftPredicate(ids, Array.isReadonlyArrayNonEmpty).pipe(
+        Option.flatMap((messageIds) => jobFor("forget", { ...event, messageIds })),
+      ),
+    ),
   );
 
-const joinJob = (data: unknown): Option.Option<GatewayJob> =>
+const joinJob = (data: typeof GuildEvent.Encoded): Option.Option<GatewayJob> =>
   decodeGuild(data).pipe(Option.map(({ id }) => ({ kind: "join", guildId: id })));
 
 const syncJobOf = (guildId: string): GatewayJob => ({ kind: "sync", guildId });
 
-const syncJob = (data: unknown): Option.Option<GatewayJob> =>
-  decodeGuildChange(data).pipe(Option.map(({ guild_id }) => syncJobOf(guild_id)));
+const syncJob = (data: typeof GuildChangeEvent.Encoded): Option.Option<GatewayJob> =>
+  decodeGuildChange(data).pipe(
+    Option.flatMap(({ guild_id }) => Option.fromUndefinedOr(guild_id)),
+    Option.map(syncJobOf),
+  );
 
-const guildUpdateJob = (data: unknown): Option.Option<GatewayJob> =>
+const guildUpdateJob = (data: typeof GuildEvent.Encoded): Option.Option<GatewayJob> =>
   decodeGuild(data).pipe(Option.map(({ id }) => syncJobOf(id)));
 
-type JobOfEvent = (data: unknown) => Option.Option<GatewayJob>;
+const jobOfDispatch = Match.type<GatewayDispatchPayload>().pipe(
+  Match.discriminator("t")(
+    GatewayDispatchEvents.MessageCreate,
+    GatewayDispatchEvents.MessageUpdate,
+    (dispatch) => singleJob("refresh", dispatch.d),
+  ),
+  Match.discriminator("t")(GatewayDispatchEvents.MessageDelete, (dispatch) =>
+    singleJob("forget", dispatch.d),
+  ),
+  Match.discriminator("t")(GatewayDispatchEvents.MessageDeleteBulk, (dispatch) =>
+    bulkJob(dispatch.d),
+  ),
+  Match.discriminator("t")(GatewayDispatchEvents.GuildCreate, (dispatch) => joinJob(dispatch.d)),
+  Match.discriminator("t")(GatewayDispatchEvents.GuildUpdate, (dispatch) =>
+    guildUpdateJob(dispatch.d),
+  ),
+  Match.discriminator("t")(
+    GatewayDispatchEvents.ChannelCreate,
+    GatewayDispatchEvents.ChannelUpdate,
+    GatewayDispatchEvents.ChannelDelete,
+    GatewayDispatchEvents.ThreadCreate,
+    GatewayDispatchEvents.ThreadUpdate,
+    GatewayDispatchEvents.ThreadDelete,
+    GatewayDispatchEvents.GuildRoleCreate,
+    GatewayDispatchEvents.GuildRoleUpdate,
+    GatewayDispatchEvents.GuildRoleDelete,
+    (dispatch) => syncJob(dispatch.d),
+  ),
+  Match.orElse((): Option.Option<GatewayJob> => Option.none()),
+);
 
-const refreshJob: JobOfEvent = (data) => singleJob("refresh", data);
-const forgetJob: JobOfEvent = (data) => singleJob("forget", data);
-
-const JOB_OF_EVENT: ReadonlyMap<string, JobOfEvent> = new Map([
-  [GatewayDispatchEvents.MessageCreate, refreshJob],
-  [GatewayDispatchEvents.MessageUpdate, refreshJob],
-  [GatewayDispatchEvents.MessageDelete, forgetJob],
-  [GatewayDispatchEvents.MessageDeleteBulk, bulkJob],
-  [GatewayDispatchEvents.GuildCreate, joinJob],
-  [GatewayDispatchEvents.GuildUpdate, guildUpdateJob],
-  [GatewayDispatchEvents.ChannelCreate, syncJob],
-  [GatewayDispatchEvents.ChannelUpdate, syncJob],
-  [GatewayDispatchEvents.ChannelDelete, syncJob],
-  [GatewayDispatchEvents.ThreadCreate, syncJob],
-  [GatewayDispatchEvents.ThreadUpdate, syncJob],
-  [GatewayDispatchEvents.ThreadDelete, syncJob],
-  [GatewayDispatchEvents.GuildRoleCreate, syncJob],
-  [GatewayDispatchEvents.GuildRoleUpdate, syncJob],
-  [GatewayDispatchEvents.GuildRoleDelete, syncJob],
-]);
-
-const toGatewayJob = ({ event, data }: GatewayEvent): Option.Option<GatewayJob> =>
-  Option.fromNullOr(event).pipe(
-    Option.flatMap((name) => Option.fromUndefinedOr(JOB_OF_EVENT.get(name))),
-    Option.flatMap((jobOf) => jobOf(data)),
-  );
+const toGatewayJob = (payload: GatewayPayload): Option.Option<GatewayJob> =>
+  Option.liftPredicate(payload, isDispatch).pipe(Option.flatMap(jobOfDispatch));
 
 const subjectOf = (job: GatewayJob): Readonly<Record<string, string>> => {
   if (job.kind === "join" || job.kind === "sync") {
@@ -164,4 +183,4 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
 };
 
 export { jobKeyOf, mergeJobs, subjectOf, toGatewayJob };
-export type { GatewayEvent };
+export type { GatewayPayload };

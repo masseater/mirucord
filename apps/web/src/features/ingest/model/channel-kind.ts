@@ -4,39 +4,39 @@ import { Match } from "effect";
 import { CATEGORY_TYPES, FORUM_TYPES, THREAD_TYPES } from "#/shared/discord";
 import type { ChannelKind } from "#/shared/discord";
 
-const VOICE_TYPES: ReadonlySet<number> = new Set([
+const VOICE_TYPES: ReadonlySet<ChannelType> = new Set([
   ChannelType.GuildVoice,
   ChannelType.GuildStageVoice,
 ]);
 
-const THREAD_PARENT_TYPES: ReadonlySet<number> = new Set([
+const THREAD_PARENT_TYPES: ReadonlySet<ChannelType> = new Set([
   ChannelType.GuildText,
   ChannelType.GuildAnnouncement,
   ...FORUM_TYPES,
 ]);
 
-const LISTED_TYPES: ReadonlySet<number> = new Set([...THREAD_PARENT_TYPES, ...VOICE_TYPES]);
+const LISTED_TYPES: ReadonlySet<ChannelType> = new Set([...THREAD_PARENT_TYPES, ...VOICE_TYPES]);
 
-const MESSAGE_TYPES: ReadonlySet<number> = new Set([
+const MESSAGE_TYPES: ReadonlySet<ChannelType> = new Set([
   ChannelType.GuildText,
   ChannelType.GuildAnnouncement,
   ...VOICE_TYPES,
   ...THREAD_TYPES,
 ]);
 
-const STORED_TYPES: ReadonlySet<number> = new Set([
+const STORED_TYPES: ReadonlySet<ChannelType> = new Set([
   ...LISTED_TYPES,
   ...THREAD_TYPES,
   ...CATEGORY_TYPES,
 ]);
 
-const kindOf = (type: number): ChannelKind =>
+const kindOf = (type: ChannelType): ChannelKind =>
   Match.value(type).pipe(
     Match.when(ChannelType.GuildAnnouncement, (): ChannelKind => "announcement"),
     Match.when(ChannelType.GuildVoice, (): ChannelKind => "voice"),
     Match.when(ChannelType.GuildStageVoice, (): ChannelKind => "stage"),
     Match.when(
-      (candidate: number) => FORUM_TYPES.has(candidate),
+      (candidate: ChannelType) => FORUM_TYPES.has(candidate),
       (): ChannelKind => "forum",
     ),
     Match.orElse((): ChannelKind => "text"),

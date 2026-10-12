@@ -9,7 +9,7 @@ import type { Overwrite, ReaderContext } from "./permissions";
 type GuildChannel = Readonly<{
   id: string;
   parentId: Option.Option<string>;
-  type: number;
+  type: ChannelType;
   permissionOverwrites: readonly Overwrite[];
 }>;
 
@@ -24,7 +24,10 @@ type Member = Readonly<{ userId: string; roleIds: readonly string[] }>;
 
 const DATA_FIRST_ARITY = 2;
 
-const ANY_THREAD_TYPES: ReadonlySet<number> = new Set([...THREAD_TYPES, ChannelType.PrivateThread]);
+const ANY_THREAD_TYPES: ReadonlySet<ChannelType> = new Set([
+  ...THREAD_TYPES,
+  ChannelType.PrivateThread,
+]);
 
 const isThread = ({ type }: GuildChannel): boolean => ANY_THREAD_TYPES.has(type);
 

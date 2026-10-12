@@ -1,8 +1,9 @@
-import { GatewayDispatchEvents } from "discord-api-types/v10";
+import { GatewayDispatchEvents, GatewayOpcodes } from "discord-api-types/v10";
 import { Array, Option } from "effect";
 import { expect, it } from "vite-plus/test";
 
 import { mergeJobs, toGatewayJob } from "./gateway-job";
+import type { GatewayJob } from "./ingest-job";
 
 const BURST = 150;
 const FIRST_ID = 1000;
@@ -10,22 +11,32 @@ const MESSAGES_PER_JOB = 100;
 
 const MESSAGE = { id: "711", channel_id: "710", guild_id: "700" };
 
+const jobOf = (event: GatewayDispatchEvents, data: unknown): Option.Option<GatewayJob> =>
+  toGatewayJob({
+    op: GatewayOpcodes.Dispatch,
+    ...Object.fromEntries([
+      ["t", event],
+      ["d", data],
+    ]),
+  });
+
 it("asks to refresh a created or edited message", () => {
   for (const event of [GatewayDispatchEvents.MessageCreate, GatewayDispatchEvents.MessageUpdate]) {
-    expect(toGatewayJob({ event, data: MESSAGE })).toStrictEqual(
+    expect(jobOf(event, MESSAGE)).toStrictEqual(
       Option.some({ kind: "refresh", guildId: "700", channelId: "710", messageIds: ["711"] }),
     );
   }
 });
 
 it("asks to forget deleted messages", () => {
-  expect(toGatewayJob({ event: GatewayDispatchEvents.MessageDelete, data: MESSAGE })).toStrictEqual(
+  expect(jobOf(GatewayDispatchEvents.MessageDelete, MESSAGE)).toStrictEqual(
     Option.some({ kind: "forget", guildId: "700", channelId: "710", messageIds: ["711"] }),
   );
   expect(
-    toGatewayJob({
-      event: GatewayDispatchEvents.MessageDeleteBulk,
-      data: { ids: ["711", "712"], channel_id: "710", guild_id: "700" },
+    jobOf(GatewayDispatchEvents.MessageDeleteBulk, {
+      ids: ["711", "712"],
+      channel_id: "710",
+      guild_id: "700",
     }),
   ).toStrictEqual(
     Option.some({ kind: "forget", guildId: "700", channelId: "710", messageIds: ["711", "712"] }),
@@ -33,21 +44,17 @@ it("asks to forget deleted messages", () => {
 });
 
 it("ignores direct messages and other events", () => {
-  expect(
-    toGatewayJob({
-      event: GatewayDispatchEvents.MessageCreate,
-      data: { id: "1", channel_id: "2" },
-    }),
-  ).toStrictEqual(Option.none());
-  expect(toGatewayJob({ event: GatewayDispatchEvents.TypingStart, data: MESSAGE })).toStrictEqual(
+  expect(jobOf(GatewayDispatchEvents.MessageCreate, { id: "1", channel_id: "2" })).toStrictEqual(
     Option.none(),
   );
+  expect(jobOf(GatewayDispatchEvents.TypingStart, MESSAGE)).toStrictEqual(Option.none());
+  expect(toGatewayJob({ op: GatewayOpcodes.HeartbeatAck })).toStrictEqual(Option.none());
 });
 
 it("asks to welcome a server the bot has joined", () => {
-  expect(
-    toGatewayJob({ event: GatewayDispatchEvents.GuildCreate, data: { id: "700", name: "x" } }),
-  ).toStrictEqual(Option.some({ kind: "join", guildId: "700" }));
+  expect(jobOf(GatewayDispatchEvents.GuildCreate, { id: "700", name: "x" })).toStrictEqual(
+    Option.some({ kind: "join", guildId: "700" }),
+  );
 });
 
 it("merges events into one job per channel and keeps each message's latest event", () => {
@@ -84,16 +91,16 @@ it("asks to sync a server whose channels, threads, or roles changed", () => {
     GatewayDispatchEvents.ThreadCreate,
     GatewayDispatchEvents.GuildRoleUpdate,
   ]) {
-    expect(toGatewayJob({ event, data: { id: "710", guild_id: "700" } })).toStrictEqual(
+    expect(jobOf(event, { id: "710", guild_id: "700" })).toStrictEqual(
       Option.some({ kind: "sync", guildId: "700" }),
     );
   }
-  expect(
-    toGatewayJob({ event: GatewayDispatchEvents.GuildUpdate, data: { id: "700" } }),
-  ).toStrictEqual(Option.some({ kind: "sync", guildId: "700" }));
-  expect(
-    toGatewayJob({ event: GatewayDispatchEvents.ChannelCreate, data: { id: "1", type: 1 } }),
-  ).toStrictEqual(Option.none());
+  expect(jobOf(GatewayDispatchEvents.GuildUpdate, { id: "700" })).toStrictEqual(
+    Option.some({ kind: "sync", guildId: "700" }),
+  );
+  expect(jobOf(GatewayDispatchEvents.ChannelCreate, { id: "1", type: 1 })).toStrictEqual(
+    Option.none(),
+  );
 });
 
 it("syncs each changed server once and not right after it joined", () => {

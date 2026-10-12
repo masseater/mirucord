@@ -16,7 +16,6 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as TechRouteImport } from './routes/tech'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as DotwellKnownSplatRouteImport } from './routes/[.]well-known/$'
-import { Route as ApiSplatRouteImport } from './routes/api.$'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardGuildIdRouteImport } from './routes/dashboard.$guildId'
 import { Route as McpConsentRouteImport } from './routes/mcp_.consent'
@@ -56,11 +55,6 @@ const DotwellKnownSplatRoute = DotwellKnownSplatRouteImport.update({
   path: '/.well-known/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSplatRoute = ApiSplatRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
@@ -85,7 +79,6 @@ export interface FileRoutesByFullPath {
   '/tech': typeof TechRoute
   '/terms': typeof TermsRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
-  '/api/$': typeof ApiSplatRoute
   '/dashboard/$guildId': typeof DashboardGuildIdRoute
   '/mcp/consent': typeof McpConsentRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -98,7 +91,6 @@ export interface FileRoutesByTo {
   '/tech': typeof TechRoute
   '/terms': typeof TermsRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
-  '/api/$': typeof ApiSplatRoute
   '/dashboard/$guildId': typeof DashboardGuildIdRoute
   '/mcp/consent': typeof McpConsentRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -112,7 +104,6 @@ export interface FileRoutesById {
   '/tech': typeof TechRoute
   '/terms': typeof TermsRoute
   '/.well-known/$': typeof DotwellKnownSplatRoute
-  '/api/$': typeof ApiSplatRoute
   '/dashboard/$guildId': typeof DashboardGuildIdRoute
   '/mcp_/consent': typeof McpConsentRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -127,7 +118,6 @@ export interface FileRouteTypes {
     | '/tech'
     | '/terms'
     | '/.well-known/$'
-    | '/api/$'
     | '/dashboard/$guildId'
     | '/mcp/consent'
     | '/dashboard/'
@@ -140,7 +130,6 @@ export interface FileRouteTypes {
     | '/tech'
     | '/terms'
     | '/.well-known/$'
-    | '/api/$'
     | '/dashboard/$guildId'
     | '/mcp/consent'
     | '/dashboard'
@@ -153,7 +142,6 @@ export interface FileRouteTypes {
     | '/tech'
     | '/terms'
     | '/.well-known/$'
-    | '/api/$'
     | '/dashboard/$guildId'
     | '/mcp_/consent'
     | '/dashboard/'
@@ -167,7 +155,6 @@ export interface RootRouteChildren {
   TechRoute: typeof TechRoute
   TermsRoute: typeof TermsRoute
   DotwellKnownSplatRoute: typeof DotwellKnownSplatRoute
-  ApiSplatRoute: typeof ApiSplatRoute
   DashboardGuildIdRoute: typeof DashboardGuildIdRoute
   McpConsentRoute: typeof McpConsentRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -224,13 +211,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotwellKnownSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/dashboard'
@@ -263,7 +243,6 @@ const rootRouteChildren: RootRouteChildren = {
   TechRoute: TechRoute,
   TermsRoute: TermsRoute,
   DotwellKnownSplatRoute: DotwellKnownSplatRoute,
-  ApiSplatRoute: ApiSplatRoute,
   DashboardGuildIdRoute: DashboardGuildIdRoute,
   McpConsentRoute: McpConsentRoute,
   DashboardIndexRoute: DashboardIndexRoute,

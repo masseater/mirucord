@@ -17,7 +17,7 @@ const FAILED: CopyState = { status: "failed" };
 const LABELS = {
   idle: "コピー",
   copied: "コピーしたよ！",
-  failed: "コピーできなかったよ",
+  failed: "コピーできませんでした",
 } as const;
 
 const resultState = (copied: boolean): CopyState =>

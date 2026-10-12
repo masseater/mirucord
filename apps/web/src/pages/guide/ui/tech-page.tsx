@@ -33,7 +33,7 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "flow",
         edges: [
-          { from: "AI クライアント", label: "MCP（OAuth 2.1）", to: "Worker の /mcp" },
+          { from: "AI クライアント", label: "MCP と OAuth 2.1", to: "Worker の /mcp" },
           { from: "Discord の Gateway", label: "WebSocket", to: "fly.io の Gateway" },
           { from: "fly.io の Gateway", label: "署名付きの POST", to: "Worker の /api/gateway" },
           { from: "Worker", label: "REST で読む", to: "Discord の API" },
@@ -53,15 +53,21 @@ const SECTIONS: readonly GuideSection[] = [
         head: ["役割", "使っているもの"],
         rows: [
           ["Web と API", "Cloudflare Workers の上の TanStack Start と Elysia"],
-          ["データベース", "Cloudflare D1（APAC に配置）と Drizzle ORM"],
-          ["メッセージと索引", "サーバーごとに 1 つの Durable Object（SQLite と FTS5）"],
+          ["データベース", "APAC に置いた Cloudflare D1 と Drizzle ORM"],
+          ["メッセージと索引", "サーバーごとに 1 つ置く Durable Object の SQLite と FTS5"],
           ["画像の説明", "Workers AI の `@cf/google/gemma-4-26b-a4b-it`"],
           ["取り込みの待ち行列", "Cloudflare Queues"],
           ["鍵の保管", "Cloudflare Secrets Store"],
-          ["Gateway の常駐", "fly.io の Machine（shared-cpu-1x、256MB、1 台）"],
-          ["認証", "better-auth（Discord の OAuth と、MCP 用の OAuth 2.1 と動的クライアント登録）"],
-          ["Discord の API", "`@discordeno/rest` と `@discordeno/gateway`"],
-          ["インフラの定義", "Alchemy（`apps/web/alchemy.run.ts`）"],
+          ["Gateway の常駐", "fly.io の shared-cpu-1x、256MB の Machine 1 台"],
+          [
+            "認証",
+            "Discord の OAuth と、MCP 用の OAuth 2.1 と動的クライアント登録を扱う better-auth",
+          ],
+          ["Discord の API", "`dfx`"],
+          [
+            "インフラの定義",
+            "`apps/web/alchemy.run.ts` と `apps/gateway/alchemy.run.ts` の Alchemy",
+          ],
         ],
       },
     ],
@@ -76,7 +82,7 @@ const SECTIONS: readonly GuideSection[] = [
           "Bot の参加と退出、チャンネル・スレッド・ロールの変更は Gateway で受け、そのサーバーのチャンネルと権限の一覧をすぐに同期します。同意したときと、過去の履歴が残っているあいだは、取り込みのジョブを Queue に積みます。",
           "Queue のコンシューマーが Discord の REST からメッセージを 1 ページずつ読み、本文と投稿者名を暗号化して、サーバーごとの Durable Object に保存します。あわせて検索用の索引を作って同じ場所に入れます。",
           "新しいメッセージ、編集、削除は fly.io の Gateway が受けます。Gateway はメッセージの本文・投稿者・添付を署名付きで Worker に送り、Worker はそれを暗号化して保存するか、行と索引を消します。",
-          "Gateway が再開（resume）できずに新しいセッションでつなぎ直したときは、参加サーバーの一覧を確かめ直し、全サーバーのチャンネルを同期して、切れていた間の新しいメッセージを取り込みます。",
+          "Gateway が resume で再開できずに新しいセッションでつなぎ直したときは、参加サーバーの一覧を確かめ直し、全サーバーのチャンネルを同期して、切れていた間の新しいメッセージを取り込みます。",
         ],
       },
       {
@@ -92,8 +98,8 @@ const SECTIONS: readonly GuideSection[] = [
         type: "list",
         items: [
           "マスター鍵は Secrets Store の `MIRUCORD_MASTER_KEY` にあり、デプロイのときに Alchemy が乱数で作ります。",
-          "サーバーごとに 256 ビットのデータ鍵を作り、マスター鍵から HKDF で導いた鍵で包んで（AES-KW）D1 に保存します。",
-          "メッセージ本文（転送元の本文を含む）、投稿者名、添付ファイルの名前と URL、埋め込み、スタンプの名前、投票の質問と選択肢は、データ鍵で AES-256-GCM の JWE にして保存します。暗号文には「サーバー / チャンネル / メッセージ」の ID を結びつけてあり、別の行に貼り替えると開けません。",
+          "サーバーごとに 256 ビットのデータ鍵を作ります。データ鍵は、マスター鍵から HKDF で導いた鍵を使って AES-KW で包み、D1 に保存します。",
+          "メッセージ本文と転送元の本文、投稿者名、添付ファイルの名前と URL、埋め込み、スタンプの名前、投票の質問と選択肢は、データ鍵で AES-256-GCM の JWE にして保存します。暗号文にはサーバー、チャンネル、メッセージの ID を結びつけてあり、別の行に貼り替えると開けません。",
           "検索用の索引には、本文を 1〜3 文字ずつに区切り、データ鍵から導いた HMAC 鍵でハッシュにした値だけを置きます。本文そのものは置きません。",
           "メッセージ本文と検索の言葉は、ログ、トレース、エラーメッセージに出しません。",
           "運営が本文を見る機能はありません。",
@@ -152,7 +158,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: "MCP のエンドポイントは `/mcp` です。認可は OAuth 2.1 と動的クライアント登録（DCR）なので、AI クライアントに URL を入れるだけで登録が済みます。",
+        text: "MCP のエンドポイントは `/mcp` です。認可は OAuth 2.1 で、動的クライアント登録に対応しているので、AI クライアントに URL を入れるだけで登録が済みます。",
       },
     ],
   },

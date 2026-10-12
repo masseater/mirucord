@@ -31,12 +31,31 @@ const Channel = Schema.Struct({
 const PendingChannel = Schema.Struct({ channelId: Schema.String, ingest: Ingest });
 
 const ListServersOutput = Schema.Struct({ servers: Schema.Array(Server) });
-const ListChannelsOutput = Schema.Struct({ channels: Schema.Array(Channel) });
+const ListChannelsOutput = Schema.Struct({ channels: Schema.Array(Channel), hint: Schema.String });
 const FindMessagesOutput = Schema.Struct({
   total: Schema.Int,
   messages: Schema.Array(Message),
   notFullyIngested: Schema.Array(PendingChannel),
 });
+const ServerPhrase = Schema.Struct({
+  kind: Schema.Literals(["text", "emoji", "sticker"]),
+  phrase: Schema.String,
+  uses: Schema.Int,
+  people: Schema.Int,
+  lastUsedAt: Schema.String,
+  channels: Schema.Array(Schema.Struct({ id: Schema.String, name: Schema.String })),
+  examples: Schema.Array(Schema.Array(Schema.String)),
+});
+const ListServerPhrasesOutput = Schema.Struct({
+  days: Schema.Int,
+  phrases: Schema.Array(ServerPhrase),
+});
 const ReadMessagesOutput = Schema.Struct({ ingest: Ingest, messages: Schema.Array(Message) });
 
-export { FindMessagesOutput, ListChannelsOutput, ListServersOutput, ReadMessagesOutput };
+export {
+  FindMessagesOutput,
+  ListChannelsOutput,
+  ListServerPhrasesOutput,
+  ListServersOutput,
+  ReadMessagesOutput,
+};

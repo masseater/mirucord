@@ -26,6 +26,7 @@ const storedMessage = (
     ...row,
   },
   tokens: [],
+  phrases: { status: "pending" },
 });
 
 const putMessages = ({

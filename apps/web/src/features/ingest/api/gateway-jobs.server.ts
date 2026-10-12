@@ -1,15 +1,18 @@
-import { Effect, Option } from "effect";
+import { Effect, Option, pipe } from "effect";
 
 import type { ForgetJob, RefreshJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKeys } from "#/shared/crypto/index.server";
-import { FORBIDDEN, findMessage } from "#/shared/discord/index.server";
+import { FORBIDDEN, NOT_FOUND, findMessage, listMessages } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
 import { loadChannelKey } from "./ingest-channel.server";
-import { storeConsented } from "./message-page.server";
+import { oldestId, storeConsented } from "./message-page.server";
 import type { IngestError } from "./message-page.server";
 import { deleteMessages, storedInChannel } from "./message-rows.server";
 import type { ChannelRef } from "./message-rows.server";
+
+const SNOWFLAKE_STEP = 1n;
+const LISTED_LOOKUP_MIN = 2;
 
 type Lookup = Readonly<{ id: string; found: Option.Option<DiscordMessage> }>;
 
@@ -20,11 +23,56 @@ const forgetIn = (ref: ChannelRef, ids: readonly string[]): Effect.Effect<void> 
 
 const forgetMessages = (job: ForgetJob): Effect.Effect<void> => forgetIn(job, job.messageIds);
 
-const lookUp = (job: RefreshJob): Effect.Effect<readonly Lookup[], IngestError> =>
-  Effect.all(
-    job.messageIds.map((id) =>
-      findMessage(job.channelId, id).pipe(Effect.map((found) => ({ id, found }))),
+const lookUpEach = (
+  channelId: string,
+  ids: readonly string[],
+): Effect.Effect<readonly Lookup[], IngestError> =>
+  pipe(
+    ids,
+    Effect.forEach((id) => findMessage(channelId, id).pipe(Effect.map((found) => ({ id, found })))),
+  );
+
+const pageFrom = (
+  channelId: string,
+  oldest: string,
+): Effect.Effect<readonly DiscordMessage[], IngestError> =>
+  listMessages(channelId, {
+    direction: "after",
+    cursor: String(BigInt(oldest) - SNOWFLAKE_STEP),
+  }).pipe(
+    Effect.catchIf(
+      (failure) => Option.contains(failure.status, NOT_FOUND),
+      () => Effect.succeed([]),
     ),
+  );
+
+const lookUpInPage = (
+  job: RefreshJob,
+  oldest: string,
+): Effect.Effect<readonly Lookup[], IngestError> =>
+  pageFrom(job.channelId, oldest).pipe(
+    Effect.flatMap((page) => {
+      const listed = new Set(page.map(({ id }) => id));
+      const wanted = new Set(job.messageIds);
+      const missing = job.messageIds.filter((id) => !listed.has(id));
+      return lookUpEach(job.channelId, missing).pipe(
+        Effect.map((fetched) => [
+          ...page
+            .filter(({ id }) => wanted.has(id))
+            .map((found) => ({ id: found.id, found: Option.some(found) })),
+          ...fetched,
+        ]),
+      );
+    }),
+  );
+
+const lookUp = (job: RefreshJob): Effect.Effect<readonly Lookup[], IngestError> =>
+  Option.match(
+    oldestId(job.messageIds).pipe(Option.filter(() => job.messageIds.length >= LISTED_LOOKUP_MIN)),
+    {
+      onNone: () => lookUpEach(job.channelId, job.messageIds),
+      onSome: (oldest) => lookUpInPage(job, oldest),
+    },
   );
 
 const refreshWith = (job: RefreshJob, wrappedKey: string): Effect.Effect<void, IngestError> =>

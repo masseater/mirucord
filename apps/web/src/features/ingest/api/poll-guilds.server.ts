@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
-import { Array, Effect, Option, pipe } from "effect";
+import { Array, Boolean, DateTime, Effect, Option, pipe } from "effect";
 
+import { isPollDue } from "#/features/ingest/model/sync-schedule";
 import { isRotating, rewrapGuildKey } from "#/shared/crypto/index.server";
 import { db, guild } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
@@ -43,7 +44,13 @@ const pollGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled(
     if (rotating) {
       yield* rewrapGuildKeys;
     }
-    yield* syncMembership(refreshIngest);
+    const now = yield* DateTime.now;
+    yield* syncMembership((guildId) =>
+      Boolean.match(isPollDue({ guildId, now }), {
+        onTrue: () => refreshIngest(guildId),
+        onFalse: () => Effect.void,
+      }),
+    );
   }),
 );
 

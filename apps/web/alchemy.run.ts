@@ -19,7 +19,7 @@ import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import type { GuildStore, RequestCounter } from "./src/app/server/index.ts";
+import type { GuildStore, NeuronBudget, RequestCounter } from "./src/app/server/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
 
@@ -238,6 +238,7 @@ const web = Effect.gen(function* web() {
       AI: Workers.AI(),
       VERSION: Workers.VersionMetadata(),
       REQUEST_COUNTER: Workers.DurableObject<RequestCounter>("RequestCounter"),
+      NEURON_BUDGET: Workers.DurableObject<NeuronBudget>("NeuronBudget"),
     },
     observability: { enabled: true, traces: { enabled: true } },
     viteEnvironments: { entry: "ssr", children: ["rsc"] },

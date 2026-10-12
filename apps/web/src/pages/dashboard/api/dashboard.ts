@@ -16,6 +16,7 @@ import type {
 import {
   consentTo,
   disconnectFor,
+  eraseMessagesFor,
   loadDashboard,
   loadForumPosts,
   loadGuildPage,
@@ -29,6 +30,7 @@ import type {
   ConsentInput,
   Dashboard,
   DisconnectResult,
+  EraseResult,
   GuildPage,
   SignedOut,
 } from "./dashboard.server";
@@ -167,6 +169,12 @@ const postDisconnect = createServerFn({ method: "POST" })
 const disconnectConnectedApp = (clientId: string): Promise<DisconnectResult> =>
   postDisconnect({ data: { clientId } });
 
+const postEraseMessages = createServerFn({ method: "POST" }).handler(() =>
+  Effect.runPromise(eraseMessagesFor),
+);
+
+const eraseMyMessages = (): Promise<EraseResult | SignedOut> => postEraseMessages();
+
 const purgeStoredChannel = (input: typeof ChannelInput.Type): Promise<PurgeResult | SignedOut> =>
   postPurge({ data: input });
 
@@ -174,6 +182,7 @@ export type { ForumPostsOutcome, RefreshOutcome, RefreshTarget };
 export {
   dashboardQuery,
   disconnectConnectedApp,
+  eraseMyMessages,
   forumPostsQuery,
   guildPageQuery,
   purgeStoredChannel,

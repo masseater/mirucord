@@ -24,6 +24,10 @@ jobs:
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           enable-cache: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: stable
+          cache: false
       - if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -34,7 +38,7 @@ jobs:
           commits="$(gh api "repos/$GITHUB_REPOSITORY/compare/$BEFORE_SHA...$HEAD_SHA" --jq .total_commits)"
           git fetch --no-tags --depth="$((commits + 1))" origin "$HEAD_SHA"
           vp exec commitlint --from "$BEFORE_SHA" --to "$HEAD_SHA" --verbose
-      - run: vp run verify
+      - run: vp run --log grouped verify
         env:
           GH_TOKEN: ${{ github.token }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -155,3 +159,24 @@ jobs:
         with:
           config-file: .github/release-please/config.json
           manifest-file: .github/release-please/manifest.json
+
+  ci-telemetry:
+    needs: [verify, jev-lint, autofix, deploy, release]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/ci-telemetry.sh
+          sparse-checkout-cone-mode: false
+      - run: .github/scripts/ci-telemetry.sh
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}

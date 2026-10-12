@@ -47,4 +47,4 @@ Developer Policy の Monetization Requirements は、Premium Apps の対応地�
 ## ドメイン
 
 本番を masseater.dev のサブドメインのまま続けるか、mirucord 専用のドメインを取るかを決める。
-決まったら、そのドメインで Developer Portal の Privacy Policy URL と Terms of Service URL を設定する。Developer Terms of Service 5(a) が求めている。
+決まったら、そのドメインで Developer Portal の Privacy Policy URL と Terms of Service URL を設定する。Privacy Policy URL は Developer Terms of Service 5(a) が求めている。

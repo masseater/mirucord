@@ -2,6 +2,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Effect, Option } from "effect";
 
+import { SEQUENTIAL } from "#/entities/guild-message/lib/search-layout";
 import { indexTokens, searchableTexts } from "#/entities/guild-message/lib/search-tokens.server";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
@@ -10,8 +11,6 @@ import { db, guild } from "#/shared/db/index.server";
 import { searchLedger } from "./search-ledger.server";
 
 const REINDEX_BATCH = 500;
-const NEXT_VERSION = 1;
-const SEQUENTIAL = 1;
 
 type Reindexing = Readonly<{ store: DrizzleSqliteDODatabase; guildId: string }>;
 
@@ -56,7 +55,7 @@ const tokensOf = (
   );
 
 const storeTokens = (store: DrizzleSqliteDODatabase, indexed: readonly Reindexed[]): void => {
-  const version = searchLedger(store).latestVersion() + NEXT_VERSION;
+  const version = searchLedger(store).nextVersion();
   for (const { id, tokens } of indexed) {
     store
       .update(guildMessage)
@@ -90,3 +89,4 @@ const reindexMissing = (reindexing: Reindexing): Effect.Effect<boolean> => {
 };
 
 export { reindexMissing };
+export type { Reindexing };

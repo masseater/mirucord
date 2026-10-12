@@ -192,4 +192,4 @@ export {
   writeFiles,
   writeHead,
 };
-export type { FileRead, SearchHead, SegmentEntry, StoredFile };
+export type { Bucketed, FileRead, SearchHead, SegmentEntry, SegmentFile, StoredFile };

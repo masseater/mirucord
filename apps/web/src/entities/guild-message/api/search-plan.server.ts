@@ -219,4 +219,4 @@ const searchPlanner = (db: DrizzleSqliteDODatabase): SearchPlanner => ({
 });
 
 export { PURGE_AFTER_MS, searchPlanner };
-export type { PieceRow, PieceSpec, Plan };
+export type { PieceRow, PieceSpec, Plan, SearchPlanner };

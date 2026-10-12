@@ -85,21 +85,9 @@ const postingsOf = ({
   });
 };
 
-const stepOf = (advance: boolean): number =>
-  Boolean.match(advance, { onTrue: () => NEXT, onFalse: () => NONE });
-
 const intersectTwo = (kept: readonly number[], other: readonly number[]): readonly number[] => {
-  const found: number[] = [];
-  let keptAt = FIRST;
-  let otherAt = FIRST;
-  while (keptAt < kept.length && otherAt < other.length) {
-    const left = kept[keptAt] ?? NONE;
-    const right = other[otherAt] ?? NONE;
-    found.push(...Array.filter([left], () => left === right));
-    keptAt += stepOf(left <= right);
-    otherAt += stepOf(right <= left);
-  }
-  return found;
+  const present = new Set(other);
+  return kept.filter((ordinal) => present.has(ordinal));
 };
 
 const intersectAll = (lists: readonly (readonly number[])[]): readonly number[] => {
@@ -182,4 +170,4 @@ const newestFirst = ({
 };
 
 export { decodeMeta, matchSegment, newestFirst, postingsOf, readChunk };
-export type { Hit, SegmentHits, SegmentMeta };
+export type { Hit, SegmentHits, SegmentMeta, SegmentQuery };

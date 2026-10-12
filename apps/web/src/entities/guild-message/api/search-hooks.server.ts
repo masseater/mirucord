@@ -45,3 +45,4 @@ const searchHooks = ({ db, alarms, bucket, guildId }: HookTarget): SearchHooks =
 
 export { nextVersion } from "./search-alarm.server";
 export { searchHooks };
+export type { HookTarget, SearchHooks };

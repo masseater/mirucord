@@ -62,3 +62,4 @@ const searchRows = (db: DrizzleSqliteDODatabase): SearchRows => ({
 });
 
 export { searchRows };
+export type { SearchRows };

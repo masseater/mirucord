@@ -9,7 +9,6 @@ import { publishSearch } from "./search-publish.server";
 
 const FLUSH_DELAY_MS = 300_000;
 const NO_DELAY = 0;
-const NEXT_VERSION = 1;
 
 type Alarms = Readonly<{
   current: () => Promise<number | null>;
@@ -66,8 +65,7 @@ const scheduleNext = (alarmed: Alarmed, next: Option.Option<number>): Effect.Eff
       ),
   });
 
-const nextVersion = (db: DrizzleSqliteDODatabase): number =>
-  searchLedger(db).latestVersion() + NEXT_VERSION;
+const nextVersion = (db: DrizzleSqliteDODatabase): number => searchLedger(db).nextVersion();
 
 const publishIndexed = (published: Published): Effect.Effect<void> => {
   const { db, bucket, guildId } = published;
@@ -90,4 +88,4 @@ const publishGuild = (published: Published): Effect.Effect<void> =>
   );
 
 export { FLUSH_DELAY_MS, forgetRows, nextVersion, publishGuild, scheduleSearch };
-export type { Alarms };
+export type { Alarmed, Alarms, Forgotten, Published, Scheduled };

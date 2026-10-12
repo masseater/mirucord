@@ -11,6 +11,7 @@ import type { TrackedRow } from "#/entities/guild-message/model/stored-message";
 const EARLIEST = 0;
 const NONE = 0;
 const NO_VERSION = 0;
+const NEXT_VERSION = 1;
 
 type Segment = typeof searchSegment.$inferSelect;
 
@@ -153,6 +154,7 @@ type SearchLedger = Readonly<{
   segments: () => readonly Segment[];
   count: (condition: SQL) => number;
   latestVersion: () => number;
+  nextVersion: () => number;
   latestPending: (sealed: readonly Segment[]) => number;
   positions: (rows: readonly TrackedRow[]) => readonly Position[];
   invalidate: (positions: readonly Position[], now: number) => boolean;
@@ -163,6 +165,7 @@ const searchLedger = (db: DrizzleSqliteDODatabase): SearchLedger => ({
   segments: (): readonly Segment[] => segmentsOf(db),
   count: (condition: SQL): number => countWhere(db, condition),
   latestVersion: (): number => latestVersionWhere(db, Option.none()),
+  nextVersion: (): number => latestVersionWhere(db, Option.none()) + NEXT_VERSION,
   latestPending: (sealed: readonly Segment[]): number =>
     latestVersionWhere(db, Option.some(pendingCondition(sealed))),
   positions: (rows: readonly TrackedRow[]): readonly Position[] => positionsOf(db, rows),

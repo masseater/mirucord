@@ -1,4 +1,4 @@
-import { Array, Clock, Data, Effect, Number, Option } from "effect";
+import { Array, Clock, Data, Effect, Number, Option, Record } from "effect";
 
 import {
   decodeMeta,
@@ -103,7 +103,7 @@ const scanSegment = (target: ScanTarget): Effect.Effect<SegmentScan, MissingFile
             ordinals: matchSegment({
               meta: decoded,
               postings,
-              invalid: head.invalid[segment.name] ?? [],
+              invalid: Option.getOrElse(Record.get(head.invalid, segment.name), () => []),
               channelIds: request.channelIds,
             }),
           },

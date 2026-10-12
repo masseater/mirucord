@@ -2,6 +2,7 @@ import { eq, inArray } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Effect, Option } from "effect";
 
+import { SEQUENTIAL } from "#/entities/guild-message/lib/search-layout";
 import { buildIndex, CHUNK_SIZE, encodeChunk } from "#/entities/guild-message/lib/search-segment";
 import { searchInvalid, searchSegment } from "#/entities/guild-message/model/search-segment.schema";
 
@@ -19,8 +20,6 @@ import type { Range, Segment } from "./search-ledger.server";
 import { PURGE_AFTER_MS, searchPlanner } from "./search-plan.server";
 import type { PieceRow, PieceSpec, Plan } from "./search-plan.server";
 import { searchRows } from "./search-rows.server";
-
-const SEQUENTIAL = 1;
 
 type Publisher = Readonly<{
   db: DrizzleSqliteDODatabase;
@@ -259,4 +258,4 @@ const publishSearch = (publisher: Publisher): Effect.Effect<Option.Option<number
 };
 
 export { publishSearch, writeSearchHead };
-export type { Publisher };
+export type { HeadTarget, Publisher };

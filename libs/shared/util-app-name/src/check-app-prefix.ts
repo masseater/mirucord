@@ -1,6 +1,7 @@
 import { Stack, isResourceOfType } from "alchemy";
 import { Rules } from "alchemy/Cloudflare";
 import { Secret } from "alchemy/Fly";
+import { Secret as GitHubSecret, Variable as GitHubVariable } from "alchemy/GitHub";
 import { Array as Arr, Effect, Match, Option, Schema } from "effect";
 
 import { prefixesOf } from "./app-name";
@@ -13,16 +14,21 @@ const decodeNamed = Schema.decodeUnknownOption(Schema.Struct({ name: Schema.Stri
 
 const isFlySecret = (resource: unknown): boolean => isResourceOfType(resource, Secret.Type);
 
-const prefixOf = (prefixes: Prefixes, resource: unknown): string =>
+const isGitHubActionsName = (resource: unknown): boolean =>
+  isResourceOfType(resource, GitHubSecret.Type) || isResourceOfType(resource, GitHubVariable.Type);
+
+const prefixOf = (prefixes: Prefixes, resource: unknown): Option.Option<string> =>
   Match.value(resource).pipe(
-    Match.when(Rules.isList, () => prefixes.envPrefix),
-    Match.when(isFlySecret, () => prefixes.envPrefix),
-    Match.orElse(() => prefixes.prefix),
+    Match.when(isGitHubActionsName, () => Option.none()),
+    Match.when(Rules.isList, () => Option.some(prefixes.envPrefix)),
+    Match.when(isFlySecret, () => Option.some(prefixes.envPrefix)),
+    Match.orElse(() => Option.some(prefixes.prefix)),
   );
 
 const describeUnprefixed = (prefixes: Prefixes, resource: NamedResource): readonly string[] =>
-  decodeNamed(resource.Props).pipe(
-    Option.filter((props) => !props.name.startsWith(prefixOf(prefixes, resource))),
+  Option.all([decodeNamed(resource.Props), prefixOf(prefixes, resource)]).pipe(
+    Option.filter(([props, prefix]) => !props.name.startsWith(prefix)),
+    Option.map(([props]) => props),
     Option.map((props) => `${resource.FQN}: ${props.name}`),
     Option.toArray,
   );
@@ -52,7 +58,7 @@ export const checkAppPrefix = (name: string): Effect.Effect<readonly string[], n
       onNonEmpty: (found) =>
         Effect.die(
           new Error(
-            `Alchemy のスタック名は "${name}" か "${prefixes.prefix}" で始まる名前、リソース名は "${prefixes.prefix}"（Rules.List と Fly.Secret は "${prefixes.envPrefix}"）で始める: ${found.join(", ")}`,
+            `Alchemy のスタック名は "${name}" か "${prefixes.prefix}" で始まる名前、リソース名は "${prefixes.prefix}"（Rules.List と Fly.Secret は "${prefixes.envPrefix}"、GitHub の Secret と Variable は対象外）で始める: ${found.join(", ")}`,
           ),
         ),
     }),

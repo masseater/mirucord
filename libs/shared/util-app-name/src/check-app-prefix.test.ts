@@ -1,6 +1,7 @@
 import { Stack } from "alchemy";
 import { D1, Rules } from "alchemy/Cloudflare";
 import { App, Secret } from "alchemy/Fly";
+import { Secrets, Variables } from "alchemy/GitHub";
 import { Stage } from "alchemy/Stage";
 import { inMemoryState } from "alchemy/State";
 import { Effect, Exit, Layer, Match, Redacted } from "effect";
@@ -16,7 +17,11 @@ const requireAppPrefix = checkAppPrefix(APP);
 type Resource =
   | Readonly<{ type: "database"; props: Readonly<{ name?: string }> }>
   | Readonly<{ type: "list"; name: string }>
-  | Readonly<{ type: "secret"; name: string }>;
+  | Readonly<{ type: "secret"; name: string }>
+  | Readonly<{ type: "githubSecret"; name: string }>
+  | Readonly<{ type: "githubVariable"; name: string }>;
+
+const REPO = { owner: "owner", repository: "repo" };
 
 const flySecret = Effect.fn("flySecret")(function* flySecret(name: string) {
   const app = yield* App("App", { name: `${PREFIX}app` });
@@ -34,6 +39,9 @@ const deploys = (stackName: string, resource: Resource): Promise<boolean> =>
             database: ({ props }) => D1.Database("DB", props),
             list: ({ name }) => Rules.List("List", { name, kind: "ip", items: [] }),
             secret: ({ name }) => flySecret(name),
+            githubSecret: ({ name }) =>
+              Secrets({ ...REPO, secrets: { [name]: Redacted.make("value") } }),
+            githubVariable: ({ name }) => Variables({ ...REPO, variables: { [name]: "value" } }),
           }),
         );
         yield* requireAppPrefix;
@@ -64,6 +72,8 @@ test.each<Readonly<{ stackName: string; resource: Resource; expected: boolean }>
   { stackName: APP, resource: { type: "secret", name: `${ENV_PREFIX}TOKEN` }, expected: true },
   { stackName: APP, resource: { type: "secret", name: "TOKEN" }, expected: false },
   { stackName: APP, resource: { type: "secret", name: `${PREFIX}TOKEN` }, expected: false },
+  { stackName: APP, resource: { type: "githubSecret", name: "API_TOKEN" }, expected: true },
+  { stackName: APP, resource: { type: "githubVariable", name: "MAX_ITEMS" }, expected: true },
   { stackName: `${PREFIX}gateway`, resource: { type: "database", props: {} }, expected: true },
   { stackName: "web", resource: { type: "database", props: {} }, expected: false },
 ])("stack $stackName with $resource deploys: $expected", ({ stackName, resource, expected }) =>

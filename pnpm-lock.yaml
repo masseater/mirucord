@@ -191,6 +191,9 @@ catalogs:
     '@discordeno/rest':
       specifier: 21.0.0
       version: 21.0.0
+    '@discordeno/types':
+      specifier: 21.0.0
+      version: 21.0.0
     '@effect/platform-node':
       specifier: 4.0.0
       version: 4.0.0
@@ -491,6 +494,9 @@ importers:
         specifier: 'catalog:'
         version: 21.0.0
       '@discordeno/rest':
+        specifier: 'catalog:'
+        version: 21.0.0
+      '@discordeno/types':
         specifier: 'catalog:'
         version: 21.0.0
       '@effect/atom-react':

@@ -1,21 +1,36 @@
-import { OverwriteType, Routes } from "discord-api-types/v10";
-import type { APIMessage, APIMessageSnapshotFields } from "discord-api-types/v10";
+import { OverwriteTypes } from "@discordeno/types";
+import type {
+  DiscordChannel as RawChannel,
+  DiscordGuild as RawGuild,
+  DiscordListActiveThreads as RawActiveThreads,
+  DiscordListArchivedThreads as RawArchivedThreads,
+  DiscordMemberWithUser as RawMember,
+  DiscordMessage as RawMessage,
+  DiscordUser as RawUser,
+} from "@discordeno/types";
+import { Routes } from "discord-api-types/v10";
 import { Array, Effect, Function, Option, Schema } from "effect";
 
 import { callDiscord } from "./client.server";
 import type { DiscordRequestError } from "./client.server";
+import { Message } from "./message.server";
 
 const DATA_FIRST_ARITY = 2;
 
 const PAGE_SIZE = 100;
 const NOT_FOUND = 404;
 const FORBIDDEN = 403;
+const NO_PERMISSIONS = "0";
+
+const PermissionBits = Schema.String.pipe(
+  Schema.withDecodingDefaultKey(Effect.succeed(NO_PERMISSIONS)),
+);
 
 const PermissionOverwrite = Schema.Struct({
   id: Schema.String,
-  type: Schema.Enum(OverwriteType),
-  allow: Schema.String,
-  deny: Schema.String,
+  type: Schema.Enum(OverwriteTypes),
+  allow: PermissionBits,
+  deny: PermissionBits,
 });
 
 const Guild = Schema.Struct({
@@ -27,7 +42,7 @@ const Guild = Schema.Struct({
   roles: Schema.Array(Schema.Struct({ id: Schema.String, permissions: Schema.String })),
 });
 
-const PartialGuild = Schema.Struct({ id: Schema.String });
+const PartialGuild = Schema.Struct({ id: Schema.optional(Schema.String) });
 
 const User = Schema.Struct({ id: Schema.String });
 
@@ -48,96 +63,6 @@ const ArchivedThreadList = Schema.Struct({
   has_more: Schema.Boolean,
 });
 
-const Attachment = Schema.Struct({
-  filename: Schema.String,
-  url: Schema.String,
-  size: Schema.Finite,
-  content_type: Schema.optional(Schema.String),
-});
-
-const Author = Schema.Struct({
-  id: Schema.String,
-  username: Schema.String,
-  global_name: Schema.optional(Schema.NullOr(Schema.String)),
-});
-
-type FieldUse = "stored" | "ignored";
-
-type StoredOf<Uses> = { [Key in keyof Uses]: Uses[Key] extends "stored" ? Key : never }[keyof Uses];
-
-const SNAPSHOT_FIELD_USE = {
-  content: "stored",
-  attachments: "stored",
-  components: "ignored",
-  edited_timestamp: "ignored",
-  embeds: "ignored",
-  flags: "ignored",
-  mention_roles: "ignored",
-  mentions: "ignored",
-  sticker_items: "ignored",
-  stickers: "ignored",
-  timestamp: "ignored",
-  type: "ignored",
-} as const satisfies Record<keyof APIMessageSnapshotFields, FieldUse>;
-
-const MessageSnapshot = Schema.Struct({
-  message: Schema.Struct({
-    content: Schema.String,
-    attachments: Schema.Array(Attachment),
-  } satisfies Record<StoredOf<typeof SNAPSHOT_FIELD_USE>, Schema.Top>),
-});
-
-const MESSAGE_FIELD_USE = {
-  id: "stored",
-  type: "stored",
-  content: "stored",
-  timestamp: "stored",
-  edited_timestamp: "stored",
-  author: "stored",
-  attachments: "stored",
-  message_snapshots: "stored",
-  activity: "ignored",
-  application: "ignored",
-  application_id: "ignored",
-  call: "ignored",
-  channel_id: "ignored",
-  components: "ignored",
-  embeds: "ignored",
-  flags: "ignored",
-  interaction: "ignored",
-  interaction_metadata: "ignored",
-  mention_channels: "ignored",
-  mention_everyone: "ignored",
-  mention_roles: "ignored",
-  mentions: "ignored",
-  message_reference: "ignored",
-  nonce: "ignored",
-  pinned: "ignored",
-  poll: "ignored",
-  position: "ignored",
-  reactions: "ignored",
-  referenced_message: "ignored",
-  resolved: "ignored",
-  role_subscription_data: "ignored",
-  shared_client_theme: "ignored",
-  sticker_items: "ignored",
-  stickers: "ignored",
-  thread: "ignored",
-  tts: "ignored",
-  webhook_id: "ignored",
-} as const satisfies Record<keyof APIMessage, FieldUse>;
-
-const Message = Schema.Struct({
-  id: Schema.String,
-  type: Schema.Finite,
-  content: Schema.String,
-  timestamp: Schema.DateTimeUtcFromString,
-  edited_timestamp: Schema.NullOr(Schema.DateTimeUtcFromString),
-  author: Author,
-  attachments: Schema.Array(Attachment),
-  message_snapshots: Schema.optional(Schema.Array(MessageSnapshot)),
-} satisfies Record<StoredOf<typeof MESSAGE_FIELD_USE>, Schema.Top>);
-
 const Member = Schema.Struct({ roles: Schema.Array(Schema.String) });
 
 type DiscordGuild = typeof Guild.Type;
@@ -145,35 +70,43 @@ type DiscordChannel = typeof Channel.Type;
 type DiscordMessage = typeof Message.Type;
 type DiscordMember = typeof Member.Type;
 
-const listBotGuilds = callDiscord(Schema.Array(PartialGuild))({
-  method: "GET",
-  route: Routes.userGuilds(),
-});
+const listBotGuilds: Effect.Effect<readonly Readonly<{ id: string }>[], DiscordRequestError> =
+  callDiscord<Partial<RawGuild>[]>()(Schema.Array(PartialGuild))({
+    method: "GET",
+    route: Routes.userGuilds(),
+  }).pipe(
+    Effect.map(Array.flatMap(({ id }) => Option.toArray(Option.fromUndefinedOr(id)))),
+    Effect.map(Array.map((id) => ({ id }))),
+  );
 
-const getBotUserId: Effect.Effect<string, DiscordRequestError> = callDiscord(User)({
+const getBotUserId: Effect.Effect<string, DiscordRequestError> = callDiscord<RawUser>()(User)({
   method: "GET",
   route: Routes.user(),
 }).pipe(Effect.map(({ id }) => id));
 
 const leaveGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   Effect.asVoid(
-    callDiscord(Schema.Unknown)({ method: "DELETE", route: Routes.userGuild(guildId) }),
+    callDiscord<unknown>()(Schema.Unknown)({ method: "DELETE", route: Routes.userGuild(guildId) }),
   );
 
 const getGuild = (guildId: string): Effect.Effect<DiscordGuild, DiscordRequestError> =>
-  callDiscord(Guild)({ method: "GET", route: Routes.guild(guildId) });
+  callDiscord<RawGuild>()(Guild)({ method: "GET", route: Routes.guild(guildId) });
 
 const listGuildChannels = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
-  callDiscord(Schema.Array(Channel))({ method: "GET", route: Routes.guildChannels(guildId) });
+  callDiscord<RawChannel[]>()(Schema.Array(Channel))({
+    method: "GET",
+    route: Routes.guildChannels(guildId),
+  });
 
 const listActiveThreads = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
-  callDiscord(ThreadList)({ method: "GET", route: Routes.guildActiveThreads(guildId) }).pipe(
-    Effect.map(({ threads }) => threads),
-  );
+  callDiscord<RawActiveThreads>()(ThreadList)({
+    method: "GET",
+    route: Routes.guildActiveThreads(guildId),
+  }).pipe(Effect.map(({ threads }) => threads));
 
 const listArchivedThreadsBefore = (
   channelId: string,
@@ -183,7 +116,7 @@ const listArchivedThreadsBefore = (
   if (Option.isSome(before)) {
     query.set("before", before.value);
   }
-  return callDiscord(ArchivedThreadList)({
+  return callDiscord<RawArchivedThreads>()(ArchivedThreadList)({
     method: "GET",
     route: `${Routes.channelThreads(channelId, "public")}?${query.toString()}`,
   }).pipe(
@@ -221,7 +154,7 @@ const listMessagesDataFirst = (
   if (page.direction !== "latest") {
     query.set(page.direction, page.cursor);
   }
-  return callDiscord(Schema.Array(Message))({
+  return callDiscord<RawMessage[]>()(Schema.Array(Message))({
     method: "GET",
     route: `${Routes.channelMessages(channelId)}?${query.toString()}`,
   });
@@ -237,11 +170,10 @@ const listMessages: {
   ): Effect.Effect<readonly DiscordMessage[], DiscordRequestError>;
 } = Function.dual(DATA_FIRST_ARITY, listMessagesDataFirst);
 
-const findDiscord = <Body extends Schema.Top>(
-  schema: Body,
-  route: string,
-): Effect.Effect<Option.Option<Body["Type"]>, DiscordRequestError, Body["DecodingServices"]> =>
-  callDiscord(schema)({ method: "GET", route }).pipe(
+const orNotFound = <Found, Services>(
+  request: Effect.Effect<Found, DiscordRequestError, Services>,
+): Effect.Effect<Option.Option<Found>, DiscordRequestError, Services> =>
+  request.pipe(
     Effect.asSome,
     Effect.catchIf(
       (error) => Option.contains(error.status, NOT_FOUND),
@@ -253,7 +185,12 @@ const findMemberDataFirst = (
   guildId: string,
   userId: string,
 ): Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError> =>
-  findDiscord(Member, Routes.guildMember(guildId, userId));
+  orNotFound(
+    callDiscord<RawMember>()(Member)({
+      method: "GET",
+      route: Routes.guildMember(guildId, userId),
+    }),
+  );
 
 const findMember: {
   (
@@ -269,7 +206,12 @@ const findMessageDataFirst = (
   channelId: string,
   messageId: string,
 ): Effect.Effect<Option.Option<DiscordMessage>, DiscordRequestError> =>
-  findDiscord(Message, Routes.channelMessage(channelId, messageId));
+  orNotFound(
+    callDiscord<RawMessage>()(Message)({
+      method: "GET",
+      route: Routes.channelMessage(channelId, messageId),
+    }),
+  );
 
 const findMessage: {
   (

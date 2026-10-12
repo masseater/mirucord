@@ -55,3 +55,5 @@ Bot がサーバーから外れたら、そのサーバーの行と索引を消�
 `auth:generate` は `mcp()` の起動処理が D1 を読むので、D1 を差し替えた一時設定で動かす。
 zod は禁止パッケージなので、`better-call` の peer をそろえるために足してはいけない。スキーマと検証は effect の Schema で書く。
 `/sign-in` は MCP の OAuth のログイン画面も兼ねるので、ログイン後の行き先を `/dashboard` に固定しない。
+サーバーごとの Durable Object（`entities/guild-message`）のマイグレーションは、`import.meta.glob` の `?raw` で読む。drizzle-kit の durable-sqlite ドライバが出す `migrations.js` は使わない。`migrations.js` は `.sql` を import し、vitest の Vite で読めないためである。alchemy の `Cloudflare.SqlMigrations` は Rolldown でビルドする Worker にしか配線されず、Website.Vite では使えない。alchemy をそちらへ移したら置き換える。
+FTS5 の索引は、drizzle が仮想テーブルを扱えない（drizzle-orm の issue #2046）ので、`message_search` を通常のテーブルとして宣言し、テーブル名と同じ隠し列への `eq` で MATCH する。仮想テーブルの作成は手で書いたマイグレーションに置く。

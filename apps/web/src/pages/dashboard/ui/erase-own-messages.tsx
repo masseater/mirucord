@@ -4,9 +4,8 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 
 import { eraseMyMessages } from "#/pages/dashboard/api/dashboard";
+import { mutationMessage } from "#/pages/dashboard/lib/mutation-message";
 import { PopButton } from "#/shared/ui/pop-button";
-
-import { mutationMessage } from "./mutation-message";
 
 const SUMMARY = "自分の投稿を削除する";
 const DETAIL =

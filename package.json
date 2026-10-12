@@ -2,6 +2,7 @@
   "name": "typescript-template",
   "version": "0.0.6",
   "private": true,
+  "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
     "verify": "vp check && vp run -r test && NODE_OPTIONS=--max-old-space-size=4096 eslint --max-warnings 0 . && syncpack lint && vp run textlint && vp run yomiyasu && vp run renovate && vp run actions-lint && vp run -r steiger && vp run -r db:check && vp run -r fallow",

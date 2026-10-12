@@ -252,7 +252,7 @@ const LIST_SERVER_PHRASES_TOOL = {
 
 const FIND_MESSAGES_TOOL = {
   title: "Find messages",
-  description: `Find messages whose text, image description, embed, sticker name or poll contains \`query\` exactly, ignoring letter case. Matching is literal, so try other wordings and synonyms yourself when a search finds little. \`total\` counts every match in the searched channels, so it shows how often a topic comes up; \`messages\` holds up to \`limit\` of them, newest first, starting at \`offset\`. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
+  description: `Find messages whose text, image description, embed, sticker name or poll contains \`query\` exactly, ignoring letter case. Matching is literal, so try other wordings and synonyms yourself when a search finds little. \`total\` counts the matches in the searched channels, so it shows how often a topic comes up; for queries longer than three characters it can count a few messages that only contain the pieces of \`query\`. \`messages\` holds the exact matches among \`limit\` candidates, newest first, starting at \`offset\`, so it can hold fewer than \`limit\`; advance \`offset\` by \`limit\` to read the next page. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
   ...TOOL_BASE,
   outputSchema: FindMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: FindMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),

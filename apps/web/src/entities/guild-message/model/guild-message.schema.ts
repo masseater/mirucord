@@ -1,4 +1,13 @@
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { customType, index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { Array } from "effect";
+
+const tokenColumn = customType<{ data: readonly number[]; driverData: ArrayBuffer }>({
+  dataType: () => "blob",
+  toDriver: (tokens) => Uint32Array.from(Array.dedupe(tokens)).buffer,
+  fromDriver: (blob) => Array.fromIterable(new Uint32Array(blob)),
+});
+
+const UNPUBLISHED = 0;
 
 const guildMessage = sqliteTable(
   "message",
@@ -12,11 +21,23 @@ const guildMessage = sqliteTable(
     editedAt: integer(),
     describedWith: text(),
     phrases: text().$type<"pending" | "extracted">().notNull().default("pending"),
+    tokens: tokenColumn(),
+    version: integer().notNull().default(UNPUBLISHED),
   },
   (table) => [
     index("message_channel_created_idx").on(table.channelId, table.createdAt),
     index("message_phrases_created_idx").on(table.phrases, table.createdAt),
+    index("message_created_idx").on(table.createdAt),
+    index("message_version_idx").on(table.version),
   ],
 );
 
-export { guildMessage };
+const BOUND_LIMIT = 90;
+
+const TRACKED_COLUMNS = {
+  id: guildMessage.id,
+  createdAt: guildMessage.createdAt,
+  version: guildMessage.version,
+};
+
+export { BOUND_LIMIT, guildMessage, TRACKED_COLUMNS };

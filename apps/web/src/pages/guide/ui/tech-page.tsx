@@ -41,9 +41,10 @@ const SECTIONS: readonly GuideSection[] = [
           { from: "Worker", label: "サーバーと同意の情報", to: "D1" },
           {
             from: "Worker",
-            label: "暗号化したメッセージと索引",
+            label: "暗号化したメッセージ",
             to: "サーバーごとの Durable Object",
           },
+          { from: "Durable Object", label: "検索用の索引と暗号文の写し", to: "R2" },
           { from: "Worker", label: "画像の説明を作る", to: "Workers AI" },
           { from: "Worker", label: "マスター鍵を読む", to: "Secrets Store" },
         ],
@@ -54,7 +55,8 @@ const SECTIONS: readonly GuideSection[] = [
         rows: [
           ["Web と API", "Cloudflare Workers の上の TanStack Start と Elysia"],
           ["データベース", "APAC に置いた Cloudflare D1 と Drizzle ORM"],
-          ["メッセージと索引", "サーバーごとに 1 つ置く Durable Object の SQLite と FTS5"],
+          ["メッセージ", "サーバーごとに 1 つ置く Durable Object の SQLite"],
+          ["検索用の索引", "北米東部に置いた Cloudflare R2 と Cache API"],
           ["画像の説明", "Workers AI の `@cf/google/gemma-4-26b-a4b-it`"],
           ["取り込みの待ち行列", "Cloudflare Queues"],
           ["鍵の保管", "Cloudflare Secrets Store"],
@@ -80,8 +82,8 @@ const SECTIONS: readonly GuideSection[] = [
         items: [
           "サーバーの管理者が Bot を招待し、管理画面でサーバー単位に同意します。同意するまでは 1 件も読みません。",
           "Bot の参加と退出、チャンネル・スレッド・ロールの変更は Gateway で受け、そのサーバーのチャンネルと権限の一覧をすぐに同期します。同意したときと、過去の履歴が残っているあいだは、取り込みのジョブを Queue に積みます。",
-          "Queue のコンシューマーが Discord の REST からメッセージを 1 ページずつ読み、本文と投稿者名を暗号化して、サーバーごとの Durable Object に保存します。あわせて検索用の索引を作って同じ場所に入れます。",
-          "新しいメッセージ、編集、削除は fly.io の Gateway が受けます。Gateway はメッセージの本文・投稿者・添付を署名付きで Worker に送り、Worker はそれを暗号化して保存するか、行と索引を消します。",
+          "Queue のコンシューマーが Discord の REST からメッセージを 1 ページずつ読み、本文と投稿者名を暗号化して、サーバーごとの Durable Object に保存します。あわせて検索用の索引の材料を作って同じ行に入れます。",
+          "新しいメッセージ、編集、削除は fly.io の Gateway が受けます。Gateway はメッセージの本文・投稿者・添付を署名付きで Worker に送り、Worker はそれを暗号化して保存するか、行を消します。編集や削除は、その場で検索結果から外れます。",
           "Gateway が resume で再開できずに新しいセッションでつなぎ直したときは、参加サーバーの一覧を確かめ直し、全サーバーのチャンネルを同期して、切れていた間の新しいメッセージを取り込みます。",
         ],
       },
@@ -144,7 +146,8 @@ const SECTIONS: readonly GuideSection[] = [
         type: "steps",
         items: [
           "`find_messages` では、検索の言葉を索引と同じ方法で区切ってハッシュにします。",
-          "サーバーの Durable Object で、そのハッシュをすべて含む行を FTS5 から引き、読めるチャンネルの行だけに絞ります。",
+          "R2 から、そのサーバーの索引を期間ごとに読み、ハッシュをすべて含むメッセージを新しい順に選び、読めるチャンネルのものだけに絞ります。",
+          "選んだメッセージの暗号文を R2 からまとめて読みます。一度読んだ索引と暗号文は Cache API に置き、同じ拠点での次の検索では読み直しません。",
           "見つかった行をデータ鍵で復号し、大文字と小文字を区別せずに言葉をそのまま含むかを確かめてから返します。",
         ],
       },

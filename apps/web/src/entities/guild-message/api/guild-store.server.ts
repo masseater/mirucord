@@ -62,20 +62,20 @@ class GuildStore extends PhraseStore {
 
   public override alarm(): Promise<void> {
     const { guildId: claimed } = this.ledgerOf();
-    return Effect.runPromise(
-      Option.match(Option.fromNullOr(claimed), {
-        onNone: () => Effect.void,
-        onSome: (guildId) =>
-          backfillPhrases({
-            guildId,
-            unphrased: (now, limit) => this.unphrased(now, limit),
-            writePhrases: (extracted) => {
-              this.writePhrases(extracted);
-            },
-            again: (at) => Effect.promise(() => this.ctx.storage.setAlarm(at)),
-          }),
-      }),
-    );
+    const phrases = Option.match(Option.fromNullOr(claimed), {
+      onNone: () => Effect.void,
+      onSome: (guildId) =>
+        backfillPhrases({
+          guildId,
+          unphrased: (now, limit) => this.unphrased(now, limit),
+          writePhrases: (extracted) => {
+            this.writePhrases(extracted);
+          },
+          again: (at) => this.search.scheduleAt(at),
+        }),
+    });
+    const published = phrases.pipe(Effect.andThen(this.search.publish()));
+    return Effect.runPromise(published);
   }
 }
 

@@ -2,7 +2,7 @@ import { Array, Effect, Number, Option, String } from "effect";
 
 import type { MessageBody } from "#/shared/crypto/index.server";
 
-import { hmacToken } from "./hmac.server";
+import { hmacWord } from "./hmac.server";
 
 const SHORTEST_GRAM = 1;
 const LONGEST_GRAM = 3;
@@ -15,8 +15,8 @@ const gramsOfSize = (chars: readonly string[], size: number): readonly string[] 
     chars.slice(start, start + size).join(""),
   );
 
-const tokensOf = (key: CryptoKey, grams: readonly string[]): Effect.Effect<readonly string[]> =>
-  Effect.forEach(Array.dedupe(grams), (gram) => hmacToken({ key, text: gram }), {
+const tokensOf = (key: CryptoKey, grams: readonly string[]): Effect.Effect<readonly number[]> =>
+  Effect.forEach(Array.dedupe(grams), (gram) => hmacWord({ key, text: gram }), {
     concurrency: "unbounded",
   });
 
@@ -25,7 +25,7 @@ const GRAM_SIZES = Array.range(SHORTEST_GRAM, LONGEST_GRAM);
 const indexTokens = ({
   key,
   texts,
-}: Readonly<{ key: CryptoKey; texts: readonly string[] }>): Effect.Effect<readonly string[]> =>
+}: Readonly<{ key: CryptoKey; texts: readonly string[] }>): Effect.Effect<readonly number[]> =>
   tokensOf(
     key,
     texts.flatMap((text) => {
@@ -37,7 +37,7 @@ const indexTokens = ({
 const queryTokens = ({
   key,
   query,
-}: Readonly<{ key: CryptoKey; query: string }>): Effect.Effect<readonly string[]> => {
+}: Readonly<{ key: CryptoKey; query: string }>): Effect.Effect<readonly number[]> => {
   const chars = charsOf(query);
   return tokensOf(key, gramsOfSize(chars, Number.min(chars.length, LONGEST_GRAM)));
 };

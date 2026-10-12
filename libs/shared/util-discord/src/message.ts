@@ -39,6 +39,7 @@ const Author = Schema.Struct({
   id: Schema.String,
   username: Schema.String,
   global_name: Schema.optional(Schema.NullOr(Schema.String)),
+  bot: Schema.optional(Schema.Boolean),
 });
 
 const MessageSnapshot = Schema.Struct({
@@ -57,6 +58,7 @@ const Message = Schema.Struct({
   timestamp: Schema.DateTimeUtcFromString,
   edited_timestamp: Schema.NullOr(Schema.DateTimeUtcFromString),
   author: Author,
+  webhook_id: Schema.optional(Schema.String),
   attachments: Schema.Array(Attachment),
   message_snapshots: Schema.optional(Schema.Array(MessageSnapshot)),
   embeds: Embeds,

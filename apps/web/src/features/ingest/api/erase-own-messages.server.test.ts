@@ -27,6 +27,7 @@ const messageBy = (id: string, authorId: string): IndexedMessage => ({
     describedWith: Option.getOrNull(Option.none<string>()),
   },
   tokens: [],
+  phrases: { status: "pending" },
 });
 
 const writeMessages = (guildId: string, messages: readonly IndexedMessage[]): Effect.Effect<void> =>

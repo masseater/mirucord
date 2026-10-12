@@ -11,8 +11,12 @@ const guildMessage = sqliteTable(
     createdAt: integer().notNull(),
     editedAt: integer(),
     describedWith: text(),
+    phrases: text().$type<"pending" | "extracted">().notNull().default("pending"),
   },
-  (table) => [index("message_channel_created_idx").on(table.channelId, table.createdAt)],
+  (table) => [
+    index("message_channel_created_idx").on(table.channelId, table.createdAt),
+    index("message_phrases_created_idx").on(table.phrases, table.createdAt),
+  ],
 );
 
 export { guildMessage };

@@ -2,15 +2,13 @@ import { DateTime, Effect, Option } from "effect";
 
 import {
   containsQuery,
-  openGuildKey,
-  openMessage,
-  openSearchKey,
+  guildStore,
   queryTokens,
   searchableTexts,
-} from "#/shared/crypto/index.server";
+} from "#/entities/guild-message/index.server";
+import type { SealedMessage } from "#/entities/guild-message/index.server";
+import { openGuildKey, openMessage, openSearchKey } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
-import type { SealedMessage } from "#/shared/guild-store/index.server";
 
 import type { GuildScope } from "./scope.server";
 

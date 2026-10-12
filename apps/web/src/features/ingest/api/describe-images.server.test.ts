@@ -5,12 +5,7 @@ import { DateTime, Effect, Option } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
-import {
-  createGuildKey,
-  openGuildKeys,
-  openMessage,
-  queryTokens,
-} from "#/shared/crypto/index.server";
+import { createGuildKey, openGuildKeys, openMessage } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
 import { candidateIds, describedWithOf, sealedIn } from "./__tests__/guild-messages";
@@ -116,8 +111,9 @@ const guildKeys = Effect.promise(() =>
 
 const photoFoundBy = (query: string): Effect.Effect<readonly string[]> =>
   guildKeys.pipe(
-    Effect.flatMap(({ searchKey }) => queryTokens({ key: searchKey, query })),
-    Effect.flatMap((tokens) => candidateIds({ guildId: GUILD, channelId: PHOTO_CHANNEL, tokens })),
+    Effect.flatMap(({ searchKey }) =>
+      candidateIds({ guildId: GUILD, channelId: PHOTO_CHANNEL, searchKey, query }),
+    ),
   );
 
 const photoAttachments = Effect.gen(function* opened() {

@@ -1,1 +1,1 @@
-export { GuildStore } from "#/shared/guild-store/index.server";
+export { GuildStore } from "#/entities/guild-message/index.server";

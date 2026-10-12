@@ -2,8 +2,8 @@ import { DiscordSnowflake } from "@sapphire/snowflake";
 import { eq, inArray } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
 
+import { guildStore } from "#/entities/guild-message/index.server";
 import { db, message } from "#/shared/db/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
 
 import { inIdChunks } from "./id-chunks.server";
 

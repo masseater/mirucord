@@ -1,9 +1,9 @@
 import { DateTime, Effect, Option } from "effect";
 
+import { guildStore, queryTokens } from "#/entities/guild-message/index.server";
+import type { IndexedMessage, StoredRow } from "#/entities/guild-message/index.server";
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { db, guild, ingestConsent } from "#/shared/db/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
-import type { IndexedMessage, StoredRow } from "#/shared/guild-store/index.server";
 
 const OWNER = "901";
 const SEEDED = DateTime.makeUnsafe("2026-10-01T00:00:00Z");
@@ -55,9 +55,15 @@ const describedWithOf = ({
 const candidateIds = ({
   guildId,
   channelId,
-  tokens,
-}: GuildChannel & Readonly<{ tokens: readonly string[] }>): Effect.Effect<readonly string[]> =>
-  Effect.promise(() => guildStore(guildId).candidates(tokens, [channelId])).pipe(
+  searchKey,
+  query,
+}: GuildChannel & Readonly<{ searchKey: CryptoKey; query: string }>): Effect.Effect<
+  readonly string[]
+> =>
+  queryTokens({ key: searchKey, query }).pipe(
+    Effect.flatMap((tokens) =>
+      Effect.promise(() => guildStore(guildId).candidates(tokens, [channelId])),
+    ),
     Effect.map((rows) => rows.map(({ id }) => id)),
   );
 

@@ -1,6 +1,6 @@
 import { Array, Effect, Number, Option, String } from "effect";
 
-import type { MessageBody } from "./message-envelope.server";
+import type { MessageBody } from "#/shared/crypto/index.server";
 
 const SHORTEST_GRAM = 1;
 const LONGEST_GRAM = 3;

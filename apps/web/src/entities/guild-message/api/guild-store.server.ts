@@ -6,8 +6,8 @@ import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { migrate } from "drizzle-orm/durable-sqlite/migrator";
 import { Array, Effect, Option } from "effect";
 
-import { guildMessage } from "./guild-message.schema";
-import { messageSearch } from "./message-search.fts";
+import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
+import { messageSearch } from "#/entities/guild-message/model/message-search.fts";
 
 const MIGRATION_FILES: Readonly<Record<string, string>> = import.meta.glob(
   "/drizzle-guild/*/migration.sql",

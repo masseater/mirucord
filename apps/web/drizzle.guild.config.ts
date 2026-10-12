@@ -2,6 +2,6 @@ import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
   dialect: "sqlite",
-  schema: "./src/shared/guild-store/*.schema.ts",
+  schema: "./src/entities/guild-message/model/*.schema.ts",
   out: "./drizzle-guild",
 });

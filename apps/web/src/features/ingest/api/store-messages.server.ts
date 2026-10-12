@@ -1,12 +1,12 @@
 import { MessageType } from "discord-api-types/v10";
 import { Array, Boolean, DateTime, Effect, Equal, Option, String, pipe } from "effect";
 
+import { guildStore, indexTokens, searchableTexts } from "#/entities/guild-message/index.server";
+import type { IndexedMessage } from "#/entities/guild-message/index.server";
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
-import { indexTokens, sealMessage, searchableTexts } from "#/shared/crypto/index.server";
+import { sealMessage } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
-import type { IndexedMessage } from "#/shared/guild-store/index.server";
 
 import { DESCRIBE_MODEL, describeImage, isDescribable } from "./describe-image.server";
 import type { ImageSource } from "./describe-image.server";

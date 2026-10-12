@@ -46,7 +46,7 @@ const seedGuild = (guildId: string): Effect.Effect<void> =>
       ]),
     );
     const messages = Array.makeBy(STORED, (index) =>
-      storedMessage({ id: `${guildId}-${String(index)}`, channelId }),
+      storedMessage({ id: `${guildId}${String(index)}`, channelId }),
     );
     yield* putMessages({ guildId, messages });
   });

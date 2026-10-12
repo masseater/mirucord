@@ -8,6 +8,20 @@ import { Array, Effect, Option } from "effect";
 
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { messageSearch } from "#/entities/guild-message/model/message-search.fts";
+import { searchKeyOf } from "#/entities/guild-message/model/search-key";
+import type {
+  Candidates,
+  ChannelCount,
+  CreatedRange,
+  IndexedMessage,
+  ReadPage,
+  SealedMessage,
+  SearchPage,
+  Seq,
+  StoredRow,
+  StoredState,
+  WriteMode,
+} from "#/entities/guild-message/model/stored-message";
 
 const MIGRATION_FILES: Readonly<Record<string, string>> = import.meta.glob(
   "/drizzle-guild/*/migration.sql",
@@ -18,6 +32,7 @@ const FOLDER_FROM_END = -2;
 const BOUND_LIMIT = 90;
 const NO_MESSAGES = 0;
 const TOKEN_SEPARATOR = " ";
+const NEXT_SEQ = 1;
 
 const MIGRATIONS = Object.fromEntries(
   Object.entries(MIGRATION_FILES).map(([path, query]) => [
@@ -25,38 +40,6 @@ const MIGRATIONS = Object.fromEntries(
     query,
   ]),
 );
-
-type StoredRow = Readonly<{
-  id: string;
-  channelId: string;
-  authorId: string;
-  sealed: string;
-  createdAt: number;
-  editedAt: number | null;
-  describedWith: string | null;
-}>;
-
-type IndexedMessage = Readonly<{ row: StoredRow; tokens: readonly string[] }>;
-
-type WriteMode = "overwrite" | "adopt";
-
-type StoredState = Readonly<{ id: string; editedAt: number | null; describedWith: string | null }>;
-
-type SealedMessage = Readonly<{
-  id: string;
-  channelId: string;
-  sealed: string;
-  createdAt: number;
-  editedAt: number | null;
-}>;
-
-type ChannelCount = Readonly<{ channelId: string; messages: number }>;
-
-type CreatedRange = Readonly<{ from: number | null; upTo: number | null }>;
-
-type ReadPage = Readonly<{ before: string | null; limit: number }>;
-
-type Seq = Readonly<{ seq: number }>;
 
 const SEALED_COLUMNS = {
   id: guildMessage.id,
@@ -95,8 +78,26 @@ class GuildStore extends DurableObject {
     }
   }
 
+  #freeSeq(id: string, seq: number): number {
+    const holder = this.#db
+      .select({ id: guildMessage.id })
+      .from(guildMessage)
+      .where(eq(guildMessage.seq, seq))
+      .get();
+    return Option.match(Option.fromUndefinedOr(holder), {
+      onNone: () => seq,
+      onSome: (taken) => {
+        if (taken.id === id) {
+          return seq;
+        }
+        return this.#freeSeq(id, seq + NEXT_SEQ);
+      },
+    });
+  }
+
   #upsert(row: StoredRow, mode: WriteMode): readonly Seq[] {
-    const insert = this.#db.insert(guildMessage).values(row);
+    const seq = this.#freeSeq(row.id, searchKeyOf(row.id));
+    const insert = this.#db.insert(guildMessage).values({ ...row, seq });
     if (mode === "adopt") {
       return insert.onConflictDoNothing().returning({ seq: guildMessage.seq }).all();
     }
@@ -231,19 +232,32 @@ class GuildStore extends DurableObject {
   public candidates(
     tokens: readonly string[],
     channelIds: readonly string[],
-  ): readonly SealedMessage[] {
+    { before, limit }: SearchPage,
+  ): Candidates {
+    const below = Option.map(Option.fromNullOr(before), (seq) => lt(messageSearch.rowid, seq));
+    const query = eq(messageSearch.messageSearch, matchOf(tokens));
     const matched = this.#db
       .select({ seq: messageSearch.rowid })
       .from(messageSearch)
-      .where(eq(messageSearch.messageSearch, matchOf(tokens)));
-    const channels = new Set(channelIds);
-    return this.#db
-      .select(SEALED_COLUMNS)
+      .where(and(query, ...Option.toArray(below)))
+      .orderBy(desc(messageSearch.rowid))
+      .limit(limit);
+    const scanned = this.#db
+      .select({ ...SEALED_COLUMNS, seq: guildMessage.seq })
       .from(guildMessage)
       .where(inArray(guildMessage.seq, matched))
-      .orderBy(desc(guildMessage.createdAt), desc(guildMessage.id))
-      .all()
-      .filter(({ channelId }) => channels.has(channelId));
+      .orderBy(desc(guildMessage.seq))
+      .all();
+    const channels = new Set(channelIds);
+    const next = Option.some(scanned).pipe(
+      Option.filter((rows) => rows.length >= limit),
+      Option.flatMap(Array.last),
+      Option.map(({ seq }) => seq),
+    );
+    return {
+      messages: scanned.filter(({ channelId }) => channels.has(channelId)),
+      next: Option.getOrNull(next),
+    };
   }
 
   #createdAtOf(channelId: string, id: string): Option.Option<number> {
@@ -273,13 +287,3 @@ class GuildStore extends DurableObject {
 }
 
 export { GuildStore };
-export type {
-  ChannelCount,
-  CreatedRange,
-  IndexedMessage,
-  ReadPage,
-  SealedMessage,
-  StoredRow,
-  StoredState,
-  WriteMode,
-};

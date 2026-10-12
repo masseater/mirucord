@@ -56,15 +56,13 @@ const notFullyIngestedOf = (
   );
 
 const FoundIds = Schema.Array(Schema.Struct({ id: Schema.String }));
-const Found = Schema.Struct({ total: Schema.Finite, messages: FoundIds });
+const Found = Schema.Struct({ messages: FoundIds });
 const decodeFound = Schema.decodeUnknownEffect(Found);
 
-const foundOf = (
-  outcome: Effect.Effect<ToolOutcome>,
-): Effect.Effect<Readonly<{ total: number; ids: readonly string[] }>> =>
+const foundOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<readonly string[]> =>
   outcome.pipe(
     Effect.flatMap(({ structured }) => decodeFound(Option.getOrUndefined(structured))),
-    Effect.map(({ total, messages }) => ({ total, ids: messages.map(({ id }) => id) })),
+    Effect.map(({ messages }) => messages.map(({ id }) => id)),
     Effect.orDie,
   );
 
@@ -126,11 +124,11 @@ it.effect("searches a readable channel without its private threads", () =>
         args: { serverId: GUILD_A, query: SAME_WORDS, channelId: A_OPEN },
       }),
     );
-    expect(found).toStrictEqual({ total: 1, ids: [A_OPEN_MESSAGE] });
+    expect(found).toStrictEqual([A_OPEN_MESSAGE]);
   }),
 );
 
-it.effect("counts keyword matches only in the channels the user can read", () =>
+it.effect("finds keyword matches only in the channels the user can read", () =>
   Effect.gen(function* find() {
     const found = yield* Effect.all([
       foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "オフ会" } })),
@@ -138,12 +136,7 @@ it.effect("counts keyword matches only in the channels the user can read", () =>
       foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "週" } })),
       foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "所の" } })),
     ]);
-    expect(found).toStrictEqual([
-      { total: 1, ids: [A_OPEN_MESSAGE] },
-      { total: 0, ids: [] },
-      { total: 1, ids: [A_OPEN_MESSAGE] },
-      { total: 0, ids: [] },
-    ]);
+    expect(found).toStrictEqual([[A_OPEN_MESSAGE], [], [A_OPEN_MESSAGE], []]);
   }),
 );
 
@@ -170,10 +163,7 @@ it.effect("returns no messages from a server whose admin has not consented or wi
       foundOf(callTool({ name: "find_messages", args: { serverId, query: "オフ会" } })),
     );
     expect(read).toStrictEqual([[], []]);
-    expect(counted).toStrictEqual([
-      { total: 0, ids: [] },
-      { total: 0, ids: [] },
-    ]);
+    expect(counted).toStrictEqual([[], []]);
   }),
 );
 

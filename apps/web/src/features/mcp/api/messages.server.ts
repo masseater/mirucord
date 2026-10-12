@@ -1,4 +1,4 @@
-import { DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option } from "effect";
 
 import {
   containsQuery,
@@ -6,7 +6,7 @@ import {
   queryTokens,
   searchableTexts,
 } from "#/entities/guild-message/index.server";
-import type { SealedMessage } from "#/entities/guild-message/index.server";
+import type { CandidateMessage, SealedMessage } from "#/entities/guild-message/index.server";
 import { openGuildKey, openMessage, openSearchKey } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 
@@ -57,33 +57,93 @@ const openStored = (
   );
 };
 
+const SEARCH_PAGES = 10;
+const LAST_PAGE = 1;
+const FIRST_HIT = 0;
+
 type FindRequest = Readonly<{
   scope: GuildScope;
   query: string;
   channelIds: readonly string[];
   limit: number;
-  offset: number;
+  before: Option.Option<number>;
 }>;
 
-type FoundMessages = Readonly<{ total: number; messages: readonly MessageView[] }>;
+type FoundMessages = Readonly<{ messages: readonly MessageView[]; next: Option.Option<number> }>;
 
-const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
-  const { guildId, wrappedKey } = request.scope.guild;
-  return openSearchKey(wrappedKey).pipe(
-    Effect.flatMap((key) => queryTokens({ key, query: request.query })),
-    Effect.flatMap((tokens) =>
-      Effect.promise(() => guildStore(guildId).candidates(tokens, request.channelIds)),
-    ),
-    Effect.flatMap((candidates) => openStored(request.scope, candidates)),
+type Hit = Readonly<{ seq: number; view: MessageView }>;
+
+type Scan = Readonly<{ before: number | null; found: readonly Hit[]; pagesLeft: number }>;
+
+const hitsOf = (
+  request: FindRequest,
+  candidates: readonly CandidateMessage[],
+): Effect.Effect<readonly Hit[]> => {
+  const seqOf = new Map(candidates.map(({ id, seq }) => [id, seq]));
+  return openStored(request.scope, candidates).pipe(
     Effect.map((views) =>
-      views.filter((view) => containsQuery({ texts: searchableTexts(view), query: request.query })),
+      views
+        .filter((view) => containsQuery({ texts: searchableTexts(view), query: request.query }))
+        .flatMap((view) => {
+          const hit = Option.fromUndefinedOr(seqOf.get(view.id)).pipe(
+            Option.map((seq) => ({ seq, view })),
+          );
+          return Option.toArray(hit);
+        }),
     ),
-    Effect.map((found) => ({
-      total: found.length,
-      messages: found.slice(request.offset, request.offset + request.limit),
-    })),
   );
 };
+
+const foundOf = (hits: readonly Hit[], next: Option.Option<number>): FoundMessages => ({
+  messages: hits.map(({ view }) => view),
+  next,
+});
+
+const scanPages = (
+  request: FindRequest,
+  tokens: readonly string[],
+  { before, found, pagesLeft }: Scan,
+): Effect.Effect<FoundMessages> =>
+  Effect.promise(() =>
+    guildStore(request.scope.guild.guildId).candidates(tokens, request.channelIds, {
+      before,
+      limit: request.limit,
+    }),
+  ).pipe(
+    Effect.flatMap(({ messages, next }) =>
+      hitsOf(request, messages).pipe(
+        Effect.flatMap((hits) => {
+          const collected = [...found, ...hits];
+          if (collected.length >= request.limit) {
+            const kept = collected.slice(FIRST_HIT, request.limit);
+            const last = Option.map(Array.last(kept), ({ seq }) => seq);
+            return Effect.succeed(foundOf(kept, last));
+          }
+          const remaining = Option.fromNullOr(next);
+          if (Option.isNone(remaining) || pagesLeft <= LAST_PAGE) {
+            return Effect.succeed(foundOf(collected, remaining));
+          }
+          return scanPages(request, tokens, {
+            before: remaining.value,
+            found: collected,
+            pagesLeft: pagesLeft - LAST_PAGE,
+          });
+        }),
+      ),
+    ),
+  );
+
+const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> =>
+  openSearchKey(request.scope.guild.wrappedKey).pipe(
+    Effect.flatMap((key) => queryTokens({ key, query: request.query })),
+    Effect.flatMap((tokens) =>
+      scanPages(request, tokens, {
+        before: Option.getOrNull(request.before),
+        found: [],
+        pagesLeft: SEARCH_PAGES,
+      }),
+    ),
+  );
 
 type ReadRequest = Readonly<{
   scope: GuildScope;

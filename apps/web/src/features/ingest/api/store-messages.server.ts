@@ -1,7 +1,7 @@
 import { MessageType } from "discord-api-types/v10";
 import { Array, Boolean, DateTime, Effect, Equal, Option, String, pipe } from "effect";
 
-import { guildStore, indexTokens, searchableTexts } from "#/entities/guild-message/index.server";
+import { indexTokens, searchableTexts, writeMessages } from "#/entities/guild-message/index.server";
 import type { IndexedMessage } from "#/entities/guild-message/index.server";
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { sealMessage } from "#/shared/crypto/index.server";
@@ -158,7 +158,7 @@ const toIndexed = (
   );
 };
 
-const writeMessages = (
+const writeChanged = (
   target: StoreTarget,
   changed: readonly DescribedMessage[],
 ): Effect.Effect<void> =>
@@ -169,7 +169,7 @@ const writeMessages = (
       Array.match(messages, {
         onEmpty: () => Effect.void,
         onNonEmpty: (batch) =>
-          Effect.promise(() => guildStore(target.job.guildId).write(batch, "overwrite")),
+          writeMessages({ guildId: target.job.guildId, messages: batch, mode: "overwrite" }),
       }),
     ),
   );
@@ -188,7 +188,7 @@ const storeMessages = ({
         ),
       );
     }),
-    Effect.flatMap((stale) => writeMessages(target, stale)),
+    Effect.flatMap((stale) => writeChanged(target, stale)),
   );
 };
 

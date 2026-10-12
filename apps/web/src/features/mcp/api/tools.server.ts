@@ -4,7 +4,6 @@ import { Effect, Option, Schema } from "effect";
 
 import {
   FindMessagesInput,
-  FIRST_OFFSET,
   ListChannelsInput,
   ReadMessagesInput,
 } from "#/features/mcp/api/tool-input";
@@ -158,7 +157,7 @@ const find =
     query,
     channelId,
     limit,
-    offset,
+    before,
   }: typeof FindMessagesInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: serverId, discordUserId }, (scope) =>
       withChannel(scope, Option.fromUndefinedOr(channelId), (channelIds) =>
@@ -167,12 +166,12 @@ const find =
           query,
           channelIds,
           limit: limitOf(limit),
-          offset: Option.getOrElse(Option.fromUndefinedOr(offset), () => FIRST_OFFSET),
+          before: Option.fromUndefinedOr(before),
         }).pipe(
-          Effect.map(({ total, messages }) =>
+          Effect.map(({ messages, next }) =>
             structuredResult({
-              total,
               messages,
+              next: Option.getOrNull(next),
               notFullyIngested: notFullyIngested(scope, channelIds),
             } satisfies typeof FindMessagesOutput.Type),
           ),
@@ -224,7 +223,7 @@ const LIST_CHANNELS_TOOL = {
 
 const FIND_MESSAGES_TOOL = {
   title: "Find messages",
-  description: `Find messages whose text or image description contains \`query\` exactly, ignoring letter case. Matching is literal, so try other wordings and synonyms yourself when a search finds little. \`total\` counts every match in the searched channels, so it shows how often a topic comes up; \`messages\` holds up to \`limit\` of them, newest first, starting at \`offset\`. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
+  description: `Find messages whose text or image description contains \`query\` exactly, ignoring letter case. Matching is literal, so try other wordings and synonyms yourself when a search finds little. \`messages\` holds up to \`limit\` matches, newest first. When \`next\` is not null, older matches may remain: pass it as \`before\` to continue. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so matches may be missing. ${INGEST_GUIDE}`,
   ...TOOL_BASE,
   outputSchema: FindMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: FindMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),

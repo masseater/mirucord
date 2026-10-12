@@ -62,9 +62,14 @@ const candidateIds = ({
 > =>
   queryTokens({ key: searchKey, query }).pipe(
     Effect.flatMap((tokens) =>
-      Effect.promise(() => guildStore(guildId).candidates(tokens, [channelId])),
+      Effect.promise(() =>
+        guildStore(guildId).candidates(tokens, [channelId], {
+          before: UNBOUNDED,
+          limit: READ_LIMIT,
+        }),
+      ),
     ),
-    Effect.map((rows) => rows.map(({ id }) => id)),
+    Effect.map(({ messages }) => messages.map(({ id }) => id)),
   );
 
 const consentedGuild = ({ guildId, channelId }: GuildChannel): Effect.Effect<void> =>

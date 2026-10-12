@@ -1,7 +1,7 @@
 import { eq, inArray } from "drizzle-orm";
 import { Array, Effect, Option, pipe } from "effect";
 
-import { guildStore, indexTokens, searchableTexts } from "#/entities/guild-message/index.server";
+import { indexTokens, searchableTexts, writeMessages } from "#/entities/guild-message/index.server";
 import type { IndexedMessage, StoredRow } from "#/entities/guild-message/index.server";
 import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
 import { db, guild, message } from "#/shared/db/index.server";
@@ -61,7 +61,7 @@ const adoptGuild = (rows: Array.NonEmptyReadonlyArray<LegacyRow>): Effect.Effect
         Effect.forEach((row) => indexRow(keys, row)),
       ),
     ),
-    Effect.flatMap((indexed) => Effect.promise(() => guildStore(guildId).write(indexed, "adopt"))),
+    Effect.flatMap((indexed) => writeMessages({ guildId, messages: indexed, mode: "adopt" })),
   );
 };
 

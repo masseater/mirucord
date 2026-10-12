@@ -3,7 +3,7 @@ import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 const guildMessage = sqliteTable(
   "message",
   {
-    seq: integer().primaryKey({ autoIncrement: true }),
+    seq: integer().primaryKey(),
     id: text().notNull().unique(),
     channelId: text().notNull(),
     authorId: text().notNull(),

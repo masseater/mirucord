@@ -33,8 +33,8 @@ const PendingChannel = Schema.Struct({ channelId: Schema.String, ingest: Ingest 
 const ListServersOutput = Schema.Struct({ servers: Schema.Array(Server) });
 const ListChannelsOutput = Schema.Struct({ channels: Schema.Array(Channel) });
 const FindMessagesOutput = Schema.Struct({
-  total: Schema.Int,
   messages: Schema.Array(Message),
+  next: Schema.NullOr(Schema.Int),
   notFullyIngested: Schema.Array(PendingChannel),
 });
 const ReadMessagesOutput = Schema.Struct({ ingest: Ingest, messages: Schema.Array(Message) });

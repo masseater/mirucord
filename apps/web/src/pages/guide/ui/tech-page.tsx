@@ -129,7 +129,7 @@ const SECTIONS: readonly GuideSection[] = [
         rows: [
           ["`list_servers`", "使えるサーバーの一覧"],
           ["`list_channels`", "読めるチャンネル、スレッド、フォーラムの投稿の一覧"],
-          ["`find_messages`", "言葉をそのまま含むメッセージを探し、件数も数える"],
+          ["`find_messages`", "言葉をそのまま含むメッセージを新しい順に探す"],
           ["`read_messages`", "チャンネルの最新のメッセージを新しい順に読む"],
         ],
       },
@@ -137,7 +137,7 @@ const SECTIONS: readonly GuideSection[] = [
         type: "steps",
         items: [
           "`find_messages` では、検索の言葉を索引と同じ方法で区切ってハッシュにします。",
-          "サーバーの Durable Object で、そのハッシュをすべて含む行を FTS5 から引き、読めるチャンネルの行だけに絞ります。",
+          "サーバーの Durable Object で、そのハッシュをすべて含む行を FTS5 から新しい順に少しずつ引き、読めるチャンネルの行だけに絞ります。",
           "見つかった行をデータ鍵で復号し、大文字と小文字を区別せずに言葉をそのまま含むかを確かめてから返します。",
         ],
       },

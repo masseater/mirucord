@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 
+import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
 import { ChannelSection } from "#/pages/home/ui/common/channel-section";
 import { MEMBERS } from "#/pages/home/ui/common/members";
 import { memberAuthor, BOT } from "#/pages/home/ui/message/author";
 import { Chatter } from "#/pages/home/ui/message/chatter";
 import type { ChatLine } from "#/pages/home/ui/message/chatter";
-import { Post } from "#/pages/home/ui/message/post";
+import { Message } from "#/pages/home/ui/message/message";
+import { PostHeading } from "#/pages/home/ui/message/post-heading";
 import { SystemMessage } from "#/pages/home/ui/message/system-message";
 
 import { StepList } from "./step-list";
@@ -42,10 +44,12 @@ const CHATTER: readonly ChatLine[] = [
 ];
 
 const Steps = (): ReactNode => (
-  <ChannelSection id="start" name={CHANNEL}>
-    <Post time={TIME} guide={GUIDE} lead={LEAD} tail={TAIL}>
+  <ChannelSection id="start">
+    <ChannelHeader name={CHANNEL} />
+    <Message author={BOT} time={TIME}>
+      <PostHeading guide={GUIDE} lead={LEAD} tail={TAIL} />
       <StepList />
-    </Post>
+    </Message>
     <Chatter lines={CHATTER} />
     <SystemMessage kind="join" actor={BOT} text={JOINED} time={TIME} />
   </ChannelSection>

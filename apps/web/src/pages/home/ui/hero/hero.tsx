@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
 import { ChannelSection } from "#/pages/home/ui/common/channel-section";
 import { TOP_CHANNEL } from "#/pages/home/ui/common/channels";
 
@@ -10,7 +11,8 @@ import { ChatLog } from "./chat-log";
 const DATE = "2024年8月12日";
 
 const Hero = (): ReactNode => (
-  <ChannelSection id={TOP_CHANNEL.id} name={TOP_CHANNEL.name} topic={TOP_CHANNEL.topic}>
+  <ChannelSection id={TOP_CHANNEL.id}>
+    <ChannelHeader name={TOP_CHANNEL.name} topic={TOP_CHANNEL.topic} />
     <ChannelWelcome />
     <div className="text-dc-muted mx-4 mt-6 mb-2 flex items-center gap-2 text-xs font-bold">
       <hr className="border-dc-line grow" />

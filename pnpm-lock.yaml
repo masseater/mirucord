@@ -185,12 +185,6 @@ catalogs:
     '@commitlint/config-conventional':
       specifier: 21.2.3
       version: 21.2.3
-    '@discordeno/gateway':
-      specifier: 21.0.0
-      version: 21.0.0
-    '@discordeno/rest':
-      specifier: 21.0.0
-      version: 21.0.0
     '@effect/platform-node':
       specifier: 4.0.0
       version: 4.0.0
@@ -481,12 +475,9 @@ importers:
 
   apps/gateway:
     dependencies:
-      '@discordeno/gateway':
+      '@effect/platform-node':
         specifier: 'catalog:'
-        version: 21.0.0
-      '@discordeno/rest':
-        specifier: 'catalog:'
-        version: 21.0.0
+        version: 4.0.0(effect@4.0.0)(redis@6.2.1(@opentelemetry/api@1.9.1))
       '@repo/ingest-util-gateway-contract':
         specifier: workspace:*
         version: link:../../libs/ingest/util-gateway-contract
@@ -496,9 +487,9 @@ importers:
       alchemy:
         specifier: catalog:stack
         version: 2.0.0-beta.81(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.2.1(@opentelemetry/api@1.9.1)))(@effect/vitest@4.0.0(effect@4.0.0)(vitest@5.0.3))(@types/node@26.6.4)(@types/react@19.3.0)(drizzle-kit@1.0.0-rc.5-ab785fc)(drizzle-orm@1.0.0-rc.5-ab785fc(@cloudflare/workers-types@5.20261009.1)(@effect/sql-d1@4.0.0(effect@4.0.0))(@effect/sql-sqlite-do@4.0.0(effect@4.0.0))(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.4)(@opentelemetry/api@1.9.1)(@sinclair/typebox@0.34.52)(effect@4.0.0)(valibot@1.2.0(typescript@5.9.3))(zod@4.6.5))(effect@4.0.0)(esbuild@0.28.2)(hono@4.11.4)(jiti@2.7.0)(terser@5.51.2)(typescript@5.9.3)(ws@8.22.0)
-      discord-api-types:
+      dfx:
         specifier: 'catalog:'
-        version: 0.38.56
+        version: 1.1.0(effect@4.0.0)
       effect:
         specifier: 4.0.0
         version: 4.0.0
@@ -1415,18 +1406,6 @@ packages:
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
-
-  '@discordeno/gateway@21.0.0':
-    resolution: {integrity: sha512-ur5Hatd1x86PPI4UnXKghAWat3vS90NvLJcpOSu1B1gYSENRZow8dohZ8Ov58SXWq5nZVuBYDJNCR248pWJvrg==}
-
-  '@discordeno/rest@21.0.0':
-    resolution: {integrity: sha512-ew5ddhUd7Qyv/GSzCy42bEmRv0yr2PspCMsLD/NeMiTLd3+OrVN5pAxBN9z+9JpS/daiiD/PVmvuUAVx/nXTEw==}
-
-  '@discordeno/types@21.0.0':
-    resolution: {integrity: sha512-TUZAEqqlXRNQji+NCaQo8DruzI8rXbBvMaZYsZvN9f03PrdSddzMOy3cjs4eeL6ZMVocmMVRIaVnB713blylCw==}
-
-  '@discordeno/utils@21.0.0':
-    resolution: {integrity: sha512-I7I3Szlk+LkT/CRmJJiLPsjuBUjbuXUCvOzsgWCltkxDMIGmQeNoQtFK7t89V1Gcc4icsrnHVMho1BcaAITijg==}
 
   '@distilled.cloud/acme@1.0.0-rc.13':
     resolution: {integrity: sha512-3rmzH125jQxk0zpCvXGNEybSaqpAolyCX+8LWDDrXf+wIKs67GflkJyQLjOOh0lKARe29hdUZGgqEbbvpp0LNA==}
@@ -6609,9 +6588,6 @@ packages:
   functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
 
-  fzstd@0.1.1:
-    resolution: {integrity: sha512-dkuVSOKKwh3eas5VkJy1AW1vFpet8TA/fGmVA5krThl8YcOVE/8ZIoEA1+U1vEn5ckxxhLirSdY837azmbaNHA==}
-
   gaxios@7.1.3:
     resolution: {integrity: sha512-YGGyuEdVIjqxkxVH1pUTMY/XtmmsApXrCVv5EU25iX6inEPbV+VakJfLealkBtJN69AQmh1eGOdCl9Sm1UP6XQ==}
     engines: {node: '>=18'}
@@ -10788,28 +10764,6 @@ snapshots:
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
-
-  '@discordeno/gateway@21.0.0':
-    dependencies:
-      '@discordeno/types': 21.0.0
-      '@discordeno/utils': 21.0.0
-      ws: 8.22.0
-    optionalDependencies:
-      fzstd: 0.1.1
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@discordeno/rest@21.0.0':
-    dependencies:
-      '@discordeno/types': 21.0.0
-      '@discordeno/utils': 21.0.0
-
-  '@discordeno/types@21.0.0': {}
-
-  '@discordeno/utils@21.0.0':
-    dependencies:
-      '@discordeno/types': 21.0.0
 
   '@distilled.cloud/acme@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
@@ -16128,9 +16082,6 @@ snapshots:
       is-document.all: 1.0.0
 
   functions-have-names@1.2.3: {}
-
-  fzstd@0.1.1:
-    optional: true
 
   gaxios@7.1.3(supports-color@7.2.0):
     dependencies:

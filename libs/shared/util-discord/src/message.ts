@@ -1,4 +1,3 @@
-import { MessageType } from "discord-api-types/v10";
 import { Effect, Schema } from "effect";
 
 const NO_CONTENT = "";
@@ -53,7 +52,7 @@ const MessageSnapshot = Schema.Struct({
 
 const Message = Schema.Struct({
   id: Schema.String,
-  type: Schema.Enum(MessageType),
+  type: Schema.Finite,
   content: MessageText,
   timestamp: Schema.DateTimeUtcFromString,
   edited_timestamp: Schema.NullOr(Schema.DateTimeUtcFromString),

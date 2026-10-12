@@ -53,11 +53,15 @@ const SECTIONS: readonly GuideSection[] = [
         rows: [
           [
             "`apps/web/src/shared/config/site.ts`",
-            "`SITE_HOST` を自分のホスト名にします。サイトの URL、MCP の URL、Gateway の送り先はここから決まります。",
+            "`SITE_HOST` を自分のホスト名にします。サイトの URL と MCP の URL はここから決まります。",
           ],
           [
-            "`apps/web/gateway/service.ts`",
-            "`APP_NAME` を自分用の名前にします。fly.io のアプリ名は全体で一意なので、そのままでは作れません。",
+            "`apps/gateway/src/app/deliver.ts`",
+            "`GATEWAY_ENDPOINT` のホスト名を自分のホスト名にします。Gateway はここへイベントを送ります。",
+          ],
+          [
+            "`apps/gateway/src/app/service.ts`",
+            "fly.io のアプリ名（`name`）を自分用の名前にします。fly.io のアプリ名は全体で一意なので、そのままでは作れません。",
           ],
           [
             "`apps/web/alchemy.ci.ts`",
@@ -104,11 +108,11 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "code",
-        code: "cd apps/web\ncp .env.example .env\nvp exec alchemy deploy --stage prod\nvp exec alchemy deploy alchemy.gateway.ts --stage prod",
+        code: "cd apps/web\ncp .env.example .env\nvp exec alchemy deploy --stage prod\ncd ../gateway\ncp ../web/.env .env\nvp exec alchemy deploy --stage prod",
       },
       {
         type: "text",
-        text: "1 つ目のコマンドで Worker、D1、Durable Objects、Queues、Secrets Store がそろい、D1 のマイグレーションも流れます。2 つ目は fly.io に Gateway を置くコマンドです。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
+        text: "`apps/web` の deploy で Worker、D1、Durable Objects、Queues、Secrets Store がそろい、D1 のマイグレーションも流れます。`apps/gateway` の deploy は fly.io に Gateway を置きます。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
       },
     ],
   },

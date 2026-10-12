@@ -1,4 +1,4 @@
-import { MessageType } from "discord-api-types/v10";
+import { Discord } from "dfx";
 import { Array, Boolean, DateTime, Effect, Equal, Option, String, pipe } from "effect";
 
 import { guildStore, indexTokens, searchableTexts } from "#/entities/guild-message/index.server";
@@ -15,7 +15,10 @@ import type { DiscordAttachment } from "./message-body.server";
 import { findStored } from "./message-rows.server";
 import type { StoredMessage } from "./message-rows.server";
 
-const STORED_TYPES: ReadonlySet<MessageType> = new Set([MessageType.Default, MessageType.Reply]);
+const STORED_TYPES: ReadonlySet<number> = new Set([
+  Discord.MessageType.DEFAULT,
+  Discord.MessageType.REPLY,
+]);
 const DESCRIBED_IMAGES_PER_MESSAGE = 4;
 const WITH_RICH_BODY = `${DESCRIBE_MODEL}+rich`;
 

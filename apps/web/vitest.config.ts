@@ -21,6 +21,10 @@ export default defineConfig({
               queueProducers: { INGEST: { queueName: "ingest" } },
               durableObjects: { GUILD_STORE: { className: "GuildStore", useSQLite: true } },
               ai: { binding: "AI" },
+              ratelimits: {
+                MCP_RATE_LIMIT: { namespace_id: "1001", simple: { limit: 1, period: 60 } },
+                AUTH_RATE_LIMIT: { namespace_id: "1002", simple: { limit: 1, period: 60 } },
+              },
               secretsStoreSecrets: { MASTER_KEY: { store_id: "test", secret_name: "master-key" } },
               bindings: {
                 DISCORD_BOT_TOKEN: `${btoa("900")}.test.token`,

@@ -30,6 +30,11 @@ Vectorize は使わない。問い合わせ費が「検索回数 × 次元数」
 塊への分け方は k-means にし、期間が過ぎたときに Queue の consumer で作る。npm の既存ライブラリを使い、別のサーバーは置かない。
 近い塊を全体の 5% ほど見る設定から始める。本番のデータで、全件と比べた上位 10 件の一致率が 9 割を下回るなら、見る塊を増やす。
 
+## メッセージの DL
+
+取り込んだメッセージをまとめて DL できるようにする。
+管理者だけでなくメンバーも DL できる。管理者が取り込みに同意するとき、メンバーの DL もその同意に含める。
+
 ## 課金
 
 Developer Policy 18 は API Data の販売・商業化を禁じる。課金は機能（プランに含む DL 回数、または DL の権利の都度購入）に付け、データの件数に値段を付けない。
@@ -38,3 +43,8 @@ Developer Policy の Monetization Requirements は、Premium Apps の対応地�
 ## Message Content intent の審査
 
 利用者が 1 万人を超えると Message Content intent は審査制になり、毎年再審査がある。審査で用途とデータの扱いを説明できるようにする。
+
+## ドメイン
+
+本番を masseater.dev のサブドメインのまま続けるか、mirucord 専用のドメインを取るかを決める。
+決まったら、そのドメインで Developer Portal の Privacy Policy URL と Terms of Service URL を設定する。Privacy Policy URL は Developer Terms of Service 5(a) が求めている。

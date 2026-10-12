@@ -1,0 +1,24 @@
+{
+  "name": "gateway",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "alchemy deploy",
+    "destroy": "alchemy destroy",
+    "test": "vp exec vp test run"
+  },
+  "dependencies": {
+    "@discordeno/gateway": "catalog:",
+    "@discordeno/rest": "catalog:",
+    "@repo/ingest-util-gateway-contract": "workspace:*",
+    "@repo/shared-util-discord": "workspace:*",
+    "alchemy": "catalog:stack",
+    "discord-api-types": "catalog:",
+    "effect": "catalog:stack"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "vite-plus": "catalog:stack"
+  }
+}

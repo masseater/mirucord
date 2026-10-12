@@ -1,9 +1,9 @@
+import type { GatewayJob } from "@repo/ingest-util-gateway-contract";
 import { GatewayDispatchEvents, GatewayOpcodes } from "discord-api-types/v10";
 import { Array, Option } from "effect";
 import { expect, it } from "vite-plus/test";
 
 import { mergeJobs, toGatewayJob } from "./gateway-job";
-import type { GatewayJob } from "./ingest-job";
 
 const BURST = 150;
 const FIRST_ID = 1000;

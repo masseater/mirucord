@@ -1,6 +1,6 @@
 packages:
   - apps/*
-  - libs/*
+  - libs/*/*
   - infra/*
   - tools/*
   - .claude
@@ -55,6 +55,7 @@ catalog:
   js-base64: 3.9.4
   type-fest: 5.10.0
   "@yarnpkg/parsers": 3.1.0
+  dfx: 1.1.0
 catalogs:
   stack:
     "@distilled.cloud/cloudflare": 1.0.0-rc.13

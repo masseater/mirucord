@@ -1,3 +1,7 @@
+import { isGuildJob } from "@repo/ingest-util-gateway-contract";
+import type { GatewayJob, GuildJob } from "@repo/ingest-util-gateway-contract";
+import { DiscordMessageSchema } from "@repo/shared-util-discord";
+import type { DiscordMessage } from "@repo/shared-util-discord";
 import { GatewayDispatchEvents, GatewayOpcodes } from "discord-api-types/v10";
 import type {
   GatewayDispatchPayload,
@@ -5,11 +9,6 @@ import type {
   GatewayMessageCreateDispatchData,
 } from "discord-api-types/v10";
 import { Array, Match, Option, Schema } from "effect";
-
-import { DiscordMessageSchema } from "#/shared/discord";
-import type { DiscordMessage } from "#/shared/discord";
-
-import type { GatewayJob } from "./ingest-job";
 
 type GatewayPayload = Readonly<{ op: GatewayOpcodes }>;
 
@@ -150,22 +149,7 @@ const jobOfDispatch = Match.type<GatewayDispatchPayload>().pipe(
 const toGatewayJob = (payload: GatewayPayload): Option.Option<GatewayJob> =>
   Option.liftPredicate(payload, isDispatch).pipe(Option.flatMap(jobOfDispatch));
 
-type GuildJob = Extract<GatewayJob, Readonly<{ kind: "join" | "sync" | "leave" }>>;
-
 type Membership = Extract<GuildJob["kind"], "join" | "leave">;
-
-const isGuildJob = (job: GatewayJob): job is GuildJob =>
-  job.kind === "join" || job.kind === "sync" || job.kind === "leave";
-
-const subjectOf = (job: GatewayJob): Readonly<Record<string, string>> => {
-  if (job.kind === "resync") {
-    return { kind: job.kind };
-  }
-  if (isGuildJob(job)) {
-    return { kind: job.kind, guildId: job.guildId };
-  }
-  return { kind: job.kind, channelId: job.channelId };
-};
 
 const jobKeyOf = (job: GatewayJob): string => {
   if (job.kind === "resync") {
@@ -263,5 +247,5 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
   ];
 };
 
-export { jobKeyOf, mergeJobs, subjectOf, toGatewayJob };
+export { jobKeyOf, mergeJobs, toGatewayJob };
 export type { GatewayPayload };

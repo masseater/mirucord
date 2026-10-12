@@ -19,10 +19,6 @@ type SealedVector = Readonly<{ ordinal: number; channelId: string; id: string; b
 
 type NamedBlock = Readonly<{ file: string; entries: readonly VectorEntry[] }>;
 
-type Opening = Readonly<{ keys: Keys; segment: Segment; stored: readonly StoredVector[] }>;
-
-type Sealing = Readonly<{ keys: Keys; segment: Segment; through: number; grouped: Grouped }>;
-
 const sealedVectors = (
   segment: Segment,
   stored: readonly StoredVector[],
@@ -44,7 +40,13 @@ const sealedVectors = (
   );
 };
 
-const openEntries = ({ keys, segment, stored }: Opening): Effect.Effect<readonly VectorEntry[]> =>
+const openEntries = ({
+  keys,
+  segment,
+  stored,
+}: Readonly<{ keys: Keys; segment: Segment; stored: readonly StoredVector[] }>): Effect.Effect<
+  readonly VectorEntry[]
+> =>
   pipe(
     sealedVectors(segment, stored),
     Effect.forEach(({ ordinal, channelId, id, bytes }) =>
@@ -77,7 +79,12 @@ const sealFiles = ({
   segment,
   through,
   grouped,
-}: Sealing): Effect.Effect<readonly StoredFile[]> =>
+}: Readonly<{
+  keys: Keys;
+  segment: Segment;
+  through: number;
+  grouped: Grouped;
+}>): Effect.Effect<readonly StoredFile[]> =>
   pipe(
     namedBlocks(through, grouped),
     Effect.forEach(({ file, entries }) => {
@@ -90,4 +97,3 @@ const sealFiles = ({
   );
 
 export { openEntries, sealFiles };
-export type { Opening, Sealing };

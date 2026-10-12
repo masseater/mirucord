@@ -24,12 +24,14 @@ type SimilarRequest = Readonly<{
   limit: number;
 }>;
 
-type SimilarView = MessageView & Readonly<{ score: number }>;
-
 type Coverage = Readonly<{ stored: number; embedded: number }>;
 
 type SimilarMessages =
-  | Readonly<{ status: "found"; messages: readonly SimilarView[]; coverage: Coverage }>
+  | Readonly<{
+      status: "found";
+      messages: readonly (MessageView & Readonly<{ score: number }>)[];
+      coverage: Readonly<{ stored: number; embedded: number }>;
+    }>
   | Readonly<{ status: "overBudget" }>;
 
 const textEncoder = new TextEncoder();
@@ -149,4 +151,4 @@ const findSimilar = (request: SimilarRequest): Effect.Effect<SimilarMessages> =>
 };
 
 export { findSimilar };
-export type { Coverage, SimilarMessages, SimilarRequest, SimilarView };
+export type { SimilarMessages, SimilarRequest };

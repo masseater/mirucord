@@ -89,8 +89,10 @@ describe("clusters", () => {
   });
 
   it("uses about the square root of the count", () => {
-    expect(clusterCountFor(FIRST)).toBe(ONE);
-    expect(clusterCountFor(SMALL)).toBe(SMALL_CLUSTERS);
-    expect(clusterCountFor(HUGE)).toBe(MAX_CLUSTERS);
+    expect([FIRST, SMALL, HUGE].map((vectors) => clusterCountFor(vectors))).toStrictEqual([
+      ONE,
+      SMALL_CLUSTERS,
+      MAX_CLUSTERS,
+    ]);
   });
 });

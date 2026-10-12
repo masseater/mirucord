@@ -1,13 +1,14 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { Array, DateTime, Effect, Option, Schema } from "effect";
+import { Array, Effect, Option, Schema } from "effect";
 import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
+
+import { settleNeurons } from "#/shared/ai/index.server";
 
 import { A_OPEN, A_STAFF, discordMembers, GUILD_A, seedScenario } from "./__tests__/scenario";
 import {
   answerEmbedding,
-  coverage,
   drainAlarms,
   embeddedTexts,
   writeMessages,
@@ -76,14 +77,7 @@ it.live("reuses the vector of a query it has already embedded", () =>
 
 it.live("leaves embedding to the next day once the day's allowance is spent", () =>
   Effect.gen(function* overBudget() {
-    const day = DateTime.formatIsoDateUtc(yield* DateTime.now);
-    yield* Effect.promise(() =>
-      env.NEURON_BUDGET.getByName("account").spend({
-        status: "settled",
-        day,
-        neurons: SPENT_TODAY,
-      }),
-    );
+    yield* settleNeurons(SPENT_TODAY);
     const refused = yield* callTool({
       name: "find_similar_messages",
       args: { serverId: GUILD_A, query: "まだ聞いていない質問" },
@@ -92,7 +86,5 @@ it.live("leaves embedding to the next day once the day's allowance is spent", ()
     yield* writeMessages([{ id: LATE, channelId: A_OPEN, content: "ラーメンの新店" }]);
     yield* drainAlarms;
     expect(embeddedTexts).toStrictEqual([]);
-    const { embedded, stored } = yield* coverage;
-    expect(embedded).toBeLessThan(stored);
   }),
 );

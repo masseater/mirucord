@@ -135,7 +135,9 @@ const embedBatch = Effect.fn("vectors.embedBatch")(function* embedBatch(
   return true;
 });
 
-const embedPending = Effect.fn("vectors.embedPending")(function* embedPending(batch: Batch) {
+const embedPending = Effect.fn("vectors.embedPending")(function* embedPending(
+  batch: Readonly<{ db: DrizzleSqliteDODatabase; keys: Keys }>,
+) {
   for (let run = NO_VECTOR; run < BATCHES_PER_RUN; run += NEXT) {
     const rows = pendingRows(batch.db, EMBED_BATCH);
     if (!Array.isReadonlyArrayNonEmpty(rows)) {
@@ -149,4 +151,4 @@ const embedPending = Effect.fn("vectors.embedPending")(function* embedPending(ba
 });
 
 export { embedPending, vectorContext };
-export type { Batch, EmbedOutcome, Keys };
+export type { EmbedOutcome, Keys };

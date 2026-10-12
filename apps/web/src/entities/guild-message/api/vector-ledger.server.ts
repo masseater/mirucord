@@ -16,8 +16,6 @@ type StoredVector = Readonly<{ id: string; channelId: string; vector: Uint8Array
 
 type Coverage = Readonly<{ stored: number; embedded: number }>;
 
-type Published = Readonly<{ segment: Segment; through: number; clusters: number }>;
-
 const hasRow = (db: DrizzleSqliteDODatabase, condition: SQL): boolean =>
   Option.isSome(
     Option.fromUndefinedOr(
@@ -81,7 +79,7 @@ const storedVectors = (
 
 const markPublished = (
   db: DrizzleSqliteDODatabase,
-  { segment, through, clusters }: Published,
+  { segment, through, clusters }: Readonly<{ segment: Segment; through: number; clusters: number }>,
 ): void => {
   db.update(searchSegment)
     .set({ vectorThrough: through, vectorClusters: clusters })
@@ -105,7 +103,9 @@ type VectorLedger = Readonly<{
   latestVectorAt: () => number;
   staleSegments: () => readonly Segment[];
   storedVectors: (ids: readonly string[]) => readonly StoredVector[];
-  markPublished: (published: Published) => void;
+  markPublished: (
+    published: Readonly<{ segment: Segment; through: number; clusters: number }>,
+  ) => void;
 }>;
 
 const vectorLedger = (db: DrizzleSqliteDODatabase): VectorLedger => ({
@@ -113,10 +113,10 @@ const vectorLedger = (db: DrizzleSqliteDODatabase): VectorLedger => ({
   latestVectorAt: (): number => latestVectorAt(db),
   staleSegments: (): readonly Segment[] => staleSegments(db),
   storedVectors: (ids: readonly string[]): readonly StoredVector[] => storedVectors(db, ids),
-  markPublished: (published: Published): void => {
+  markPublished: (published): void => {
     markPublished(db, published);
   },
 });
 
 export { vectorLedger };
-export type { Coverage, Published, StoredVector, VectorLedger };
+export type { Coverage, StoredVector, VectorLedger };

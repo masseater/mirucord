@@ -12,7 +12,7 @@ type Spending =
   | Readonly<{ status: "settled"; day: string; neurons: number }>;
 
 class NeuronBudget extends DurableObject {
-  public spentOn(day: string): number {
+  private spentOn(day: string): number {
     return decodeSpent(this.ctx.storage.kv.get(SPENT_KEY)).pipe(
       Option.filter((spent) => spent.day === day),
       Option.match({ onNone: () => NOTHING_SPENT, onSome: ({ neurons }) => neurons }),

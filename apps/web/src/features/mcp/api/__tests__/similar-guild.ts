@@ -96,6 +96,4 @@ const drainAlarms = Effect.promise(() => runDurableObjectAlarm(guildStore(GUILD_
   Effect.asVoid,
 );
 
-const coverage = Effect.promise(() => guildStore(GUILD_A).vectorCoverage());
-
-export { answerEmbedding, coverage, drainAlarms, embeddedTexts, writeMessages };
+export { answerEmbedding, drainAlarms, embeddedTexts, writeMessages };

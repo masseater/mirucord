@@ -76,16 +76,14 @@ const keysOfVectors = (
   ...Array.filter([centroidsKey({ guildId, segment, through })], () => clusters > SINGLE_CLUSTER),
 ];
 
-type VectorColumns = Readonly<{
-  name: string;
-  vectorThrough: number | null;
-  vectorClusters: number | null;
-}>;
-
 const vectorsOfRow = ({
   vectorThrough,
   vectorClusters,
-}: VectorColumns): Option.Option<SegmentVectors> =>
+}: Readonly<{
+  name: string;
+  vectorThrough: number | null;
+  vectorClusters: number | null;
+}>): Option.Option<SegmentVectors> =>
   Option.all({
     through: Option.fromNullOr(vectorThrough),
     clusters: Option.fromNullOr(vectorClusters),
@@ -94,7 +92,14 @@ const vectorsOfRow = ({
 const vectorKeys = ({
   guildId,
   row,
-}: Readonly<{ guildId: string; row: VectorColumns }>): readonly string[] =>
+}: Readonly<{
+  guildId: string;
+  row: Readonly<{
+    name: string;
+    vectorThrough: number | null;
+    vectorClusters: number | null;
+  }>;
+}>): readonly string[] =>
   Option.match(vectorsOfRow(row), {
     onNone: () => [],
     onSome: (vectors) => keysOfVectors(guildId, row.name, vectors),
@@ -269,7 +274,6 @@ export {
   writeHead,
 };
 export type {
-  VectorColumns,
   Bucketed,
   FileRead,
   SearchHead,

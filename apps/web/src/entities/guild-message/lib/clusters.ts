@@ -47,8 +47,6 @@ const nearestCentroids = ({
     ({ row }) => row,
   );
 
-type Grouping = Readonly<{ flat: boolean; entries: readonly VectorEntry[] }>;
-
 type Grouped = Readonly<{
   centroids: Option.Option<readonly VectorEntry[]>;
   clusters: readonly (readonly VectorEntry[])[];
@@ -62,7 +60,10 @@ const sampleOf = (entries: readonly VectorEntry[]): readonly Quantized[] => {
     .map(({ vector }) => vector);
 };
 
-const groupEntries = ({ flat, entries }: Grouping): Grouped => {
+const groupEntries = ({
+  flat,
+  entries,
+}: Readonly<{ flat: boolean; entries: readonly VectorEntry[] }>): Grouped => {
   if (flat || entries.length <= FLAT_LIMIT) {
     return { centroids: Option.none(), clusters: [entries] };
   }
@@ -89,4 +90,4 @@ const groupEntries = ({ flat, entries }: Grouping): Grouped => {
 };
 
 export { centroidBlockOf, clusterCountFor, groupEntries, nearestCentroids, trainCentroids };
-export type { Grouped, Grouping };
+export type { Grouped };

@@ -21,8 +21,6 @@ type Embedded =
   | Readonly<{ status: "embedded"; vectors: readonly Quantized[] }>
   | Readonly<{ status: "over-budget" }>;
 
-type EmbedRequest = Readonly<{ priority: Priority; texts: readonly string[] }>;
-
 const clip = (text: string): string => text.slice(CLIP_START, MAX_CHARS);
 
 const estimateNeurons = (texts: readonly string[]): number =>
@@ -77,11 +75,17 @@ const embedWithin = Effect.fn("embedTexts")(function* embedWithin(
   } satisfies Embedded;
 });
 
-const embedTexts = ({ priority, texts }: EmbedRequest): Effect.Effect<Embedded, EmbeddingError> =>
+const embedTexts = ({
+  priority,
+  texts,
+}: Readonly<{ priority: Priority; texts: readonly string[] }>): Effect.Effect<
+  Embedded,
+  EmbeddingError
+> =>
   Array.match(texts, {
     onEmpty: () => Effect.succeed({ status: "embedded", vectors: [] }),
     onNonEmpty: (nonEmpty) => embedWithin(priority, nonEmpty),
   });
 
 export { embedTexts };
-export type { Embedded, EmbeddingError, EmbedRequest };
+export type { Embedded, EmbeddingError };

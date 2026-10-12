@@ -37,8 +37,8 @@ const scoped = (request: ToolRequest, withinScope: WithinScope): Effect.Effect<C
   );
 
 const withScope =
-  (request: ToolRequest) =>
-  (withinScope: WithinScope): Promise<CallToolResult> =>
+  (request: Readonly<{ guildId: string; discordUserId: string }>) =>
+  (withinScope: (scope: GuildScope) => Effect.Effect<CallToolResult>): Promise<CallToolResult> =>
     Effect.runPromise(scoped(request, withinScope));
 
 const readableChannels = (scope: GuildScope): readonly StoredChannel[] =>
@@ -115,4 +115,3 @@ export {
   withChannel,
   withScope,
 };
-export type { ToolRequest, WithinScope };

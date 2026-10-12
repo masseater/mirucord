@@ -26,9 +26,10 @@ type SimilarRequest = Readonly<{
 
 type SimilarEntry = SealedEntry & Readonly<{ score: number }>;
 
-type SimilarStats = Readonly<{ segments: number; files: number; vectors: number }>;
-
-type SimilarResult = Readonly<{ entries: readonly SimilarEntry[]; stats: SimilarStats }>;
+type SimilarResult = Readonly<{
+  entries: readonly SimilarEntry[];
+  stats: Readonly<{ segments: number; files: number; vectors: number }>;
+}>;
 
 type ScoredHit = Readonly<{ segment: string; ordinal: number; score: number }>;
 
@@ -187,4 +188,4 @@ const searchSimilar = (request: SimilarRequest): Effect.Effect<SimilarResult> =>
   );
 
 export { searchSimilar };
-export type { SimilarEntry, SimilarRequest, SimilarResult, SimilarStats };
+export type { SimilarEntry, SimilarRequest, SimilarResult };

@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { DateTime, Effect } from "effect";
 
-import type { NeuronBudget } from "./neuron-budget.server";
+import type { Spending } from "./neuron-budget.server";
 
 const BUDGET_NAME = "account";
 const QUERY_LIMIT = 9000;
@@ -17,7 +17,8 @@ const LIMITS: Readonly<Record<Priority, number>> = {
   background: BACKGROUND_LIMIT,
 };
 
-const budget = (): DurableObjectStub<NeuronBudget> => env.NEURON_BUDGET.getByName(BUDGET_NAME);
+const spendOn = (spending: Spending): Effect.Effect<boolean> =>
+  Effect.promise(() => env.NEURON_BUDGET.getByName(BUDGET_NAME).spend(spending));
 
 const today = DateTime.now.pipe(Effect.map(DateTime.formatIsoDateUtc));
 
@@ -26,16 +27,14 @@ const spendNeurons = Effect.fn("spendNeurons")(function* spendNeurons(
   neurons: number,
 ) {
   const day = yield* today;
-  const granted = yield* Effect.promise(() =>
-    budget().spend({ status: "capped", day, neurons, limit: LIMITS[priority] }),
-  );
+  const granted = yield* spendOn({ status: "capped", day, neurons, limit: LIMITS[priority] });
   yield* Effect.annotateCurrentSpan({ priority, neurons, granted });
   return granted;
 });
 
 const settleNeurons = Effect.fn("settleNeurons")(function* settleNeurons(neurons: number) {
   const day = yield* today;
-  yield* Effect.promise(() => budget().spend({ status: "settled", day, neurons }));
+  yield* spendOn({ status: "settled", day, neurons });
 });
 
 const nextBudgetDay = DateTime.now.pipe(

@@ -38,6 +38,11 @@ release. Add a tool name to select part of the graph. For example, run
 
 <!--VITE PLUS END-->
 
+## Cloudflare のプラン
+
+本番の Cloudflare は Workers Paid（月 5 ドル）を契約している前提で考える。2026-10-11 に Free から切り替えた。
+Paid に含まれる D1・Queues・Workers AI・Durable Objects などの無料枠は使ってよい。Free プランの日次上限は関係ないので、Free の話を持ち出さない。
+
 ## 環境変数と認証
 
 - 環境変数は必要最小限にする。環境変数が一つ増えるだけで、どの環境で何を設定するかという考慮事項が爆発的に増えるためである。

@@ -45,12 +45,13 @@ lint・fmt・checkだけは、Vite+の仕様によりルートの単一設定と
 アプリのsrc/直下には、FSDのレイヤーだけを置く。
 FSDはコロケーションが本質である。使われる場所の近くに置き、再利用されるまで切り出さない。
 サービス名「mirucord」とキャラクター名「ミル」は、`#/shared/config` の `SERVICE_NAME` と `MASCOT_NAME` から参照し、直書きしない。ESLint が落とす。
-ドメイン、リポジトリ名、Cloudflare のリソース名、鍵の導出に使う文字列は、変えると壊れる識別子なので定数に寄せない。
+ドメイン、リポジトリ名、鍵の導出に使う文字列は、変えると壊れる識別子なので定数に寄せない。Cloudflare のリソース名は `APP_NAME` から作る。
 
 ## Alchemy
 
 Alchemy のリソース定義に足りない設定があるときは、alchemy にパッチを当てず、公式の拡張手段であるカスタムリソースを定義する。
-Cloudflare のリソースには `name` を明示し、`mirucord-` で始める。prod 以外のステージでは末尾に `-<stage>` を付ける。
+アプリ名は `apps/web/app-name.ts` の `APP_NAME` だけで定義する。Cloudflare のリソースには `name` を明示し、`APP_NAME-` で始める。prod 以外のステージでは末尾に `-<stage>` を付ける。
+`APP_NAME` を変えるとリソース名が変わり、リソースは作り直される。`APP_NAME` は `SERVICE_NAME` と別に持つ。
 
 ## パッケージマネージャー
 

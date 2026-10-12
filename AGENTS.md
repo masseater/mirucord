@@ -76,6 +76,12 @@ Paid に含まれる D1・Queues・Workers AI・Durable Objects などの無料�
 - 環境変数にしてよいのは、設定や認証に限らず、本当に環境ごとに変わる値だけである。環境で変わらない値はコードや Alchemy の設定に書き、ツールにフラグがあればフラグを使う。
 - Cloudflare などのクラウドの認証は Alchemy のプロファイルで管理する。
 
+## ライブラリの型
+
+- ライブラリが型を提供する値は、`Schema.decodeUnknown*` で受けて型を捨てない。ライブラリの型のまま受けて `Schema.decode*` に渡す。入力の型が Schema の Encoded と食い違えばコンパイルが落ちる。
+- ライブラリが export する型・スキーマ・enum・定数を自前で書き写さない。一部だけ使うときも `Pick` などでライブラリの型から作る。
+- 入力が `unknown` でなければ、`@effect/tsgo` の `prefer-typed-schema-decoder`（error）が `decode*` を求める。
+
 ## レビューとCI
 
 - PRのレビューは行わない。PRは作ったらすぐマージする。

@@ -62,7 +62,7 @@ const rememberVector = (url: string, vector: Quantized): Effect.Effect<void> => 
 };
 
 const embedQuery = (query: string): Effect.Effect<Option.Option<Quantized>> =>
-  embedTexts({ priority: "live", texts: [query] }).pipe(
+  embedTexts({ priority: "query", texts: [query] }).pipe(
     Effect.map((embedded) => {
       if (embedded.status === "over-budget") {
         return Option.none();

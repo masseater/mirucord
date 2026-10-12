@@ -4,13 +4,15 @@ import { DateTime, Effect } from "effect";
 import type { NeuronBudget } from "./neuron-budget.server";
 
 const BUDGET_NAME = "account";
-const LIVE_LIMIT = 9000;
+const QUERY_LIMIT = 9000;
+const LIVE_LIMIT = 8000;
 const BACKGROUND_LIMIT = 7000;
 const ONE_DAY = 1;
 
-type Priority = "live" | "background";
+type Priority = "query" | "live" | "background";
 
 const LIMITS: Readonly<Record<Priority, number>> = {
+  query: QUERY_LIMIT,
   live: LIVE_LIMIT,
   background: BACKGROUND_LIMIT,
 };

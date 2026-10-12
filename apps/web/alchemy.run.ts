@@ -4,6 +4,7 @@ import {
   Credentials,
   D1,
   Queues,
+  R2,
   SecretsStore,
   Website,
   Workers,
@@ -245,11 +246,33 @@ const web = Effect.gen(function* web() {
   return site;
 });
 
+const r2Bench = Effect.gen(function* r2Bench() {
+  const name = yield* mirucordName("r2bench");
+  const APAC = yield* R2.Bucket("R2BenchApac", {
+    name: `${name}-apac`,
+    locationHint: "apac",
+    forceDestroy: true,
+  });
+  const ENAM = yield* R2.Bucket("R2BenchEnam", {
+    name: `${name}-enam`,
+    locationHint: "enam",
+    forceDestroy: true,
+  });
+  return yield* Workers.Worker("R2Bench", {
+    name,
+    main: "r2bench/worker.ts",
+    domain: `${name}.masseater.dev`,
+    env: { R2BENCH_APAC: APAC, R2BENCH_ENAM: ENAM },
+    observability: { enabled: true },
+  });
+});
+
 const stackProviders = workerIssuesProvider.pipe(Layer.provideMerge(providers()));
 
 type WebEnv = InferEnv<typeof web>;
+type R2BenchEnv = InferEnv<typeof r2Bench>;
 
-export type { WebEnv };
+export type { R2BenchEnv, WebEnv };
 export default Stack(
   "web",
   {
@@ -259,6 +282,7 @@ export default Stack(
   Effect.gen(function* stack() {
     const { url, workerName, hash } = yield* web;
     yield* WorkerIssues("WorkerIssues", { workerName, deployment: hash });
-    return { url };
+    const bench = yield* r2Bench;
+    return { url, r2BenchUrl: bench.url };
   }),
 );

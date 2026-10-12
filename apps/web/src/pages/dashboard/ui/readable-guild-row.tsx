@@ -9,7 +9,7 @@ const ReadableGuildRow = ({ guild }: Readonly<{ guild: ReadableGuild }>): ReactN
   <li className="border-dc-line flex flex-col gap-3 rounded-2xl border px-4 py-3">
     <div className="flex items-center gap-4">
       <GuildIcon guildId={guild.id} name={guild.name} icon={guild.icon} />
-      <span className="font-bold">{guild.name}</span>
+      <span className="min-w-0 font-bold break-words">{guild.name}</span>
     </div>
     <EraseOwnMessages guildId={guild.id} />
   </li>

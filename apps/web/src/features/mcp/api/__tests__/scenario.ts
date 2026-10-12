@@ -1,4 +1,5 @@
-import { ChannelType, OverwriteType, PermissionFlagsBits } from "discord-api-types/v10";
+import { OverwriteTypes } from "@discordeno/types";
+import { ChannelType, PermissionFlagsBits } from "discord-api-types/v10";
 import { Array, DateTime, Effect, Option, Record } from "effect";
 import { http, HttpResponse } from "msw";
 
@@ -49,8 +50,8 @@ type ScenarioGuild = Readonly<{
 }>;
 
 const STAFF_ONLY: readonly Overwrite[] = [
-  { id: GUILD_A, type: OverwriteType.Role, allow: NOTHING, deny: VIEW },
-  { id: STAFF_ROLE, type: OverwriteType.Role, allow: VIEW, deny: NOTHING },
+  { id: GUILD_A, type: OverwriteTypes.Role, allow: NOTHING, deny: VIEW },
+  { id: STAFF_ROLE, type: OverwriteTypes.Role, allow: VIEW, deny: NOTHING },
 ];
 
 const topLevel = (

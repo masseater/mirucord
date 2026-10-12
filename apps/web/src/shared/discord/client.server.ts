@@ -20,14 +20,18 @@ type DiscordRequest = Readonly<{
 }>;
 
 const callDiscord =
-  <Body extends Schema.Top>(schema: Body) =>
+  <Raw>() =>
+  <Body extends Schema.Top>(
+    schema: Body,
+    ..._rawMustDecode: [Raw] extends [Body["Encoded"]] ? readonly [] : readonly [never]
+  ) =>
   ({
     method,
     route,
     options,
   }: DiscordRequest): Effect.Effect<Body["Type"], DiscordRequestError, Body["DecodingServices"]> =>
     Effect.tryPromise({
-      try: () => rest.makeRequest(method, route, { ...options, runThroughQueue: false }),
+      try: () => rest.makeRequest<Raw>(method, route, { ...options, runThroughQueue: false }),
       catch: (cause) =>
         new DiscordRequestError({
           status: decodeRequestFailure(cause).pipe(Option.map((failure) => failure.cause.status)),

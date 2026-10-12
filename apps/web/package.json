@@ -25,6 +25,7 @@
     "@better-auth/oauth-provider": "catalog:",
     "@discordeno/gateway": "catalog:",
     "@discordeno/rest": "catalog:",
+    "@discordeno/types": "catalog:",
     "@effect/atom-react": "catalog:stack",
     "@modelcontextprotocol/server": "catalog:",
     "@openfeature/core": "1.12.0",

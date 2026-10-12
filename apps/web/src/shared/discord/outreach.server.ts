@@ -1,3 +1,4 @@
+import type { DiscordAuditLog, DiscordChannel } from "@discordeno/types";
 import { AuditLogEvent, Routes } from "discord-api-types/v10";
 import { Array, Effect, Option, Schema } from "effect";
 
@@ -23,7 +24,7 @@ const postWebhookMessage = ({
     WEBHOOK_PATH_PARTS,
   );
   return Effect.asVoid(
-    callDiscord(Schema.Unknown)({
+    callDiscord<unknown>()(Schema.Unknown)({
       method: "POST",
       route: Routes.webhook(webhookId, token),
       options: { body: { content, allowed_mentions: { parse: [] } }, unauthorized: true },
@@ -36,7 +37,7 @@ const postChannelMessage = ({
   content,
 }: Readonly<{ channelId: string; content: string }>): Effect.Effect<void, DiscordRequestError> =>
   Effect.asVoid(
-    callDiscord(Schema.Unknown)({
+    callDiscord<unknown>()(Schema.Unknown)({
       method: "POST",
       route: Routes.channelMessages(channelId),
       options: {
@@ -47,7 +48,7 @@ const postChannelMessage = ({
   );
 
 const openDirectChannel = (userId: string): Effect.Effect<string, DiscordRequestError> =>
-  callDiscord(Channel)({
+  callDiscord<DiscordChannel>()(Channel)({
     method: "POST",
     route: Routes.userChannels(),
     options: {
@@ -72,7 +73,7 @@ const findBotAdder = ({
   DiscordRequestError
 > => {
   const query = new URLSearchParams({ action_type: String(AuditLogEvent.BotAdd) });
-  return callDiscord(AuditLog)({
+  return callDiscord<DiscordAuditLog>()(AuditLog)({
     method: "GET",
     route: `${Routes.guildAuditLog(guildId)}?${query.toString()}`,
   }).pipe(

@@ -82,7 +82,9 @@ const indexedOf = ({ id, channelId, content }: SimilarSeed): Effect.Effect<Index
     };
   });
 
-const writeMessages = (seeds: readonly SimilarSeed[]): Effect.Effect<void> =>
+const writeMessages = (
+  seeds: readonly Readonly<{ id: string; channelId: string; content: string }>[],
+): Effect.Effect<void> =>
   pipe(
     seeds,
     Effect.forEach((seed) => indexedOf(seed)),

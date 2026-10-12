@@ -7,18 +7,14 @@ import {
   guildSettings,
   listManagedGuilds,
   purgePausedChannel,
-  refreshGuildList,
-  refreshManagedGuild,
   revokeConsent,
 } from "#/features/ingest/index.server";
 import type {
   ConsentResult,
   ForumPostsResult,
-  GuildRefreshResult,
   GuildSettings,
   ManagedGuild,
   PurgeResult,
-  RefreshResult,
   RevokeResult,
 } from "#/features/ingest/index.server";
 import { readableGuilds } from "#/features/mcp/index.server";
@@ -159,13 +155,6 @@ const purgeFor = (input: ChannelTarget): Effect.Effect<PurgeResult | SignedOut> 
 const loadForumPosts = (input: ChannelTarget): Effect.Effect<ForumPostsResult | SignedOut> =>
   withSignedInUser((userId) => forumPosts({ ...input, userId }).pipe(Effect.orDie));
 
-const refreshGuilds: Effect.Effect<RefreshResult | SignedOut> = withSignedInUser(() =>
-  refreshGuildList.pipe(Effect.orDie),
-);
-
-const refreshGuild = (guildId: string): Effect.Effect<GuildRefreshResult | SignedOut> =>
-  withSignedInUser((userId) => refreshManagedGuild({ guildId, userId }).pipe(Effect.orDie));
-
 export {
   consentTo,
   disconnectFor,
@@ -174,8 +163,6 @@ export {
   loadForumPosts,
   loadGuildPage,
   purgeFor,
-  refreshGuild,
-  refreshGuilds,
   revokeFor,
 };
 export type {

@@ -1,4 +1,3 @@
-import { DiscordSnowflake } from "@sapphire/snowflake";
 import { eq, inArray } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
 
@@ -41,25 +40,6 @@ const channelMessagesSince = ({
   return Effect.promise(() => guildStore(guildId).idsBetween(channelId, { from, upTo: NO_BOUND }));
 };
 
-const timeOf = (id: string): number => DiscordSnowflake.timestampFrom(id);
-
-const channelMessagesBelow = ({
-  guildId,
-  channelId,
-  below,
-  from,
-}: ChannelRef & Readonly<{ below: string; from: Option.Option<string> }>): Effect.Effect<
-  readonly string[]
-> => {
-  const isWithin = (id: string): boolean =>
-    BigInt(id) < BigInt(below) &&
-    Option.match(from, { onNone: () => true, onSome: (oldest) => BigInt(id) >= BigInt(oldest) });
-  const range = { from: Option.getOrNull(from.pipe(Option.map(timeOf))), upTo: timeOf(below) };
-  return Effect.promise(() => guildStore(guildId).idsBetween(channelId, range)).pipe(
-    Effect.map((ids) => ids.filter((id) => isWithin(id))),
-  );
-};
-
 const storedInChannel = ({
   guildId,
   channelId,
@@ -92,7 +72,6 @@ const deleteMessages = ({ guildId, ids }: GuildMessages): Effect.Effect<void> =>
   );
 
 export {
-  channelMessagesBelow,
   channelMessagesSince,
   deleteMessages,
   findStored,

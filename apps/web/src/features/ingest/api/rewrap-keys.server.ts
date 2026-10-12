@@ -1,14 +1,8 @@
 import { eq } from "drizzle-orm";
-import { Array, Boolean, DateTime, Effect, Option, pipe } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
-import { isPollDue } from "#/features/ingest/model/sync-schedule";
 import { isRotating, rewrapGuildKey } from "#/shared/crypto/index.server";
 import { db, guild } from "#/shared/db/index.server";
-import type { DiscordRequestError } from "#/shared/discord/index.server";
-
-import { refreshIngest } from "./consent-scope.server";
-import { whenIngestEnabled } from "./ingest-flag.server";
-import { syncMembership } from "./sync-guilds.server";
 
 const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
   db.select({ id: guild.id, wrappedKey: guild.wrappedKey }).from(guild),
@@ -38,20 +32,13 @@ const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
   ),
 );
 
-const pollGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled(
-  Effect.gen(function* pollGuilds() {
-    const rotating = yield* isRotating;
+const rewrapWhileRotating: Effect.Effect<void> = isRotating.pipe(
+  Effect.flatMap((rotating) => {
     if (rotating) {
-      yield* rewrapGuildKeys;
+      return rewrapGuildKeys;
     }
-    const now = yield* DateTime.now;
-    yield* syncMembership((guildId) =>
-      Boolean.match(isPollDue({ guildId, now }), {
-        onTrue: () => refreshIngest(guildId),
-        onFalse: () => Effect.void,
-      }),
-    );
+    return Effect.void;
   }),
 );
 
-export { pollGuilds };
+export { rewrapWhileRotating };

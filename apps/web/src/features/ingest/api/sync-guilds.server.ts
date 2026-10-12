@@ -103,30 +103,6 @@ const eachGuild = (
     { discard: true },
   );
 
-const refreshGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
-  getGuild(guildId).pipe(Effect.tap(updateGuild), Effect.flatMap(replaceRoles));
-
-const syncMembership = (
-  refreshKnown: (guildId: string) => Effect.Effect<void, DiscordRequestError>,
-): Effect.Effect<void, DiscordRequestError> =>
-  Effect.gen(function* syncAdmitted() {
-    const { botUserId, fresh, known } = yield* reconcileMembership;
-    yield* eachGuild(fresh, (id) => syncGuild(botUserId, id));
-    yield* eachGuild(known, refreshKnown);
-  });
-
-const syncGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled(
-  reconcileMembership.pipe(
-    Effect.flatMap(({ botUserId, admitted }) =>
-      eachGuild(admitted, (id) => syncGuild(botUserId, id)),
-    ),
-  ),
-);
-
-const syncGuildList: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled(
-  syncMembership(refreshGuild),
-);
-
 const syncOneGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   whenIngestEnabled(
     Effect.gen(function* syncNamedGuild() {
@@ -167,4 +143,4 @@ const syncKnownGuild = (guildId: string): Effect.Effect<void, DiscordRequestErro
     }),
   );
 
-export { syncGuildList, syncGuilds, syncJoinedGuild, syncKnownGuild, syncMembership, syncOneGuild };
+export { syncJoinedGuild, syncKnownGuild, syncOneGuild };

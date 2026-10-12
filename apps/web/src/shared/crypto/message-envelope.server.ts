@@ -110,5 +110,5 @@ const openMessage: {
   (sealed: string, key: CryptoKey, address: MessageAddress): Effect.Effect<MessageBody>;
 } = Function.dual(DATA_FIRST_ARITY, openMessageDataFirst);
 
-export { AttachmentSchema, EmbedSchema, PollSchema, openMessage, sealMessage };
+export { openMessage, sealMessage };
 export type { MessageAddress, MessageBody };

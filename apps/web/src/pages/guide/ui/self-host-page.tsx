@@ -7,7 +7,7 @@ import { GuideDocument } from "./guide-document";
 
 const TITLE = "セルフホスト";
 const TIP = `自分のおうちでも${MASCOT_NAME}は働けるよ`;
-const LEAD = `${SERVICE_NAME} はコードとインフラの定義をすべて公開しています。運営を信用しなくても、自分の Cloudflare アカウントで同じものを動かせます。ここでは例として、ホスト名を \`${SERVICE_NAME}.example.com\` として書きます。`;
+const LEAD = `${SERVICE_NAME} はコードとインフラの定義をすべて公開しています。運営を信用しなくても、自分の Cloudflare アカウントで同じものを動かせます。このページでは、ホスト名を例として \`${SERVICE_NAME}.example.com\` にしています。`;
 
 const SECTIONS: readonly GuideSection[] = [
   {
@@ -16,11 +16,11 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "list",
         items: [
-          "Cloudflare のアカウントと、そこで管理しているドメイン。Workers、D1、Durable Objects、Queues、Workers AI、Secrets Store を使います。Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
-          "Discord Developer Portal のアプリケーション。",
-          "fly.io のアカウント。Discord の Gateway につなぎっぱなしにするプロセスを置きます。メッセージの取り込みと、サーバーやチャンネルの変化の反映はこの Gateway が起点なので、必須です。",
-          "GitHub のアカウント。CI からデプロイするときに使います。",
-          "Node.js と Vite+ の `vp` コマンド。",
+          "Cloudflare のアカウントと、そこで管理しているドメインを用意します。Workers、D1、Durable Objects、Queues、Workers AI、Secrets Store を使い、Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
+          "Discord Developer Portal でアプリケーションを作ります。手順は次の節にあります。",
+          "fly.io のアカウントも必須です。Discord の Gateway につなぎっぱなしにするプロセスをここに置きます。メッセージの取り込みも、サーバーやチャンネルの変化の反映も、この Gateway から始まります。",
+          "CI からデプロイするなら、GitHub のアカウントも使います。",
+          "手元には Node.js と Vite+ の `vp` コマンドを入れておきます。",
         ],
       },
     ],
@@ -61,7 +61,7 @@ const SECTIONS: readonly GuideSection[] = [
           ],
           [
             "`apps/gateway/src/app/service.ts`",
-            "fly.io のアプリ名（`name`）を自分用の名前にします。fly.io のアプリ名は全体で一意なので、そのままでは作れません。",
+            "fly.io のアプリ名を表す `name` を自分用の名前にします。fly.io のアプリ名は全体で一意なので、そのままでは作れません。",
           ],
           [
             "`apps/web/alchemy.ci.ts`",
@@ -88,14 +88,14 @@ const SECTIONS: readonly GuideSection[] = [
           ["`DISCORD_CLIENT_SECRET`", "必須", "ログイン"],
           ["`DISCORD_BOT_TOKEN`", "必須", "取り込み、Gateway、Gateway の通知の署名"],
           ["`FLY_API_TOKEN`", "必須", "fly.io の認証"],
-          ["`MAX_GUILDS`", `任意（既定は ${FREE_GUILD_LIMIT}）`, "Bot が入れるサーバーの数の上限"],
+          ["`MAX_GUILDS`", "任意", `Bot が入れるサーバーの数の上限で、既定は ${FREE_GUILD_LIMIT}`],
           ["`ALERT_WEBHOOK_URL`", "任意", "障害を知らせる Discord の Webhook"],
           ["`ALCHEMY_STAGE`", "任意", "Alchemy のステージ名"],
         ],
       },
       {
         type: "text",
-        text: "ログインの署名鍵（`BETTER_AUTH_SECRET`）とメッセージを包むマスター鍵（`MIRUCORD_MASTER_KEY`）は自分で用意しません。初めてのデプロイで Alchemy が乱数で作ります。",
+        text: "ログインの署名鍵 `BETTER_AUTH_SECRET` と、メッセージを包むマスター鍵 `MIRUCORD_MASTER_KEY` は自分で用意しません。初めてのデプロイで Alchemy が乱数で作ります。",
       },
     ],
   },
@@ -104,7 +104,7 @@ const SECTIONS: readonly GuideSection[] = [
     blocks: [
       {
         type: "text",
-        text: "`apps/web/.env.example` を `apps/web/.env` に写し、上の表の値を書きます。Alchemy は `.env` を自動で読みます。",
+        text: "`apps/web/.env.example` を `apps/web/.env` にコピーし、上の表の値を書きます。Alchemy は `.env` を自動で読みます。",
       },
       {
         type: "code",
@@ -112,7 +112,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: "`apps/web` の deploy で Worker、D1、Durable Objects、Queues、Secrets Store がそろい、D1 のマイグレーションも流れます。`apps/gateway` の deploy は fly.io に Gateway を置きます。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
+        text: "`apps/web` の deploy で Worker、D1、Durable Objects、Queues、Secrets Store がそろい、D1 のマイグレーションも適用されます。`apps/gateway` の deploy は fly.io に Gateway を置きます。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
       },
     ],
   },
@@ -121,7 +121,7 @@ const SECTIONS: readonly GuideSection[] = [
     blocks: [
       {
         type: "text",
-        text: "`.github/workflows/verify.yml` は、main への push で検査が通ると `deploy` ジョブで同じ 2 つのデプロイを行います。`FLY_API_TOKEN` がなければ Gateway のデプロイは飛ばします。",
+        text: "`.github/workflows/verify.yml` は、main への push で検査が通ると `deploy` ジョブで同じ 2 つのデプロイを行います。`FLY_API_TOKEN` がなければ Gateway はデプロイしません。",
       },
       {
         type: "table",
@@ -136,7 +136,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: `\`OPENROUTER_API_KEY\` は検査の jev-lint が使います。\`apps/web/alchemy.ci.ts\` を手元からデプロイすると、デプロイに要る権限だけを持つ Cloudflare の API トークン（\`${SERVICE_NAME}-deploy\`）を作り、上の値を GitHub に登録します。API トークンを作るので、このときだけはトークンを作れる強い Cloudflare の認証と、\`GITHUB_TOKEN\` が要ります。`,
+        text: `\`OPENROUTER_API_KEY\` は検査の jev-lint が使います。\`apps/web/alchemy.ci.ts\` を手元からデプロイすると、デプロイに要る権限だけを持つ \`${SERVICE_NAME}-deploy\` という Cloudflare の API トークンを作り、上の値を GitHub に登録します。このときだけは、API トークンを作る権限のある Cloudflare の認証と \`GITHUB_TOKEN\` が要ります。`,
       },
       {
         type: "code",

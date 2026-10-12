@@ -41,6 +41,7 @@
     "better-auth": "catalog:stack",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
+    "dfx": "catalog:",
     "discord-api-types": "catalog:",
     "drizzle-orm": "catalog:stack",
     "effect": "catalog:stack",

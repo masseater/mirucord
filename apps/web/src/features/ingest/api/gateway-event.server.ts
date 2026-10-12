@@ -1,10 +1,11 @@
+import {
+  GatewayJobSchema,
+  subjectOf,
+  verifyGatewayEvent,
+} from "@repo/ingest-util-gateway-contract";
+import type { GatewayJob } from "@repo/ingest-util-gateway-contract";
 import { env } from "cloudflare:workers";
 import { Effect, Match, Option, Schema } from "effect";
-
-import { subjectOf } from "#/features/ingest/model/gateway-job";
-import { verifyGatewayEvent } from "#/features/ingest/model/gateway-signature";
-import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
-import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 
 import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server";
 import { forgetGuild } from "./guild-membership.server";

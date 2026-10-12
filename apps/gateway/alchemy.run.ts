@@ -3,7 +3,7 @@ import { providers as cloudflareProviders, state } from "alchemy/Cloudflare";
 import { providers as flyProviders, Secret } from "alchemy/Fly";
 import { Config, Effect, Layer } from "effect";
 
-import { BOT_TOKEN_SECRET, Gateway, GatewayApp } from "./gateway/service.ts";
+import { BOT_TOKEN_SECRET, Gateway, GatewayApp } from "./src/app/service.ts";
 
 const cloudflare = cloudflareProviders();
 

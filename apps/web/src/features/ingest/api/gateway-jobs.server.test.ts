@@ -1,12 +1,12 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
+import { DiscordMessageSchema } from "@repo/shared-util-discord";
 import { DateTime, Effect, Option, Schema } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect } from "vite-plus/test";
 
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
-import { DiscordMessageSchema } from "#/shared/discord";
 
 import { putMessages, storedIdsIn, storedMessage } from "./__tests__/guild-messages";
 import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server";

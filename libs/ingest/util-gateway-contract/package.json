@@ -1,0 +1,14 @@
+{
+  "name": "@repo/ingest-util-gateway-contract",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@repo/shared-util-discord": "workspace:*",
+    "effect": "catalog:stack",
+    "standardwebhooks": "catalog:"
+  }
+}

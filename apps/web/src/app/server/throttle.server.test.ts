@@ -1,20 +1,24 @@
 import { it } from "@effect/vitest";
-import { Effect, Option } from "effect";
+import { Array, Effect, Option } from "effect";
 import { expect } from "vite-plus/test";
 
+import { MCP_RATE_LIMIT } from "./rate-limit";
 import { mcpRejection, tokenOrIp } from "./throttle.server";
 
+const FIRST_ATTEMPT = 1;
 const TOO_MANY_REQUESTS = 429;
 
-it.live("rejects requests over the limit with 429", () =>
+it.live("rejects MCP requests over the limit with 429", () =>
   Effect.gen(function* overLimit() {
     const request = new Request("https://example.test/mcp", {
       headers: { authorization: "Bearer over-limit" },
     });
-    const first = yield* mcpRejection(request);
-    const second = yield* mcpRejection(request);
-    expect(Option.isNone(first)).toBe(true);
-    expect(second.pipe(Option.map(({ status }) => status))).toStrictEqual(
+    const allowed = yield* Effect.forEach(Array.range(FIRST_ATTEMPT, MCP_RATE_LIMIT.limit), () =>
+      mcpRejection(request),
+    );
+    const over = yield* mcpRejection(request);
+    expect(Array.getSomes(allowed)).toStrictEqual([]);
+    expect(over.pipe(Option.map(({ status }) => status))).toStrictEqual(
       Option.some(TOO_MANY_REQUESTS),
     );
   }),

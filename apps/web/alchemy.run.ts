@@ -18,8 +18,7 @@ import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
 import { PREFIX } from "./app-name.ts";
-import type { RequestCounter } from "./src/app/server/request-counter.server.ts";
-import type { GuildStore } from "./src/entities/guild-message/api/guild-store.server.ts";
+import type { GuildStore, RequestCounter } from "./src/app/server/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
 

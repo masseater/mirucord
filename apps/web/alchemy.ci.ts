@@ -30,6 +30,7 @@ const deployToken = Effect.gen(function* deployToken() {
           "D1 Write",
           "Vectorize Write",
           "Queues Write",
+          "Workers R2 Storage Write",
           "Workers Observability Write",
           "Workers AI Read",
           "Account Settings Read",

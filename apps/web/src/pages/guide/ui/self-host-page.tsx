@@ -18,7 +18,7 @@ const SECTIONS: readonly GuideSection[] = [
         items: [
           "Cloudflare のアカウントと、そこで管理しているドメイン。Workers、D1、Vectorize、Queues、Workers AI、Secrets Store を使います。Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
           "Discord Developer Portal のアプリケーション。",
-          "fly.io のアカウント。編集と削除をすぐに反映させるための Gateway に使います。なくても、毎時の取り込みだけで動きます。",
+          "fly.io のアカウント。編集と削除をすぐに反映させるための Gateway に使います。なくても、1日1回の取り込みだけで動きます。",
           "GitHub のアカウント。CI からデプロイするときに使います。",
           "Node.js と Vite+ の `vp` コマンド。",
         ],

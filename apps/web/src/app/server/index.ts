@@ -43,4 +43,5 @@ const worker: ExportedHandler = {
 };
 
 export { GuildStore } from "#/entities/guild-message/index.server";
+export { RequestCounter } from "./request-counter.server";
 export default worker;

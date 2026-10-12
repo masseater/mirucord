@@ -1,5 +1,5 @@
 import handler from "@tanstack/react-start/server-entry";
-import { Boolean, Effect } from "effect";
+import { Effect } from "effect";
 
 import { ingestDeliveries } from "#/features/ingest/index.server";
 import { serveMcp } from "#/features/mcp/index.server";
@@ -10,18 +10,19 @@ import { api } from "./api.server";
 const MCP_PATH = new URL(MCP_URL).pathname;
 const API_PREFIX = "/api/";
 
+const route = (request: Request): Response | Promise<Response> => {
+  const { pathname } = new URL(request.url);
+  if (pathname === MCP_PATH) {
+    return serveMcp(request);
+  }
+  if (pathname.startsWith(API_PREFIX)) {
+    return api.handle(request);
+  }
+  return handler.fetch(request);
+};
+
 const worker: ExportedHandler = {
-  fetch: (request): Response | Promise<Response> => {
-    const { pathname } = new URL(request.url);
-    return Boolean.match(pathname === MCP_PATH, {
-      onTrue: () => serveMcp(request),
-      onFalse: () =>
-        Boolean.match(pathname.startsWith(API_PREFIX), {
-          onTrue: () => api.handle(request),
-          onFalse: () => handler.fetch(request),
-        }),
-    });
-  },
+  fetch: route,
   queue: (batch): Promise<void> => Effect.runPromise(ingestDeliveries(batch.messages)),
 };
 

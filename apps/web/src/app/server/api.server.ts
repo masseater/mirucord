@@ -3,7 +3,7 @@ import { Elysia, t } from "elysia";
 import { CloudflareAdapter } from "elysia/adapter/cloudflare-worker";
 
 import { receiveGatewayEvent } from "#/features/ingest/index.server";
-import { makeAuth } from "#/shared/auth/index.server";
+import { getAuth } from "#/shared/auth/index.server";
 
 export const api = new Elysia({ adapter: CloudflareAdapter, aot: false })
   .get("/api/health", () => ({
@@ -18,4 +18,4 @@ export const api = new Elysia({ adapter: CloudflareAdapter, aot: false })
       receiveGatewayEvent({ body, headers: Object.fromEntries(request.headers) }),
     { parse: "text", body: t.String() },
   )
-  .mount((request) => makeAuth().handler(request));
+  .mount((request) => getAuth().handler(request));

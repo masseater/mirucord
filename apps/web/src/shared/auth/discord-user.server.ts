@@ -3,7 +3,7 @@ import { Array, Effect, Option } from "effect";
 
 import { db } from "#/shared/db/client.server";
 
-import { makeAuth } from "./auth.server";
+import { getAuth } from "./auth.server";
 import { account } from "./generated/auth.table";
 
 const DISCORD_PROVIDER = "discord";
@@ -19,7 +19,7 @@ const discordUserIdOf = (userId: string): Effect.Effect<Option.Option<string>> =
   ).pipe(Effect.map((rows) => Option.map(Array.head(rows), ({ accountId }) => accountId)));
 
 const signedInUser = (request: Request): Effect.Effect<Option.Option<SignedInUser>> =>
-  Effect.promise(() => makeAuth().api.getSession({ headers: request.headers })).pipe(
+  Effect.promise(() => getAuth().api.getSession({ headers: request.headers })).pipe(
     Effect.flatMap((session) =>
       Option.match(Option.fromNullOr(session), {
         onNone: () => Effect.succeedNone,

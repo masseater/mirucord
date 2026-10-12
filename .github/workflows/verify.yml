@@ -83,14 +83,15 @@ jobs:
           gh workflow run autofix.yml --repo "$GITHUB_REPOSITORY" --ref "$HEAD_BRANCH"
           -f run_id="$FAILED_RUN_ID" -f branch="$HEAD_BRANCH" -f sha="$HEAD_SHA"
 
-  deploy-target:
+  deploy:
     needs: verify
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && github.repository == 'masseater/mirucord'
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    outputs:
-      latest: ${{ steps.head.outputs.latest }}
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
     steps:
       - id: head
         env:
@@ -102,26 +103,18 @@ jobs:
           if [ "$current" = "$HEAD_SHA" ]; then
             echo "latest=true" >> "$GITHUB_OUTPUT"
           fi
-
-  deploy:
-    needs: deploy-target
-    if: needs.deploy-target.outputs.latest == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    concurrency:
-      group: deploy-production
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - if: steps.head.outputs.latest == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
+      - if: steps.head.outputs.latest == 'true'
+        uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
           cache: true
           run-install: |
             - args: ['--frozen-lockfile']
-      - working-directory: apps/web
+      - if: steps.head.outputs.latest == 'true'
+        working-directory: apps/web
         run: vp exec alchemy deploy --stage prod --yes --no-input
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -132,6 +125,7 @@ jobs:
           MAX_GUILDS: ${{ vars.MAX_GUILDS }}
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
       - id: fly
+        if: steps.head.outputs.latest == 'true'
         run: |
           if [ -n "$FLY_API_TOKEN" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"

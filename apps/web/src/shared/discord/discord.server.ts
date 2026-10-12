@@ -15,7 +15,8 @@ import { Array, Effect, Function, Option, Schema } from "effect";
 
 import { callDiscord } from "./client.server";
 import type { DiscordRequestError } from "./client.server";
-import { Message } from "./message.server";
+import { Message } from "./message";
+import type { DiscordMessage } from "./message";
 
 const DATA_FIRST_ARITY = 2;
 
@@ -64,7 +65,6 @@ const Member = Schema.Struct({ roles: Schema.Array(Schema.String) });
 
 type DiscordGuild = typeof Guild.Type;
 type DiscordChannel = typeof Channel.Type;
-type DiscordMessage = typeof Message.Type;
 type DiscordMember = typeof Member.Type;
 
 const listBotGuilds: Effect.Effect<readonly Readonly<{ id: string }>[], DiscordRequestError> =
@@ -245,4 +245,4 @@ export {
   NOT_FOUND,
   PAGE_SIZE,
 };
-export type { DiscordChannel, DiscordGuild, DiscordMember, DiscordMessage, MessagePage };
+export type { DiscordChannel, DiscordGuild, DiscordMember, MessagePage };

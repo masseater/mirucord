@@ -65,4 +65,7 @@ const Message = Schema.Struct({
   poll: Schema.optional(Poll),
 });
 
+type DiscordMessage = typeof Message.Type;
+
 export { Message };
+export type { DiscordMessage };

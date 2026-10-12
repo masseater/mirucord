@@ -1,14 +1,15 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
-import { DateTime, Effect, Option } from "effect";
+import { DateTime, Effect, Option, Schema } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect } from "vite-plus/test";
 
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
+import { DiscordMessageSchema } from "#/shared/discord";
 
 import { putMessages, storedIdsIn, storedMessage } from "./__tests__/guild-messages";
-import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
+import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server";
 
 const OWNER = "901";
 const GUILD = "700";
@@ -17,6 +18,7 @@ const OTHER_CHANNEL = "720";
 const FORGOTTEN = "711";
 const VANISHED = "712";
 const POSTED = "713";
+const DELIVERED = "714";
 const ELSEWHERE = "721";
 const NOT_FOUND = 404;
 const LISTED_FROM = "711";
@@ -136,5 +138,24 @@ it.effect("stores a refreshed message and forgets one Discord no longer has", ()
     expect(stored.has(POSTED)).toBe(true);
     expect(stored.has(VANISHED)).toBe(false);
     expect(lookups).toStrictEqual([`?limit=100&after=${LISTED_FROM}`, VANISHED]);
+  }),
+);
+
+it.effect("stores a message delivered with its body without asking Discord again", () =>
+  Effect.gen(function* store() {
+    const message = yield* Schema.decodeEffect(DiscordMessageSchema)({
+      ...POSTED_MESSAGE,
+      id: DELIVERED,
+      content: `message ${DELIVERED}`,
+    }).pipe(Effect.orDie);
+    yield* storeGatewayMessages({
+      kind: "store",
+      guildId: GUILD,
+      channelId: CHANNEL,
+      messages: [message],
+    });
+    const stored = yield* storedIds;
+    expect(stored.has(DELIVERED)).toBe(true);
+    expect(lookups).toStrictEqual([]);
   }),
 );

@@ -1,6 +1,6 @@
 import { Effect, Option, pipe } from "effect";
 
-import type { ForgetJob, RefreshJob } from "#/features/ingest/model/ingest-job";
+import type { ForgetJob, RefreshJob, StoreJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKeys } from "#/shared/crypto/index.server";
 import { FORBIDDEN, NOT_FOUND, findMessage, listMessages } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
@@ -89,14 +89,16 @@ const refreshWith = (job: RefreshJob, wrappedKey: string): Effect.Effect<void, I
     yield* forgetIn(job, gone);
   });
 
-const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
+const withChannelKey = <Failure>(
+  job: Readonly<{ guildId: string; channelId: string }>,
+  use: (wrappedKey: string) => Effect.Effect<void, Failure>,
+): Effect.Effect<void, Failure> =>
   loadChannelKey(job).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.void,
-        onSome: (wrappedKey) => refreshWith(job, wrappedKey),
-      }),
-    ),
+    Effect.flatMap(Option.match({ onNone: () => Effect.void, onSome: use })),
+  );
+
+const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
+  withChannelKey(job, (wrappedKey) => refreshWith(job, wrappedKey)).pipe(
     Effect.catchTag("DiscordRequestError", (failure) => {
       if (Option.contains(failure.status, FORBIDDEN)) {
         return Effect.void;
@@ -105,4 +107,17 @@ const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
     }),
   );
 
-export { forgetMessages, refreshMessages };
+const storeGatewayMessages = (job: StoreJob): Effect.Effect<void> =>
+  withChannelKey(job, (wrappedKey) =>
+    openGuildKeys(wrappedKey).pipe(
+      Effect.flatMap((keys) =>
+        storeConsented({
+          ...keys,
+          job: { guildId: job.guildId, channelId: job.channelId },
+          page: job.messages,
+        }),
+      ),
+    ),
+  );
+
+export { forgetMessages, refreshMessages, storeGatewayMessages };

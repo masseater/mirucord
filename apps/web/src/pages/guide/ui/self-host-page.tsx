@@ -18,7 +18,7 @@ const SECTIONS: readonly GuideSection[] = [
         items: [
           "Cloudflare のアカウントと、そこで管理しているドメイン。Workers、D1、Durable Objects、Queues、Workers AI、Secrets Store を使います。Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
           "Discord Developer Portal のアプリケーション。",
-          "fly.io のアカウント。編集と削除をすぐに反映させるための Gateway に使います。なくても、1日1回の取り込みだけで動きます。",
+          "fly.io のアカウント。Discord の Gateway につなぎっぱなしにするプロセスを置きます。メッセージの取り込みと、サーバーやチャンネルの変化の反映はこの Gateway が起点なので、必須です。",
           "GitHub のアカウント。CI からデプロイするときに使います。",
           "Node.js と Vite+ の `vp` コマンド。",
         ],
@@ -83,7 +83,7 @@ const SECTIONS: readonly GuideSection[] = [
           ["`DISCORD_CLIENT_ID`", "必須", "ログインと Bot の招待"],
           ["`DISCORD_CLIENT_SECRET`", "必須", "ログイン"],
           ["`DISCORD_BOT_TOKEN`", "必須", "取り込み、Gateway、Gateway の通知の署名"],
-          ["`FLY_API_TOKEN`", "Gateway を動かすとき", "fly.io の認証"],
+          ["`FLY_API_TOKEN`", "必須", "fly.io の認証"],
           ["`MAX_GUILDS`", `任意（既定は ${FREE_GUILD_LIMIT}）`, "Bot が入れるサーバーの数の上限"],
           ["`ALERT_WEBHOOK_URL`", "任意", "障害を知らせる Discord の Webhook"],
           ["`ALCHEMY_STAGE`", "任意", "Alchemy のステージ名"],
@@ -108,7 +108,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: "1 つ目のコマンドで Worker、D1、Durable Objects、Queues、Secrets Store がそろい、D1 のマイグレーションも流れます。2 つ目は fly.io に Gateway を置くコマンドで、使わないなら要りません。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
+        text: "1 つ目のコマンドで Worker、D1、Durable Objects、Queues、Secrets Store がそろい、D1 のマイグレーションも流れます。2 つ目は fly.io に Gateway を置くコマンドです。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
       },
     ],
   },

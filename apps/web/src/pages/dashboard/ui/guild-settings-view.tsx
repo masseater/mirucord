@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import type { ReactNode } from "react";
 
 import type { GuildSettings } from "#/features/ingest/index.server";
@@ -7,7 +6,6 @@ import { MascotTip } from "#/shared/ui/mascot-tip";
 import { ConsentForm } from "./consent-form";
 import { ConsentRecord } from "./consent-record";
 import { GrantedPanels } from "./granted-panels";
-import { RefreshButton } from "./refresh-button";
 
 const TIP = {
   awaiting: "よければ同意してね",
@@ -17,18 +15,14 @@ const TIP = {
   withdrawing: "削除中だよ！",
 } as const;
 
-const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => {
-  const target = useMemo(() => ({ scope: "guild", guildId: settings.id }) as const, [settings.id]);
-  return (
-    <>
-      <MascotTip>{TIP[settings.ingest]}</MascotTip>
-      <h1 className="text-dc-bright font-maru text-3xl font-black">{settings.name}</h1>
-      <RefreshButton target={target} />
-      <ConsentRecord consent={settings.consent} />
-      {settings.consent.status === "awaiting" && <ConsentForm settings={settings} />}
-      {settings.consent.status === "granted" && <GrantedPanels settings={settings} />}
-    </>
-  );
-};
+const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (
+  <>
+    <MascotTip>{TIP[settings.ingest]}</MascotTip>
+    <h1 className="text-dc-bright font-maru text-3xl font-black">{settings.name}</h1>
+    <ConsentRecord consent={settings.consent} />
+    {settings.consent.status === "awaiting" && <ConsentForm settings={settings} />}
+    {settings.consent.status === "granted" && <GrantedPanels settings={settings} />}
+  </>
+);
 
 export { GuildSettingsView };

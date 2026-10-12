@@ -6,6 +6,7 @@ import { alertOperators } from "#/shared/alert/index.server";
 
 import { ingestChannel } from "./ingest-channel.server";
 import { migrateMessages } from "./migrate-messages.server";
+import { catchUpGuild } from "./resync.server";
 import { abandonWithdrawal, withdrawGuild } from "./withdraw-guild.server";
 import type { GuildDataRemainsError } from "./withdraw-guild.server";
 
@@ -26,6 +27,9 @@ const runJob = (job: QueueJob): Effect.Effect<void, JobError> => {
   }
   if (job.kind === "migrate") {
     return migrateMessages;
+  }
+  if (job.kind === "catchUp") {
+    return catchUpGuild(job.guildId);
   }
   return withdrawGuild(job.guildId);
 };

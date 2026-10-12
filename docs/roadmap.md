@@ -43,3 +43,8 @@ Developer Policy の Monetization Requirements は、Premium Apps の対応地�
 ## Message Content intent の審査
 
 利用者が 1 万人を超えると Message Content intent は審査制になり、毎年再審査がある。審査で用途とデータの扱いを説明できるようにする。
+
+## ドメイン
+
+本番を masseater.dev のサブドメインのまま続けるか、mirucord 専用のドメインを取るかを決める。
+決まったら、そのドメインで Developer Portal の Privacy Policy URL と Terms of Service URL を設定する。Developer Terms of Service 5(a) が求めている。

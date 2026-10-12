@@ -58,7 +58,6 @@ catalog:
 catalogs:
   stack:
     "@distilled.cloud/cloudflare": 1.0.0-rc.13
-    "@distilled.cloud/fly-io": 1.0.0-rc.13
     "@effect/atom-react": 4.0.0
     "@effect/tsgo": 0.51.1
     "@effect/vitest": 4.0.0
@@ -71,7 +70,7 @@ catalogs:
     drizzle-orm: 1.0.0-rc.5-ab785fc
     effect: 4.0.0
     elysia: 1.4.30
-    fallow: 3.32.0
+    fallow: 3.33.0
     renovate: 44.148.5
     steiger: 0.7.0
     tailwindcss: 4.3.3

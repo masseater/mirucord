@@ -148,7 +148,7 @@ export default defineConfig({
             "WorkerIssues",
           ],
           capIsNewExceptionPattern:
-            "^(ApiToken|Config|Context|Data|Schema|D1|Queues|SecretsStore|Vectorize|Website|Workers)\\.",
+            "^(ApiToken|Config|Context|Data|Schema|D1|Queues|Rules|SecretsStore|Vectorize|Website|Workers)\\.",
         },
       ],
       "typescript/no-empty-interface": ["error", { allowSingleExtends: true }],

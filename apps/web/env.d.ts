@@ -1,4 +1,4 @@
-import type { WebEnv } from "./alchemy.run.ts";
+import type { R2BenchEnv, WebEnv } from "./alchemy.run.ts";
 
 type BoundEnv = Omit<WebEnv, "MASTER_KEY"> &
   Readonly<{
@@ -8,6 +8,6 @@ type BoundEnv = Omit<WebEnv, "MASTER_KEY"> &
 
 declare module "cloudflare:workers" {
   namespace Cloudflare {
-    interface Env extends BoundEnv {}
+    interface Env extends BoundEnv, R2BenchEnv {}
   }
 }

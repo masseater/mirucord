@@ -8,7 +8,11 @@ import {
   startMigration,
   syncGuilds,
 } from "#/features/ingest/index.server";
+import { serveMcp } from "#/features/mcp/index.server";
 import { alertOperators } from "#/shared/alert/index.server";
+import { MCP_URL } from "#/shared/config";
+
+const MCP_PATH = new URL(MCP_URL).pathname;
 
 const SYNC_FAILED = "Guild sync could not list servers from Discord";
 
@@ -19,7 +23,11 @@ const runCron = (cron: string): Effect.Effect<void> =>
   }).pipe(Effect.catchTag("DiscordRequestError", () => alertOperators(SYNC_FAILED)));
 
 const worker: ExportedHandler = {
-  fetch: (request): Response | Promise<Response> => handler.fetch(request),
+  fetch: (request): Response | Promise<Response> =>
+    Boolean.match(new URL(request.url).pathname === MCP_PATH, {
+      onTrue: () => serveMcp(request),
+      onFalse: () => handler.fetch(request),
+    }),
   scheduled: (controller): Promise<void> => Effect.runPromise(runCron(controller.cron)),
   queue: (batch): Promise<void> => Effect.runPromise(ingestDeliveries(batch.messages)),
 };

@@ -17,7 +17,7 @@ import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { AUTH_RATE_LIMIT, MCP_RATE_LIMIT } from "./src/app/server/rate-limit.ts";
+import type { RequestCounter } from "./src/app/server/request-counter.server.ts";
 import type { GuildStore } from "./src/entities/guild-message/api/guild-store.server.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
@@ -27,8 +27,6 @@ const NAME_PREFIX = "mirucord";
 const PRODUCTION_STAGE = "prod";
 const NOT_FOUND = 404;
 const DEFAULT_MAX_GUILDS = String(FREE_GUILD_LIMIT);
-const MCP_RATE_LIMIT_NAMESPACE = 1001;
-const AUTH_RATE_LIMIT_NAMESPACE = 1002;
 const WORKER_ISSUES = "Mirucord.WorkerIssues";
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);
 
@@ -235,14 +233,7 @@ const web = Effect.gen(function* web() {
       GUILD_STORE: Workers.DurableObject<GuildStore>("GuildStore"),
       AI: Workers.AI(),
       VERSION: Workers.VersionMetadata(),
-      MCP_RATE_LIMIT: Workers.RateLimit("MCP_RATE_LIMIT", {
-        namespaceId: MCP_RATE_LIMIT_NAMESPACE,
-        simple: MCP_RATE_LIMIT,
-      }),
-      AUTH_RATE_LIMIT: Workers.RateLimit("AUTH_RATE_LIMIT", {
-        namespaceId: AUTH_RATE_LIMIT_NAMESPACE,
-        simple: AUTH_RATE_LIMIT,
-      }),
+      REQUEST_COUNTER: Workers.DurableObject<RequestCounter>("RequestCounter"),
     },
     observability: { enabled: true, traces: { enabled: true } },
     viteEnvironments: { entry: "ssr", children: ["rsc"] },

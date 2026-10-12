@@ -5,7 +5,6 @@ import {
   D1,
   Queues,
   SecretsStore,
-  Vectorize,
   Website,
   Workers,
   providers,
@@ -23,7 +22,6 @@ import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
-const EMBEDDING_DIMENSIONS = 1024;
 const NAME_PREFIX = "mirucord";
 const PRODUCTION_STAGE = "prod";
 const NOT_FOUND = 404;
@@ -188,25 +186,6 @@ const mirucordName = (resource: string): Effect.Effect<string, never, Stage> =>
     });
   });
 
-const messagesIndex = Effect.gen(function* messagesIndex() {
-  const index = yield* Vectorize.Index("Messages", {
-    name: yield* mirucordName("messages-bge-m3"),
-    dimensions: EMBEDDING_DIMENSIONS,
-    metric: "cosine",
-  });
-  yield* Vectorize.MetadataIndex("MessagesGuildId", {
-    indexName: index.indexName,
-    propertyName: "guildId",
-    indexType: "string",
-  });
-  yield* Vectorize.MetadataIndex("MessagesChannelId", {
-    indexName: index.indexName,
-    propertyName: "channelId",
-    indexType: "string",
-  });
-  return index;
-});
-
 const masterKey = Effect.gen(function* masterKey() {
   const store = yield* SecretsStore.Store("Secrets");
   return yield* SecretsStore.Secret("MasterKeySecret", {
@@ -229,7 +208,6 @@ const storage = Effect.gen(function* storage() {
     primaryLocationHint: "apac",
     migrations: "./drizzle",
   });
-  yield* messagesIndex;
   const INGEST = yield* Queues.Queue("Ingest", { name: yield* mirucordName("ingest") });
   return { DB, INGEST };
 });

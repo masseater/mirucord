@@ -1,6 +1,8 @@
 import { Effect, Function, Schema } from "effect";
 import { CompactEncrypt, compactDecrypt } from "jose";
 
+import { MessageAttachment, MessageEmbed, MessagePoll } from "#/shared/discord";
+
 const DATA_FIRST_ARITY = 3;
 
 const MESSAGE_ALGORITHMS = { alg: "dir", enc: "A256GCM" } as const;
@@ -40,37 +42,19 @@ const unseal: {
   (sealed: string, key: CryptoKey, context: string): Effect.Effect<string>;
 } = Function.dual(DATA_FIRST_ARITY, unsealDataFirst);
 
-const AttachmentSchema = Schema.Struct({
-  filename: Schema.String,
-  url: Schema.String,
-  description: Schema.optional(Schema.String),
-});
-
-const EmbedSchema = Schema.Struct({
-  title: Schema.optional(Schema.String),
-  description: Schema.optional(Schema.String),
-  url: Schema.optional(Schema.String),
-  fields: Schema.Array(Schema.Struct({ name: Schema.String, value: Schema.String })),
-});
-
-const PollSchema = Schema.Struct({
-  question: Schema.String,
-  answers: Schema.Array(Schema.String),
-});
-
 const nothingYet = Effect.succeed<readonly never[]>([]);
 
-const StoredEmbeds = Schema.Array(EmbedSchema).pipe(Schema.withDecodingDefaultKey(nothingYet));
+const StoredEmbeds = Schema.Array(MessageEmbed).pipe(Schema.withDecodingDefaultKey(nothingYet));
 
 const Stickers = Schema.Array(Schema.String).pipe(Schema.withDecodingDefaultKey(nothingYet));
 
 const MessageBodySchema = Schema.Struct({
   authorName: Schema.String,
   content: Schema.String,
-  attachments: Schema.Array(AttachmentSchema),
+  attachments: Schema.Array(MessageAttachment),
   embeds: StoredEmbeds,
   stickers: Stickers,
-  poll: Schema.optional(PollSchema),
+  poll: Schema.optional(MessagePoll),
 });
 
 type MessageBody = typeof MessageBodySchema.Type;

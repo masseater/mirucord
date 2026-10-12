@@ -6,12 +6,22 @@ const Attachment = Schema.Struct({
   url: Schema.String,
   description: Schema.optional(Schema.String),
 });
+const Embed = Schema.Struct({
+  title: Schema.optional(Schema.String),
+  description: Schema.optional(Schema.String),
+  url: Schema.optional(Schema.String),
+  fields: Schema.Array(Schema.Struct({ name: Schema.String, value: Schema.String })),
+});
+const Poll = Schema.Struct({ question: Schema.String, answers: Schema.Array(Schema.String) });
 const Message = Schema.Struct({
   id: Schema.String,
   channelId: Schema.String,
   author: Schema.String,
   content: Schema.String,
   attachments: Schema.Array(Attachment),
+  embeds: Schema.Array(Embed),
+  stickers: Schema.Array(Schema.String),
+  poll: Schema.optional(Poll),
   createdAt: Schema.String,
   edited: Schema.Boolean,
   url: Schema.String,

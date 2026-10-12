@@ -142,11 +142,15 @@ const sealedRows = (
     seed.messages,
     ({ id, channelId }) =>
       Effect.all({
-        sealed: sealMessage({ authorName: "someone", content: SAME_WORDS, attachments: [] }, key, {
-          guildId: seed.id,
-          channelId,
-          messageId: id,
-        }),
+        sealed: sealMessage(
+          { authorName: "someone", content: SAME_WORDS, attachments: [], embeds: [], stickers: [] },
+          key,
+          {
+            guildId: seed.id,
+            channelId,
+            messageId: id,
+          },
+        ),
         tokens: indexTokens({ key: searchKey, texts: [SAME_WORDS] }),
       }).pipe(
         Effect.map(({ sealed, tokens }) => ({

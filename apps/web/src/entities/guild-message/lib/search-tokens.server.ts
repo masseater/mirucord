@@ -55,15 +55,36 @@ const queryTokens = ({
   return tokensOf(key, gramsOfSize(chars, Number.min(chars.length, LONGEST_GRAM)));
 };
 
+const embedTexts = (embeds: MessageBody["embeds"]): readonly string[] =>
+  embeds.flatMap(({ title, description, fields }) => [
+    ...Option.toArray(Option.fromUndefinedOr(title)),
+    ...Option.toArray(Option.fromUndefinedOr(description)),
+    ...fields.flatMap(({ name, value }) => [name, value]),
+  ]);
+
+const pollTexts = (poll: MessageBody["poll"]): readonly string[] =>
+  Option.fromUndefinedOr(poll).pipe(
+    Option.match({ onNone: () => [], onSome: ({ question, answers }) => [question, ...answers] }),
+  );
+
 const searchableTexts = ({
   content,
   attachments,
-}: Pick<MessageBody, "content" | "attachments">): readonly string[] =>
+  embeds,
+  stickers,
+  poll,
+}: Pick<
+  MessageBody,
+  "content" | "attachments" | "embeds" | "stickers" | "poll"
+>): readonly string[] =>
   [
     content,
     ...attachments.flatMap(({ description }) =>
       Option.toArray(Option.fromUndefinedOr(description)),
     ),
+    ...embedTexts(embeds),
+    ...stickers,
+    ...pollTexts(poll),
   ].filter((text) => String.isNonEmpty(text));
 
 const containsQuery = ({

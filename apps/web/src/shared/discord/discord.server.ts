@@ -60,6 +60,13 @@ const Author = Schema.Struct({
   global_name: Schema.optional(Schema.NullOr(Schema.String)),
 });
 
+const MessageSnapshot = Schema.Struct({
+  message: Schema.Struct({
+    content: Schema.String,
+    attachments: Schema.Array(Attachment),
+  }),
+});
+
 const Message = Schema.Struct({
   id: Schema.String,
   type: Schema.Finite,
@@ -68,6 +75,7 @@ const Message = Schema.Struct({
   edited_timestamp: Schema.NullOr(Schema.DateTimeUtcFromString),
   author: Author,
   attachments: Schema.Array(Attachment),
+  message_snapshots: Schema.optional(Schema.Array(MessageSnapshot)),
 });
 
 const Member = Schema.Struct({ roles: Schema.Array(Schema.String) });

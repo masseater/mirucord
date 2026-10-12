@@ -15,19 +15,39 @@ import type { StoredMessage } from "./message-rows.server";
 
 const STORED_TYPES: ReadonlySet<MessageType> = new Set([MessageType.Default, MessageType.Reply]);
 const DESCRIBED_IMAGES_PER_MESSAGE = 4;
+const WITH_FORWARDS = `${DESCRIBE_MODEL}+forwards`;
 
 type StoreTarget = Readonly<{ key: CryptoKey; searchKey: CryptoKey; job: IngestJob }>;
 
 const editedAtOf = ({ edited_timestamp }: DiscordMessage): Option.Option<DateTime.Utc> =>
   Option.fromNullOr(edited_timestamp);
 
+type Forwarded = NonNullable<DiscordMessage["message_snapshots"]>[number]["message"];
+
+const forwardsOf = ({ message_snapshots }: DiscordMessage): readonly Forwarded[] =>
+  (message_snapshots ?? []).map(({ message }) => message);
+
+const isForward = (incoming: DiscordMessage): boolean =>
+  Array.isReadonlyArrayNonEmpty(forwardsOf(incoming));
+
 const isChanged = (previous: Option.Option<StoredMessage>, incoming: DiscordMessage): boolean =>
   Option.match(previous, {
     onNone: () => true,
     onSome: ({ editedAt, describedWith }) =>
       !Equal.equals(editedAt, Option.map(editedAtOf(incoming), DateTime.toEpochMillis)) ||
-      Option.isNone(describedWith),
+      Option.isNone(describedWith) ||
+      (isForward(incoming) && !Option.contains(describedWith, WITH_FORWARDS)),
   });
+
+const contentOf = (incoming: DiscordMessage): string =>
+  [incoming.content, ...forwardsOf(incoming).map(({ content }) => content)]
+    .filter((content) => String.isNonEmpty(content))
+    .join("\n");
+
+const attachmentsOf = (incoming: DiscordMessage): readonly DiscordAttachment[] => [
+  ...incoming.attachments,
+  ...forwardsOf(incoming).flatMap(({ attachments }) => attachments),
+];
 
 const authorNameOf = ({ author }: DiscordMessage): string =>
   Option.getOrElse(Option.fromNullishOr(author.global_name), () => author.username);
@@ -83,16 +103,25 @@ const describeAttachment = (
   );
 };
 
+const describedModelOf = (incoming: DiscordMessage): string =>
+  Boolean.match(isForward(incoming), {
+    onTrue: () => WITH_FORWARDS,
+    onFalse: () => DESCRIBE_MODEL,
+  });
+
 const describeMessage = (incoming: DiscordMessage): Effect.Effect<DescribedMessage> =>
   pipe(
-    incoming.attachments,
+    attachmentsOf(incoming),
     Effect.forEach((attachment, index) => describeAttachment(attachment, index)),
     Effect.map((results) => ({
       incoming,
       attachments: results.map(({ attachment }) => attachment),
       describedWith: Boolean.match(
         results.some(({ status }) => status === "failed"),
-        { onTrue: () => Option.getOrNull(Option.none<string>()), onFalse: () => DESCRIBE_MODEL },
+        {
+          onTrue: () => Option.getOrNull(Option.none<string>()),
+          onFalse: () => describedModelOf(incoming),
+        },
       ),
     })),
   );
@@ -109,7 +138,7 @@ const toIndexed = (
   { key, searchKey, job }: StoreTarget,
   { incoming, attachments, describedWith }: DescribedMessage,
 ): Effect.Effect<IndexedMessage> => {
-  const body = { authorName: authorNameOf(incoming), content: incoming.content, attachments };
+  const body = { authorName: authorNameOf(incoming), content: contentOf(incoming), attachments };
   return Effect.all({
     sealed: sealMessage(body, key, { ...job, messageId: incoming.id }),
     tokens: indexTokens({ key: searchKey, texts: searchableTexts(body) }),

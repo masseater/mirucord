@@ -19,7 +19,7 @@ import {
   oldestId,
 } from "./message-page.server";
 import type { IngestError, StoreTarget } from "./message-page.server";
-import { removeDeleted, sweepHistory } from "./sweep-history.server";
+import { removeDeleted } from "./sweep-history.server";
 
 const MAX_PAGES_PER_RUN = 5;
 const LAST_PAGE = 1;
@@ -35,7 +35,6 @@ type ChannelProgress = Readonly<{
   newest: string | null;
   oldest: string | null;
   backfill: Backfill;
-  sweep: string | null;
 }>;
 
 const backfillAfter = (page: readonly DiscordMessage[]): Backfill =>
@@ -49,7 +48,6 @@ const loadProgress = (job: IngestJob): Effect.Effect<Option.Option<ChannelProgre
         newest: channel.newestMessageId,
         oldest: channel.oldestMessageId,
         backfill: channel.backfill,
-        sweep: channel.sweepCursor,
       })
       .from(channel)
       .innerJoin(guild, eq(channel.guildId, guild.id))
@@ -148,7 +146,6 @@ const advanceOldest = (
 type Progress = Readonly<{
   newest: Option.Option<string>;
   history: History;
-  sweep: Option.Option<string>;
 }>;
 
 type Saved = "saved" | "superseded";
@@ -162,7 +159,7 @@ const sameOldest = (oldest: string | null): SQL =>
 const saveProgress = (
   job: IngestJob,
   previous: ChannelProgress,
-  { newest, history, sweep }: Progress,
+  { newest, history }: Progress,
 ): Effect.Effect<Saved> =>
   Effect.promise(() =>
     db
@@ -171,7 +168,6 @@ const saveProgress = (
         newestMessageId: Option.getOrNull(newest),
         oldestMessageId: Option.getOrNull(history.oldest),
         backfill: history.backfill,
-        sweepCursor: Option.getOrNull(sweep),
       })
       .where(and(eq(channel.id, job.channelId), sameOldest(previous.oldest)))
       .returning({ id: channel.id }),
@@ -205,8 +201,7 @@ const ingestWith = (job: IngestJob, progress: ChannelProgress): Effect.Effect<vo
     yield* removeDeleted({ ref: job, latest });
     const newest = yield* advanceNewest(target, progress, latest);
     const history = yield* advanceOldest(target, progress, latest);
-    const sweep = yield* sweepHistory({ target, sweep: Option.fromNullOr(progress.sweep), latest });
-    const saved = yield* saveProgress(job, progress, { newest, history, sweep });
+    const saved = yield* saveProgress(job, progress, { newest, history });
     if (saved === "saved") {
       yield* continueBackfill(job, history);
     }

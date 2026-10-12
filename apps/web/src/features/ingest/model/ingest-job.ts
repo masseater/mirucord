@@ -55,6 +55,13 @@ const LeaveJobSchema = Schema.Struct({
   guildId: Schema.String,
 });
 
+const ResyncJobSchema = Schema.Struct({ kind: Schema.Literal("resync") });
+
+const CatchUpJobSchema = Schema.Struct({
+  kind: Schema.Literal("catchUp"),
+  guildId: Schema.String,
+});
+
 const GatewayJobSchema = Schema.Union([
   StoreJobSchema,
   RefreshJobSchema,
@@ -62,9 +69,15 @@ const GatewayJobSchema = Schema.Union([
   JoinJobSchema,
   SyncJobSchema,
   LeaveJobSchema,
+  ResyncJobSchema,
 ]);
 
-const QueueJobSchema = Schema.Union([WithdrawJobSchema, MigrateJobSchema, IngestJobSchema]);
+const QueueJobSchema = Schema.Union([
+  WithdrawJobSchema,
+  MigrateJobSchema,
+  CatchUpJobSchema,
+  IngestJobSchema,
+]);
 
 type IngestJob = typeof IngestJobSchema.Type;
 

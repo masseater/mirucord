@@ -97,6 +97,14 @@ it("asks to forget a server the bot was removed from, but not one that is only u
   );
 });
 
+it("asks to catch up once when the gateway starts a new session", () => {
+  expect(jobOf(GatewayDispatchEvents.Ready, {})).toStrictEqual(Option.some({ kind: "resync" }));
+  expect(jobOf(GatewayDispatchEvents.Resumed, {})).toStrictEqual(Option.none());
+  expect(
+    mergeJobs([{ kind: "resync" }, { kind: "join", guildId: "700" }, { kind: "resync" }]),
+  ).toStrictEqual([{ kind: "resync" }, { kind: "join", guildId: "700" }]);
+});
+
 it("keeps only the latest join or leave of each server and skips its sync", () => {
   expect(
     mergeJobs([

@@ -39,7 +39,6 @@ const channel = sqliteTable(
     permissionOverwrites: text({ mode: "json" }).$type<readonly Overwrite[]>().notNull(),
     newestMessageId: text(),
     oldestMessageId: text(),
-    sweepCursor: text(),
     backfill: text({ enum: ["pending", "done"] })
       .notNull()
       .default("pending"),

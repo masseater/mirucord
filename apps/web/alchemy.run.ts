@@ -19,7 +19,7 @@ import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
 import type { GuildStore } from "./src/entities/guild-message/api/guild-store.server.ts";
-import { INGEST_MAX_RETRIES, POLL_CRON, SYNC_CRON } from "./src/features/ingest/index.ts";
+import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
@@ -243,7 +243,6 @@ const web = Effect.gen(function* web() {
     name: yield* mirucordName("web"),
     domain: SITE_HOST,
     main: "src/app/server/index.ts",
-    crons: [POLL_CRON, SYNC_CRON],
     compatibility: { flags: ["global_fetch_strictly_public"] },
     env: {
       ...discord,

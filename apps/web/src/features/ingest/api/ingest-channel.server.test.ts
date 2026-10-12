@@ -2,7 +2,7 @@ import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
-import { Array, Boolean, DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vite-plus/test";
 
@@ -19,12 +19,9 @@ import { ingestChannel } from "./ingest-channel.server";
 const OWNER = "901";
 const GUILD = "700";
 const CHANNEL = "710";
-const CURSOR = "8000";
 const DELETED = "7900";
 const KEPT = "7950";
-const ABOVE_CURSOR = "8500";
 const LATEST_START = 90_000;
-const SWEPT_START = 1000;
 const UNIT = 1;
 const PAGE_SIZE = 100;
 const DEFAULT_TYPE = 0;
@@ -45,19 +42,6 @@ const fullPage = (start: number): readonly unknown[] =>
 
 const network = setupNetwork();
 
-const answer = (swept: readonly unknown[]): void => {
-  network.use(
-    http.get("https://discord.com/api/v10/channels/:channelId/messages", ({ request }) =>
-      HttpResponse.json(
-        Boolean.match(new URL(request.url).searchParams.has("before"), {
-          onTrue: () => swept,
-          onFalse: () => fullPage(LATEST_START),
-        }),
-      ),
-    ),
-  );
-};
-
 const seed: Effect.Effect<void> = Effect.gen(function* seedChannel() {
   yield* consentedGuild({ guildId: GUILD, channelId: CHANNEL });
   yield* Effect.promise(() =>
@@ -68,10 +52,9 @@ const seed: Effect.Effect<void> = Effect.gen(function* seedChannel() {
       type: 0,
       permissionOverwrites: [],
       backfill: "done",
-      sweepCursor: CURSOR,
     }),
   );
-  const messages = [DELETED, KEPT, ABOVE_CURSOR].map((id) =>
+  const messages = [DELETED, KEPT].map((id) =>
     storedMessage({ id, channelId: CHANNEL, createdAt: SEEDED_AT.getTime() }),
   );
   yield* putMessages({ guildId: GUILD, messages });
@@ -79,17 +62,6 @@ const seed: Effect.Effect<void> = Effect.gen(function* seedChannel() {
 
 const storedIds = storedIdsIn({ guildId: GUILD, channelId: CHANNEL }).pipe(
   Effect.map((ids) => new Set(ids)),
-);
-
-const savedCursor = Effect.promise(() =>
-  db.select({ sweep: channel.sweepCursor }).from(channel).where(eq(channel.id, CHANNEL)),
-).pipe(Effect.map((rows) => Option.flatMapNullishOr(Array.head(rows), ({ sweep }) => sweep)));
-
-const resetCursor = Effect.promise(() =>
-  db
-    .update(channel)
-    .set({ sweepCursor: Option.getOrNull(Option.none()) })
-    .where(eq(channel.id, CHANNEL)),
 );
 
 beforeAll(() => {
@@ -105,23 +77,17 @@ afterAll(() => {
   network.disable();
 });
 
-it.effect("forgets an old message deleted in Discord and restarts the sweep at the start", () =>
-  Effect.gen(function* sweepToStart() {
-    answer([discordMessage(KEPT)]);
+it.effect("forgets a stored message missing from a channel's whole latest history", () =>
+  Effect.gen(function* forgetMissing() {
+    network.use(
+      http.get("https://discord.com/api/v10/channels/:channelId/messages", () =>
+        HttpResponse.json([discordMessage(KEPT)]),
+      ),
+    );
     yield* ingestChannel({ guildId: GUILD, channelId: CHANNEL });
     const stored = yield* storedIds;
     expect(stored.has(DELETED)).toBe(false);
     expect(stored.has(KEPT)).toBe(true);
-    expect(Option.isNone(yield* savedCursor)).toBe(true);
-  }),
-);
-
-it.effect("moves the sweep below a full page of history", () =>
-  Effect.gen(function* sweepFullPage() {
-    yield* resetCursor;
-    answer(fullPage(SWEPT_START));
-    yield* ingestChannel({ guildId: GUILD, channelId: CHANNEL });
-    expect(yield* savedCursor).toStrictEqual(Option.some(String(SWEPT_START)));
   }),
 );
 

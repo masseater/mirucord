@@ -3,12 +3,10 @@ import type { DataTag, UnusedSkipTokenOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { Duration, Effect, Option, Schema } from "effect";
 
-import { REFRESH_COOLDOWN } from "#/features/ingest";
 import type {
   ConsentResult,
   ForumPostsResult,
   GuildIngest,
-  GuildRefreshResult,
   PurgeResult,
   RevokeResult,
 } from "#/features/ingest/index.server";
@@ -21,8 +19,6 @@ import {
   loadForumPosts,
   loadGuildPage,
   purgeFor,
-  refreshGuild,
-  refreshGuilds,
   revokeFor,
 } from "./dashboard.server";
 import type {
@@ -86,14 +82,6 @@ const postPurge = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(ChannelInput))
   .handler(({ data }) => Effect.runPromise(purgeFor(data)));
 
-const postRefreshGuilds = createServerFn({ method: "POST" }).handler(() =>
-  Effect.runPromise(refreshGuilds),
-);
-
-const postRefreshGuild = createServerFn({ method: "POST" })
-  .validator(Schema.toStandardSchemaV1(GuildInput))
-  .handler(({ data }) => Effect.runPromise(refreshGuild(data.guildId)));
-
 const dashboardQuery = queryOptions({
   queryKey: ["dashboard"],
   queryFn: () => getDashboard(),
@@ -126,36 +114,6 @@ const forumPostsQuery = ({
     queryFn: () => getForumPosts({ data: { guildId, channelId } }),
   });
 
-type RefreshTarget = Readonly<{ scope: "guilds" }> | Readonly<{ scope: "guild"; guildId: string }>;
-
-type RefreshOutcome = GuildRefreshResult | SignedOut;
-
-const runRefresh = (target: RefreshTarget): Promise<RefreshOutcome> => {
-  if (target.scope === "guilds") {
-    return postRefreshGuilds();
-  }
-  return postRefreshGuild({ data: { guildId: target.guildId } });
-};
-
-type RefreshKey = readonly ["refresh", RefreshTarget];
-
-const refreshQuery = (
-  target: RefreshTarget,
-): UnusedSkipTokenOptions<RefreshOutcome, Error, RefreshOutcome, RefreshKey> &
-  Readonly<{ queryKey: DataTag<RefreshKey, RefreshOutcome, Error> }> =>
-  queryOptions({
-    queryKey: ["refresh", target] as const,
-    queryFn: ({ client }) =>
-      Effect.runPromise(
-        Effect.promise(() => runRefresh(target)).pipe(
-          Effect.tap(() =>
-            Effect.promise(() => client.invalidateQueries({ queryKey: dashboardQuery.queryKey })),
-          ),
-        ),
-      ),
-    staleTime: Duration.toMillis(REFRESH_COOLDOWN),
-  });
-
 const saveConsent = (input: ConsentInput): Promise<ConsentResult | SignedOut> =>
   postConsent({ data: input });
 
@@ -179,7 +137,7 @@ const eraseMyMessages = (guildId: string): Promise<EraseResult | SignedOut> =>
 const purgeStoredChannel = (input: typeof ChannelInput.Type): Promise<PurgeResult | SignedOut> =>
   postPurge({ data: input });
 
-export type { ForumPostsOutcome, RefreshOutcome, RefreshTarget };
+export type { ForumPostsOutcome };
 export {
   dashboardQuery,
   disconnectConnectedApp,
@@ -187,7 +145,6 @@ export {
   forumPostsQuery,
   guildPageQuery,
   purgeStoredChannel,
-  refreshQuery,
   saveConsent,
   withdrawConsent,
 };

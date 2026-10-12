@@ -101,6 +101,8 @@ const leaveJob = (data: Readonly<GatewayGuildDeleteDispatchData>): Option.Option
     Option.map(({ id }) => ({ kind: "leave", guildId: id })),
   );
 
+const resyncJob = (): Option.Option<GatewayJob> => Option.some({ kind: "resync" });
+
 const syncJobOf = (guildId: string): GatewayJob => ({ kind: "sync", guildId });
 
 const syncJob = (data: typeof GuildChangeEvent.Encoded): Option.Option<GatewayJob> =>
@@ -129,6 +131,7 @@ const jobOfDispatch = Match.type<GatewayDispatchPayload>().pipe(
     guildUpdateJob(dispatch.d),
   ),
   Match.discriminator("t")(GatewayDispatchEvents.GuildDelete, (dispatch) => leaveJob(dispatch.d)),
+  Match.discriminator("t")(GatewayDispatchEvents.Ready, resyncJob),
   Match.discriminator("t")(
     GatewayDispatchEvents.ChannelCreate,
     GatewayDispatchEvents.ChannelUpdate,
@@ -155,6 +158,9 @@ const isGuildJob = (job: GatewayJob): job is GuildJob =>
   job.kind === "join" || job.kind === "sync" || job.kind === "leave";
 
 const subjectOf = (job: GatewayJob): Readonly<Record<string, string>> => {
+  if (job.kind === "resync") {
+    return { kind: job.kind };
+  }
   if (isGuildJob(job)) {
     return { kind: job.kind, guildId: job.guildId };
   }
@@ -162,6 +168,9 @@ const subjectOf = (job: GatewayJob): Readonly<Record<string, string>> => {
 };
 
 const jobKeyOf = (job: GatewayJob): string => {
+  if (job.kind === "resync") {
+    return job.kind;
+  }
   if (isGuildJob(job)) {
     return job.guildId;
   }
@@ -174,7 +183,7 @@ const jobKeyOf = (job: GatewayJob): string => {
 type MessageChange = Place & Readonly<{ messageId: string; change: Change }>;
 
 const messageChangesOf = (job: GatewayJob): readonly MessageChange[] => {
-  if (isGuildJob(job)) {
+  if (job.kind === "resync" || isGuildJob(job)) {
     return [];
   }
   const place = { guildId: job.guildId, channelId: job.channelId };
@@ -245,7 +254,13 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
   const syncs = [...new Set(jobs.flatMap((job) => syncedGuildsOf(job)))]
     .filter((guildId) => !membership.has(guildId))
     .map((guildId) => syncJobOf(guildId));
-  return [...moves, ...syncs, ...Object.values(groups).flatMap((group) => jobsOfGroup(group))];
+  const resyncs = Option.toArray(Array.findFirst(jobs, ({ kind }) => kind === "resync"));
+  return [
+    ...resyncs,
+    ...moves,
+    ...syncs,
+    ...Object.values(groups).flatMap((group) => jobsOfGroup(group)),
+  ];
 };
 
 export { jobKeyOf, mergeJobs, subjectOf, toGatewayJob };

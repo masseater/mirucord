@@ -9,6 +9,7 @@ import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server";
 import { forgetGuild } from "./guild-membership.server";
 import type { IngestError } from "./message-page.server";
+import { resyncGuilds } from "./resync.server";
 import { syncJoinedGuild, syncKnownGuild } from "./sync-guilds.server";
 
 const PROCESSED = 200;
@@ -23,6 +24,7 @@ const runJob: (job: GatewayJob) => Effect.Effect<void, IngestError> = Match.type
     join: ({ guildId }) => syncJoinedGuild(guildId),
     sync: ({ guildId }) => syncKnownGuild(guildId),
     leave: ({ guildId }) => forgetGuild(guildId),
+    resync: () => resyncGuilds,
     store: storeGatewayMessages,
     refresh: refreshMessages,
     forget: forgetMessages,

@@ -1,9 +1,9 @@
 import { it } from "@effect/vitest";
+import { signGatewayEvent } from "@repo/ingest-util-gateway-contract";
 import { env } from "cloudflare:workers";
 import { DateTime, Effect } from "effect";
 import { expect } from "vite-plus/test";
 
-import { signGatewayEvent } from "#/features/ingest/index.gateway";
 import { SITE_ORIGIN } from "#/shared/config";
 
 import { api } from "./api.server";

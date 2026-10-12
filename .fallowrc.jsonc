@@ -122,6 +122,8 @@
             "candidates",
             "read",
             "eraseAuthor",
+            "publish",
+            "alarm",
           ],
         },
         {

@@ -16,7 +16,7 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "list",
         items: [
-          "Cloudflare のアカウントと、そこで管理しているドメインを用意します。Workers、D1、Durable Objects、Queues、Workers AI、Secrets Store を使い、Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
+          "Cloudflare のアカウントと、そこで管理しているドメインを用意します。Workers、D1、Durable Objects、R2、Queues、Workers AI、Secrets Store を使い、Workers Paid プランを前提にしています。無料プランでは、D1 の 1 日あたりの書き込みや Worker の CPU 時間の上限で取り込みが止まります。",
           "Discord Developer Portal でアプリケーションを作ります。手順は次の節にあります。",
           "fly.io のアカウントも必須です。Discord の Gateway につなぎっぱなしにするプロセスをここに置きます。メッセージの取り込みも、サーバーやチャンネルの変化の反映も、この Gateway から始まります。",
           "CI からデプロイするなら、GitHub のアカウントも使います。",
@@ -112,7 +112,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: "`apps/web` の deploy で Worker、D1、Durable Objects、Queues、Secrets Store がそろい、D1 のマイグレーションも適用されます。`apps/gateway` の deploy は fly.io に Gateway を置きます。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
+        text: "`apps/web` の deploy で Worker、D1、Durable Objects、R2、Queues、Secrets Store がそろい、D1 のマイグレーションも適用されます。`apps/gateway` の deploy は fly.io に Gateway を置きます。ステージを `prod` 以外にすると、リソース名の末尾に `-<ステージ名>` が付きます。",
       },
     ],
   },

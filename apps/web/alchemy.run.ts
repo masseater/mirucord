@@ -5,6 +5,7 @@ import {
   Credentials,
   D1,
   Queues,
+  R2,
   SecretsStore,
   Website,
   Workers,
@@ -208,11 +209,15 @@ const storage = Effect.gen(function* storage() {
     migrations: "./drizzle",
   });
   const INGEST = yield* Queues.Queue("Ingest", { name: yield* mirucordName("ingest") });
-  return { DB, INGEST };
+  const SEARCH = yield* R2.Bucket("Search", {
+    name: yield* mirucordName("search"),
+    locationHint: "enam",
+  });
+  return { DB, INGEST, SEARCH };
 });
 
 const web = Effect.gen(function* web() {
-  const { DB, INGEST } = yield* storage;
+  const { DB, INGEST, SEARCH } = yield* storage;
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* masterKey;
   const { discord, release, operations } = yield* settings;
@@ -228,6 +233,7 @@ const web = Effect.gen(function* web() {
       MASTER_KEY,
       DB,
       INGEST,
+      SEARCH,
       GUILD_STORE: Workers.DurableObject<GuildStore>("GuildStore"),
       AI: Workers.AI(),
       VERSION: Workers.VersionMetadata(),

@@ -1,11 +1,10 @@
-import { eq } from "drizzle-orm";
-import { Array, DateTime, Effect, Option, pipe } from "effect";
+import { DateTime, Effect, Option, pipe } from "effect";
 
 import { phraseHashes } from "#/entities/guild-message/lib/phrases.server";
 import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
-import { db, guild } from "#/shared/db/index.server";
 
 import type { ExtractedPhrases, UnphrasedMessage } from "./store-types";
+import { wrappedKeyOf } from "./wrapped-key.server";
 
 const BACKFILL_BATCH = 200;
 
@@ -17,11 +16,6 @@ type BackfillTarget = Readonly<{
   writePhrases: (extracted: readonly ExtractedPhrases[]) => void;
   again: (at: number) => Effect.Effect<void>;
 }>;
-
-const wrappedKeyOf = (guildId: string): Effect.Effect<Option.Option<string>> =>
-  Effect.promise(() =>
-    db.select({ wrappedKey: guild.wrappedKey }).from(guild).where(eq(guild.id, guildId)),
-  ).pipe(Effect.map((rows) => Option.map(Array.head(rows), ({ wrappedKey }) => wrappedKey)));
 
 const extractPhrases = (
   { guildId, keys }: Readonly<{ guildId: string; keys: GuildKeys }>,

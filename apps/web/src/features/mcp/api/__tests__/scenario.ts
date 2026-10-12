@@ -243,6 +243,7 @@ const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
     yield* seedConsent(seed);
     const rows = yield* sealedRows(seed, yield* openGuildKeys(wrappedKey));
     yield* Effect.promise(() => guildStore(seed.id).write(rows, "overwrite"));
+    yield* Effect.promise(() => guildStore(seed.id).publish());
   });
 
 const guildKeys = (

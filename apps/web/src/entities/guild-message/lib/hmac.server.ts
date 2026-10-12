@@ -14,4 +14,12 @@ const hmacToken = ({
     Effect.map((signature) => Hex.encode(new Uint8Array(signature, TOKEN_START, TOKEN_BYTES))),
   );
 
-export { hmacToken };
+const hmacWord = ({
+  key,
+  text,
+}: Readonly<{ key: CryptoKey; text: string }>): Effect.Effect<number> =>
+  Effect.promise(() => crypto.subtle.sign("HMAC", key, textEncoder.encode(text))).pipe(
+    Effect.map((signature) => new DataView(signature).getUint32(TOKEN_START)),
+  );
+
+export { hmacToken, hmacWord };

@@ -18,7 +18,13 @@ type ExtractedHashes = Extract<PhraseState, Readonly<{ status: "extracted" }>>["
 
 type PhraseColumn = "messageId" | "authorId" | "channelId";
 
-type IndexedMessage = Readonly<{ row: StoredRow; tokens: readonly string[]; phrases: PhraseState }>;
+type IndexedMessage = Readonly<{
+  row: StoredRow;
+  tokens: readonly number[];
+  phrases: PhraseState;
+}>;
+
+type TrackedRow = Readonly<{ id: string; createdAt: number; version: number }>;
 
 type WriteMode = "overwrite" | "adopt";
 
@@ -97,6 +103,7 @@ export type {
   SealedMessage,
   StoredRow,
   StoredState,
+  TrackedRow,
   UnphrasedMessage,
   WriteMode,
 };

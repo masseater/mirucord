@@ -36,7 +36,17 @@ const JoinJobSchema = Schema.Struct({
   guildId: Schema.String,
 });
 
-const GatewayJobSchema = Schema.Union([RefreshJobSchema, ForgetJobSchema, JoinJobSchema]);
+const SyncJobSchema = Schema.Struct({
+  kind: Schema.Literal("sync"),
+  guildId: Schema.String,
+});
+
+const GatewayJobSchema = Schema.Union([
+  RefreshJobSchema,
+  ForgetJobSchema,
+  JoinJobSchema,
+  SyncJobSchema,
+]);
 
 const QueueJobSchema = Schema.Union([WithdrawJobSchema, MigrateJobSchema, IngestJobSchema]);
 

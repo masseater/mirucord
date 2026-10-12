@@ -77,3 +77,35 @@ it("splits a large burst into jobs of at most a hundred messages", () => {
     { ...job, messageIds: Array.drop(ids, MESSAGES_PER_JOB) },
   ]);
 });
+
+it("asks to sync a server whose channels, threads, or roles changed", () => {
+  for (const event of [
+    GatewayDispatchEvents.ChannelUpdate,
+    GatewayDispatchEvents.ThreadCreate,
+    GatewayDispatchEvents.GuildRoleUpdate,
+  ]) {
+    expect(toGatewayJob({ event, data: { id: "710", guild_id: "700" } })).toStrictEqual(
+      Option.some({ kind: "sync", guildId: "700" }),
+    );
+  }
+  expect(
+    toGatewayJob({ event: GatewayDispatchEvents.GuildUpdate, data: { id: "700" } }),
+  ).toStrictEqual(Option.some({ kind: "sync", guildId: "700" }));
+  expect(
+    toGatewayJob({ event: GatewayDispatchEvents.ChannelCreate, data: { id: "1", type: 1 } }),
+  ).toStrictEqual(Option.none());
+});
+
+it("syncs each changed server once and not right after it joined", () => {
+  expect(
+    mergeJobs([
+      { kind: "sync", guildId: "700" },
+      { kind: "sync", guildId: "800" },
+      { kind: "join", guildId: "800" },
+      { kind: "sync", guildId: "700" },
+    ]),
+  ).toStrictEqual([
+    { kind: "join", guildId: "800" },
+    { kind: "sync", guildId: "700" },
+  ]);
+});

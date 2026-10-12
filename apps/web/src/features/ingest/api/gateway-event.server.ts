@@ -8,7 +8,7 @@ import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 
 import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
 import type { IngestError } from "./message-page.server";
-import { syncJoinedGuild } from "./sync-guilds.server";
+import { syncJoinedGuild, syncKnownGuild } from "./sync-guilds.server";
 
 const PROCESSED = 200;
 const FAILED = 500;
@@ -20,6 +20,9 @@ const decodeJob = Schema.decodeUnknownOption(Schema.fromJsonString(GatewayJobSch
 const runJob = (job: GatewayJob): Effect.Effect<void, IngestError> => {
   if (job.kind === "join") {
     return syncJoinedGuild(job.guildId);
+  }
+  if (job.kind === "sync") {
+    return syncKnownGuild(job.guildId);
   }
   if (job.kind === "refresh") {
     return refreshMessages(job);

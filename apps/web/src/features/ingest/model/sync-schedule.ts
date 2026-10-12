@@ -1,7 +1,7 @@
 import { DateTime } from "effect";
 
 const POLL_CRON = "32 * * * *";
-const SYNC_CRON = "2 * * * *";
+const SYNC_CRON = "2 18 * * *";
 const POLL_SLOTS = 24n;
 
 const isPollDue = ({

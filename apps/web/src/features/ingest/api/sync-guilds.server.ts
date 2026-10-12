@@ -157,4 +157,14 @@ const syncJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestErr
     ),
   );
 
-export { syncGuildList, syncGuilds, syncJoinedGuild, syncMembership, syncOneGuild };
+const syncKnownGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+  listGuildIds.pipe(
+    Effect.flatMap((stored) => {
+      if (stored.includes(guildId)) {
+        return syncOneGuild(guildId);
+      }
+      return Effect.void;
+    }),
+  );
+
+export { syncGuildList, syncGuilds, syncJoinedGuild, syncKnownGuild, syncMembership, syncOneGuild };

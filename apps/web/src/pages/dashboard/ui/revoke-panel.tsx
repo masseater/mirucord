@@ -4,10 +4,9 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 
 import { withdrawConsent } from "#/pages/dashboard/api/dashboard";
+import { mutationMessage } from "#/pages/dashboard/lib/mutation-message";
 import { useReturnToDashboard } from "#/pages/dashboard/model/use-return-to-dashboard";
 import { PopButton } from "#/shared/ui/pop-button";
-
-import { mutationMessage } from "./mutation-message";
 
 const SUMMARY = "同意を取り消す";
 const DETAIL = "保存したメッセージと検索用データをすべて削除します。元に戻せません。";

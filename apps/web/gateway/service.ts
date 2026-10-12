@@ -38,7 +38,7 @@ const runGateway = (botToken: string): Effect.Effect<void> =>
       preferSnakeCase: true,
       events: {
         message: (_shard, payload) =>
-          Option.match(toGatewayJob({ event: payload.t, data: payload.d }), {
+          Option.match(toGatewayJob(payload), {
             onNone: () => false,
             onSome: (job) => Queue.offerUnsafe(jobs, job),
           }),

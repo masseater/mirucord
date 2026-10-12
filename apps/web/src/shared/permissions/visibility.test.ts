@@ -1,5 +1,4 @@
-import { OverwriteTypes } from "@discordeno/types";
-import { ChannelType, PermissionFlagsBits } from "discord-api-types/v10";
+import { ChannelType, OverwriteType, PermissionFlagsBits } from "discord-api-types/v10";
 import { Option } from "effect";
 import { expect, it } from "vite-plus/test";
 
@@ -55,8 +54,8 @@ it("shows nothing to someone who is not a member", () => {
 it("shows a channel that @everyone is denied but a role is allowed", () => {
   const snapshot = snapshotOf([
     textChannel("1", [
-      { id: GUILD, type: OverwriteTypes.Role, allow: NOTHING, deny: VIEW },
-      { id: MEMBER_ROLE, type: OverwriteTypes.Role, allow: VIEW, deny: NOTHING },
+      { id: GUILD, type: OverwriteType.Role, allow: NOTHING, deny: VIEW },
+      { id: MEMBER_ROLE, type: OverwriteType.Role, allow: VIEW, deny: NOTHING },
     ]),
   ]);
   expect([...visibleChannelIds(snapshot, member(USER, [MEMBER_ROLE]))]).toStrictEqual(["1"]);
@@ -65,15 +64,15 @@ it("shows a channel that @everyone is denied but a role is allowed", () => {
 it("lets a member deny win over a role allow", () => {
   const snapshot = snapshotOf([
     textChannel("1", [
-      { id: MEMBER_ROLE, type: OverwriteTypes.Role, allow: VIEW, deny: NOTHING },
-      { id: USER, type: OverwriteTypes.Member, allow: NOTHING, deny: VIEW },
+      { id: MEMBER_ROLE, type: OverwriteType.Role, allow: VIEW, deny: NOTHING },
+      { id: USER, type: OverwriteType.Member, allow: NOTHING, deny: VIEW },
     ]),
   ]);
   expect([...visibleChannelIds(snapshot, member(USER, [MEMBER_ROLE]))]).toStrictEqual([]);
 });
 
 it("shows every channel to the owner and to administrators", () => {
-  const hidden = [{ id: GUILD, type: OverwriteTypes.Role, allow: NOTHING, deny: VIEW }];
+  const hidden = [{ id: GUILD, type: OverwriteType.Role, allow: NOTHING, deny: VIEW }];
   const snapshot = snapshotOf([textChannel("1", hidden), textChannel("2", hidden)]);
   expect([...visibleChannelIds(snapshot, member(OWNER, []))]).toStrictEqual(["1", "2"]);
   expect([...visibleChannelIds(snapshot, member(USER, [ADMIN_ROLE]))]).toStrictEqual(["1", "2"]);
@@ -81,7 +80,7 @@ it("shows every channel to the owner and to administrators", () => {
 
 it("hides a thread whose parent channel is hidden", () => {
   const snapshot = snapshotOf([
-    textChannel("1", [{ id: GUILD, type: OverwriteTypes.Role, allow: NOTHING, deny: VIEW }]),
+    textChannel("1", [{ id: GUILD, type: OverwriteType.Role, allow: NOTHING, deny: VIEW }]),
     textChannel("2", []),
     {
       id: "11",
@@ -109,7 +108,7 @@ it("shows the posts of a forum the reader can see", () => {
   const snapshot = snapshotOf([
     { ...textChannel("1", []), type: ChannelType.GuildForum },
     {
-      ...textChannel("2", [{ id: GUILD, type: OverwriteTypes.Role, allow: NOTHING, deny: VIEW }]),
+      ...textChannel("2", [{ id: GUILD, type: OverwriteType.Role, allow: NOTHING, deny: VIEW }]),
       type: ChannelType.GuildForum,
     },
     {
@@ -131,7 +130,7 @@ it("shows the posts of a forum the reader can see", () => {
 it("reads the text chat of a voice channel with view and history alone", () => {
   const snapshot = snapshotOf([
     voiceChannel("1", []),
-    voiceChannel("2", [{ id: GUILD, type: OverwriteTypes.Role, allow: NOTHING, deny: VIEW }]),
+    voiceChannel("2", [{ id: GUILD, type: OverwriteType.Role, allow: NOTHING, deny: VIEW }]),
   ]);
   expect([...visibleChannelIds(snapshot, member(USER, []))]).toStrictEqual(["1"]);
 });
@@ -140,10 +139,10 @@ it("cannot post where @everyone is denied sending and no role of the reader is a
   const snapshot = {
     ...snapshotOf([
       textChannel("1", []),
-      textChannel("2", [{ id: GUILD, type: OverwriteTypes.Role, allow: VIEW, deny: SEND }]),
+      textChannel("2", [{ id: GUILD, type: OverwriteType.Role, allow: VIEW, deny: SEND }]),
       textChannel("3", [
-        { id: GUILD, type: OverwriteTypes.Role, allow: VIEW, deny: SEND },
-        { id: MEMBER_ROLE, type: OverwriteTypes.Role, allow: SEND, deny: NOTHING },
+        { id: GUILD, type: OverwriteType.Role, allow: VIEW, deny: SEND },
+        { id: MEMBER_ROLE, type: OverwriteType.Role, allow: SEND, deny: NOTHING },
       ]),
     ]),
     rolePermissions: {

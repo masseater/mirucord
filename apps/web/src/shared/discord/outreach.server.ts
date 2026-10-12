@@ -1,5 +1,13 @@
-import type { DiscordAuditLog, DiscordChannel } from "@discordeno/types";
 import { AuditLogEvent, Routes } from "discord-api-types/v10";
+import type {
+  RESTGetAPIAuditLogResult,
+  RESTPostAPIChannelMessageJSONBody,
+  RESTPostAPIChannelMessageResult,
+  RESTPostAPICurrentUserCreateDMChannelJSONBody,
+  RESTPostAPICurrentUserCreateDMChannelResult,
+  RESTPostAPIWebhookWithTokenJSONBody,
+  RESTPostAPIWebhookWithTokenResult,
+} from "discord-api-types/v10";
 import { Array, Effect, Option, Schema } from "effect";
 
 import { callDiscord } from "./client.server";
@@ -24,10 +32,16 @@ const postWebhookMessage = ({
     WEBHOOK_PATH_PARTS,
   );
   return Effect.asVoid(
-    callDiscord<unknown>()(Schema.Unknown)({
+    callDiscord<RESTPostAPIWebhookWithTokenResult>()(Schema.decodeEffect(Schema.Unknown))({
       method: "POST",
       route: Routes.webhook(webhookId, token),
-      options: { body: { content, allowed_mentions: { parse: [] } }, unauthorized: true },
+      options: {
+        body: {
+          content,
+          allowed_mentions: { parse: [] },
+        } satisfies RESTPostAPIWebhookWithTokenJSONBody,
+        unauthorized: true,
+      },
     }),
   );
 };
@@ -37,22 +51,25 @@ const postChannelMessage = ({
   content,
 }: Readonly<{ channelId: string; content: string }>): Effect.Effect<void, DiscordRequestError> =>
   Effect.asVoid(
-    callDiscord<unknown>()(Schema.Unknown)({
+    callDiscord<RESTPostAPIChannelMessageResult>()(Schema.decodeEffect(Schema.Unknown))({
       method: "POST",
       route: Routes.channelMessages(channelId),
       options: {
-        body: { content, allowed_mentions: { parse: [] } },
+        body: {
+          content,
+          allowed_mentions: { parse: [] },
+        } satisfies RESTPostAPIChannelMessageJSONBody,
         unauthorized: false,
       },
     }),
   );
 
 const openDirectChannel = (userId: string): Effect.Effect<string, DiscordRequestError> =>
-  callDiscord<DiscordChannel>()(Channel)({
+  callDiscord<RESTPostAPICurrentUserCreateDMChannelResult>()(Schema.decodeEffect(Channel))({
     method: "POST",
     route: Routes.userChannels(),
     options: {
-      body: { recipient_id: userId },
+      body: { recipient_id: userId } satisfies RESTPostAPICurrentUserCreateDMChannelJSONBody,
       unauthorized: false,
     },
   }).pipe(Effect.map(({ id }) => id));
@@ -73,7 +90,7 @@ const findBotAdder = ({
   DiscordRequestError
 > => {
   const query = new URLSearchParams({ action_type: String(AuditLogEvent.BotAdd) });
-  return callDiscord<DiscordAuditLog>()(AuditLog)({
+  return callDiscord<RESTGetAPIAuditLogResult>()(Schema.decodeEffect(AuditLog))({
     method: "GET",
     route: `${Routes.guildAuditLog(guildId)}?${query.toString()}`,
   }).pipe(

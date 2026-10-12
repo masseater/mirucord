@@ -1,8 +1,14 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
+import { RouteBases } from "discord-api-types/v10";
+import type {
+  RESTPostAPIChannelMessageJSONBody,
+  RESTPostAPICurrentUserCreateDMChannelJSONBody,
+} from "discord-api-types/v10";
 import { eq } from "drizzle-orm";
-import { Effect, Schema } from "effect";
+import { Effect } from "effect";
 import { http, HttpResponse } from "msw";
+import type { PathParams } from "msw";
 import { afterAll, afterEach, beforeAll, expect } from "vite-plus/test";
 
 import { db, guild } from "#/shared/db/index.server";
@@ -15,23 +21,11 @@ const INVITER = "903";
 const DM_CHANNEL = "950";
 const SYSTEM_CHANNEL = "811";
 const OTHER_CHANNEL = "812";
-const DISCORD = "https://discord.com/api/v10";
+const DISCORD = RouteBases.api;
 const FORBIDDEN = 403;
 const CANNOT_DM = 50_007;
 
 const network = setupNetwork();
-
-const DirectChannelBody = Schema.Struct({ recipient_id: Schema.String });
-const MessageBody = Schema.Struct({ content: Schema.String });
-
-const bodyOf = <Body extends Schema.Top>(
-  schema: Body,
-  request: Readonly<{ json: () => Promise<unknown> }>,
-): Effect.Effect<Body["Type"], never, Body["DecodingServices"]> =>
-  Effect.promise(() => request.json()).pipe(
-    Effect.flatMap(Schema.decodeUnknownEffect(schema)),
-    Effect.orDie,
-  );
 
 type Sent = Readonly<{ channelId: string; content: string }>;
 
@@ -45,30 +39,35 @@ const outgoing = (
   record: (message: Sent) => void,
   dm: Scenario["dm"],
 ): ReturnType<typeof http.post>[] => [
-  http.post(`${DISCORD}/users/@me/channels`, ({ request }) =>
-    Effect.runPromise(
-      bodyOf(DirectChannelBody, request).pipe(
-        Effect.map(({ recipient_id }) => {
-          record({ channelId: `dm:${recipient_id}`, content: "" });
-          return HttpResponse.json({ id: DM_CHANNEL });
-        }),
+  http.post<PathParams, RESTPostAPICurrentUserCreateDMChannelJSONBody>(
+    `${DISCORD}/users/@me/channels`,
+    ({ request }) =>
+      Effect.runPromise(
+        Effect.promise(() => request.json()).pipe(
+          Effect.map(({ recipient_id }) => {
+            record({ channelId: `dm:${recipient_id}`, content: "" });
+            return HttpResponse.json({ id: DM_CHANNEL });
+          }),
+        ),
       ),
-    ),
   ),
-  http.post(`${DISCORD}/channels/:channelId/messages`, ({ params, request }) => {
-    const channelId = String(params["channelId"]);
-    if (channelId === DM_CHANNEL && dm === "closed") {
-      return HttpResponse.json({ code: CANNOT_DM }, { status: FORBIDDEN });
-    }
-    return Effect.runPromise(
-      bodyOf(MessageBody, request).pipe(
-        Effect.map(({ content }) => {
-          record({ channelId, content });
-          return HttpResponse.json({ id: "1" });
-        }),
-      ),
-    );
-  }),
+  http.post<PathParams<"channelId">, RESTPostAPIChannelMessageJSONBody>(
+    `${DISCORD}/channels/:channelId/messages`,
+    ({ params, request }) => {
+      const channelId = String(params.channelId);
+      if (channelId === DM_CHANNEL && dm === "closed") {
+        return HttpResponse.json({ code: CANNOT_DM }, { status: FORBIDDEN });
+      }
+      return Effect.runPromise(
+        Effect.promise(() => request.json()).pipe(
+          Effect.map(({ content = "" }) => {
+            record({ channelId, content });
+            return HttpResponse.json({ id: "1" });
+          }),
+        ),
+      );
+    },
+  ),
 ];
 
 const discordWith = ({ guildId, auditLog, dm }: Scenario): Sent[] => {

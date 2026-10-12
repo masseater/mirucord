@@ -1,11 +1,11 @@
-import { OverwriteTypes } from "@discordeno/types";
 import { BitField } from "@sapphire/bitfield";
-import { PermissionFlagsBits } from "discord-api-types/v10";
+import { OverwriteType, PermissionFlagsBits } from "discord-api-types/v10";
+import type { APIOverwrite } from "discord-api-types/v10";
 import { Array, Function, Option, Record } from "effect";
 
 const DATA_FIRST_ARITY = 2;
 
-type Overwrite = Readonly<{ id: string; type: OverwriteTypes; allow: string; deny: string }>;
+type Overwrite = Readonly<APIOverwrite>;
 
 type ReaderContext = Readonly<{
   guildId: string;
@@ -45,7 +45,7 @@ const channelPermissions = (reader: ReaderContext, overwrites: readonly Overwrit
     Array.findFirst(overwrites, ({ id }) => id === reader.guildId),
   );
   const roleOverwrites = overwrites.filter(
-    ({ id, type }) => type === OverwriteTypes.Role && reader.memberRoleIds.includes(id),
+    ({ id, type }) => type === OverwriteType.Role && reader.memberRoleIds.includes(id),
   );
   const afterRoles = applyOverwrite(
     afterEveryone,
@@ -56,7 +56,7 @@ const channelPermissions = (reader: ReaderContext, overwrites: readonly Overwrit
     afterRoles,
     Array.findFirst(
       overwrites,
-      ({ id, type }) => type === OverwriteTypes.Member && id === reader.userId,
+      ({ id, type }) => type === OverwriteType.Member && id === reader.userId,
     ),
   );
 };

@@ -26,7 +26,7 @@ const LIVELY_MESSAGES = ["701", "702"].map((id) => storedMessage({ id, channelId
 
 const network = setupNetwork();
 
-const channelRow = (id: string, type: number): typeof channel.$inferInsert => ({
+const channelRow = (id: string, type: ChannelType): typeof channel.$inferInsert => ({
   id,
   guildId: GUILD,
   name: `channel ${id}`,

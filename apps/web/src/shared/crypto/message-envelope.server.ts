@@ -58,9 +58,7 @@ const PollSchema = Schema.Struct({
   answers: Schema.Array(Schema.String),
 });
 
-const NOTHING: readonly never[] = [];
-
-const nothingYet = Effect.succeed(NOTHING);
+const nothingYet = Effect.succeed<readonly never[]>([]);
 
 const StoredEmbeds = Schema.Array(EmbedSchema).pipe(Schema.withDecodingDefaultKey(nothingYet));
 
@@ -112,5 +110,5 @@ const openMessage: {
   (sealed: string, key: CryptoKey, address: MessageAddress): Effect.Effect<MessageBody>;
 } = Function.dual(DATA_FIRST_ARITY, openMessageDataFirst);
 
-export { openMessage, sealMessage };
+export { AttachmentSchema, EmbedSchema, PollSchema, openMessage, sealMessage };
 export type { MessageAddress, MessageBody };

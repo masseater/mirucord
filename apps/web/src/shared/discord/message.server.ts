@@ -5,8 +5,6 @@ const NO_CONTENT = "";
 
 const MessageText = Schema.String.pipe(Schema.withDecodingDefaultKey(Effect.succeed(NO_CONTENT)));
 
-const NO_EMBEDS: readonly never[] = [];
-
 const Attachment = Schema.Struct({
   filename: Schema.String,
   url: Schema.String,
@@ -23,7 +21,7 @@ const Embed = Schema.Struct({
   fields: Schema.optional(Schema.Array(EmbedField)),
 });
 
-const noEmbeds = Effect.succeed(NO_EMBEDS);
+const noEmbeds = Effect.succeed<readonly never[]>([]);
 
 const Embeds = Schema.Array(Embed).pipe(Schema.withDecodingDefaultKey(noEmbeds));
 

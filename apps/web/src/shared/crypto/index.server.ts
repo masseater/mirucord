@@ -6,5 +6,11 @@ export {
   openSearchKey,
   rewrapGuildKey,
 } from "./keyring.server";
-export { openMessage, sealMessage } from "./message-envelope.server";
+export {
+  AttachmentSchema,
+  EmbedSchema,
+  PollSchema,
+  openMessage,
+  sealMessage,
+} from "./message-envelope.server";
 export type { MessageBody } from "./message-envelope.server";

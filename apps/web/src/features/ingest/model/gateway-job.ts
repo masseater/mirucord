@@ -35,6 +35,7 @@ const GuildDeleteEvent = Schema.Struct({
 });
 
 const decodeGuild = Schema.decodeOption(GuildEvent);
+const decodeGuildDelete = Schema.decodeOption(GuildDeleteEvent);
 const decodeGuildChange = Schema.decodeOption(GuildChangeEvent);
 const decodeGuildDelete = Schema.decodeOption(GuildDeleteEvent);
 const decodeMessage = Schema.decodeOption(MessageEvent);

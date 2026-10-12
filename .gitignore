@@ -33,8 +33,7 @@ dist-ssr
 .claude/worktrees/
 
 # Agent skills restored from skills-lock.json
-.agents/skills
-.claude/skills/*
+.agents/skills/
 
 .nitro
 .tanstack

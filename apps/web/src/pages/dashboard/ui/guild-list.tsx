@@ -1,4 +1,3 @@
-import { Array } from "effect";
 import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
@@ -9,8 +8,7 @@ import { popButtonVariants } from "#/shared/ui/pop-variants";
 import { GuildCard } from "./guild-card";
 
 const TITLE = "あなたが管理しているサーバー";
-const EMPTY = `${MASCOT_NAME}が入っていて、あなたが管理権限を持つサーバーはまだありません。`;
-const INVITE = "Bot をサーバーに招待する";
+const INVITE = `${MASCOT_NAME}をサーバーに招待`;
 
 const GuildList = ({
   guilds,
@@ -18,7 +16,6 @@ const GuildList = ({
 }: Readonly<{ guilds: readonly ManagedGuild[]; inviteUrl: string }>): ReactNode => (
   <Panel>
     <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
-    {Array.isReadonlyArrayEmpty(guilds) && <p className="text-dc-muted">{EMPTY}</p>}
     <ul className="grid gap-4 sm:grid-cols-2">
       {guilds.map((guild) => (
         <GuildCard key={guild.id} guild={guild} />

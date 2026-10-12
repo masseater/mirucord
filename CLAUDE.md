@@ -44,14 +44,18 @@ lint・fmt・checkだけは、Vite+の仕様によりルートの単一設定と
 必須技術のパッケージはpnpmのstackカタログから参照する。未参照のカタログ項目と未使用の依存はfallowが落とす。
 アプリのsrc/直下には、FSDのレイヤーだけを置く。
 FSDはコロケーションが本質である。使われる場所の近くに置き、再利用されるまで切り出さない。
+定数・設定値・スキーマ・ルールのIDは一か所で定義し、ほかの場所はimportか導出で参照する。同じ値を書き写さない。
 サービス名「mirucord」とキャラクター名「ミル」は、`#/shared/config` の `SERVICE_NAME` と `MASCOT_NAME` から参照し、直書きしない。ESLint が落とす。
 ドメイン、リポジトリ名、鍵の導出に使う文字列は、変えると壊れる識別子なので定数に寄せない。Cloudflare のリソース名は `APP_NAME` から作る。
 
 ## Alchemy
 
 Alchemy のリソース定義に足りない設定があるときは、alchemy にパッチを当てず、公式の拡張手段であるカスタムリソースを定義する。
-アプリ名は `apps/web/app-name.ts` の `APP_NAME` だけで定義する。Cloudflare のリソースには `name` を明示し、`APP_NAME-` で始める。prod 以外のステージでは末尾に `-<stage>` を付ける。
-`APP_NAME` を変えるとリソース名が変わり、リソースは作り直される。`APP_NAME` は `SERVICE_NAME` と別に持つ。
+アプリ名は `libs/shared/util-app-name/src/app-name.ts` の `APP_NAME` だけで定義し、各アプリは `@repo/shared-util-app-name` から参照する。`APP_NAME` は `SERVICE_NAME` と別に持つ。
+スタック名は `APP_NAME` か、`APP_NAME-` で始まる名前にする。今は `mirucord`・`mirucord-gateway`・`mirucord-ci` である。
+スタックの最後では、`@repo/shared-util-app-name` の `requireAppPrefix` を `yield*` する。守らなければ ESLint か実行時検査が落とす。
+Cloudflare のリソースには `name` を明示し、`APP_NAME-` で始める。prod 以外のステージでは末尾に `-<stage>` を付ける。Rules.List と Fly.Secret は `-` を使えないので `APP_NAME_` で始める。
+`APP_NAME` やスタック名を変えるとリソース名や state が変わり、Random の値も含めてリソースは作り直される。スタック名を変えるときは、先に state を新しいスタック名へ写す。
 
 ## パッケージマネージャー
 

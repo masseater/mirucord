@@ -1,3 +1,4 @@
+import { GATEWAY_PATH } from "@repo/ingest-util-gateway-contract";
 import { env } from "cloudflare:workers";
 import { Elysia, t } from "elysia";
 import { CloudflareAdapter } from "elysia/adapter/cloudflare-worker";
@@ -13,7 +14,7 @@ export const api = new Elysia({ adapter: CloudflareAdapter, aot: false })
     deployedAt: env.VERSION.timestamp,
   }))
   .post(
-    "/api/gateway",
+    GATEWAY_PATH,
     ({ body, request }) =>
       receiveGatewayEvent({ body, headers: Object.fromEntries(request.headers) }),
     { parse: "text", body: t.String() },

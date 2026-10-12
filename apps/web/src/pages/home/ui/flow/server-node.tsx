@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 
 import { DiscordMark } from "#/pages/home/ui/common/discord-mark";
+import { MASCOT_NAME } from "#/shared/config";
 
 const TITLE = "みんなのサーバー";
-const CAPTION = "Bot を招待するだけ";
+const CAPTION = `${MASCOT_NAME}を招待するだけ`;
 
 const ServerNode = ({ left, top }: Readonly<{ left: string; top: string }>): ReactNode => (
   <g transform={`translate(${left} ${top})`}>

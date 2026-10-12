@@ -13,9 +13,6 @@ import { Panel } from "#/shared/ui/panel";
 import { ConsentActions } from "./consent-actions";
 
 const TIP = `${MASCOT_NAME}とつなぐよ`;
-const FAILED = "うまくいきませんでした。";
-const SCOPE = "は、あなたが Discord で読めるチャンネルのメッセージを読めるようになります。";
-const ASK = "へのアクセスを許可しますか";
 
 const answerConsent = (accept: boolean): Promise<unknown> =>
   authClient.oauth2.consent({ accept, fetchOptions: { throw: true } });
@@ -34,20 +31,8 @@ const ConsentForm = ({ clientId }: Readonly<{ clientId: string }>): ReactNode =>
     <AppFrame>
       <MascotTip>{TIP}</MascotTip>
       <Panel>
-        <h1 className="text-dc-bright font-maru text-2xl font-black">
-          {clientName}
-          {ASK}
-        </h1>
-        <p className="text-dc-muted leading-relaxed">
-          {clientName}
-          {SCOPE}
-        </p>
-        <ConsentActions
-          locked={status === "pending" || status === "success"}
-          onAllow={allow}
-          onDeny={deny}
-        />
-        {status === "error" && <p role="alert">{FAILED}</p>}
+        <h1 className="text-dc-bright font-maru text-2xl font-black">{clientName}</h1>
+        <ConsentActions status={status} onAllow={allow} onDeny={deny} />
       </Panel>
     </AppFrame>
   );

@@ -1,10 +1,10 @@
-import { Array } from "effect";
 import type { ReactNode } from "react";
 
 import type { GuildSettings, SettingsChannel } from "#/features/ingest/index.server";
 import { groupByCategory } from "#/pages/dashboard/model/channel-groups";
 import { MASCOT_NAME } from "#/shared/config";
 
+import { BlindChannelNote } from "./blind-channel-note";
 import { CategoryHeading } from "./category-heading";
 import { ChannelLabel } from "./channel-label";
 import { ForumPillToggle } from "./forum-pill-toggle";
@@ -12,7 +12,6 @@ import { ForumPostPanel } from "./forum-post-panel";
 import { Pill } from "./pill";
 
 const TITLE = `${MASCOT_NAME}が見られるチャンネル`;
-const EMPTY = `${MASCOT_NAME}が見られるチャンネルがまだありません。`;
 
 type Props = Readonly<{ settings: GuildSettings; channels: readonly SettingsChannel[] }>;
 
@@ -46,7 +45,7 @@ const ReadableChannelList = ({ settings, channels }: Props): ReactNode => (
   <>
     <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
     <ChannelGroups settings={settings} channels={channels} />
-    {!Array.isReadonlyArrayNonEmpty(channels) && <p className="font-bold">{EMPTY}</p>}
+    <BlindChannelNote channels={channels} />
   </>
 );
 

@@ -52,14 +52,14 @@
     },
     "modern-web-guidance": {
       "source": "GoogleChrome/modern-web-guidance",
-      "ref": "a97286845f2baba38988f9e5fe2b2a1351021e50",
+      "ref": "b31dc0a43ff5d19bcf386a3476a216f3b39a6f55",
       "sourceType": "github",
       "skillPath": "skills/modern-web-guidance/SKILL.md",
       "computedHash": "dbd30d9c331c8957e065270150ffe44b4ba11ad5259cc9144240f63c45b05f1c"
     },
     "shadcn": {
       "source": "shadcn-ui/ui",
-      "ref": "993eb2c3151997ce08a49635c10fd8c8ef3713c7",
+      "ref": "30a58d4498f270af1c1e981a7d78a15cf5740841",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "da388f632cd83783c02967446e21941c9ee8291ccb43ba74c23f7d4e9b7c298c"

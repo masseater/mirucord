@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import type { GuildSettings } from "#/features/ingest/index.server";
 import { groupByCategory } from "#/pages/dashboard/model/channel-groups";
+import { countFormat } from "#/pages/dashboard/model/format";
 import { Panel } from "#/shared/ui/panel";
 
 import { CategoryHeading } from "./category-heading";
@@ -9,7 +10,7 @@ import { IngestPill } from "./ingest-pill";
 import { IngestStatusRow } from "./ingest-status-row";
 
 const TITLE = "取り込みの状況";
-const STORED = "保存しているメッセージ";
+const STORED = "思い出";
 const UNIT = "件";
 
 const IngestStatus = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (
@@ -19,7 +20,7 @@ const IngestStatus = ({ settings }: Readonly<{ settings: GuildSettings }>): Reac
       <IngestPill ingest={settings.ingest} />
     </div>
     <p className="font-bold">
-      {STORED} {settings.storedMessages.toLocaleString("ja-JP")} {UNIT}
+      {STORED} {countFormat.format(settings.storedMessages)} {UNIT}
     </p>
     {groupByCategory(settings, settings.channels).map((group) => {
       const rows = group.channels.map((channel) => (

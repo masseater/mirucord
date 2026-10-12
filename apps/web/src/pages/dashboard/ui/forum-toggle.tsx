@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest/index.server";
+import { countFormat } from "#/pages/dashboard/model/format";
 import { forumPostsId, useForumDisclosure } from "#/pages/dashboard/model/forum-disclosure";
 
 import { ChannelLabel } from "./channel-label";
@@ -30,7 +31,7 @@ const ForumToggle = ({
         <ForumChevron open={disclosure.status === "open"} />
         <ChannelLabel channel={channel} />
         <span className="text-dc-muted text-sm">
-          {POSTS} {channel.posts.toLocaleString("ja-JP")} {UNIT}
+          {POSTS} {countFormat.format(channel.posts)} {UNIT}
         </span>
       </button>
       <IngestPill ingest={channel.ingest} />

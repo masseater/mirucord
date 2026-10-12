@@ -19,6 +19,7 @@ import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
+import { edgeGuard } from "./edge-guard.ts";
 import type { GuildStore, RequestCounter } from "./src/app/server/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
@@ -28,6 +29,7 @@ const NOT_FOUND = 404;
 const DEFAULT_MAX_GUILDS = String(FREE_GUILD_LIMIT);
 const WORKER_ISSUES = "Mirucord.WorkerIssues";
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);
+const OWNED_ZONE = Option.none<string>();
 
 const discordEnv = Config.all({
   DISCORD_CLIENT_ID: Config.NonEmptyString("DISCORD_CLIENT_ID"),
@@ -281,6 +283,10 @@ export default Stack(
   Effect.gen(function* stack() {
     const { url, workerName, hash } = yield* web;
     yield* WorkerIssues("WorkerIssues", { workerName, deployment: hash });
+    yield* Option.match(OWNED_ZONE, {
+      onNone: () => Effect.void,
+      onSome: edgeGuard,
+    });
     yield* ciTelemetry;
     yield* requireAppPrefix;
     return { url };

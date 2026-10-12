@@ -54,6 +54,7 @@ catalog:
   standardwebhooks: 1.1.1
   js-base64: 3.9.4
   type-fest: 5.10.0
+  dfx: 1.1.0
 catalogs:
   stack:
     "@effect/atom-react": 4.0.0

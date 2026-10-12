@@ -1,12 +1,8 @@
-import { createRestManager } from "@discordeno/rest";
-import type { RequestMethods } from "@discordeno/rest";
 import { env } from "cloudflare:workers";
-import type {
-  RESTPostAPIChannelMessageJSONBody,
-  RESTPostAPICurrentUserCreateDMChannelJSONBody,
-  RESTPostAPIWebhookWithTokenJSONBody,
-} from "discord-api-types/v10";
-import { Data, Effect, Option, Schema } from "effect";
+import { DiscordConfig, DiscordREST, DiscordRESTMemoryLive } from "dfx";
+import type { DiscordRestService } from "dfx/DiscordREST";
+import { Context, Data, Effect, Layer, ManagedRuntime, Option, Redacted, Schema } from "effect";
+import { FetchHttpClient } from "effect/http";
 import type { ReadonlyDeep } from "type-fest";
 
 class DiscordRequestError extends Data.TaggedError("DiscordRequestError")<{
@@ -14,41 +10,41 @@ class DiscordRequestError extends Data.TaggedError("DiscordRequestError")<{
   readonly cause: unknown;
 }> {}
 
-const RequestFailure = Schema.Struct({ cause: Schema.Struct({ status: Schema.Finite }) });
-const decodeRequestFailure = Schema.decodeUnknownOption(RequestFailure);
+type DiscordFailure = Readonly<{ response?: Readonly<{ status: number }> | undefined }>;
 
-const rest = createRestManager({ token: env.DISCORD_BOT_TOKEN });
+const BotConfig = DiscordConfig.layer({ token: Redacted.make(env.DISCORD_BOT_TOKEN) });
 
-type DiscordRequestBody = ReadonlyDeep<
-  | RESTPostAPIChannelMessageJSONBody
-  | RESTPostAPICurrentUserCreateDMChannelJSONBody
-  | RESTPostAPIWebhookWithTokenJSONBody
->;
+const DiscordLive = DiscordRESTMemoryLive.pipe(Layer.provide([BotConfig, FetchHttpClient.layer]));
 
-type DiscordRequest = Readonly<{
-  method: RequestMethods;
-  route: string;
-  options?: Readonly<{ body: DiscordRequestBody; unauthorized: boolean }>;
-}>;
+const discordRuntime = ManagedRuntime.make(DiscordLive);
 
-const callDiscord =
-  <Result>() =>
-  <Type, DecodingServices>(
-    decode: (result: Result) => Effect.Effect<Type, Schema.SchemaError, DecodingServices>,
-  ) =>
-  ({
-    method,
-    route,
-    options,
-  }: DiscordRequest): Effect.Effect<Type, DiscordRequestError, DecodingServices> =>
-    Effect.tryPromise({
-      try: () => rest.makeRequest<Result>(method, route, { ...options, runThroughQueue: false }),
-      catch: (cause) =>
-        new DiscordRequestError({
-          status: decodeRequestFailure(cause).pipe(Option.map((failure) => failure.cause.status)),
-          cause,
-        }),
-    }).pipe(Effect.flatMap((body) => decode(body).pipe(Effect.orDie)));
+const discordRest = discordRuntime.contextEffect.pipe(
+  Effect.map((context) => Context.get(context, DiscordREST)),
+);
 
-export { callDiscord, DiscordRequestError };
-export type { DiscordRequest, DiscordRequestBody };
+const requestErrorOf = (cause: DiscordFailure): DiscordRequestError =>
+  new DiscordRequestError({
+    status: Option.fromUndefinedOr(cause.response).pipe(Option.map(({ status }) => status)),
+    cause,
+  });
+
+const withDiscord = <Found>(
+  request: (rest: ReadonlyDeep<DiscordRestService>) => Effect.Effect<Found, DiscordFailure>,
+): Effect.Effect<Found, DiscordRequestError> =>
+  discordRest.pipe(Effect.flatMap(request), Effect.mapError(requestErrorOf));
+
+const decodeBody =
+  <Body extends Schema.Top>(schema: Body) =>
+  (raw: Body["Encoded"]): Effect.Effect<Body["Type"], never, Body["DecodingServices"]> =>
+    Effect.orDie(Schema.decodeEffect(schema)(raw));
+
+const decodeList = <Item extends Schema.Top>(item: Item) => {
+  const decode = decodeBody(Schema.NullOr(Schema.Array(item)));
+  return (
+    raw: readonly Item["Encoded"][] | null,
+  ): Effect.Effect<readonly Item["Type"][], never, Item["DecodingServices"]> =>
+    decode(raw).pipe(Effect.map((items) => items ?? []));
+};
+
+export { decodeBody, decodeList, DiscordRequestError, withDiscord };
+export type { DiscordFailure };

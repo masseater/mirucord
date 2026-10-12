@@ -137,7 +137,7 @@ it.effect("stores a refreshed message and forgets one Discord no longer has", ()
     const stored = yield* storedIds;
     expect(stored.has(POSTED)).toBe(true);
     expect(stored.has(VANISHED)).toBe(false);
-    expect(lookups).toStrictEqual([`?limit=100&after=${LISTED_FROM}`, VANISHED]);
+    expect(lookups).toStrictEqual([`?after=${LISTED_FROM}&limit=100`, VANISHED]);
   }),
 );
 

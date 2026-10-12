@@ -7,7 +7,6 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "discord-api-types": "catalog:",
     "effect": "catalog:stack"
   }
 }

@@ -17,6 +17,7 @@ const KEPT = "700";
 const JOINED = "710";
 const DEPARTED = "720";
 const DISCORD = "https://discord.com/api/v10";
+const DIRECT_CHANNEL = "990";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 
 const network = setupNetwork();
@@ -50,6 +51,13 @@ const discordPathsDuring = <Value, Failure>(
       ),
       http.get(`${DISCORD}/guilds/:guildId`, ({ params }) =>
         HttpResponse.json(discordGuild(String(params["guildId"]))),
+      ),
+      http.get(`${DISCORD}/guilds/:guildId/audit-logs`, () =>
+        HttpResponse.json({ audit_log_entries: [] }),
+      ),
+      http.post(`${DISCORD}/users/@me/channels`, () => HttpResponse.json({ id: DIRECT_CHANNEL })),
+      http.post(`${DISCORD}/channels/${DIRECT_CHANNEL}/messages`, () =>
+        HttpResponse.json({ id: "1" }),
       ),
     );
     const value = yield* work;

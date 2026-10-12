@@ -43,16 +43,18 @@ const leaveOverLimit = (rejected: readonly string[]): Effect.Effect<void> =>
     { discard: true },
   );
 
+const forgetGuild = (guildId: string): Effect.Effect<void> =>
+  forgetGuildMessages(guildId).pipe(
+    Effect.andThen(Effect.promise(() => db.delete(guild).where(eq(guild.id, guildId)))),
+  );
+
 const removeDepartedGuilds = (
   current: readonly string[],
   stored: readonly string[],
 ): Effect.Effect<void> =>
   Effect.forEach(
     stored.filter((id) => !current.includes(id)),
-    (id) =>
-      forgetGuildMessages(id).pipe(
-        Effect.andThen(Effect.promise(() => db.delete(guild).where(eq(guild.id, id)))),
-      ),
+    forgetGuild,
     { discard: true },
   );
 
@@ -82,5 +84,5 @@ const reconcileMembership: Effect.Effect<Membership, DiscordRequestError> = Effe
   },
 );
 
-export { guildLimit, logDiscordFailure, reconcileMembership };
+export { forgetGuild, guildLimit, logDiscordFailure, reconcileMembership };
 export type { Membership };

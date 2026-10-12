@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Effect, Option, Schema } from "effect";
+import { Effect, Match, Option, Schema } from "effect";
 
 import { subjectOf } from "#/features/ingest/model/gateway-job";
 import { verifyGatewayEvent } from "#/features/ingest/model/gateway-signature";
@@ -7,6 +7,7 @@ import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 
 import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
+import { forgetGuild } from "./guild-membership.server";
 import type { IngestError } from "./message-page.server";
 import { syncJoinedGuild, syncKnownGuild } from "./sync-guilds.server";
 
@@ -17,18 +18,15 @@ const UNAUTHORIZED = 401;
 
 const decodeJob = Schema.decodeOption(Schema.fromJsonString(GatewayJobSchema));
 
-const runJob = (job: GatewayJob): Effect.Effect<void, IngestError> => {
-  if (job.kind === "join") {
-    return syncJoinedGuild(job.guildId);
-  }
-  if (job.kind === "sync") {
-    return syncKnownGuild(job.guildId);
-  }
-  if (job.kind === "refresh") {
-    return refreshMessages(job);
-  }
-  return forgetMessages(job);
-};
+const runJob: (job: GatewayJob) => Effect.Effect<void, IngestError> = Match.type<GatewayJob>().pipe(
+  Match.discriminatorsExhaustive("kind")({
+    join: ({ guildId }) => syncJoinedGuild(guildId),
+    sync: ({ guildId }) => syncKnownGuild(guildId),
+    leave: ({ guildId }) => forgetGuild(guildId),
+    refresh: refreshMessages,
+    forget: forgetMessages,
+  }),
+);
 
 const processEvent = (body: string): Effect.Effect<Response> =>
   Option.match(decodeJob(body), {

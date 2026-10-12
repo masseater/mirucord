@@ -57,6 +57,30 @@ it("asks to welcome a server the bot has joined", () => {
   );
 });
 
+it("asks to forget a server the bot was removed from, but not one that is only unavailable", () => {
+  expect(jobOf(GatewayDispatchEvents.GuildDelete, { id: "700" })).toStrictEqual(
+    Option.some({ kind: "leave", guildId: "700" }),
+  );
+  expect(jobOf(GatewayDispatchEvents.GuildDelete, { id: "700", unavailable: true })).toStrictEqual(
+    Option.none(),
+  );
+});
+
+it("keeps only the latest join or leave of each server and skips its sync", () => {
+  expect(
+    mergeJobs([
+      { kind: "join", guildId: "700" },
+      { kind: "sync", guildId: "700" },
+      { kind: "leave", guildId: "700" },
+      { kind: "leave", guildId: "800" },
+      { kind: "join", guildId: "800" },
+    ]),
+  ).toStrictEqual([
+    { kind: "leave", guildId: "700" },
+    { kind: "join", guildId: "800" },
+  ]);
+});
+
 it("merges events into one job per channel and keeps each message's latest event", () => {
   expect(
     mergeJobs([

@@ -1,14 +1,17 @@
 import type { ReactNode } from "react";
 
+import { MASCOT_NAME } from "#/shared/config";
+import { IconLine } from "#/shared/ui/icon-line";
 import { popButtonVariants } from "#/shared/ui/pop-variants";
 
-const NOTE =
-  "サーバーの管理者さんが Bot を招待して、取り込みに同意すると使えるようになります。管理者でなければ、管理者さんにお願いしてね。";
-const INVITE = "Bot をサーバーに招待する";
+const NOTE = "管理者さんだけが招待できます";
+const INVITE = `${MASCOT_NAME}をサーバーに招待`;
 
 const InviteGuide = ({ inviteUrl }: Readonly<{ inviteUrl: string }>): ReactNode => (
   <>
-    <p className="text-dc-muted text-sm">{NOTE}</p>
+    <IconLine icon="admin" tone="muted" size="sm">
+      {NOTE}
+    </IconLine>
     <a href={inviteUrl} className={popButtonVariants({ tone: "secondary", size: "sm" })}>
       {INVITE}
     </a>

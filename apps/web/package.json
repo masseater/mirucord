@@ -47,6 +47,7 @@
     "elysia": "catalog:stack",
     "jose": "catalog:",
     "js-base64": "catalog:",
+    "lucide-react": "catalog:",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "scheduler": "0.28.0",

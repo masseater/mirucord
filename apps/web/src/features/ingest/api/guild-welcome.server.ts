@@ -1,15 +1,9 @@
 import { ChannelType } from "discord-api-types/v10";
 import { Array, Effect, Option, Order } from "effect";
 
-import {
-  DASHBOARD_PATH,
-  MASCOT_NAME,
-  MCP_URL,
-  ONBOARDING_STEPS,
-  SITE_ORIGIN,
-} from "#/shared/config";
+import { DASHBOARD_PATH, MASCOT_NAME, SITE_ORIGIN } from "#/shared/config";
 import { findBotAdder, postChannelMessage, sendDirectMessage } from "#/shared/discord/index.server";
-import type { DiscordChannel, DiscordGuild } from "#/shared/discord/index.server";
+import type { DiscordChannel, DiscordGuild, OutgoingMessage } from "#/shared/discord/index.server";
 
 import type { ChannelListing } from "./channel-listing.server";
 
@@ -33,27 +27,20 @@ const FIRST_POSITION = 0;
 const GREETING = {
   inviter: (name: string) =>
     `はじめまして、${MASCOT_NAME}だよ！「${name}」に招待してくれてありがとう。`,
-  channel: () => `はじめまして、${MASCOT_NAME}だよ！招待してくれた管理者さん、ありがとう。`,
+  channel: () => `はじめまして、${MASCOT_NAME}だよ！招待してくれてありがとう。`,
 } as const;
 
-const welcomeMessage = (addressee: Addressee, discordGuild: DiscordGuild): string =>
-  [
-    GREETING[addressee](discordGuild.name),
-    `まだこのサーバーのメッセージは何も読んでないよ。使いはじめるには、次の 3 つをしてね。`,
-    "",
-    `**1\\. ${ONBOARDING_STEPS.consent.title}**`,
-    `サーバーの管理者さんがログインして、取り込みに同意してね。${ONBOARDING_STEPS.consent.guide}`,
-    `<${SITE_ORIGIN}${DASHBOARD_PATH}/${discordGuild.id}>`,
-    "",
-    `**2\\. ${ONBOARDING_STEPS.register.title}**`,
-    `${ONBOARDING_STEPS.register.guide}サーバーのみんなも、それぞれ自分のアプリに登録すれば使えるよ。`,
-    `<${MCP_URL}>`,
-    "",
-    `**3\\. ${ONBOARDING_STEPS.ask.title}**`,
-    ONBOARDING_STEPS.ask.guide,
-    "",
-    `くわしい使い方はここ → <${SITE_ORIGIN}/#start>`,
-  ].join("\n");
+const WAITING = `同意するまで、${MASCOT_NAME}はメッセージを読まないよ。`;
+const CONSENT = "取り込みに同意する";
+const HOW_TO = "使い方";
+
+const welcomeMessage = (addressee: Addressee, discordGuild: DiscordGuild): OutgoingMessage => ({
+  content: [GREETING[addressee](discordGuild.name), WAITING].join("\n"),
+  links: [
+    { label: CONSENT, url: `${SITE_ORIGIN}${DASHBOARD_PATH}/${discordGuild.id}` },
+    { label: HOW_TO, url: `${SITE_ORIGIN}/#start` },
+  ],
+});
 
 const byPosition: Order.Order<DiscordChannel> = Order.mapInput(
   Order.Number,
@@ -82,10 +69,7 @@ const inviterOf = ({ botUserId, discordGuild }: Welcome): Effect.Effect<string> 
 
 const postToChannels = (welcome: Welcome): Effect.Effect<Delivery> =>
   Effect.findFirst(welcomeChannels(welcome), (channelId) =>
-    postChannelMessage({
-      channelId,
-      content: welcomeMessage("channel", welcome.discordGuild),
-    }).pipe(
+    postChannelMessage({ channelId, ...welcomeMessage("channel", welcome.discordGuild) }).pipe(
       Effect.as(true),
       Effect.catchTag("DiscordRequestError", () => Effect.succeed(false)),
     ),
@@ -101,7 +85,7 @@ const postToChannels = (welcome: Welcome): Effect.Effect<Delivery> =>
 const welcomeGuild = (welcome: Welcome): Effect.Effect<void> =>
   inviterOf(welcome).pipe(
     Effect.flatMap((userId) =>
-      sendDirectMessage({ userId, content: welcomeMessage("inviter", welcome.discordGuild) }),
+      sendDirectMessage({ userId, ...welcomeMessage("inviter", welcome.discordGuild) }),
     ),
     Effect.as<Delivery>("inviter"),
     Effect.catchTag("DiscordRequestError", () => postToChannels(welcome)),

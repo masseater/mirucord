@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
+import { IconLine } from "#/shared/ui/icon-line";
 
 type StepState = "done" | "todo" | "awaiting" | "invite";
 
@@ -35,7 +36,11 @@ const NextStep = ({
     </span>
     <div className="flex min-w-0 grow flex-col gap-2">
       <p className="text-dc-bright font-bold">{title}</p>
-      {state === "done" && <p className="text-mint text-sm font-bold">{DONE}</p>}
+      {state === "done" && (
+        <IconLine icon="done" tone="success" size="sm">
+          {DONE}
+        </IconLine>
+      )}
       {state !== "done" && children}
     </div>
   </li>

@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 
 import { authClient } from "#/shared/auth";
+import { IconLine } from "#/shared/ui/icon-line";
 import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
@@ -11,7 +12,7 @@ import { DeleteAccount } from "./delete-account";
 
 const TITLE = "アカウント";
 const SIGN_OUT = "ログアウト";
-const FAILED = "ログアウトできませんでした。";
+const FAILED = "ログアウトできませんでした";
 
 const AccountPanel = ({ name }: Readonly<{ name: string }>): ReactNode => {
   const navigate = useNavigate();
@@ -35,9 +36,9 @@ const AccountPanel = ({ name }: Readonly<{ name: string }>): ReactNode => {
         {SIGN_OUT}
       </PopButton>
       {status === "error" && (
-        <p role="alert" className="bg-pink text-ink rounded-2xl px-4 py-2 text-sm font-bold">
+        <IconLine icon="alert" role="alert" tone="strong" size="sm">
           {FAILED}
-        </p>
+        </IconLine>
       )}
       <DeleteAccount />
     </Panel>

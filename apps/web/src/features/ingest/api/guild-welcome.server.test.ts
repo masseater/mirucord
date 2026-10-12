@@ -60,8 +60,8 @@ const outgoing = (
       }
       return Effect.runPromise(
         Effect.promise(() => request.json()).pipe(
-          Effect.map(({ content = "" }) => {
-            record({ channelId, content });
+          Effect.map((body) => {
+            record({ channelId, content: JSON.stringify(body) });
             return HttpResponse.json({ id: "1" });
           }),
         ),
@@ -130,7 +130,7 @@ it.effect("a joined server sends the next steps to whoever invited the bot", () 
     yield* syncJoinedGuild("730");
     expect(sent.map(({ channelId }) => channelId)).toStrictEqual([`dm:${INVITER}`, DM_CHANNEL]);
     expect(sent.map(({ content }) => content).join("")).toMatch(
-      /mirucord\.masseater\.dev\/dashboard\/730>[\s\S]*mirucord\.masseater\.dev\/mcp>/u,
+      /"url":"https:\/\/mirucord\.masseater\.dev\/dashboard\/730"/u,
     );
     yield* Effect.promise(() => forget("730"));
   }),

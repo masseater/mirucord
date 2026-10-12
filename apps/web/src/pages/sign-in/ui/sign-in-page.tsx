@@ -20,7 +20,7 @@ const SignInPage = (): ReactNode => {
     <AppFrame>
       <MascotTip>{TIP}</MascotTip>
       <Panel>
-        <h1 className="text-dc-bright font-maru text-3xl font-black">{TITLE}</h1>
+        <h1 className="sr-only">{TITLE}</h1>
         <DiscordSignIn callbackURL={callbackUrlOf(search)} />
       </Panel>
     </AppFrame>

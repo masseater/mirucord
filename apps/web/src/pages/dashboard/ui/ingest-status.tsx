@@ -9,7 +9,7 @@ import { IngestPill } from "./ingest-pill";
 import { IngestStatusRow } from "./ingest-status-row";
 
 const TITLE = "取り込みの状況";
-const STORED = "保存しているメッセージ";
+const STORED = "思い出";
 const UNIT = "件";
 
 const IngestStatus = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (

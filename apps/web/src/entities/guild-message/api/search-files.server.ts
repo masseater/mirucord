@@ -269,6 +269,7 @@ export {
   writeHead,
 };
 export type {
+  VectorColumns,
   Bucketed,
   FileRead,
   SearchHead,

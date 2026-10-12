@@ -187,4 +187,4 @@ const searchSimilar = (request: SimilarRequest): Effect.Effect<SimilarResult> =>
   );
 
 export { searchSimilar };
-export type { SimilarEntry, SimilarRequest, SimilarResult };
+export type { SimilarEntry, SimilarRequest, SimilarResult, SimilarStats };

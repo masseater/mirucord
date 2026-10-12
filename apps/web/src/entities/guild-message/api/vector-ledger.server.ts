@@ -119,4 +119,4 @@ const vectorLedger = (db: DrizzleSqliteDODatabase): VectorLedger => ({
 });
 
 export { vectorLedger };
-export type { Coverage, StoredVector, VectorLedger };
+export type { Coverage, Published, StoredVector, VectorLedger };

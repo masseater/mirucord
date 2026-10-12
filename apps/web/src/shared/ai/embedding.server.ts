@@ -83,5 +83,5 @@ const embedTexts = ({ priority, texts }: EmbedRequest): Effect.Effect<Embedded, 
     onNonEmpty: (nonEmpty) => embedWithin(priority, nonEmpty),
   });
 
-export { EMBED_MODEL, EmbeddingError, embedTexts, estimateNeurons };
-export type { Embedded };
+export { embedTexts };
+export type { Embedded, EmbeddingError, EmbedRequest };

@@ -90,3 +90,4 @@ const sealFiles = ({
   );
 
 export { openEntries, sealFiles };
+export type { Opening, Sealing };

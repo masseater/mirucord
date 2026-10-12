@@ -255,4 +255,4 @@ const searchMessages = (request: SearchRequest): Effect.Effect<SearchResult> =>
   );
 
 export { loadPage, searchMessages };
-export type { SearchRequest, SearchResult, SearchStats };
+export type { LoadedPage, MissingFile, SearchRequest, SearchResult, SearchStats };

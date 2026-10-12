@@ -149,4 +149,4 @@ const embedPending = Effect.fn("vectors.embedPending")(function* embedPending(ba
 });
 
 export { embedPending, vectorContext };
-export type { EmbedOutcome, Keys };
+export type { Batch, EmbedOutcome, Keys };

@@ -115,3 +115,4 @@ export {
   withChannel,
   withScope,
 };
+export type { ToolRequest, WithinScope };

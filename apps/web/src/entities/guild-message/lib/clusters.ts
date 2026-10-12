@@ -17,16 +17,15 @@ const SAMPLE_SIZE = 1024;
 const FIRST = 0;
 const NEAREST = 1;
 
-type Training = Readonly<{ sample: readonly Quantized[]; clusters: number }>;
-
-type Probe = Readonly<{ vector: Quantized; centroids: VectorBlock; count: number }>;
-
 const clusterCountFor = (vectors: number): number => {
   const rootCount = Math.round(Math.sqrt(vectors));
   return Math.min(MAX_CLUSTERS, Math.max(MIN_CLUSTERS, rootCount));
 };
 
-const trainCentroids = ({ sample, clusters }: Training): readonly Quantized[] => {
+const trainCentroids = ({
+  sample,
+  clusters,
+}: Readonly<{ sample: readonly Quantized[]; clusters: number }>): readonly Quantized[] => {
   const points = sample.map((vector) => [...dequantize(vector)]);
   const { centroids } = kmeans(points, Math.min(clusters, sample.length), {
     initialization: "kmeans++",
@@ -39,7 +38,11 @@ const trainCentroids = ({ sample, clusters }: Training): readonly Quantized[] =>
 const centroidBlockOf = (centroids: readonly Quantized[]): VectorBlock =>
   blockOf(centroids.map((vector, ordinal) => ({ ordinal, channelId: "", vector })));
 
-const nearestCentroids = ({ vector, centroids, count }: Probe): readonly number[] =>
+const nearestCentroids = ({
+  vector,
+  centroids,
+  count,
+}: Readonly<{ vector: Quantized; centroids: VectorBlock; count: number }>): readonly number[] =>
   nearestRows({ query: vector, block: centroids, keep: () => true, limit: count }).map(
     ({ row }) => row,
   );
@@ -86,4 +89,4 @@ const groupEntries = ({ flat, entries }: Grouping): Grouped => {
 };
 
 export { centroidBlockOf, clusterCountFor, groupEntries, nearestCentroids, trainCentroids };
-export type { Grouped };
+export type { Grouped, Grouping };

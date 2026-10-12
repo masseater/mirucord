@@ -149,4 +149,4 @@ const findSimilar = (request: SimilarRequest): Effect.Effect<SimilarMessages> =>
 };
 
 export { findSimilar };
-export type { SimilarMessages, SimilarRequest };
+export type { Coverage, SimilarMessages, SimilarRequest, SimilarView };

@@ -2,8 +2,7 @@ import { Data, Effect, Logger, ManagedRuntime, Schema, pipe } from "effect";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
 import type { CiTelemetryEnv } from "./alchemy.run.ts";
-
-const CI_TELEMETRY_AUDIENCE = "mirucord-ci-telemetry";
+import { CI_TELEMETRY_AUDIENCE } from "./app-name.ts";
 
 const ISSUER = "https://token.actions.githubusercontent.com";
 

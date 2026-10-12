@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 
+import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
 import { ChannelSection } from "#/pages/home/ui/common/channel-section";
 import { MEMBERS } from "#/pages/home/ui/common/members";
 import { memberAuthor, BOT } from "#/pages/home/ui/message/author";
 import { Chatter } from "#/pages/home/ui/message/chatter";
 import type { ChatLine } from "#/pages/home/ui/message/chatter";
-import { Post } from "#/pages/home/ui/message/post";
+import { Message } from "#/pages/home/ui/message/message";
+import { PostHeading } from "#/pages/home/ui/message/post-heading";
 import { MASCOT_NAME } from "#/shared/config";
 
 import { ForumPosts } from "./forum-posts";
@@ -41,10 +43,12 @@ const CHATTER: readonly ChatLine[] = [
 ];
 
 const Forum = (): ReactNode => (
-  <ChannelSection id="forum" name={CHANNEL} kind="forum">
-    <Post time={TIME} guide={GUIDE} lead={LEAD} tail={TAIL}>
+  <ChannelSection id="forum">
+    <ChannelHeader name={CHANNEL} kind="forum" />
+    <Message author={BOT} time={TIME}>
+      <PostHeading guide={GUIDE} lead={LEAD} tail={TAIL} />
       <ForumPosts />
-    </Post>
+    </Message>
     <Chatter lines={CHATTER} />
   </ChannelSection>
 );

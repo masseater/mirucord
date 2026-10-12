@@ -89,14 +89,16 @@ const refreshWith = (job: RefreshJob, wrappedKey: string): Effect.Effect<void, I
     yield* forgetIn(job, gone);
   });
 
-const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
+const withChannelKey = <Failure>(
+  job: Readonly<{ guildId: string; channelId: string }>,
+  use: (wrappedKey: string) => Effect.Effect<void, Failure>,
+): Effect.Effect<void, Failure> =>
   loadChannelKey(job).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.void,
-        onSome: (wrappedKey) => refreshWith(job, wrappedKey),
-      }),
-    ),
+    Effect.flatMap(Option.match({ onNone: () => Effect.void, onSome: use })),
+  );
+
+const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
+  withChannelKey(job, (wrappedKey) => refreshWith(job, wrappedKey)).pipe(
     Effect.catchTag("DiscordRequestError", (failure) => {
       if (Option.contains(failure.status, FORBIDDEN)) {
         return Effect.void;
@@ -105,24 +107,16 @@ const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
     }),
   );
 
-const storeWith = (job: StoreJob, wrappedKey: string): Effect.Effect<void> =>
-  openGuildKeys(wrappedKey).pipe(
-    Effect.flatMap((keys) =>
-      storeConsented({
-        ...keys,
-        job: { guildId: job.guildId, channelId: job.channelId },
-        page: job.messages,
-      }),
-    ),
-  );
-
 const storeGatewayMessages = (job: StoreJob): Effect.Effect<void> =>
-  loadChannelKey(job).pipe(
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.void,
-        onSome: (wrappedKey) => storeWith(job, wrappedKey),
-      }),
+  withChannelKey(job, (wrappedKey) =>
+    openGuildKeys(wrappedKey).pipe(
+      Effect.flatMap((keys) =>
+        storeConsented({
+          ...keys,
+          job: { guildId: job.guildId, channelId: job.channelId },
+          page: job.messages,
+        }),
+      ),
     ),
   );
 

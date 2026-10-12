@@ -13,8 +13,10 @@ it.live("rejects MCP requests over the limit with 429", () =>
     const request = new Request("https://example.test/mcp", {
       headers: { authorization: "Bearer over-limit" },
     });
-    const allowed = yield* Effect.forEach(Array.range(FIRST_ATTEMPT, MCP_RATE_LIMIT.limit), () =>
-      mcpRejection(request),
+    const allowed = yield* Effect.forEach(
+      Array.range(FIRST_ATTEMPT, MCP_RATE_LIMIT.limit),
+      () => mcpRejection(request),
+      { concurrency: "unbounded" },
     );
     const over = yield* mcpRejection(request);
     expect(Array.getSomes(allowed)).toStrictEqual([]);

@@ -1,0 +1,13 @@
+{
+  "name": "@repo/shared-util-discord",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "discord-api-types": "catalog:",
+    "effect": "catalog:stack"
+  }
+}

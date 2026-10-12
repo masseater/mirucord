@@ -1,12 +1,11 @@
 import { it } from "@effect/vitest";
+import { GatewayJobSchema, signGatewayEvent } from "@repo/ingest-util-gateway-contract";
 import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { DateTime, Effect, Schema } from "effect";
 import type { Duration } from "effect";
 import { beforeEach, expect, vi } from "vite-plus/test";
 
-import { signGatewayEvent } from "#/features/ingest/model/gateway-signature";
-import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import { db, guild } from "#/shared/db/index.server";
 
 import {

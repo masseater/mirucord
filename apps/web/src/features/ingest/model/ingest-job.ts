@@ -1,7 +1,5 @@
 import { Schema } from "effect";
 
-import { DiscordMessageSchema } from "#/shared/discord";
-
 const INGEST_MAX_RETRIES = 5;
 
 const IngestJobSchema = Schema.Struct({
@@ -17,60 +15,10 @@ const WithdrawJobSchema = Schema.Struct({
 
 const MigrateJobSchema = Schema.Struct({ kind: Schema.Literal("migrate") });
 
-const MessageIdsSchema = Schema.NonEmptyArray(Schema.String);
-
-const RefreshJobSchema = Schema.Struct({
-  kind: Schema.Literal("refresh"),
-  guildId: Schema.String,
-  channelId: Schema.String,
-  messageIds: MessageIdsSchema,
-});
-
-const ForgetJobSchema = Schema.Struct({
-  kind: Schema.Literal("forget"),
-  guildId: Schema.String,
-  channelId: Schema.String,
-  messageIds: MessageIdsSchema,
-});
-
-const StoreJobSchema = Schema.Struct({
-  kind: Schema.Literal("store"),
-  guildId: Schema.String,
-  channelId: Schema.String,
-  messages: Schema.NonEmptyArray(DiscordMessageSchema),
-});
-
-const JoinJobSchema = Schema.Struct({
-  kind: Schema.Literal("join"),
-  guildId: Schema.String,
-});
-
-const SyncJobSchema = Schema.Struct({
-  kind: Schema.Literal("sync"),
-  guildId: Schema.String,
-});
-
-const LeaveJobSchema = Schema.Struct({
-  kind: Schema.Literal("leave"),
-  guildId: Schema.String,
-});
-
-const ResyncJobSchema = Schema.Struct({ kind: Schema.Literal("resync") });
-
 const CatchUpJobSchema = Schema.Struct({
   kind: Schema.Literal("catchUp"),
   guildId: Schema.String,
 });
-
-const GatewayJobSchema = Schema.Union([
-  StoreJobSchema,
-  RefreshJobSchema,
-  ForgetJobSchema,
-  JoinJobSchema,
-  SyncJobSchema,
-  LeaveJobSchema,
-  ResyncJobSchema,
-]);
 
 const QueueJobSchema = Schema.Union([
   WithdrawJobSchema,
@@ -81,15 +29,7 @@ const QueueJobSchema = Schema.Union([
 
 type IngestJob = typeof IngestJobSchema.Type;
 
-type GatewayJob = typeof GatewayJobSchema.Type;
-
-type RefreshJob = typeof RefreshJobSchema.Type;
-
-type ForgetJob = typeof ForgetJobSchema.Type;
-
-type StoreJob = typeof StoreJobSchema.Type;
-
 type QueueJob = typeof QueueJobSchema.Type;
 
-export { GatewayJobSchema, INGEST_MAX_RETRIES, QueueJobSchema };
-export type { ForgetJob, GatewayJob, IngestJob, QueueJob, RefreshJob, StoreJob };
+export { INGEST_MAX_RETRIES, QueueJobSchema };
+export type { IngestJob, QueueJob };

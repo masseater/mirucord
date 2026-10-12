@@ -162,7 +162,6 @@ export default defineConfig({
           "**/*.config.ts",
           "**/alchemy.run.ts",
           "**/alchemy.ci.ts",
-          "**/alchemy.gateway.ts",
           "**/src/app/server/index.ts",
         ],
         rules: { "import/no-default-export": "off" },

@@ -144,4 +144,5 @@ const dropStackState = Effect.fn("dropStackState")(function* dropStackState(
 });
 
 export type { StackMove };
+export { relabelMachines } from "./fly-relabel.ts";
 export { copyStackState, dropStackState, requireStackState };

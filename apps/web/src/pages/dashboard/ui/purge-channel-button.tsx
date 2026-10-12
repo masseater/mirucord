@@ -4,33 +4,25 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 
 import { purgeStoredChannel } from "#/pages/dashboard/api/dashboard";
+import { FORBIDDEN, mutationFeedback, SIGNED_OUT, success } from "#/pages/dashboard/lib/feedback";
 import { useReturnToDashboard } from "#/pages/dashboard/model/use-return-to-dashboard";
-import { MASCOT_NAME } from "#/shared/config";
 import { PopButton } from "#/shared/ui/pop-button";
 
+import { FeedbackLine } from "./feedback-line";
+
 const LABEL = "今すぐ削除";
-const FAILED = "削除できませんでした。少し待ってからもう一度押してください";
-const SILENT = "";
-const RESULT_MESSAGES = {
-  purged: SILENT,
-  notPaused: `${MASCOT_NAME}がまたこのチャンネルを見られるようになったので、削除しませんでした`,
-  forbidden: "このサーバーを管理する権限が確認できなかったので、削除できませんでした",
-  signedOut: "ログインの期限が切れたので、削除できませんでした。もう一度ログインしてください",
+const RESULTS = {
+  purged: Option.none(),
+  notPaused: success("取り込みを再開したので削除しませんでした"),
+  forbidden: FORBIDDEN,
+  signedOut: SIGNED_OUT,
 } as const;
 
-const purgeMessage = (
-  status: "idle" | "pending" | "success" | "error",
-  result: Option.Option<Readonly<{ status: keyof typeof RESULT_MESSAGES }>>,
-): string => {
-  if (status === "error") {
-    return FAILED;
-  }
-  return result.pipe(
-    Option.filter(() => status === "success"),
-    Option.map((answered) => RESULT_MESSAGES[answered.status]),
-    Option.getOrElse(() => SILENT),
-  );
-};
+const purgeFeedback = mutationFeedback({
+  pending: Option.none(),
+  failed: "削除できませんでした",
+  result: (status: keyof typeof RESULTS) => RESULTS[status],
+});
 
 const PurgeChannelButton = ({
   guildId,
@@ -51,9 +43,7 @@ const PurgeChannelButton = ({
         {LABEL}
         <span className="sr-only">{`（#${channelName}）`}</span>
       </PopButton>
-      <span role="alert" className="text-xs font-bold">
-        {purgeMessage(status, Option.fromUndefinedOr(data))}
-      </span>
+      <FeedbackLine feedback={purgeFeedback(status, Option.fromUndefinedOr(data))} />
     </>
   );
 };

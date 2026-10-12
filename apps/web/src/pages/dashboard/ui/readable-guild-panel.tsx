@@ -1,20 +1,30 @@
+import { Array, Match } from "effect";
 import type { ReactNode } from "react";
 
 import type { GuildListing } from "#/pages/dashboard/api/dashboard.server";
-import { MASCOT_NAME } from "#/shared/config";
-import { Panel } from "#/shared/ui/panel";
+import { fixable } from "#/pages/dashboard/lib/feedback";
 
+import { FeedbackLine } from "./feedback-line";
 import { ReadableGuildList } from "./readable-guild-list";
+import { ReadableGuildSection } from "./readable-guild-section";
 
-const TITLE = `${MASCOT_NAME}がさがせるサーバー`;
-const UNAVAILABLE = "サーバーを確かめられませんでした。時間をおいて開き直してください。";
+const UNAVAILABLE = fixable("refresh")("サーバーを読み込めませんでした");
 
-const ReadableGuildPanel = ({ listing }: Readonly<{ listing: GuildListing }>): ReactNode => (
-  <Panel>
-    <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
-    {listing.status === "unavailable" && <p className="text-dc-muted">{UNAVAILABLE}</p>}
-    {listing.status === "ready" && <ReadableGuildList guilds={listing.guilds} />}
-  </Panel>
-);
+const ReadableGuildPanel = ({ listing }: Readonly<{ listing: GuildListing }>): ReactNode =>
+  Match.value(listing).pipe(
+    Match.discriminatorsExhaustive("status")({
+      unavailable: () => (
+        <ReadableGuildSection>
+          <FeedbackLine feedback={UNAVAILABLE} />
+        </ReadableGuildSection>
+      ),
+      ready: ({ guilds }) =>
+        Array.isReadonlyArrayNonEmpty(guilds) && (
+          <ReadableGuildSection>
+            <ReadableGuildList guilds={guilds} />
+          </ReadableGuildSection>
+        ),
+    }),
+  );
 
 export { ReadableGuildPanel };

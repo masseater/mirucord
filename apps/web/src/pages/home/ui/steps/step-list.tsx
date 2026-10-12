@@ -12,7 +12,7 @@ import { StepItem } from "./step-item";
 const INVITE = `1. ${ONBOARDING_STEPS.consent.title}`;
 const REGISTER = `2. ${ONBOARDING_STEPS.register.title}`;
 const ASK = `3. ${ONBOARDING_STEPS.ask.title}`;
-const CONSENT = "管理画面で同意する";
+const CONSENT = "同意する";
 
 const inviteActions = (): ReactNode => (
   <div className="flex flex-wrap gap-2">

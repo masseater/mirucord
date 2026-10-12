@@ -15,20 +15,15 @@ import { ReadableGuildPanel } from "./readable-guild-panel";
 const TITLE = "管理画面";
 const WITHDRAWING_TIP = "削除中だよ！";
 const INGESTING_TIP = "思い出を集めてるよ";
-const NEXT_STEPS_TIP = "次にやることを教えるね！";
-const URL_TITLE = "MCP サーバーの URL";
-const URL_NOTE = "ほかのアプリでも使うときは、この URL をコネクタとして登録してね。";
+const URL_TITLE = "ほかのアプリに登録する URL";
 const INGESTING: ReadonlySet<GuildIngest> = new Set(["waiting", "backfilling"]);
 
-const tipFor = ({ name, guilds }: ReadyDashboard, steps: NextSteps): string => {
+const tipFor = ({ name, guilds }: ReadyDashboard): string => {
   if (guilds.some(({ ingest }) => ingest === "withdrawing")) {
     return WITHDRAWING_TIP;
   }
   if (guilds.some(({ ingest }) => INGESTING.has(ingest))) {
     return INGESTING_TIP;
-  }
-  if (steps.status === "pending") {
-    return NEXT_STEPS_TIP;
   }
   return `${name}さん、おかえり！`;
 };
@@ -39,14 +34,14 @@ const stepsOrUrl = (steps: NextSteps, inviteUrl: string): ReactNode => {
       <NextStepsPanel consent={steps.consent} register={steps.register} inviteUrl={inviteUrl} />
     );
   }
-  return <McpUrlPanel title={URL_TITLE} note={URL_NOTE} />;
+  return <McpUrlPanel title={URL_TITLE} />;
 };
 
 const DashboardView = ({ dashboard }: Readonly<{ dashboard: ReadyDashboard }>): ReactNode => {
   const steps = nextStepsOf(dashboard);
   return (
     <>
-      <MascotTip>{tipFor(dashboard, steps)}</MascotTip>
+      <MascotTip>{tipFor(dashboard)}</MascotTip>
       <h1 className="text-dc-bright font-maru text-3xl font-black">{TITLE}</h1>
       {stepsOrUrl(steps, dashboard.inviteUrl)}
       <ReadableGuildPanel listing={dashboard.readable} />

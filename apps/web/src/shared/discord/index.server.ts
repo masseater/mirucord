@@ -22,4 +22,5 @@ export {
   postWebhookMessage,
   sendDirectMessage,
 } from "./outreach.server";
+export type { OutgoingMessage } from "./outreach.server";
 export { botInviteUrl } from "./invite.server";

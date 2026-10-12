@@ -1,4 +1,4 @@
-import { Discord } from "dfx";
+import { Discord, UI } from "dfx";
 import { Array, Effect, Option, Schema } from "effect";
 
 import { decodeBody, withDiscord } from "./client.server";
@@ -36,12 +36,34 @@ const postWebhookMessage = ({
   ).pipe(Effect.asVoid);
 };
 
+type OutgoingMessage = Readonly<{
+  content: string;
+  links?: readonly Readonly<{
+    [Key in "label" | "url"]: NonNullable<Discord.ButtonComponentForMessageRequest[Key]>;
+  }>[];
+}>;
+
+const linkRow = (
+  links: NonNullable<OutgoingMessage["links"]>,
+): Discord.ActionRowComponentForMessageRequest =>
+  UI.row(
+    links.map(({ label, url }) => UI.button({ style: Discord.ButtonStyleTypes.LINK, label, url })),
+  );
+
 const postChannelMessage = ({
   channelId,
   content,
-}: Readonly<{ channelId: string; content: string }>): Effect.Effect<void, DiscordRequestError> =>
+  links = [],
+}: OutgoingMessage & Readonly<{ channelId: string }>): Effect.Effect<void, DiscordRequestError> =>
   withDiscord((rest) =>
-    rest.createMessage(channelId, { content, allowed_mentions: NO_MENTIONS }),
+    rest.createMessage(channelId, {
+      content,
+      allowed_mentions: NO_MENTIONS,
+      components: Option.liftPredicate(links, Array.isReadonlyArrayNonEmpty).pipe(
+        Option.map(linkRow),
+        Option.toArray,
+      ),
+    }),
   ).pipe(Effect.asVoid);
 
 const openDirectChannel = (userId: string): Effect.Effect<string, DiscordRequestError> =>
@@ -52,10 +74,10 @@ const openDirectChannel = (userId: string): Effect.Effect<string, DiscordRequest
 
 const sendDirectMessage = ({
   userId,
-  content,
-}: Readonly<{ userId: string; content: string }>): Effect.Effect<void, DiscordRequestError> =>
+  ...message
+}: OutgoingMessage & Readonly<{ userId: string }>): Effect.Effect<void, DiscordRequestError> =>
   openDirectChannel(userId).pipe(
-    Effect.flatMap((channelId) => postChannelMessage({ channelId, content })),
+    Effect.flatMap((channelId) => postChannelMessage({ channelId, ...message })),
   );
 
 const findBotAdder = ({
@@ -79,3 +101,4 @@ const findBotAdder = ({
   );
 
 export { findBotAdder, postChannelMessage, postWebhookMessage, sendDirectMessage };
+export type { OutgoingMessage };

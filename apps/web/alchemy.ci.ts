@@ -5,6 +5,7 @@ import { Secrets, Variables, providers as gitHubProviders } from "alchemy/GitHub
 import { Config, Effect, Layer, Schema } from "effect";
 import type { ConfigError } from "effect/Config";
 
+import { PREFIX } from "./app-name.ts";
 import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
 
@@ -19,7 +20,7 @@ const deployToken = Effect.gen(function* deployToken() {
     hostname: SITE_HOST,
   }).pipe(Effect.orDie);
   const token = yield* ApiToken.AccountApiToken("DeployToken", {
-    name: "mirucord-deploy",
+    name: `${PREFIX}deploy`,
     accountId,
     policies: [
       {
@@ -50,7 +51,7 @@ const deployToken = Effect.gen(function* deployToken() {
 const observerToken = Effect.gen(function* observerToken() {
   const { accountId } = yield* yield* CloudflareEnvironment;
   return yield* ApiToken.AccountApiToken("ObserverToken", {
-    name: "mirucord-observer",
+    name: `${PREFIX}observer`,
     accountId,
     policies: [
       {

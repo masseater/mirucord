@@ -17,13 +17,12 @@ import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
+import { PREFIX } from "./app-name.ts";
 import type { RequestCounter } from "./src/app/server/request-counter.server.ts";
 import type { GuildStore } from "./src/entities/guild-message/api/guild-store.server.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
-import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
-import { SITE_HOST } from "./src/shared/config/site.ts";
+import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
 
-const NAME_PREFIX = "mirucord";
 const PRODUCTION_STAGE = "prod";
 const NOT_FOUND = 404;
 const DEFAULT_MAX_GUILDS = String(FREE_GUILD_LIMIT);
@@ -180,7 +179,7 @@ const releaseVersion = Config.option(Config.NonEmptyString("GITHUB_SHA")).pipe(
 const mirucordName = (resource: string): Effect.Effect<string, never, Stage> =>
   Effect.gen(function* resourceName() {
     const stage = yield* Stage;
-    const name = `${NAME_PREFIX}-${resource}`;
+    const name = `${PREFIX}${resource}`;
     return Boolean.match(stage === PRODUCTION_STAGE, {
       onTrue: () => name,
       onFalse: () => `${name}-${stage}`,

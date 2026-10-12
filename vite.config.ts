@@ -148,7 +148,7 @@ export default defineConfig({
             "WorkerIssues",
           ],
           capIsNewExceptionPattern:
-            "^(ApiToken|Config|Context|Data|Schema|D1|Queues|R2|SecretsStore|Vectorize|Website|Workers)\\.",
+            "^(ApiToken|Config|Context|Data|Schema|D1|Queues|SecretsStore|Vectorize|Website|Workers)\\.",
         },
       ],
       "typescript/no-empty-interface": ["error", { allowSingleExtends: true }],
@@ -163,7 +163,6 @@ export default defineConfig({
           "**/alchemy.run.ts",
           "**/alchemy.ci.ts",
           "**/src/app/server/index.ts",
-          "**/r2bench/worker.ts",
         ],
         rules: { "import/no-default-export": "off" },
       },

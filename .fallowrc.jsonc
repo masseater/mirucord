@@ -100,7 +100,7 @@
     {
       "name": "alchemy",
       "enablers": ["alchemy"],
-      "entryPoints": ["alchemy.run.ts", "alchemy.ci.ts", "r2bench/worker.ts"],
+      "entryPoints": ["alchemy.run.ts", "alchemy.ci.ts"],
     },
     {
       "name": "cloudflare-durable-objects",

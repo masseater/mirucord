@@ -19,11 +19,6 @@ type ConnectedApp = Readonly<{
 
 type AppGrant = Readonly<{ userId: string; clientId: string }>;
 
-type Instant = Readonly<{ getTime: () => number }>;
-
-const epochOf = (date: Instant | null): number | null =>
-  Option.getOrNull(Option.map(Option.fromNullOr(date), (value) => value.getTime()));
-
 const listConnectedApps = (userId: string): Effect.Effect<readonly ConnectedApp[]> => {
   const latestRefresh = db
     .select({
@@ -52,8 +47,12 @@ const listConnectedApps = (userId: string): Effect.Effect<readonly ConnectedApp[
       rows.map(({ clientId, name, connectedAt, consentUpdatedAt, refreshedAt }) => ({
         clientId,
         name: Option.getOrElse(Option.fromNullOr(name), () => clientId),
-        connectedAt: epochOf(connectedAt),
-        updatedAt: epochOf(refreshedAt ?? consentUpdatedAt),
+        connectedAt: Option.getOrNull(
+          Option.map(Option.fromNullOr(connectedAt), (date) => date.getTime()),
+        ),
+        updatedAt: Option.getOrNull(
+          Option.map(Option.fromNullOr(refreshedAt ?? consentUpdatedAt), (date) => date.getTime()),
+        ),
       })),
     ),
   );

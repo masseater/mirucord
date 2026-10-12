@@ -1,5 +1,10 @@
-import { OverwriteTypes } from "@discordeno/types";
-import { ChannelType, PermissionFlagsBits } from "discord-api-types/v10";
+import {
+  ChannelType,
+  OverwriteType,
+  PermissionFlagsBits,
+  RouteBases,
+  Routes,
+} from "discord-api-types/v10";
 import { Array, DateTime, Effect, Option, Record } from "effect";
 import { http, HttpResponse } from "msw";
 
@@ -50,8 +55,8 @@ type ScenarioGuild = Readonly<{
 }>;
 
 const STAFF_ONLY: readonly Overwrite[] = [
-  { id: GUILD_A, type: OverwriteTypes.Role, allow: NOTHING, deny: VIEW },
-  { id: STAFF_ROLE, type: OverwriteTypes.Role, allow: VIEW, deny: NOTHING },
+  { id: GUILD_A, type: OverwriteType.Role, allow: NOTHING, deny: VIEW },
+  { id: STAFF_ROLE, type: OverwriteType.Role, allow: VIEW, deny: NOTHING },
 ];
 
 const topLevel = (
@@ -121,7 +126,7 @@ const ROLES_BY_MEMBERSHIP: Readonly<Record<string, readonly string[]>> = {
 };
 
 const discordMembers = http.get<Readonly<{ guildId: string; userId: string }>>(
-  "https://discord.com/api/v10/guilds/:guildId/members/:userId",
+  `${RouteBases.api}${decodeURIComponent(Routes.guildMember(":guildId", ":userId"))}`,
   ({ params: { guildId, userId } }) =>
     Option.match(Record.get(ROLES_BY_MEMBERSHIP, `${guildId}/${userId}`), {
       onNone: () => HttpResponse.json({ message: "Unknown Member" }, { status: NOT_FOUND }),

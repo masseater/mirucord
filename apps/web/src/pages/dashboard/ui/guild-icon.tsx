@@ -1,10 +1,11 @@
+import { CDNRoutes, ImageFormat, RouteBases } from "discord-api-types/v10";
 import { Array, Option } from "effect";
 import type { ReactNode } from "react";
 
 const ICON_SIZE = 96;
 
 const iconUrl = (guildId: string, icon: string): string =>
-  `https://cdn.discordapp.com/icons/${guildId}/${icon}.webp?size=${String(ICON_SIZE)}`;
+  `${RouteBases.cdn}${CDNRoutes.guildIcon(guildId, icon, ImageFormat.WebP)}?size=${String(ICON_SIZE)}`;
 
 const GuildIcon = ({
   guildId,

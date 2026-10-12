@@ -15,7 +15,7 @@ const FAILED = 500;
 const BAD_REQUEST = 400;
 const UNAUTHORIZED = 401;
 
-const decodeJob = Schema.decodeUnknownOption(Schema.fromJsonString(GatewayJobSchema));
+const decodeJob = Schema.decodeOption(Schema.fromJsonString(GatewayJobSchema));
 
 const runJob = (job: GatewayJob): Effect.Effect<void, IngestError> => {
   if (job.kind === "join") {

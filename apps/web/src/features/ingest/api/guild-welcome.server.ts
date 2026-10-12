@@ -23,7 +23,7 @@ type Addressee = "inviter" | "channel";
 
 type Delivery = Addressee | "nowhere";
 
-const WELCOME_TYPES: ReadonlySet<number> = new Set([
+const WELCOME_TYPES: ReadonlySet<ChannelType> = new Set([
   ChannelType.GuildText,
   ChannelType.GuildAnnouncement,
 ]);

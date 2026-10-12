@@ -1,3 +1,4 @@
+import type { ChannelType } from "discord-api-types/v10";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import type { Overwrite } from "#/shared/permissions";
@@ -34,7 +35,7 @@ const channel = sqliteTable(
       .references(() => guild.id, { onDelete: "cascade" }),
     parentId: text(),
     name: text().notNull(),
-    type: integer().notNull(),
+    type: integer().$type<ChannelType>().notNull(),
     permissionOverwrites: text({ mode: "json" }).$type<readonly Overwrite[]>().notNull(),
     newestMessageId: text(),
     oldestMessageId: text(),

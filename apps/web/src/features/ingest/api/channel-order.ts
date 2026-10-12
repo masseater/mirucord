@@ -1,8 +1,9 @@
+import type { ChannelType } from "discord-api-types/v10";
 import { Array, Order } from "effect";
 
 import { VOICE_TYPES } from "#/features/ingest/model/channel-kind";
 
-type Positioned = Readonly<{ id: string; type: number; position: number }>;
+type Positioned = Readonly<{ id: string; type: ChannelType; position: number }>;
 
 const byVoice: Order.Order<Positioned> = Order.mapInput(Order.Boolean, ({ type }: Positioned) =>
   VOICE_TYPES.has(type),

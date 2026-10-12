@@ -2,6 +2,7 @@ import { getRequest } from "@tanstack/react-start/server";
 import { Cause, Effect, Option } from "effect";
 
 import {
+  eraseOwnMessages,
   forumPosts,
   grantConsent,
   guildSettings,
@@ -11,6 +12,7 @@ import {
 } from "#/features/ingest/index.server";
 import type {
   ConsentResult,
+  EraseResult,
   ForumPostsResult,
   GuildSettings,
   ManagedGuild,
@@ -21,9 +23,6 @@ import { readableGuilds } from "#/features/mcp/index.server";
 import { disconnectApp, listConnectedApps, signedInUser } from "#/shared/auth/index.server";
 import type { ConnectedApp, SignedInUser } from "#/shared/auth/index.server";
 import { botInviteUrl } from "#/shared/discord/index.server";
-
-import { eraseOwnMessages } from "./erase-own-messages.server";
-import type { EraseResult } from "./erase-own-messages.server";
 
 type SignedOut = Readonly<{ status: "signedOut" }>;
 
@@ -175,4 +174,4 @@ export type {
   ReadableGuild,
   SignedOut,
 };
-export type { EraseResult } from "./erase-own-messages.server";
+export type { EraseResult } from "#/features/ingest/index.server";

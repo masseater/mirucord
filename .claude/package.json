@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "fallow": "fallow --production --quiet --format compact && fallow dupes --quiet --format compact && fallow security --fail-on-issues --quiet"
+    "fallow": "fallow --production --fail-on-issues --quiet --format compact && fallow dupes --fail-on-issues --quiet --format compact && fallow security --fail-on-issues --quiet"
   },
   "dependencies": {
     "@effect/platform-node": "catalog:",

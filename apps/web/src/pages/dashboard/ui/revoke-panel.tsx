@@ -7,6 +7,8 @@ import { withdrawConsent } from "#/pages/dashboard/api/dashboard";
 import { useReturnToDashboard } from "#/pages/dashboard/model/use-return-to-dashboard";
 import { PopButton } from "#/shared/ui/pop-button";
 
+import { mutationMessage } from "./mutation-message";
+
 const SUMMARY = "同意を取り消す";
 const DETAIL = "保存したメッセージと検索用データをすべて削除します。元に戻せません。";
 const CONFIRM = "同意を取り消してデータを削除する";
@@ -22,18 +24,10 @@ const RESULT_MESSAGES = {
   signedOut: "ログインの期限が切れたので、取り消せませんでした。もう一度ログインしてください。",
 } as const;
 
-const revokeMessage = (
-  status: keyof typeof MESSAGES | "success",
-  result: Option.Option<Readonly<{ status: keyof typeof RESULT_MESSAGES }>>,
-): string => {
-  if (status !== "success") {
-    return MESSAGES[status];
-  }
-  return Option.match(result, {
-    onNone: () => MESSAGES.idle,
-    onSome: (answered) => RESULT_MESSAGES[answered.status],
-  });
-};
+const revokeMessage = mutationMessage({
+  messages: MESSAGES,
+  resultMessage: (status: keyof typeof RESULT_MESSAGES) => RESULT_MESSAGES[status],
+});
 
 const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
   const returnToDashboard = useReturnToDashboard();

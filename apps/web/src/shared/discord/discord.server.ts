@@ -1,4 +1,5 @@
 import { OverwriteType, Routes } from "discord-api-types/v10";
+import type { APIMessage, APIMessageSnapshotFields } from "discord-api-types/v10";
 import { Array, Effect, Function, Option, Schema } from "effect";
 
 import { callDiscord } from "./client.server";
@@ -60,12 +61,71 @@ const Author = Schema.Struct({
   global_name: Schema.optional(Schema.NullOr(Schema.String)),
 });
 
+type FieldUse = "stored" | "ignored";
+
+type StoredOf<Uses> = { [Key in keyof Uses]: Uses[Key] extends "stored" ? Key : never }[keyof Uses];
+
+const SNAPSHOT_FIELD_USE = {
+  content: "stored",
+  attachments: "stored",
+  components: "ignored",
+  edited_timestamp: "ignored",
+  embeds: "ignored",
+  flags: "ignored",
+  mention_roles: "ignored",
+  mentions: "ignored",
+  sticker_items: "ignored",
+  stickers: "ignored",
+  timestamp: "ignored",
+  type: "ignored",
+} as const satisfies Record<keyof APIMessageSnapshotFields, FieldUse>;
+
 const MessageSnapshot = Schema.Struct({
   message: Schema.Struct({
     content: Schema.String,
     attachments: Schema.Array(Attachment),
-  }),
+  } satisfies Record<StoredOf<typeof SNAPSHOT_FIELD_USE>, Schema.Top>),
 });
+
+const MESSAGE_FIELD_USE = {
+  id: "stored",
+  type: "stored",
+  content: "stored",
+  timestamp: "stored",
+  edited_timestamp: "stored",
+  author: "stored",
+  attachments: "stored",
+  message_snapshots: "stored",
+  activity: "ignored",
+  application: "ignored",
+  application_id: "ignored",
+  call: "ignored",
+  channel_id: "ignored",
+  components: "ignored",
+  embeds: "ignored",
+  flags: "ignored",
+  interaction: "ignored",
+  interaction_metadata: "ignored",
+  mention_channels: "ignored",
+  mention_everyone: "ignored",
+  mention_roles: "ignored",
+  mentions: "ignored",
+  message_reference: "ignored",
+  nonce: "ignored",
+  pinned: "ignored",
+  poll: "ignored",
+  position: "ignored",
+  reactions: "ignored",
+  referenced_message: "ignored",
+  resolved: "ignored",
+  role_subscription_data: "ignored",
+  shared_client_theme: "ignored",
+  sticker_items: "ignored",
+  stickers: "ignored",
+  thread: "ignored",
+  tts: "ignored",
+  webhook_id: "ignored",
+} as const satisfies Record<keyof APIMessage, FieldUse>;
 
 const Message = Schema.Struct({
   id: Schema.String,
@@ -76,7 +136,7 @@ const Message = Schema.Struct({
   author: Author,
   attachments: Schema.Array(Attachment),
   message_snapshots: Schema.optional(Schema.Array(MessageSnapshot)),
-});
+} satisfies Record<StoredOf<typeof MESSAGE_FIELD_USE>, Schema.Top>);
 
 const Member = Schema.Struct({ roles: Schema.Array(Schema.String) });
 

@@ -12,3 +12,5 @@ export { listManagedGuilds } from "./api/managed-guild.server";
 export type { ManagedGuild } from "./api/managed-guild.server";
 export type { GuildIngest } from "./model/channel-ingest";
 export { guildLimit } from "./api/guild-membership.server";
+export { eraseOwnMessages } from "./api/erase-own-messages.server";
+export type { EraseResult } from "./api/erase-own-messages.server";

@@ -6,9 +6,10 @@ import { db, guild } from "#/shared/db/index.server";
 
 type EraseResult = Readonly<{ status: "erased" }> | Readonly<{ status: "notFound" }>;
 
-type EraseTarget = Readonly<{ guildId: string; authorId: string }>;
-
-const eraseOwnMessages = ({ guildId, authorId }: EraseTarget): Effect.Effect<EraseResult> =>
+const eraseOwnMessages = ({
+  guildId,
+  authorId,
+}: Readonly<{ guildId: string; authorId: string }>): Effect.Effect<EraseResult> =>
   Effect.promise(() => db.select({ id: guild.id }).from(guild).where(eq(guild.id, guildId))).pipe(
     Effect.flatMap((found): Effect.Effect<EraseResult> => {
       if (Array.isReadonlyArrayEmpty(found)) {

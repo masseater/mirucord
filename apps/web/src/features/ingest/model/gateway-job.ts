@@ -1,6 +1,7 @@
 import { GatewayDispatchEvents, GatewayOpcodes } from "discord-api-types/v10";
 import type {
   GatewayDispatchPayload,
+  GatewayGuildDeleteDispatchData,
   GatewayMessageCreateDispatchData,
 } from "discord-api-types/v10";
 import { Array, Match, Option, Schema } from "effect";
@@ -35,14 +36,8 @@ const GuildEvent = Schema.Struct({ id: Schema.String });
 
 const GuildChangeEvent = Schema.Struct({ guild_id: Schema.optionalKey(Schema.String) });
 
-const GuildDeleteEvent = Schema.Struct({
-  id: Schema.String,
-  unavailable: Schema.optionalKey(Schema.Boolean),
-});
-
 const decodeGuild = Schema.decodeOption(GuildEvent);
 const decodeGuildChange = Schema.decodeOption(GuildChangeEvent);
-const decodeGuildDelete = Schema.decodeOption(GuildDeleteEvent);
 const decodeMessage = Schema.decodeOption(MessageEvent);
 const decodeFullMessage = Schema.decodeOption(DiscordMessageSchema);
 const decodeBulkDelete = Schema.decodeOption(BulkDeleteEvent);
@@ -101,9 +96,8 @@ const bulkJob = (data: typeof BulkDeleteEvent.Encoded): Option.Option<GatewayJob
 const joinJob = (data: typeof GuildEvent.Encoded): Option.Option<GatewayJob> =>
   decodeGuild(data).pipe(Option.map(({ id }) => ({ kind: "join", guildId: id })));
 
-const leaveJob = (data: typeof GuildDeleteEvent.Encoded): Option.Option<GatewayJob> =>
-  decodeGuildDelete(data).pipe(
-    Option.filter(({ unavailable }) => unavailable !== true),
+const leaveJob = (data: Readonly<GatewayGuildDeleteDispatchData>): Option.Option<GatewayJob> =>
+  Option.liftPredicate(data, ({ unavailable }) => unavailable !== true).pipe(
     Option.map(({ id }) => ({ kind: "leave", guildId: id })),
   );
 

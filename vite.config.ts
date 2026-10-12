@@ -162,7 +162,6 @@ export default defineConfig({
           "**/*.config.ts",
           "**/alchemy.run.ts",
           "**/alchemy.ci.ts",
-          "**/alchemy.gateway.ts",
           "**/src/app/server/index.ts",
           "**/r2bench/worker.ts",
         ],

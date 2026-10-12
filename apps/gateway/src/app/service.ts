@@ -1,14 +1,13 @@
 import { createGatewayManager } from "@discordeno/gateway";
 import { createRestManager } from "@discordeno/rest";
+import type { GatewayJob } from "@repo/ingest-util-gateway-contract";
 import { App, Service } from "alchemy/Fly";
 import { ServerHost } from "alchemy/Server";
 import { GatewayIntentBits } from "discord-api-types/v10";
 import { Config, Effect, Option, Queue, Redacted, Stream } from "effect";
 
-import { mergeJobs, toGatewayJob } from "#/features/ingest/index.gateway";
-import type { GatewayJob } from "#/features/ingest/index.gateway";
-
 import { makeDeliver } from "./deliver";
+import { mergeJobs, toGatewayJob } from "./gateway-job";
 
 const GatewayApp = App("MirucordGatewayApp", { name: "mirucord-gateway-app" });
 

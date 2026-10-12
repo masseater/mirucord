@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@effect/tsgo/schema.json",
   "extends": "../../tsconfig.base.json",
-  "include": ["src", "test", "gateway", "r2bench", "*.ts"],
+  "include": ["src", "test", "r2bench", "*.ts"],
   "compilerOptions": {
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["vite/client", "@cloudflare/workers-types", "@cloudflare/vitest-plugin/types"],

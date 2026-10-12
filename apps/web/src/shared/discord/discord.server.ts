@@ -1,3 +1,5 @@
+import { DiscordMessageSchema } from "@repo/shared-util-discord";
+import type { DiscordMessage } from "@repo/shared-util-discord";
 import { ChannelType, OverwriteType, Routes } from "discord-api-types/v10";
 import type {
   RESTDeleteAPICurrentUserGuildResult,
@@ -15,8 +17,6 @@ import { Array, Effect, Function, Option, Schema } from "effect";
 
 import { callDiscord } from "./client.server";
 import type { DiscordRequestError } from "./client.server";
-import { Message } from "./message";
-import type { DiscordMessage } from "./message";
 
 const DATA_FIRST_ARITY = 2;
 
@@ -159,12 +159,12 @@ const listMessagesDataFirst = (
   if (page.direction !== "latest") {
     query.set(page.direction, page.cursor);
   }
-  return callDiscord<RESTGetAPIChannelMessagesResult>()(Schema.decodeEffect(Schema.Array(Message)))(
-    {
-      method: "GET",
-      route: `${Routes.channelMessages(channelId)}?${query.toString()}`,
-    },
-  );
+  return callDiscord<RESTGetAPIChannelMessagesResult>()(
+    Schema.decodeEffect(Schema.Array(DiscordMessageSchema)),
+  )({
+    method: "GET",
+    route: `${Routes.channelMessages(channelId)}?${query.toString()}`,
+  });
 };
 
 const listMessages: {
@@ -214,7 +214,7 @@ const findMessageDataFirst = (
   messageId: string,
 ): Effect.Effect<Option.Option<DiscordMessage>, DiscordRequestError> =>
   orNotFound(
-    callDiscord<RESTGetAPIChannelMessageResult>()(Schema.decodeEffect(Message))({
+    callDiscord<RESTGetAPIChannelMessageResult>()(Schema.decodeEffect(DiscordMessageSchema))({
       method: "GET",
       route: Routes.channelMessage(channelId, messageId),
     }),

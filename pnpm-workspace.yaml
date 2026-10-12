@@ -52,9 +52,11 @@ catalog:
   standardwebhooks: 1.1.1
   js-base64: 3.9.4
   type-fest: 5.10.0
+  "@yarnpkg/parsers": 3.1.0
   dfx: 1.1.0
 catalogs:
   stack:
+    "@distilled.cloud/cloudflare": 1.0.0-rc.13
     "@effect/atom-react": 4.0.0
     "@effect/tsgo": 0.51.1
     "@effect/vitest": 4.0.0
@@ -85,8 +87,6 @@ overrides:
 peerDependencyRules:
   allowAny:
     - vite
-  allowedVersions:
-    vite: "*"
 allowBuilds:
   "@ast-grep/cli": true
   esbuild: true

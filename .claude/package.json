@@ -4,10 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "fallow": "fallow --production --fail-on-issues --quiet --format compact && fallow dupes --fail-on-issues --quiet --format compact && fallow security --fail-on-issues --quiet"
+    "fallow": "fallow --skip dupes --fail-on-issues --quiet --format compact && fallow dupes --fail-on-issues --quiet --format compact && fallow security --fail-on-issues --quiet"
   },
   "dependencies": {
+    "@distilled.cloud/cloudflare": "catalog:stack",
     "@effect/platform-node": "catalog:",
+    "@yarnpkg/parsers": "catalog:",
     "alchemy": "catalog:stack",
     "effect": "catalog:stack"
   },

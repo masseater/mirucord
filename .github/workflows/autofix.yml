@@ -67,6 +67,11 @@ jobs:
         with:
           enable-cache: false
       - if: steps.target.outputs.stale != 'true'
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: stable
+          cache: false
+      - if: steps.target.outputs.stale != 'true'
         uses: anthropics/claude-code-action@1d6de8cb0c237e7c15e9e1bdf973826ebae490cc # v1.0.248
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -100,3 +105,24 @@ jobs:
               --body "Fixes verify failure $FAILED_RUN_URL" ||
               echo "::warning::Could not open a pull request; open one from $BRANCH manually"
           fi
+
+  ci-telemetry:
+    needs: [autofix]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/ci-telemetry.sh
+          sparse-checkout-cone-mode: false
+      - run: .github/scripts/ci-telemetry.sh
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}

@@ -42,19 +42,19 @@ export default defineConfig(
           selector:
             'CallExpression[callee.name="Stack"]:not([arguments.0.name="APP_NAME"]):not([arguments.0.type="TemplateLiteral"][arguments.0.quasis.0.value.raw=""][arguments.0.expressions.0.name="PREFIX"])',
           message:
-            "スタック名には app-name.ts の APP_NAME か、PREFIX で始まるテンプレートリテラルを渡す",
+            "スタック名には @repo/shared-util-app-name の APP_NAME か、PREFIX で始まるテンプレートリテラルを渡す",
         },
         {
           selector:
             'Program:not(:has(YieldExpression[delegate=true] > Identifier.argument[name="requireAppPrefix"]))',
           message:
-            "スタックの最後で checkAppPrefix(APP_NAME) の requireAppPrefix を yield* して、リソース名の prefix を検査する",
+            "スタックの最後で @repo/shared-util-app-name の requireAppPrefix を yield* して、リソース名の prefix を検査する",
         },
         {
           selector:
             'CallExpression[callee.name="Stack"] > .arguments:nth-child(3):not(:has(FunctionExpression > BlockStatement > ExpressionStatement:nth-last-child(2) > YieldExpression[delegate=true] > Identifier.argument[name="requireAppPrefix"]))',
           message:
-            "スタックの最後で checkAppPrefix(APP_NAME) の requireAppPrefix を yield* して、リソース名の prefix を検査する",
+            "スタックの最後で @repo/shared-util-app-name の requireAppPrefix を yield* して、リソース名の prefix を検査する",
         },
       ],
     },

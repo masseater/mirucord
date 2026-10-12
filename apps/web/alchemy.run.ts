@@ -1,3 +1,4 @@
+import { APP_NAME, PREFIX, requireAppPrefix } from "@repo/shared-util-app-name";
 import { Resource, Stack, Stage, makeRandom } from "alchemy";
 import {
   CloudflareEnvironment,
@@ -21,7 +22,6 @@ import type { RequestCounter } from "./src/app/server/request-counter.server.ts"
 import type { GuildStore } from "./src/entities/guild-message/api/guild-store.server.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
-import { APP_NAME, PREFIX, requireAppPrefix } from "./stack-prefix.ts";
 
 const PRODUCTION_STAGE = "prod";
 const NOT_FOUND = 404;

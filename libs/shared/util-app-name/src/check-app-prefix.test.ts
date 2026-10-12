@@ -6,7 +6,7 @@ import { inMemoryState } from "alchemy/State";
 import { Effect, Exit, Layer, Match, Redacted } from "effect";
 import { expect, test } from "vite-plus/test";
 
-import { checkAppPrefix } from "./app-name";
+import { checkAppPrefix } from "./check-app-prefix";
 
 const APP = "my-app";
 const PREFIX = `${APP}-`;

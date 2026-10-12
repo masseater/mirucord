@@ -1,4 +1,5 @@
 import { NodeSocket } from "@effect/platform-node";
+import { ENV_PREFIX, PREFIX } from "@repo/shared-util-app-name/app-name";
 import { App, Service } from "alchemy/Fly";
 import { ServerHost } from "alchemy/Server";
 import { Discord, DiscordConfig } from "dfx";
@@ -6,7 +7,6 @@ import { DiscordGateway, DiscordLive } from "dfx/gateway";
 import { Config, Effect, Filter, Layer, Redacted, Stream } from "effect";
 import { FetchHttpClient } from "effect/http";
 
-import { ENV_PREFIX, PREFIX } from "./app-name";
 import { makeDeliver } from "./deliver";
 import { mergeJobs, toGatewayJob } from "./gateway-job";
 

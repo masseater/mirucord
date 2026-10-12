@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./app-name": "./src/app-name.ts"
   },
   "scripts": {
     "test": "vp exec vp test run"

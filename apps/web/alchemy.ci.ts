@@ -1,3 +1,4 @@
+import { PREFIX, requireAppPrefix } from "@repo/shared-util-app-name";
 import { Stack } from "alchemy";
 import type { CompiledStack } from "alchemy";
 import { ApiToken, CloudflareEnvironment, Zone, providers, state } from "alchemy/Cloudflare";
@@ -7,7 +8,6 @@ import type { ConfigError } from "effect/Config";
 
 import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
-import { PREFIX, requireAppPrefix } from "./stack-prefix.ts";
 
 const repo = { owner: "masseater", repository: "mirucord" };
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);

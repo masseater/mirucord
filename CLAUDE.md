@@ -51,9 +51,9 @@ FSDはコロケーションが本質である。使われる場所の近くに�
 ## Alchemy
 
 Alchemy のリソース定義に足りない設定があるときは、alchemy にパッチを当てず、公式の拡張手段であるカスタムリソースを定義する。
-アプリ名は各アプリの `app-name.ts` の `APP_NAME` で定義する。`APP_NAME` は `SERVICE_NAME` と別に持つ。
+アプリ名は `libs/shared/util-app-name/src/app-name.ts` の `APP_NAME` だけで定義し、各アプリは `@repo/shared-util-app-name` から参照する。`APP_NAME` は `SERVICE_NAME` と別に持つ。
 スタック名は `APP_NAME` か、`APP_NAME-` で始まる名前にする。今は `mirucord`・`mirucord-gateway`・`mirucord-ci` である。
-スタックの最後では、`checkAppPrefix(APP_NAME)` で作った `requireAppPrefix` を `yield*` する。守らなければ ESLint か実行時検査が落とす。
+スタックの最後では、`@repo/shared-util-app-name` の `requireAppPrefix` を `yield*` する。守らなければ ESLint か実行時検査が落とす。
 Cloudflare のリソースには `name` を明示し、`APP_NAME-` で始める。prod 以外のステージでは末尾に `-<stage>` を付ける。Rules.List と Fly.Secret は `-` を使えないので `APP_NAME_` で始める。
 `APP_NAME` やスタック名を変えるとリソース名や state が変わり、Random の値も含めてリソースは作り直される。スタック名を変えるときは、先に state を新しいスタック名へ写す。
 

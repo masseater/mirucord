@@ -3,7 +3,7 @@ import type { DiscordMessage } from "@repo/shared-util-discord";
 import { ChannelType, OverwriteType } from "discord-api-types/v10";
 import { Array, Effect, Function, Option, Schema } from "effect";
 
-import { decodeBody, withDiscord } from "./client.server";
+import { decodeBody, decodeList, withDiscord } from "./client.server";
 import type { DiscordRequestError } from "./client.server";
 
 const DATA_FIRST_ARITY = 2;
@@ -57,31 +57,26 @@ type DiscordGuild = typeof Guild.Type;
 type DiscordChannel = typeof Channel.Type;
 type DiscordMember = typeof Member.Type;
 
-const decodeGuilds = decodeBody(Schema.NullOr(Schema.Array(PartialGuild)));
+const decodeGuilds = decodeList(PartialGuild);
 
 const decodeUser = decodeBody(User);
 
 const decodeGuild = decodeBody(Guild);
 
-const decodeChannels = decodeBody(Schema.NullOr(Schema.Array(Channel)));
+const decodeChannels = decodeList(Channel);
 
 const decodeThreadList = decodeBody(ThreadList);
 
 const decodeArchivedThreadList = decodeBody(ArchivedThreadList);
 
-const decodeMessages = decodeBody(Schema.NullOr(Schema.Array(DiscordMessageSchema)));
+const decodeMessages = decodeList(DiscordMessageSchema);
 
 const decodeMember = decodeBody(Member);
 
 const decodeMessage = decodeBody(DiscordMessageSchema);
 
 const listBotGuilds: Effect.Effect<readonly Readonly<{ id: string }>[], DiscordRequestError> =
-  withDiscord((rest) =>
-    rest.listMyGuilds().pipe(
-      Effect.flatMap(decodeGuilds),
-      Effect.map((guilds) => guilds ?? []),
-    ),
-  );
+  withDiscord((rest) => rest.listMyGuilds().pipe(Effect.flatMap(decodeGuilds)));
 
 const getBotUserId: Effect.Effect<string, DiscordRequestError> = withDiscord((rest) =>
   rest.getMyUser().pipe(
@@ -99,12 +94,7 @@ const getGuild = (guildId: string): Effect.Effect<DiscordGuild, DiscordRequestEr
 const listGuildChannels = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
-  withDiscord((rest) =>
-    rest.listGuildChannels(guildId).pipe(
-      Effect.flatMap(decodeChannels),
-      Effect.map((channels) => channels ?? []),
-    ),
-  );
+  withDiscord((rest) => rest.listGuildChannels(guildId).pipe(Effect.flatMap(decodeChannels)));
 
 const listActiveThreads = (
   guildId: string,
@@ -166,10 +156,7 @@ const listMessagesDataFirst = (
   page: MessagePage,
 ): Effect.Effect<readonly DiscordMessage[], DiscordRequestError> =>
   withDiscord((rest) =>
-    rest.listMessages(channelId, pageParams(page)).pipe(
-      Effect.flatMap(decodeMessages),
-      Effect.map((messages) => messages ?? []),
-    ),
+    rest.listMessages(channelId, pageParams(page)).pipe(Effect.flatMap(decodeMessages)),
   );
 
 const listMessages: {

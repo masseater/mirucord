@@ -41,23 +41,21 @@ const axis = (index: number, noise: number): readonly number[] =>
   });
 
 const entryAt = (index: number): Parameters<typeof blockOf>[typeof FIRST][number] => ({
-  id: `m${index}`,
+  ordinal: index * MS,
   channelId: `c${index}`,
-  createdAt: index * MS,
   vector: quantize(axis(index, index)),
 });
 
 describe("vector blocks", () => {
-  it.effect("round-trips ids, channels and vectors through bytes", () =>
+  it.effect("round-trips ordinals, channels and vectors through bytes", () =>
     Effect.gen(function* roundTrip() {
       const entries: readonly ReturnType<typeof entryAt>[] = ROWS.map((index) => entryAt(index));
       const bytes = yield* encodeBlock(blockOf(entries));
       const decoded = entriesOf(yield* decodeBlock(bytes));
       const plain = (list: readonly (typeof entries)[number][]): readonly unknown[] =>
-        list.map(({ id, channelId, createdAt, vector }) => ({
-          id,
+        list.map(({ ordinal, channelId, vector }) => ({
+          ordinal,
           channelId,
-          createdAt,
           values: [...vector.values],
         }));
       expect(plain(decoded)).toStrictEqual(plain(entries));

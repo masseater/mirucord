@@ -10,9 +10,8 @@ const START = 0;
 const NEXT_ROW = 1;
 
 const BlockHeader = Schema.Struct({
-  ids: Schema.Array(Schema.String),
+  ordinals: Schema.Array(Schema.Int),
   channelIds: Schema.Array(Schema.String),
-  createdAt: Schema.Array(Schema.Finite),
 });
 
 const BlockHeaderJson = Schema.fromJsonString(BlockHeader);
@@ -20,9 +19,8 @@ const encodeHeader = Schema.encodeEffect(BlockHeaderJson);
 const decodeHeader = Schema.decodeEffect(BlockHeaderJson);
 
 type VectorEntry = Readonly<{
-  id: string;
+  ordinal: number;
   channelId: string;
-  createdAt: number;
   vector: Quantized;
 }>;
 
@@ -44,19 +42,17 @@ const blockOf = (entries: readonly VectorEntry[]): VectorBlock => {
     values.set(vector.values, row * DIMENSIONS);
   }
   return {
-    ids: entries.map(({ id }) => id),
+    ordinals: entries.map(({ ordinal }) => ordinal),
     channelIds: entries.map(({ channelId }) => channelId),
-    createdAt: entries.map(({ createdAt }) => createdAt),
     scales: Float32Array.from(entries, ({ vector }) => vector.scale),
     values,
   };
 };
 
 const entriesOf = (block: VectorBlock): readonly VectorEntry[] =>
-  block.ids.map((id, row) => ({
-    id,
+  block.ordinals.map((ordinal, row) => ({
+    ordinal,
     channelId: block.channelIds[row] ?? "",
-    createdAt: block.createdAt[row] ?? START,
     vector: {
       values: block.values.slice(row * DIMENSIONS, (row + NEXT_ROW) * DIMENSIONS),
       scale: block.scales[row] ?? START,
@@ -78,7 +74,7 @@ const layOut = (block: VectorBlock, header: Uint8Array): Uint8Array => {
 };
 
 const encodeBlock = (block: VectorBlock): Effect.Effect<Uint8Array> =>
-  encodeHeader({ ids: block.ids, channelIds: block.channelIds, createdAt: block.createdAt }).pipe(
+  encodeHeader({ ordinals: block.ordinals, channelIds: block.channelIds }).pipe(
     Effect.orDie,
     Effect.map((header) => layOut(block, textEncoder.encode(header))),
   );
@@ -90,13 +86,12 @@ const decodeBlock = (bytes: Uint8Array): Effect.Effect<VectorBlock> => {
     textDecoder.decode(copy.subarray(HEADER_BYTES, HEADER_BYTES + headerLength)),
   ).pipe(
     Effect.orDie,
-    Effect.map(({ ids, channelIds, createdAt }) => {
-      const rows = ids.length;
+    Effect.map(({ ordinals, channelIds }) => {
+      const rows = ordinals.length;
       const scalesAt = alignedTo(HEADER_BYTES + headerLength, FLOAT_BYTES);
       return {
-        ids,
+        ordinals,
         channelIds,
-        createdAt,
         scales: new Float32Array(copy.buffer, scalesAt, rows),
         values: new Int8Array(copy.buffer, scalesAt + rows * FLOAT_BYTES, rows * DIMENSIONS),
       };

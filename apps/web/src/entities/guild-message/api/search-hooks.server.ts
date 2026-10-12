@@ -6,6 +6,7 @@ import type { Alarms } from "./search-alarm.server";
 import { deletePrefix } from "./search-files.server";
 import { writeSearchHead } from "./search-publish.server";
 import type { TrackedRow } from "./store-types";
+import { publishGuildVectors } from "./vector-alarm.server";
 
 const ONE_PUBLISH = 1;
 const NO_DELAY = 0;
@@ -22,6 +23,7 @@ type SearchHooks = Readonly<{
   flushLater: () => Effect.Effect<void>;
   scheduleAt: (at: number) => Effect.Effect<void>;
   publish: () => Effect.Effect<void>;
+  vectors: () => Effect.Effect<void>;
   clearFiles: () => Effect.Effect<void>;
 }>;
 
@@ -46,6 +48,10 @@ const searchHooks = ({ db, alarms, bucket, guildId }: HookTarget): SearchHooks =
       ),
     publish: () =>
       named((id) => publishing.withPermit(publishGuild({ db, alarms, bucket, guildId: id }))),
+    vectors: () =>
+      named((id) =>
+        publishing.withPermit(publishGuildVectors({ db, alarms, bucket, guildId: id })),
+      ),
     clearFiles: () => named((id) => deletePrefix({ bucket, guildId: id })),
   };
 };

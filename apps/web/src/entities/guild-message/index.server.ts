@@ -23,3 +23,5 @@ export {
   queryTokens,
   searchableTexts,
 } from "./lib/search-tokens.server";
+export { searchSimilar } from "./api/vector-search.server";
+export type { SimilarEntry } from "./api/vector-search.server";

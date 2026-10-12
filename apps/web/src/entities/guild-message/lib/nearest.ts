@@ -33,8 +33,8 @@ const scoreAt = ({ query, block }: ScoreRequest, row: number): number =>
 
 const nearestRows = (request: ScoreRequest): readonly Scored[] =>
   pipe(
-    Array.range(NO_SCORE, request.block.ids.length - NEXT),
-    Array.filter((row) => row < request.block.ids.length && request.keep(row)),
+    Array.range(NO_SCORE, request.block.ordinals.length - NEXT),
+    Array.filter((row) => row < request.block.ordinals.length && request.keep(row)),
     Array.map((row) => ({ row, score: scoreAt(request, row) })),
     (scored) => scored.toSorted(byScore),
     Array.take(request.limit),

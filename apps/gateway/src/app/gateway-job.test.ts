@@ -1,5 +1,5 @@
 import type { GatewayJob } from "@repo/ingest-util-gateway-contract";
-import { GatewayDispatchEvents, GatewayOpcodes } from "discord-api-types/v10";
+import { Discord } from "dfx";
 import { Array, Option } from "effect";
 import { expect, it } from "vite-plus/test";
 
@@ -11,9 +11,9 @@ const MESSAGES_PER_JOB = 100;
 
 const MESSAGE = { id: "711", channel_id: "710", guild_id: "700" };
 
-const jobOf = (event: GatewayDispatchEvents, data: unknown): Option.Option<GatewayJob> =>
+const jobOf = (event: Discord.GatewayDispatchEvents, data: unknown): Option.Option<GatewayJob> =>
   toGatewayJob({
-    op: GatewayOpcodes.Dispatch,
+    op: Discord.GatewayOpcodes.Dispatch,
     ...Object.fromEntries([
       ["t", event],
       ["d", data],
@@ -38,7 +38,10 @@ const storedContents = (job: GatewayJob): readonly string[] => {
 };
 
 it("carries a created or edited message with its body", () => {
-  for (const event of [GatewayDispatchEvents.MessageCreate, GatewayDispatchEvents.MessageUpdate]) {
+  for (const event of [
+    Discord.GatewayDispatchEvents.MessageCreate,
+    Discord.GatewayDispatchEvents.MessageUpdate,
+  ]) {
     const jobs = Option.toArray(jobOf(event, { ...FULL_MESSAGE, extra: "ignored" }));
     expect(jobs.map(({ kind }) => kind)).toStrictEqual(["store"]);
     expect(jobs.map((job) => storedContents(job))).toStrictEqual([["hello"]]);
@@ -47,24 +50,24 @@ it("carries a created or edited message with its body", () => {
 
 it("keeps the latest body of a message edited twice in a row", () => {
   const edits = ["first", "second"].map((content) =>
-    jobOf(GatewayDispatchEvents.MessageUpdate, { ...FULL_MESSAGE, content }),
+    jobOf(Discord.GatewayDispatchEvents.MessageUpdate, { ...FULL_MESSAGE, content }),
   );
   const merged = mergeJobs(edits.flatMap((job) => Option.toArray(job)));
   expect(merged.map((job) => storedContents(job))).toStrictEqual([["second"]]);
 });
 
 it("asks to refresh an edit that arrives without the whole message", () => {
-  expect(jobOf(GatewayDispatchEvents.MessageUpdate, MESSAGE)).toStrictEqual(
+  expect(jobOf(Discord.GatewayDispatchEvents.MessageUpdate, MESSAGE)).toStrictEqual(
     Option.some({ kind: "refresh", guildId: "700", channelId: "710", messageIds: ["711"] }),
   );
 });
 
 it("asks to forget deleted messages", () => {
-  expect(jobOf(GatewayDispatchEvents.MessageDelete, MESSAGE)).toStrictEqual(
+  expect(jobOf(Discord.GatewayDispatchEvents.MessageDelete, MESSAGE)).toStrictEqual(
     Option.some({ kind: "forget", guildId: "700", channelId: "710", messageIds: ["711"] }),
   );
   expect(
-    jobOf(GatewayDispatchEvents.MessageDeleteBulk, {
+    jobOf(Discord.GatewayDispatchEvents.MessageDeleteBulk, {
       ids: ["711", "712"],
       channel_id: "710",
       guild_id: "700",
@@ -75,31 +78,33 @@ it("asks to forget deleted messages", () => {
 });
 
 it("ignores direct messages and other events", () => {
-  expect(jobOf(GatewayDispatchEvents.MessageCreate, { id: "1", channel_id: "2" })).toStrictEqual(
-    Option.none(),
-  );
-  expect(jobOf(GatewayDispatchEvents.TypingStart, MESSAGE)).toStrictEqual(Option.none());
-  expect(toGatewayJob({ op: GatewayOpcodes.HeartbeatAck })).toStrictEqual(Option.none());
+  expect(
+    jobOf(Discord.GatewayDispatchEvents.MessageCreate, { id: "1", channel_id: "2" }),
+  ).toStrictEqual(Option.none());
+  expect(jobOf(Discord.GatewayDispatchEvents.TypingStart, MESSAGE)).toStrictEqual(Option.none());
+  expect(toGatewayJob({ op: Discord.GatewayOpcodes.HeartbeatAck })).toStrictEqual(Option.none());
 });
 
 it("asks to welcome a server the bot has joined", () => {
-  expect(jobOf(GatewayDispatchEvents.GuildCreate, { id: "700", name: "x" })).toStrictEqual(
+  expect(jobOf(Discord.GatewayDispatchEvents.GuildCreate, { id: "700", name: "x" })).toStrictEqual(
     Option.some({ kind: "join", guildId: "700" }),
   );
 });
 
 it("asks to forget a server the bot was removed from, but not one that is only unavailable", () => {
-  expect(jobOf(GatewayDispatchEvents.GuildDelete, { id: "700" })).toStrictEqual(
+  expect(jobOf(Discord.GatewayDispatchEvents.GuildDelete, { id: "700" })).toStrictEqual(
     Option.some({ kind: "leave", guildId: "700" }),
   );
-  expect(jobOf(GatewayDispatchEvents.GuildDelete, { id: "700", unavailable: true })).toStrictEqual(
-    Option.none(),
-  );
+  expect(
+    jobOf(Discord.GatewayDispatchEvents.GuildDelete, { id: "700", unavailable: true }),
+  ).toStrictEqual(Option.none());
 });
 
 it("asks to catch up once when the gateway starts a new session", () => {
-  expect(jobOf(GatewayDispatchEvents.Ready, {})).toStrictEqual(Option.some({ kind: "resync" }));
-  expect(jobOf(GatewayDispatchEvents.Resumed, {})).toStrictEqual(Option.none());
+  expect(jobOf(Discord.GatewayDispatchEvents.Ready, {})).toStrictEqual(
+    Option.some({ kind: "resync" }),
+  );
+  expect(jobOf(Discord.GatewayDispatchEvents.Resumed, {})).toStrictEqual(Option.none());
   expect(
     mergeJobs([{ kind: "resync" }, { kind: "join", guildId: "700" }, { kind: "resync" }]),
   ).toStrictEqual([{ kind: "resync" }, { kind: "join", guildId: "700" }]);
@@ -150,18 +155,18 @@ it("splits a large burst into jobs of at most a hundred messages", () => {
 
 it("asks to sync a server whose channels, threads, or roles changed", () => {
   for (const event of [
-    GatewayDispatchEvents.ChannelUpdate,
-    GatewayDispatchEvents.ThreadCreate,
-    GatewayDispatchEvents.GuildRoleUpdate,
+    Discord.GatewayDispatchEvents.ChannelUpdate,
+    Discord.GatewayDispatchEvents.ThreadCreate,
+    Discord.GatewayDispatchEvents.GuildRoleUpdate,
   ]) {
     expect(jobOf(event, { id: "710", guild_id: "700" })).toStrictEqual(
       Option.some({ kind: "sync", guildId: "700" }),
     );
   }
-  expect(jobOf(GatewayDispatchEvents.GuildUpdate, { id: "700" })).toStrictEqual(
+  expect(jobOf(Discord.GatewayDispatchEvents.GuildUpdate, { id: "700" })).toStrictEqual(
     Option.some({ kind: "sync", guildId: "700" }),
   );
-  expect(jobOf(GatewayDispatchEvents.ChannelCreate, { id: "1", type: 1 })).toStrictEqual(
+  expect(jobOf(Discord.GatewayDispatchEvents.ChannelCreate, { id: "1", type: 1 })).toStrictEqual(
     Option.none(),
   );
 });

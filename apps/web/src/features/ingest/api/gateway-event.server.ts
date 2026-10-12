@@ -6,7 +6,7 @@ import { verifyGatewayEvent } from "#/features/ingest/model/gateway-signature";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
 import type { GatewayJob } from "#/features/ingest/model/ingest-job";
 
-import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
+import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server";
 import { forgetGuild } from "./guild-membership.server";
 import type { IngestError } from "./message-page.server";
 import { syncJoinedGuild, syncKnownGuild } from "./sync-guilds.server";
@@ -23,6 +23,7 @@ const runJob: (job: GatewayJob) => Effect.Effect<void, IngestError> = Match.type
     join: ({ guildId }) => syncJoinedGuild(guildId),
     sync: ({ guildId }) => syncKnownGuild(guildId),
     leave: ({ guildId }) => forgetGuild(guildId),
+    store: storeGatewayMessages,
     refresh: refreshMessages,
     forget: forgetMessages,
   }),

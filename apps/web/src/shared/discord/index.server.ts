@@ -14,7 +14,8 @@ export {
   NOT_FOUND,
   PAGE_SIZE,
 } from "./discord.server";
-export type { DiscordChannel, DiscordGuild, DiscordMessage, MessagePage } from "./discord.server";
+export type { DiscordChannel, DiscordGuild, MessagePage } from "./discord.server";
+export type { DiscordMessage } from "./message";
 export {
   findBotAdder,
   postChannelMessage,

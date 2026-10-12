@@ -1,6 +1,6 @@
 import { Effect, Option, pipe } from "effect";
 
-import type { ForgetJob, RefreshJob } from "#/features/ingest/model/ingest-job";
+import type { ForgetJob, RefreshJob, StoreJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKeys } from "#/shared/crypto/index.server";
 import { FORBIDDEN, NOT_FOUND, findMessage, listMessages } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
@@ -105,4 +105,25 @@ const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
     }),
   );
 
-export { forgetMessages, refreshMessages };
+const storeWith = (job: StoreJob, wrappedKey: string): Effect.Effect<void> =>
+  openGuildKeys(wrappedKey).pipe(
+    Effect.flatMap((keys) =>
+      storeConsented({
+        ...keys,
+        job: { guildId: job.guildId, channelId: job.channelId },
+        page: job.messages,
+      }),
+    ),
+  );
+
+const storeGatewayMessages = (job: StoreJob): Effect.Effect<void> =>
+  loadChannelKey(job).pipe(
+    Effect.flatMap(
+      Option.match({
+        onNone: () => Effect.void,
+        onSome: (wrappedKey) => storeWith(job, wrappedKey),
+      }),
+    ),
+  );
+
+export { forgetMessages, refreshMessages, storeGatewayMessages };

@@ -36,4 +36,7 @@ const Message = Schema.Struct({
   message_snapshots: Schema.optional(Schema.Array(MessageSnapshot)),
 });
 
+type DiscordMessage = typeof Message.Type;
+
 export { Message };
+export type { DiscordMessage };

@@ -5,11 +5,17 @@ import type {
 } from "discord-api-types/v10";
 import { Array, Match, Option, Schema } from "effect";
 
-import type { GatewayJob, MessageJob } from "./ingest-job";
+import { DiscordMessageSchema } from "#/shared/discord";
+import type { DiscordMessage } from "#/shared/discord";
+
+import type { GatewayJob } from "./ingest-job";
 
 type GatewayPayload = Readonly<{ op: GatewayOpcodes }>;
 
-type JobKind = MessageJob["kind"];
+type Change =
+  | Readonly<{ kind: "refresh" }>
+  | Readonly<{ kind: "forget" }>
+  | Readonly<{ kind: "store"; message: DiscordMessage }>;
 
 const MESSAGES_PER_JOB = 100;
 
@@ -38,37 +44,56 @@ const decodeGuild = Schema.decodeOption(GuildEvent);
 const decodeGuildChange = Schema.decodeOption(GuildChangeEvent);
 const decodeGuildDelete = Schema.decodeOption(GuildDeleteEvent);
 const decodeMessage = Schema.decodeOption(MessageEvent);
+const decodeFullMessage = Schema.decodeOption(DiscordMessageSchema);
 const decodeBulkDelete = Schema.decodeOption(BulkDeleteEvent);
 
 const isDispatch = (payload: GatewayPayload): payload is GatewayDispatchPayload =>
   payload.op === GatewayOpcodes.Dispatch;
 
-type Target = Readonly<
-  Pick<GatewayMessageCreateDispatchData, "channel_id" | "guild_id"> & {
-    messageIds: readonly [string, ...string[]];
-  }
->;
+type Place = Readonly<{ guildId: string; channelId: string }>;
 
-const jobFor = (kind: JobKind, target: Target): Option.Option<GatewayJob> =>
-  Option.fromUndefinedOr(target.guild_id).pipe(
-    Option.map((guildId) => ({
-      kind,
-      guildId,
-      channelId: target.channel_id,
-      messageIds: target.messageIds,
-    })),
+const placeOf = ({
+  channel_id,
+  guild_id,
+}: Readonly<
+  Pick<GatewayMessageCreateDispatchData, "channel_id" | "guild_id">
+>): Option.Option<Place> =>
+  Option.fromUndefinedOr(guild_id).pipe(
+    Option.map((guildId) => ({ guildId, channelId: channel_id })),
   );
 
-const singleJob = (kind: JobKind, data: typeof MessageEvent.Encoded): Option.Option<GatewayJob> =>
+const storeOrRefreshJob = (
+  data: typeof MessageEvent.Encoded & typeof DiscordMessageSchema.Encoded,
+): Option.Option<GatewayJob> =>
   decodeMessage(data).pipe(
-    Option.flatMap((event) => jobFor(kind, { ...event, messageIds: [event.id] })),
+    Option.flatMap((event) =>
+      placeOf(event).pipe(
+        Option.map((place): GatewayJob =>
+          Option.match(decodeFullMessage(data), {
+            onNone: () => ({ kind: "refresh", ...place, messageIds: [event.id] }),
+            onSome: (message) => ({ kind: "store", ...place, messages: [message] }),
+          }),
+        ),
+      ),
+    ),
   );
+
+const forgetOf = (
+  event: Readonly<Pick<GatewayMessageCreateDispatchData, "channel_id" | "guild_id">>,
+  messageIds: readonly [string, ...string[]],
+): Option.Option<GatewayJob> =>
+  placeOf(event).pipe(
+    Option.map((place): GatewayJob => ({ kind: "forget", ...place, messageIds })),
+  );
+
+const forgetJob = (data: typeof MessageEvent.Encoded): Option.Option<GatewayJob> =>
+  decodeMessage(data).pipe(Option.flatMap((event) => forgetOf(event, [event.id])));
 
 const bulkJob = (data: typeof BulkDeleteEvent.Encoded): Option.Option<GatewayJob> =>
   decodeBulkDelete(data).pipe(
     Option.flatMap(({ ids, ...event }) =>
       Option.liftPredicate(ids, Array.isReadonlyArrayNonEmpty).pipe(
-        Option.flatMap((messageIds) => jobFor("forget", { ...event, messageIds })),
+        Option.flatMap((messageIds) => forgetOf(event, messageIds)),
       ),
     ),
   );
@@ -97,10 +122,10 @@ const jobOfDispatch = Match.type<GatewayDispatchPayload>().pipe(
   Match.discriminator("t")(
     GatewayDispatchEvents.MessageCreate,
     GatewayDispatchEvents.MessageUpdate,
-    (dispatch) => singleJob("refresh", dispatch.d),
+    (dispatch) => storeOrRefreshJob(dispatch.d),
   ),
   Match.discriminator("t")(GatewayDispatchEvents.MessageDelete, (dispatch) =>
-    singleJob("forget", dispatch.d),
+    forgetJob(dispatch.d),
   ),
   Match.discriminator("t")(GatewayDispatchEvents.MessageDeleteBulk, (dispatch) =>
     bulkJob(dispatch.d),
@@ -146,26 +171,28 @@ const jobKeyOf = (job: GatewayJob): string => {
   if (isGuildJob(job)) {
     return job.guildId;
   }
+  if (job.kind === "store") {
+    return Array.headNonEmpty(job.messages).id;
+  }
   return Array.headNonEmpty(job.messageIds);
 };
 
-type MessageChange = Readonly<{
-  kind: JobKind;
-  guildId: string;
-  channelId: string;
-  messageId: string;
-}>;
+type MessageChange = Place & Readonly<{ messageId: string; change: Change }>;
 
 const messageChangesOf = (job: GatewayJob): readonly MessageChange[] => {
   if (isGuildJob(job)) {
     return [];
   }
-  return job.messageIds.map((messageId) => ({
-    kind: job.kind,
-    guildId: job.guildId,
-    channelId: job.channelId,
-    messageId,
-  }));
+  const place = { guildId: job.guildId, channelId: job.channelId };
+  if (job.kind === "store") {
+    return job.messages.map((message) => ({
+      ...place,
+      messageId: message.id,
+      change: { kind: "store", message },
+    }));
+  }
+  const change: Change = { kind: job.kind };
+  return job.messageIds.map((messageId) => ({ ...place, messageId, change }));
 };
 
 const syncedGuildsOf = (job: GatewayJob): readonly string[] => {
@@ -182,11 +209,29 @@ const membershipOf = (job: GatewayJob): readonly (readonly [string, Membership])
   return [];
 };
 
+const storedMessagesOf = (events: readonly MessageChange[]): readonly DiscordMessage[] =>
+  events.flatMap(({ change }) => {
+    if (change.kind === "store") {
+      return [change.message];
+    }
+    return [];
+  });
+
 const jobsOfGroup = (events: Array.NonEmptyReadonlyArray<MessageChange>): readonly GatewayJob[] => {
-  const { kind, guildId, channelId } = Array.headNonEmpty(events);
+  const { change, guildId, channelId } = Array.headNonEmpty(events);
+  if (change.kind === "store") {
+    return Array.chunksOf(storedMessagesOf(events), MESSAGES_PER_JOB).flatMap((chunk) =>
+      Array.match(chunk, {
+        onEmpty: (): readonly GatewayJob[] => [],
+        onNonEmpty: (messages): readonly GatewayJob[] => [
+          { kind: "store", guildId, channelId, messages },
+        ],
+      }),
+    );
+  }
   const messageIds = events.map(({ messageId }) => messageId);
   return Array.chunksOf(messageIds, MESSAGES_PER_JOB).map((chunk): GatewayJob => ({
-    kind,
+    kind: change.kind,
     guildId,
     channelId,
     messageIds: chunk,
@@ -199,7 +244,7 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
   );
   const groups = Array.groupBy(
     [...latest.values()],
-    ({ kind, channelId }) => `${kind}:${channelId}`,
+    ({ change, channelId }) => `${change.kind}:${channelId}`,
   );
   const membership = new Map(jobs.flatMap((job) => membershipOf(job)));
   const moves = [...membership].map(([guildId, kind]): GatewayJob => ({ kind, guildId }));

@@ -20,12 +20,43 @@ const jobOf = (event: GatewayDispatchEvents, data: unknown): Option.Option<Gatew
     ]),
   });
 
-it("asks to refresh a created or edited message", () => {
-  for (const event of [GatewayDispatchEvents.MessageCreate, GatewayDispatchEvents.MessageUpdate]) {
-    expect(jobOf(event, MESSAGE)).toStrictEqual(
-      Option.some({ kind: "refresh", guildId: "700", channelId: "710", messageIds: ["711"] }),
-    );
+const FULL_MESSAGE = {
+  ...MESSAGE,
+  type: 0,
+  content: "hello",
+  timestamp: "2026-10-01T00:00:00Z",
+  edited_timestamp: Option.getOrNull(Option.none<string>()),
+  author: { id: "901", username: "someone" },
+  attachments: [],
+};
+
+const storedContents = (job: GatewayJob): readonly string[] => {
+  if (job.kind !== "store") {
+    return [];
   }
+  return job.messages.map(({ content }) => content);
+};
+
+it("carries a created or edited message with its body", () => {
+  for (const event of [GatewayDispatchEvents.MessageCreate, GatewayDispatchEvents.MessageUpdate]) {
+    const jobs = Option.toArray(jobOf(event, { ...FULL_MESSAGE, extra: "ignored" }));
+    expect(jobs.map(({ kind }) => kind)).toStrictEqual(["store"]);
+    expect(jobs.map((job) => storedContents(job))).toStrictEqual([["hello"]]);
+  }
+});
+
+it("keeps the latest body of a message edited twice in a row", () => {
+  const edits = ["first", "second"].map((content) =>
+    jobOf(GatewayDispatchEvents.MessageUpdate, { ...FULL_MESSAGE, content }),
+  );
+  const merged = mergeJobs(edits.flatMap((job) => Option.toArray(job)));
+  expect(merged.map((job) => storedContents(job))).toStrictEqual([["second"]]);
+});
+
+it("asks to refresh an edit that arrives without the whole message", () => {
+  expect(jobOf(GatewayDispatchEvents.MessageUpdate, MESSAGE)).toStrictEqual(
+    Option.some({ kind: "refresh", guildId: "700", channelId: "710", messageIds: ["711"] }),
+  );
 });
 
 it("asks to forget deleted messages", () => {

@@ -12,7 +12,7 @@ import { GuildSettingsView } from "./guild-settings-view";
 import { SignInPanel } from "./sign-in-panel";
 
 const BACK = "サーバー一覧";
-const NOT_MANAGED = "このサーバーの設定は開けません。";
+const NOT_MANAGED = "このサーバーの設定は開けないよ";
 
 const GuildSettingsPage = (): ReactNode => {
   const { guildId } = useParams({ from: "/dashboard/$guildId" });

@@ -149,16 +149,6 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - if: steps.fly.outputs.enabled == 'true'
-        run: |
-          machines="https://api.machines.dev/v1/apps/mirucord-gateway-app/machines"
-          for id in $(curl -fsS -H "Authorization: Bearer $FLY_API_TOKEN" "$machines" \
-            | jq -r '.[] | select(.config.metadata["alchemy.stack"] == "gateway" and .config.metadata["alchemy.stage"] == "prod") | .id'); do
-            curl -fsS -X POST -H "Authorization: Bearer $FLY_API_TOKEN" -H "Content-Type: application/json" \
-              -d '{"value":"mirucord-gateway"}' "$machines/$id/metadata/alchemy.stack"
-          done
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      - if: steps.fly.outputs.enabled == 'true'
         working-directory: tools/stack-state
         run: vp exec node src/main.ts relabel mirucord-gateway-app gateway mirucord-gateway prod MirucordGateway
         env:

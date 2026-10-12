@@ -1,17 +1,26 @@
 import { it } from "@effect/vitest";
 import { env } from "cloudflare:workers";
+import { eq } from "drizzle-orm";
 import { DateTime, Effect, Schema } from "effect";
 import type { Duration } from "effect";
 import { beforeEach, expect, vi } from "vite-plus/test";
 
 import { signGatewayEvent } from "#/features/ingest/model/gateway-signature";
 import { GatewayJobSchema } from "#/features/ingest/model/ingest-job";
+import { db, guild } from "#/shared/db/index.server";
 
+import {
+  consentedGuild,
+  putMessages,
+  storedCount,
+  storedMessage,
+} from "./__tests__/guild-messages";
 import { receiveGatewayEvent } from "./gateway-event.server";
 
 type GatewayEvent = Readonly<{ body: string; headers: Readonly<Record<string, string>> }>;
 
 const PROCESSED = 200;
+const NOTHING_STORED = 0;
 const BAD_REQUEST = 400;
 const UNAUTHORIZED = 401;
 const STALE_BY: Duration.Input = "10 minutes";
@@ -76,5 +85,25 @@ it.live("rejects a signed body that is not a gateway job", () =>
     const now = yield* DateTime.now;
     const event = yield* signedRequest('{"kind":"withdraw"}', now, env.DISCORD_BOT_TOKEN);
     expect(yield* statusOf(event)).toBe(BAD_REQUEST);
+  }),
+);
+
+it.live("forgets a server as soon as the bot is removed from it", () =>
+  Effect.gen(function* removedGuild() {
+    const target = { guildId: "750", channelId: "751" };
+    yield* consentedGuild(target);
+    yield* putMessages({
+      guildId: target.guildId,
+      messages: [storedMessage({ id: "752", channelId: target.channelId })],
+    });
+    const now = yield* DateTime.now;
+    const body = yield* encodeJson({ kind: "leave", guildId: target.guildId }).pipe(Effect.orDie);
+    const event = yield* signedRequest(body, now, env.DISCORD_BOT_TOKEN);
+    expect(yield* statusOf(event)).toBe(PROCESSED);
+    expect(yield* storedCount(target.guildId)).toBe(NOTHING_STORED);
+    const rows = yield* Effect.promise(() =>
+      db.select({ id: guild.id }).from(guild).where(eq(guild.id, target.guildId)),
+    );
+    expect(rows).toStrictEqual([]);
   }),
 );

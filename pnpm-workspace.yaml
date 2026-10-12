@@ -35,7 +35,6 @@ catalog:
   "@vitejs/plugin-rsc": 0.5.36
   skills: 1.7.1
   "@tanstack/intent": 0.5.5
-  "@discordeno/rest": 21.0.0
   "@modelcontextprotocol/server": 2.3.1
   "@sapphire/bitfield": 1.2.4
   discord-api-types: 0.38.56
@@ -50,7 +49,6 @@ catalog:
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
   usehooks-ts: ^3.1.1
-  "@discordeno/gateway": 21.0.0
   standardwebhooks: 1.1.1
   js-base64: 3.9.4
   type-fest: 5.10.0
@@ -70,7 +68,7 @@ catalogs:
     effect: 4.0.0
     elysia: 1.4.30
     fallow: 3.32.0
-    renovate: 44.148.4
+    renovate: 44.148.5
     steiger: 0.7.0
     tailwindcss: 4.3.3
     textlint: 15.8.0

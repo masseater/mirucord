@@ -3,7 +3,7 @@ import type { DiscordMessage } from "@repo/shared-util-discord";
 import { ChannelType, OverwriteType } from "discord-api-types/v10";
 import { Array, Effect, Function, Option, Schema } from "effect";
 
-import { decodeBody, decodeList, withDiscord } from "./client.server";
+import { decodeBody, withDiscord } from "./client.server";
 import type { DiscordRequestError } from "./client.server";
 
 const DATA_FIRST_ARITY = 2;
@@ -56,6 +56,14 @@ const Member = Schema.Struct({ roles: Schema.Array(Schema.String) });
 type DiscordGuild = typeof Guild.Type;
 type DiscordChannel = typeof Channel.Type;
 type DiscordMember = typeof Member.Type;
+
+const decodeList = <Item extends Schema.Top>(item: Item) => {
+  const decode = decodeBody(Schema.NullOr(Schema.Array(item)));
+  return (
+    raw: readonly Item["Encoded"][] | null,
+  ): Effect.Effect<readonly Item["Type"][], never, Item["DecodingServices"]> =>
+    decode(raw).pipe(Effect.map((items) => items ?? []));
+};
 
 const decodeGuilds = decodeList(PartialGuild);
 

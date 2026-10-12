@@ -49,6 +49,7 @@ const indexRow = (
     Effect.map((tokens) => ({
       row: { id, channelId, authorId, sealed, createdAt, editedAt, describedWith },
       tokens,
+      phrases: { status: "pending" },
     })),
   );
 

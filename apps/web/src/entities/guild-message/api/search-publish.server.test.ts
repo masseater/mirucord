@@ -46,6 +46,7 @@ const messageAt = ({ index, tokens, channelId = CHANNEL }: Seed): IndexedMessage
     describedWith: Option.getOrNull(Option.none<string>()),
   },
   tokens,
+  phrases: { status: "pending" },
 });
 
 const write = (guildId: string, messages: readonly IndexedMessage[]): Effect.Effect<void> =>

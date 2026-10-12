@@ -3,10 +3,10 @@ import type { SQL } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Option } from "effect";
 
-import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
+import { BOUND_LIMIT, guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { searchInvalid, searchSegment } from "#/entities/guild-message/model/search-segment.schema";
-import { BOUND_LIMIT } from "#/entities/guild-message/model/stored-message";
-import type { TrackedRow } from "#/entities/guild-message/model/stored-message";
+
+import type { TrackedRow } from "./store-types";
 
 const EARLIEST = 0;
 const NONE = 0;

@@ -1,7 +1,7 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "de334d37-2bb8-4ca0-9f0c-d1ea48dca032",
+  "id": "16955ab8-b390-4991-a77a-48fbb736669b",
   "prevIds": ["bc0c3cc2-4068-4cda-8a87-e524e1c03116"],
   "ddl": [
     {
@@ -13,11 +13,15 @@
       "entityType": "tables"
     },
     {
-      "name": "search_invalid",
+      "name": "phrase_ledger",
       "entityType": "tables"
     },
     {
-      "name": "search_segment",
+      "name": "phrase_stats",
+      "entityType": "tables"
+    },
+    {
+      "name": "phrase_use",
       "entityType": "tables"
     },
     {
@@ -111,54 +115,24 @@
       "table": "message"
     },
     {
-      "type": "blob",
-      "notNull": false,
+      "type": "text",
+      "notNull": true,
       "autoincrement": false,
-      "default": null,
+      "default": "'pending'",
       "generated": null,
-      "name": "tokens",
+      "name": "phrases",
       "entityType": "columns",
       "table": "message"
     },
     {
       "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "0",
-      "generated": null,
-      "name": "version",
-      "entityType": "columns",
-      "table": "message"
-    },
-    {
-      "type": "text",
-      "notNull": true,
+      "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
-      "name": "segment",
+      "name": "id",
       "entityType": "columns",
-      "table": "search_invalid"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "ordinal",
-      "entityType": "columns",
-      "table": "search_invalid"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "since",
-      "entityType": "columns",
-      "table": "search_invalid"
+      "table": "phrase_ledger"
     },
     {
       "type": "text",
@@ -166,69 +140,49 @@
       "autoincrement": false,
       "default": null,
       "generated": null,
-      "name": "name",
+      "name": "guildId",
       "entityType": "columns",
-      "table": "search_segment"
+      "table": "phrase_ledger"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "written",
+      "entityType": "columns",
+      "table": "phrase_ledger"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "generation",
+      "entityType": "columns",
+      "table": "phrase_ledger"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "backfillRequestedAt",
+      "entityType": "columns",
+      "table": "phrase_ledger"
     },
     {
       "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "kind",
-      "entityType": "columns",
-      "table": "search_segment"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "fromCreatedAt",
-      "entityType": "columns",
-      "table": "search_segment"
-    },
-    {
-      "type": "integer",
       "notNull": false,
       "autoincrement": false,
       "default": null,
       "generated": null,
-      "name": "toCreatedAt",
+      "name": "visibility",
       "entityType": "columns",
-      "table": "search_segment"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "builtThrough",
-      "entityType": "columns",
-      "table": "search_segment"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "count",
-      "entityType": "columns",
-      "table": "search_segment"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "shards",
-      "entityType": "columns",
-      "table": "search_segment"
+      "table": "phrase_stats"
     },
     {
       "type": "text",
@@ -236,16 +190,96 @@
       "autoincrement": false,
       "default": null,
       "generated": null,
-      "name": "ids",
+      "name": "body",
       "entityType": "columns",
-      "table": "search_segment"
+      "table": "phrase_stats"
     },
     {
-      "columns": ["segment", "ordinal"],
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "written",
+      "entityType": "columns",
+      "table": "phrase_stats"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "computedAt",
+      "entityType": "columns",
+      "table": "phrase_stats"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "messageId",
+      "entityType": "columns",
+      "table": "phrase_use"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "phrase",
+      "entityType": "columns",
+      "table": "phrase_use"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "common",
+      "entityType": "columns",
+      "table": "phrase_use"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "channelId",
+      "entityType": "columns",
+      "table": "phrase_use"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "authorId",
+      "entityType": "columns",
+      "table": "phrase_use"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "createdAt",
+      "entityType": "columns",
+      "table": "phrase_use"
+    },
+    {
+      "columns": ["messageId", "phrase"],
       "nameExplicit": false,
-      "name": "search_invalid_pk",
+      "name": "phrase_use_pk",
       "entityType": "pks",
-      "table": "search_invalid"
+      "table": "phrase_use"
     },
     {
       "columns": ["id"],
@@ -262,10 +296,17 @@
       "entityType": "pks"
     },
     {
-      "columns": ["name"],
+      "columns": ["id"],
       "nameExplicit": false,
-      "name": "search_segment_pk",
-      "table": "search_segment",
+      "name": "phrase_ledger_pk",
+      "table": "phrase_ledger",
+      "entityType": "pks"
+    },
+    {
+      "columns": ["visibility"],
+      "nameExplicit": false,
+      "name": "phrase_stats_pk",
+      "table": "phrase_stats",
       "entityType": "pks"
     },
     {
@@ -289,6 +330,10 @@
     {
       "columns": [
         {
+          "value": "phrases",
+          "isExpression": false
+        },
+        {
           "value": "createdAt",
           "isExpression": false
         }
@@ -296,23 +341,69 @@
       "isUnique": false,
       "where": null,
       "origin": "manual",
-      "name": "message_created_idx",
+      "name": "message_phrases_created_idx",
       "entityType": "indexes",
       "table": "message"
     },
     {
       "columns": [
         {
-          "value": "version",
+          "value": "createdAt",
           "isExpression": false
         }
       ],
       "isUnique": false,
       "where": null,
       "origin": "manual",
-      "name": "message_version_idx",
+      "name": "phrase_use_created_idx",
       "entityType": "indexes",
-      "table": "message"
+      "table": "phrase_use"
+    },
+    {
+      "columns": [
+        {
+          "value": "phrase",
+          "isExpression": false
+        },
+        {
+          "value": "createdAt",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "phrase_use_phrase_idx",
+      "entityType": "indexes",
+      "table": "phrase_use"
+    },
+    {
+      "columns": [
+        {
+          "value": "authorId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "phrase_use_author_idx",
+      "entityType": "indexes",
+      "table": "phrase_use"
+    },
+    {
+      "columns": [
+        {
+          "value": "channelId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "phrase_use_channel_idx",
+      "entityType": "indexes",
+      "table": "phrase_use"
     },
     {
       "columns": ["id"],

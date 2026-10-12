@@ -6,9 +6,9 @@ import { SEQUENTIAL } from "#/entities/guild-message/lib/search-layout";
 import { indexTokens, searchableTexts } from "#/entities/guild-message/lib/search-tokens.server";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
-import { db, guild } from "#/shared/db/index.server";
 
 import { searchLedger } from "./search-ledger.server";
+import { wrappedKeyOf } from "./wrapped-key.server";
 
 const REINDEX_BATCH = 500;
 
@@ -17,15 +17,6 @@ type Reindexing = Readonly<{ store: DrizzleSqliteDODatabase; guildId: string }>;
 type MissingRow = Readonly<{ id: string; channelId: string; sealed: string }>;
 
 type Reindexed = Readonly<{ id: string; tokens: readonly number[] }>;
-
-const wrappedKeyOf = (guildId: string): Effect.Effect<Option.Option<string>> =>
-  Effect.promise(() =>
-    db.select({ wrappedKey: guild.wrappedKey }).from(guild).where(eq(guild.id, guildId)).get(),
-  ).pipe(
-    Effect.map((found) =>
-      Option.map(Option.fromUndefinedOr(found), ({ wrappedKey }) => wrappedKey),
-    ),
-  );
 
 const missingRows = (store: DrizzleSqliteDODatabase): readonly MissingRow[] =>
   store

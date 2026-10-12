@@ -5,6 +5,7 @@ import {
   RouteBases,
   Routes,
 } from "discord-api-types/v10";
+import { eq } from "drizzle-orm";
 import { Array, DateTime, Effect, Option, Record } from "effect";
 import { http, HttpResponse } from "msw";
 
@@ -164,6 +165,7 @@ const sealedRows = (
             describedWith: Option.getOrNull(Option.none<string>()),
           },
           tokens,
+          phrases: { status: "pending" },
         })),
       ),
     { concurrency: 1 },
@@ -244,6 +246,16 @@ const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
     yield* Effect.promise(() => guildStore(seed.id).publish());
   });
 
+const guildKeys = (
+  guildId: string,
+): Effect.Effect<Effect.Success<ReturnType<typeof openGuildKeys>>> =>
+  Effect.promise(() =>
+    db.select({ wrappedKey: guild.wrappedKey }).from(guild).where(eq(guild.id, guildId)),
+  ).pipe(
+    Effect.map((rows) => Option.getOrThrow(Array.head(rows))),
+    Effect.flatMap(({ wrappedKey }) => openGuildKeys(wrappedKey)),
+  );
+
 const seedScenario = (): Promise<void> =>
   Effect.runPromise(Effect.forEach(GUILDS, seedGuild, { discard: true }));
 
@@ -260,6 +272,7 @@ export {
   GUILD_C,
   GUILD_D,
   D_OPEN,
+  guildKeys,
   SAME_WORDS,
   seedScenario,
   USER,

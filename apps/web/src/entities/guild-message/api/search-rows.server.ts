@@ -3,8 +3,7 @@ import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Option } from "effect";
 
 import type { SealedEntry } from "#/entities/guild-message/lib/search-segment";
-import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
-import { BOUND_LIMIT } from "#/entities/guild-message/model/stored-message";
+import { BOUND_LIMIT, guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 
 const sealedEntries = (
   db: DrizzleSqliteDODatabase,

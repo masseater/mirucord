@@ -1,11 +1,10 @@
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Clock, Effect, Option } from "effect";
 
-import type { TrackedRow } from "#/entities/guild-message/model/stored-message";
-
 import { reindexMissing } from "./reindex.server";
 import { searchLedger } from "./search-ledger.server";
 import { publishSearch } from "./search-publish.server";
+import type { TrackedRow } from "./store-types";
 
 const FLUSH_DELAY_MS = 300_000;
 const NO_DELAY = 0;

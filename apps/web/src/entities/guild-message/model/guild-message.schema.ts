@@ -20,14 +20,24 @@ const guildMessage = sqliteTable(
     createdAt: integer().notNull(),
     editedAt: integer(),
     describedWith: text(),
+    phrases: text().$type<"pending" | "extracted">().notNull().default("pending"),
     tokens: tokenColumn(),
     version: integer().notNull().default(UNPUBLISHED),
   },
   (table) => [
     index("message_channel_created_idx").on(table.channelId, table.createdAt),
+    index("message_phrases_created_idx").on(table.phrases, table.createdAt),
     index("message_created_idx").on(table.createdAt),
     index("message_version_idx").on(table.version),
   ],
 );
 
-export { guildMessage };
+const BOUND_LIMIT = 90;
+
+const TRACKED_COLUMNS = {
+  id: guildMessage.id,
+  createdAt: guildMessage.createdAt,
+  version: guildMessage.version,
+};
+
+export { BOUND_LIMIT, guildMessage, TRACKED_COLUMNS };

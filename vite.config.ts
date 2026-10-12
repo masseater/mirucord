@@ -161,6 +161,7 @@ export default defineConfig({
         files: [
           "**/*.config.ts",
           "**/alchemy.run.ts",
+          "**/*.worker.ts",
           "**/alchemy.ci.ts",
           "**/src/app/server/index.ts",
         ],

@@ -38,13 +38,5 @@ const decodeBody =
   (raw: Body["Encoded"]): Effect.Effect<Body["Type"], never, Body["DecodingServices"]> =>
     Effect.orDie(Schema.decodeEffect(schema)(raw));
 
-const decodeList = <Item extends Schema.Top>(item: Item) => {
-  const decode = decodeBody(Schema.NullOr(Schema.Array(item)));
-  return (
-    raw: readonly Item["Encoded"][] | null,
-  ): Effect.Effect<readonly Item["Type"][], never, Item["DecodingServices"]> =>
-    decode(raw).pipe(Effect.map((items) => items ?? []));
-};
-
-export { decodeBody, decodeList, DiscordRequestError, withDiscord };
+export { decodeBody, DiscordRequestError, withDiscord };
 export type { DiscordFailure };

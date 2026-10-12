@@ -26,6 +26,9 @@ import { disconnectApp, listConnectedApps, signedInUser } from "#/shared/auth/in
 import type { ConnectedApp, SignedInUser } from "#/shared/auth/index.server";
 import { botInviteUrl } from "#/shared/discord/index.server";
 
+import { eraseOwnMessages } from "./erase-own-messages.server";
+import type { EraseResult } from "./erase-own-messages.server";
+
 type SignedOut = Readonly<{ status: "signedOut" }>;
 
 type ReadableGuild = Readonly<{
@@ -128,6 +131,8 @@ const disconnectFor = (clientId: string): Effect.Effect<DisconnectResult> =>
     ),
   );
 
+const eraseMessagesFor: Effect.Effect<EraseResult | SignedOut> = withSignedInUser(eraseOwnMessages);
+
 const loadGuildPage = (guildId: string): Effect.Effect<GuildPage> =>
   withSignedInUser((userId) =>
     guildSettings({ guildId, userId }).pipe(
@@ -163,6 +168,7 @@ const refreshGuild = (guildId: string): Effect.Effect<GuildRefreshResult | Signe
 export {
   consentTo,
   disconnectFor,
+  eraseMessagesFor,
   loadDashboard,
   loadForumPosts,
   loadGuildPage,
@@ -181,3 +187,4 @@ export type {
   ReadableGuild,
   SignedOut,
 };
+export type { EraseResult } from "./erase-own-messages.server";

@@ -8,6 +8,7 @@ import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
 import { DeleteAccount } from "./delete-account";
+import { EraseOwnMessages } from "./erase-own-messages";
 
 const TITLE = "アカウント";
 const SIGN_OUT = "ログアウト";
@@ -39,6 +40,7 @@ const AccountPanel = ({ name }: Readonly<{ name: string }>): ReactNode => {
           {FAILED}
         </p>
       )}
+      <EraseOwnMessages />
       <DeleteAccount />
     </Panel>
   );

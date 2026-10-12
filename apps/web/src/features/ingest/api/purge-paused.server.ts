@@ -7,6 +7,7 @@ import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { purgeChannel } from "./consent-scope.server";
 import { whenManaged } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
+import type { VectorizeError } from "./vectors.server";
 
 type PurgeRequest = GuildMembership & Readonly<{ channelId: string }>;
 
@@ -29,7 +30,7 @@ const findHidden = ({ guildId, channelId }: PurgeRequest): Effect.Effect<boolean
       ),
   ).pipe(Effect.map(Array.isReadonlyArrayNonEmpty));
 
-const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult> =>
+const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult, VectorizeError> =>
   findHidden(request).pipe(
     Effect.flatMap((hidden) => {
       if (!hidden) {
@@ -44,11 +45,9 @@ const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult> =>
           ),
       ).pipe(
         Effect.flatMap((threads) =>
-          Effect.forEach(
-            [request.channelId, ...threads.map(({ id }) => id)],
-            (channelId) => purgeChannel({ guildId: request.guildId, channelId }),
-            { discard: true },
-          ),
+          Effect.forEach([request.channelId, ...threads.map(({ id }) => id)], purgeChannel, {
+            discard: true,
+          }),
         ),
         Effect.andThen(Effect.logInfo("Purged a paused channel on request")),
         Effect.annotateLogs({ guildId: request.guildId, channelId: request.channelId }),
@@ -59,7 +58,7 @@ const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult> =>
 
 const purgePausedChannel = (
   request: PurgeRequest,
-): Effect.Effect<PurgeResult, DiscordRequestError> =>
+): Effect.Effect<PurgeResult, DiscordRequestError | VectorizeError> =>
   whenManaged({
     membership: request,
     denied: { status: "forbidden" },

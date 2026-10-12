@@ -11,11 +11,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vp exec vp test run",
     "steiger": "steiger ./src",
-    "db:generate": "drizzle-kit generate && drizzle-kit generate --config drizzle.guild.config.ts",
+    "db:generate": "drizzle-kit generate",
     "prepare": "effect-tsgo patch --typescript --oxlint",
     "auth:generate": "auth generate --config auth.config.ts --output src/shared/auth/generated/auth.table.ts --yes",
     "fallow": "fallow --production --quiet --format compact && fallow dupes --quiet --format compact && fallow security --fail-on-issues --quiet",
-    "db:check": "drizzle-kit check && drizzle-kit generate --explain --output json | grep -q '\"status\":\"no_changes\"' && drizzle-kit check --config drizzle.guild.config.ts && drizzle-kit generate --config drizzle.guild.config.ts --explain --output json | grep -q '\"status\":\"no_changes\"'",
+    "db:check": "drizzle-kit check && drizzle-kit generate --explain --output json | grep -q '\"status\":\"no_changes\"'",
     "deploy": "alchemy deploy",
     "destroy": "alchemy destroy"
   },

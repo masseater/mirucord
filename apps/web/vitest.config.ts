@@ -13,13 +13,12 @@ export default defineConfig({
       Effect.runPromise(
         readMigrations.pipe(
           Effect.map((migrations) => ({
-            main: "./test/worker.ts",
             miniflare: {
               compatibilityDate: "2026-09-01",
               compatibilityFlags: ["nodejs_compat"],
               d1Databases: ["DB"],
               queueProducers: { INGEST: { queueName: "ingest" } },
-              durableObjects: { GUILD_STORE: { className: "GuildStore", useSQLite: true } },
+              vectorize: { MESSAGES: { index_name: "messages" } },
               ai: { binding: "AI" },
               secretsStoreSecrets: { MASTER_KEY: { store_id: "test", secret_name: "master-key" } },
               bindings: {

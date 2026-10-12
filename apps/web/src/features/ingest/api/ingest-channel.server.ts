@@ -3,7 +3,7 @@ import type { SQL } from "drizzle-orm";
 import { Array, Boolean, DateTime, Effect, Number, Option } from "effect";
 
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
-import { openGuildKeys } from "#/shared/crypto/index.server";
+import { openGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 import { FORBIDDEN } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
@@ -200,9 +200,10 @@ const continueBackfill = (job: IngestJob, history: History): Effect.Effect<void>
 
 const ingestWith = (job: IngestJob, progress: ChannelProgress): Effect.Effect<void, IngestError> =>
   Effect.gen(function* ingest() {
-    const target = { ...(yield* openGuildKeys(progress.wrappedKey)), job };
+    const key = yield* openGuildKey(progress.wrappedKey);
+    const target = { key, job };
     const latest = yield* fetchAndStore({ target, request: { direction: "latest" } });
-    yield* removeDeleted({ ref: job, latest });
+    yield* removeDeleted({ channelId: job.channelId, latest });
     const newest = yield* advanceNewest(target, progress, latest);
     const history = yield* advanceOldest(target, progress, latest);
     const sweep = yield* sweepHistory({ target, sweep: Option.fromNullOr(progress.sweep), latest });

@@ -5,7 +5,6 @@ import type { QueueJob } from "#/features/ingest/model/ingest-job";
 import { alertOperators } from "#/shared/alert/index.server";
 
 import { ingestChannel } from "./ingest-channel.server";
-import { migrateMessages } from "./migrate-messages.server";
 import { abandonWithdrawal, withdrawGuild } from "./withdraw-guild.server";
 import type { GuildDataRemainsError } from "./withdraw-guild.server";
 
@@ -21,17 +20,14 @@ const decodeJob = Schema.decodeUnknownEffect(QueueJobSchema);
 type JobError = Effect.Error<ReturnType<typeof ingestChannel>> | GuildDataRemainsError;
 
 const runJob = (job: QueueJob): Effect.Effect<void, JobError> => {
-  if (!("kind" in job)) {
-    return ingestChannel(job);
+  if ("kind" in job) {
+    return withdrawGuild(job.guildId);
   }
-  if (job.kind === "migrate") {
-    return migrateMessages;
-  }
-  return withdrawGuild(job.guildId);
+  return ingestChannel(job);
 };
 
 const undoJob = (job: QueueJob): Effect.Effect<void> => {
-  if ("kind" in job && job.kind === "withdraw") {
+  if ("kind" in job) {
     return abandonWithdrawal(job.guildId);
   }
   return Effect.void;

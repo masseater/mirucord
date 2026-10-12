@@ -1,13 +1,13 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
-import { DateTime, Effect, Option } from "effect";
+import { env } from "cloudflare:workers";
+import { DateTime, Effect, Option, Schema } from "effect";
 import { http, HttpResponse } from "msw";
-import { afterAll, afterEach, beforeAll, beforeEach, expect } from "vite-plus/test";
+import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
-import { createGuildKey } from "#/shared/crypto/index.server";
-import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
+import { createGuildKey, openGuildKey, sealMessage } from "#/shared/crypto/index.server";
+import { channel, db, guild, ingestConsent, message } from "#/shared/db/index.server";
 
-import { putMessages, storedIdsIn, storedMessage } from "./__tests__/guild-messages";
 import { forgetMessages, refreshMessages } from "./gateway-jobs.server";
 
 const OWNER = "901";
@@ -23,7 +23,11 @@ const LISTED_FROM = "711";
 const UNKNOWN_MESSAGE = 10_008;
 const DEFAULT_TYPE = 0;
 const EDITED_NEVER: string | null = Option.getOrNull(Option.none<string>());
+const UNIT = 1;
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
+const decodeInputs = Schema.decodeUnknownEffect(
+  Schema.Struct({ text: Schema.Array(Schema.String) }),
+);
 
 const SEEDED = [
   { id: FORGOTTEN, channelId: CHANNEL },
@@ -47,6 +51,25 @@ const lookups: string[] = [];
 
 const seed = Effect.gen(function* seed() {
   const wrappedKey = yield* createGuildKey;
+  const key = yield* openGuildKey(wrappedKey);
+  const rows = yield* Effect.all(
+    SEEDED.map(({ id, channelId }) =>
+      sealMessage({ authorName: "someone", content: `message ${id}`, attachments: [] }, key, {
+        guildId: GUILD,
+        channelId,
+        messageId: id,
+      }).pipe(
+        Effect.map((sealed) => ({
+          id,
+          guildId: GUILD,
+          channelId,
+          authorId: OWNER,
+          sealed,
+          createdAt: SEEDED_AT,
+        })),
+      ),
+    ),
+  );
   yield* Effect.promise(() =>
     db.batch([
       db
@@ -67,14 +90,14 @@ const seed = Effect.gen(function* seed() {
         grantedAt: SEEDED_AT,
         noticeChannelId: CHANNEL,
       }),
+      db.insert(message).values([...rows]),
     ]),
   );
-  yield* putMessages({ guildId: GUILD, messages: SEEDED.map((row) => storedMessage(row)) });
 });
 
-const storedIds = Effect.forEach([CHANNEL, OTHER_CHANNEL], (channelId) =>
-  storedIdsIn({ guildId: GUILD, channelId }),
-).pipe(Effect.map((channels) => new Set(channels.flat())));
+const storedIds = Effect.promise(() => db.select({ id: message.id }).from(message)).pipe(
+  Effect.map((rows) => new Set(rows.map(({ id }) => id))),
+);
 
 beforeAll(() => {
   network.enable();
@@ -82,6 +105,14 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) =>
+    Effect.runPromise(
+      decodeInputs(inputs).pipe(Effect.map(({ text }) => ({ data: text.map(() => [UNIT]) }))),
+    ),
+  );
+  vi.spyOn(env.MESSAGES, "getByIds").mockResolvedValue([]);
+  vi.spyOn(env.MESSAGES, "upsert").mockResolvedValue({ mutationId: "test" });
+  vi.spyOn(env.MESSAGES, "deleteByIds").mockResolvedValue({ mutationId: "test" });
   network.use(
     http.get(`https://discord.com/api/v10/channels/${CHANNEL}/messages`, ({ request }) => {
       lookups.push(new URL(request.url).search);

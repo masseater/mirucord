@@ -1,11 +1,13 @@
 import { DiscordSnowflake } from "@sapphire/snowflake";
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, gte, inArray, lte } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
 import { DateTime, Effect, Option } from "effect";
 
 import { db, message } from "#/shared/db/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
 
 import { inIdChunks } from "./id-chunks.server";
+import { deleteVectors } from "./vectors.server";
+import type { VectorizeError } from "./vectors.server";
 
 type StoredMessage = Readonly<{
   id: string;
@@ -13,82 +15,120 @@ type StoredMessage = Readonly<{
   describedWith: Option.Option<string>;
 }>;
 
-type ChannelRef = Readonly<{ guildId: string; channelId: string }>;
-
-type GuildMessages = Readonly<{ guildId: string; ids: readonly string[] }>;
-
-const findStored = ({ guildId, ids }: GuildMessages): Effect.Effect<readonly StoredMessage[]> =>
-  Effect.promise(() => guildStore(guildId).stored(ids)).pipe(
-    Effect.map((rows) =>
-      rows.map(({ id, editedAt, describedWith }) => ({
+const findStored = (ids: readonly string[]): Effect.Effect<readonly StoredMessage[]> =>
+  inIdChunks({
+    ids,
+    run: (chunk) =>
+      db
+        .select({
+          id: message.id,
+          editedAt: message.editedAt,
+          describedWith: message.describedWith,
+        })
+        .from(message)
+        .where(inArray(message.id, [...chunk])),
+  }).pipe(
+    Effect.map((chunks) =>
+      chunks.flat().map(({ id, editedAt, describedWith }) => ({
         id,
-        editedAt: Option.fromNullOr(editedAt),
+        editedAt: Option.map(Option.fromNullOr(editedAt), (date) => date.getTime()),
         describedWith: Option.fromNullOr(describedWith),
       })),
     ),
   );
 
-const NO_BOUND = Option.getOrNull(Option.none<number>());
-
 const channelMessagesSince = ({
-  guildId,
   channelId,
   since,
-}: ChannelRef & Readonly<{ since: Option.Option<DateTime.DateTime> }>): Effect.Effect<
-  readonly string[]
-> => {
-  const from = Option.getOrNull(since.pipe(Option.map(DateTime.toEpochMillis)));
-  return Effect.promise(() => guildStore(guildId).idsBetween(channelId, { from, upTo: NO_BOUND }));
-};
+}: Readonly<{
+  channelId: string;
+  since: Option.Option<DateTime.DateTime>;
+}>): Effect.Effect<readonly string[]> =>
+  Effect.promise(() =>
+    db
+      .select({ id: message.id })
+      .from(message)
+      .where(
+        Option.match(since, {
+          onNone: () => eq(message.channelId, channelId),
+          onSome: (date) =>
+            and(eq(message.channelId, channelId), gte(message.createdAt, DateTime.toDate(date))),
+        }),
+      ),
+  ).pipe(Effect.map((rows) => rows.map(({ id }) => id)));
 
-const timeOf = (id: string): number => DiscordSnowflake.timestampFrom(id);
+const timeOf = (id: string): Date =>
+  DateTime.toDate(DateTime.makeUnsafe(DiscordSnowflake.timestampFrom(id)));
+
+const sinceOldest = (from: Option.Option<string>): readonly SQL[] =>
+  Option.match(from, {
+    onNone: () => [],
+    onSome: (oldest) => [gte(message.createdAt, timeOf(oldest))],
+  });
 
 const channelMessagesBelow = ({
-  guildId,
   channelId,
   below,
   from,
-}: ChannelRef & Readonly<{ below: string; from: Option.Option<string> }>): Effect.Effect<
-  readonly string[]
-> => {
+}: Readonly<{
+  channelId: string;
+  below: string;
+  from: Option.Option<string>;
+}>): Effect.Effect<readonly string[]> => {
+  const conditions = [
+    eq(message.channelId, channelId),
+    lte(message.createdAt, timeOf(below)),
+    ...sinceOldest(from),
+  ];
   const isWithin = (id: string): boolean =>
     BigInt(id) < BigInt(below) &&
     Option.match(from, { onNone: () => true, onSome: (oldest) => BigInt(id) >= BigInt(oldest) });
-  const range = { from: Option.getOrNull(from.pipe(Option.map(timeOf))), upTo: timeOf(below) };
-  return Effect.promise(() => guildStore(guildId).idsBetween(channelId, range)).pipe(
-    Effect.map((ids) => ids.filter((id) => isWithin(id))),
-  );
+  return Effect.promise(() =>
+    db
+      .select({ id: message.id })
+      .from(message)
+      .where(and(...conditions)),
+  ).pipe(Effect.map((rows) => rows.map(({ id }) => id).filter((id) => isWithin(id))));
 };
 
 const storedInChannel = ({
-  guildId,
   channelId,
   ids,
-}: ChannelRef & Readonly<{ ids: readonly string[] }>): Effect.Effect<readonly string[]> =>
-  Effect.promise(() => guildStore(guildId).idsInChannel(channelId, ids));
+}: Readonly<{ channelId: string; ids: readonly string[] }>): Effect.Effect<readonly string[]> =>
+  inIdChunks({
+    ids,
+    run: (chunk) =>
+      db
+        .select({ id: message.id })
+        .from(message)
+        .where(and(eq(message.channelId, channelId), inArray(message.id, [...chunk]))),
+  }).pipe(Effect.map((chunks) => chunks.flat().map(({ id }) => id)));
 
-const forgetGuildMessages = (guildId: string): Effect.Effect<void> =>
-  Effect.promise(() => guildStore(guildId).clear());
+const MESSAGE_OWNER = { guild: message.guildId, channel: message.channelId } as const;
 
-const forgetChannelMessages = ({ guildId, channelId }: ChannelRef): Effect.Effect<void> =>
-  Effect.all(
-    [
-      Effect.promise(() => guildStore(guildId).removeChannel(channelId)),
-      Effect.promise(() => db.delete(message).where(eq(message.channelId, channelId))),
-    ],
-    { discard: true },
-  );
+const forgetMessagesOf = (
+  owner: keyof typeof MESSAGE_OWNER,
+  ownerId: string,
+): Effect.Effect<void, VectorizeError> =>
+  Effect.promise(() =>
+    db.select({ id: message.id }).from(message).where(eq(MESSAGE_OWNER[owner], ownerId)),
+  ).pipe(Effect.flatMap((rows) => deleteVectors(rows.map(({ id }) => id))));
 
-const deleteMessages = ({ guildId, ids }: GuildMessages): Effect.Effect<void> =>
-  Effect.all(
-    [
-      Effect.promise(() => guildStore(guildId).remove(ids)),
+const forgetGuildMessages = (guildId: string): Effect.Effect<void, VectorizeError> =>
+  forgetMessagesOf("guild", guildId);
+
+const forgetChannelMessages = (channelId: string): Effect.Effect<void, VectorizeError> =>
+  forgetMessagesOf("channel", channelId);
+
+const deleteMessages = (ids: readonly string[]): Effect.Effect<void, VectorizeError> =>
+  deleteVectors(ids).pipe(
+    Effect.andThen(
       inIdChunks({
         ids,
         run: (chunk) => db.delete(message).where(inArray(message.id, [...chunk])),
       }),
-    ],
-    { discard: true },
+    ),
+    Effect.asVoid,
   );
 
 export {
@@ -100,4 +140,5 @@ export {
   forgetGuildMessages,
   storedInChannel,
 };
-export type { ChannelRef, GuildMessages, StoredMessage };
+export type { StoredMessage };
+export type { VectorizeError } from "./vectors.server";

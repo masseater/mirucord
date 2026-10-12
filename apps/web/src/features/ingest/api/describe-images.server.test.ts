@@ -1,19 +1,14 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { DateTime, Effect, Option } from "effect";
+import { eq } from "drizzle-orm";
+import { DateTime, Effect, Option, Schema } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
-import {
-  createGuildKey,
-  openGuildKeys,
-  openMessage,
-  queryTokens,
-} from "#/shared/crypto/index.server";
-import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
+import { createGuildKey, openGuildKey, openMessage } from "#/shared/crypto/index.server";
+import { channel, db, guild, ingestConsent, message } from "#/shared/db/index.server";
 
-import { candidateIds, describedWithOf, sealedIn } from "./__tests__/guild-messages";
 import { ingestChannel } from "./ingest-channel.server";
 
 const DEFAULT_MESSAGE = 0;
@@ -31,10 +26,12 @@ const LARGE_SIZE = 5_000_000;
 const LARGE_CHANNEL = "840";
 const LARGE = "841";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
+const UNIT = 1;
 const NONE = 0;
 const PHOTO_BYTES = 100_000;
 const BYTE_VALUES = 256;
 
+const embeddedTexts: string[] = [];
 const photoRequests: URL[] = [];
 const modelImages: string[] = [];
 
@@ -106,35 +103,39 @@ const seedGuild = Effect.gen(function* seed() {
   );
 });
 
-const guildKeys = Effect.promise(() =>
-  db.select({ wrappedKey: guild.wrappedKey }).from(guild),
+type StoredRow = Readonly<{ sealed: string; describedWith: string | null }>;
+
+const storedRow = (id: string): Effect.Effect<readonly StoredRow[]> =>
+  Effect.promise(() =>
+    db
+      .select({ sealed: message.sealed, describedWith: message.describedWith })
+      .from(message)
+      .where(eq(message.id, id)),
+  );
+
+const guildKey: Effect.Effect<CryptoKey> = Effect.promise(() =>
+  db.select({ wrappedKey: guild.wrappedKey }).from(guild).where(eq(guild.id, GUILD)),
 ).pipe(
   Effect.map(([row]) => Option.fromUndefinedOr(row)),
   Effect.flatMap((row) => Effect.fromOption(row).pipe(Effect.orDie)),
-  Effect.flatMap(({ wrappedKey }) => openGuildKeys(wrappedKey)),
+  Effect.flatMap(({ wrappedKey }) => openGuildKey(wrappedKey)),
 );
 
-const photoFoundBy = (query: string): Effect.Effect<readonly string[]> =>
-  guildKeys.pipe(
-    Effect.flatMap(({ searchKey }) => queryTokens({ key: searchKey, query })),
-    Effect.flatMap((tokens) => candidateIds({ guildId: GUILD, channelId: PHOTO_CHANNEL, tokens })),
-  );
+const decodeTexts = Schema.decodeUnknownOption(
+  Schema.Struct({ text: Schema.Array(Schema.String) }),
+);
 
-const photoAttachments = Effect.gen(function* opened() {
-  const { key } = yield* guildKeys;
-  const [sealed = ""] = yield* sealedIn({ guildId: GUILD, channelId: PHOTO_CHANNEL });
-  const body = yield* openMessage(sealed, key, {
-    guildId: GUILD,
-    channelId: PHOTO_CHANNEL,
-    messageId: PHOTO,
+const answerModel = (inputs: unknown): Promise<Record<string, unknown>> =>
+  Option.match(decodeTexts(inputs), {
+    onNone: () => {
+      modelImages.push(JSON.stringify(inputs));
+      return Promise.resolve({ choices: [{ message: { content: ` ${DESCRIPTION}\n` } }] });
+    },
+    onSome: ({ text }) => {
+      embeddedTexts.push(...text);
+      return Promise.resolve({ data: text.map(() => [UNIT]) });
+    },
   });
-  return body.attachments;
-});
-
-const answerModel = (inputs: unknown): Promise<Record<string, unknown>> => {
-  modelImages.push(JSON.stringify(inputs));
-  return Promise.resolve({ choices: [{ message: { content: ` ${DESCRIPTION}\n` } }] });
-};
 
 beforeAll(() => {
   network.enable();
@@ -142,9 +143,13 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  embeddedTexts.length = NONE;
   photoRequests.length = NONE;
   modelImages.length = NONE;
   vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => answerModel(inputs));
+  vi.spyOn(env.MESSAGES, "getByIds").mockResolvedValue([]);
+  vi.spyOn(env.MESSAGES, "upsert").mockResolvedValue({ mutationId: "test" });
+  vi.spyOn(env.MESSAGES, "deleteByIds").mockResolvedValue({ mutationId: "test" });
 });
 
 afterEach(() => {
@@ -159,15 +164,20 @@ it.effect("indexes an image-only message by the description of its image", () =>
   Effect.gen(function* described() {
     answerWith(PHOTO, photo);
     yield* ingestChannel({ guildId: GUILD, channelId: PHOTO_CHANNEL });
+    expect(embeddedTexts).toStrictEqual([DESCRIPTION]);
     expect(modelImages.join("")).toContain(expectedPhoto);
     expect(photoRequests.map(({ pathname }) => pathname)).toStrictEqual([
       new URL(PHOTO_URL).pathname,
     ]);
-    expect(yield* describedWithOf({ guildId: GUILD, id: PHOTO })).toStrictEqual([
-      "@cf/google/gemma-4-26b-a4b-it",
-    ]);
-    expect(yield* photoFoundBy("ラーメン")).toStrictEqual([PHOTO]);
-    expect(yield* photoAttachments).toStrictEqual([
+    const [row = { sealed: "", describedWith: "" }] = yield* storedRow(PHOTO);
+    expect(row.describedWith).toBe("@cf/google/gemma-4-26b-a4b-it");
+    const key = yield* guildKey;
+    const body = yield* openMessage(row.sealed, key, {
+      guildId: GUILD,
+      channelId: PHOTO_CHANNEL,
+      messageId: PHOTO,
+    });
+    expect(body.attachments).toStrictEqual([
       { filename: "ramen.jpg", url: PHOTO_URL, description: DESCRIPTION },
     ]);
   }),
@@ -178,7 +188,9 @@ it.effect("marks an image too large to describe as done without fetching it", ()
     answerWith(LARGE, photo, LARGE_SIZE);
     yield* ingestChannel({ guildId: GUILD, channelId: LARGE_CHANNEL });
     expect(photoRequests).toStrictEqual([]);
-    expect(yield* describedWithOf({ guildId: GUILD, id: LARGE })).toStrictEqual([
+    expect(embeddedTexts).toStrictEqual([]);
+    const rows = yield* storedRow(LARGE);
+    expect(rows.map(({ describedWith }) => describedWith)).toStrictEqual([
       "@cf/google/gemma-4-26b-a4b-it",
     ]);
   }),
@@ -189,6 +201,7 @@ it.live("leaves a message to be described again when its image cannot be fetched
     answerWith(BROKEN, forbidden);
     yield* ingestChannel({ guildId: GUILD, channelId: BROKEN_CHANNEL });
     const undescribed = Option.getOrNull(Option.none<string>());
-    expect(yield* describedWithOf({ guildId: GUILD, id: BROKEN })).toStrictEqual([undescribed]);
+    const rows = yield* storedRow(BROKEN);
+    expect(rows.map(({ describedWith }) => describedWith)).toStrictEqual([undescribed]);
   }),
 );

@@ -4,13 +4,12 @@ import { Array, DateTime, Effect, Option } from "effect";
 import { isPastRetention } from "#/features/ingest/model/bot-access";
 import { MESSAGE_TYPES } from "#/features/ingest/model/channel-kind";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
-import { channel, db, ingestConsent } from "#/shared/db/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
+import { channel, db, ingestConsent, message } from "#/shared/db/index.server";
 
 import { accessOf } from "./bot-access.server";
 import { enqueue } from "./enqueue.server";
 import { forgetChannelMessages } from "./message-rows.server";
-import type { ChannelRef } from "./message-rows.server";
+import type { VectorizeError } from "./vectors.server";
 
 const CLEARED = Option.getOrNull(Option.none<string>());
 
@@ -29,23 +28,34 @@ const loadScope = (guildId: string): Effect.Effect<ConsentScope> =>
     ),
   );
 
-const purgeChannel = (ref: ChannelRef): Effect.Effect<void> =>
-  forgetChannelMessages(ref).pipe(
+const purgeChannel = (channelId: string): Effect.Effect<void, VectorizeError> =>
+  forgetChannelMessages(channelId).pipe(
     Effect.andThen(
       Effect.promise(() =>
-        db
-          .update(channel)
-          .set({ newestMessageId: CLEARED, oldestMessageId: CLEARED, backfill: "pending" })
-          .where(eq(channel.id, ref.channelId)),
+        db.batch([
+          db.delete(message).where(eq(message.channelId, channelId)),
+          db
+            .update(channel)
+            .set({ newestMessageId: CLEARED, oldestMessageId: CLEARED, backfill: "pending" })
+            .where(eq(channel.id, channelId)),
+        ]),
       ),
     ),
     Effect.asVoid,
   );
 
-const purgeOutOfScope = (guildId: string, scope: ConsentScope): Effect.Effect<void> =>
+const purgeOutOfScope = (
+  guildId: string,
+  scope: ConsentScope,
+): Effect.Effect<void, VectorizeError> =>
   Effect.all(
     {
-      stored: Effect.promise(() => guildStore(guildId).channels()),
+      stored: Effect.promise(() =>
+        db
+          .selectDistinct({ id: message.channelId })
+          .from(message)
+          .where(eq(message.guildId, guildId)),
+      ),
       channels: Effect.promise(() =>
         db
           .select({
@@ -62,17 +72,13 @@ const purgeOutOfScope = (guildId: string, scope: ConsentScope): Effect.Effect<vo
     { concurrency: "unbounded" },
   ).pipe(
     Effect.map(({ stored, channels, now }) => {
-      const withMessages = new Set(stored);
+      const withMessages = new Set(stored.map(({ id }) => id));
       return channels
         .filter((row) => Option.isSome(Option.fromNullOr(row.newest)) || withMessages.has(row.id))
         .filter((row) => scope.status === "awaiting" || isPastRetention(accessOf(row), now))
         .map(({ id }) => id);
     }),
-    Effect.flatMap((outOfScope) =>
-      Effect.forEach(outOfScope, (channelId) => purgeChannel({ guildId, channelId }), {
-        discard: true,
-      }),
-    ),
+    Effect.flatMap((outOfScope) => Effect.forEach(outOfScope, purgeChannel, { discard: true })),
   );
 
 const NEEDS_INGEST = and(
@@ -96,7 +102,7 @@ const enqueueInScope = (guildId: string, scope: ConsentScope): Effect.Effect<voi
   return enqueueReadable(guildId);
 };
 
-const refreshIngest = (guildId: string): Effect.Effect<void> =>
+const refreshIngest = (guildId: string): Effect.Effect<void, VectorizeError> =>
   loadScope(guildId).pipe(
     Effect.tap((scope) => purgeOutOfScope(guildId, scope)),
     Effect.flatMap((scope) => enqueueInScope(guildId, scope)),

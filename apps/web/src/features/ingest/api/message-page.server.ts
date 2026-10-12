@@ -9,9 +9,9 @@ import type {
 
 import { loadScope } from "./consent-scope.server";
 import { storeMessages } from "./store-messages.server";
-import type { StoreTarget } from "./store-messages.server";
+import type { StoreError, StoreTarget } from "./store-messages.server";
 
-type IngestError = DiscordRequestError;
+type IngestError = DiscordRequestError | StoreError;
 
 const SnowflakeOrder: Order.Order<string> = Order.mapInput(Order.BigInt, BigInt);
 
@@ -36,7 +36,7 @@ const isFullPage = (page: readonly DiscordMessage[]): boolean => page.length >= 
 const storeConsented = ({
   page,
   ...target
-}: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<void> =>
+}: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<void, StoreError> =>
   loadScope(target.job.guildId).pipe(
     Effect.flatMap((scope) => {
       if (scope.status === "awaiting") {

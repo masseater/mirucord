@@ -21,7 +21,6 @@ import type { HttpClientError } from "effect/http";
 import { INGEST_MAX_RETRIES, POLL_CRON, SYNC_CRON } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT } from "./src/shared/config/plan.ts";
 import { SITE_HOST } from "./src/shared/config/site.ts";
-import type { GuildStore } from "./src/shared/guild-store/guild-store.server.ts";
 
 const EMBEDDING_DIMENSIONS = 1024;
 const NAME_PREFIX = "mirucord";
@@ -229,13 +228,13 @@ const storage = Effect.gen(function* storage() {
     primaryLocationHint: "apac",
     migrations: "./drizzle",
   });
-  yield* messagesIndex;
+  const MESSAGES = yield* messagesIndex;
   const INGEST = yield* Queues.Queue("Ingest", { name: yield* mirucordName("ingest") });
-  return { DB, INGEST };
+  return { DB, MESSAGES, INGEST };
 });
 
 const web = Effect.gen(function* web() {
-  const { DB, INGEST } = yield* storage;
+  const { DB, MESSAGES, INGEST } = yield* storage;
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* masterKey;
   const { discord, release, operations } = yield* settings;
@@ -251,8 +250,8 @@ const web = Effect.gen(function* web() {
       BETTER_AUTH_SECRET,
       MASTER_KEY,
       DB,
+      MESSAGES,
       INGEST,
-      GUILD_STORE: Workers.DurableObject<GuildStore>("GuildStore"),
       AI: Workers.AI(),
       VERSION: Workers.VersionMetadata(),
     },

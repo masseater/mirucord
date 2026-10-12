@@ -89,17 +89,6 @@
       "entryPoints": ["alchemy.run.ts", "alchemy.ci.ts", "alchemy.gateway.ts"],
     },
     {
-      "name": "cloudflare-durable-objects",
-      "enablers": ["alchemy"],
-      "usedClassMembers": [{ "extends": "DurableObject", "members": ["*"] }],
-    },
-    {
-      "name": "cloudflare-vitest-plugin",
-      "enablers": ["@cloudflare/vitest-plugin"],
-      "entryPointRole": "test",
-      "entryPoints": ["test/worker.ts"],
-    },
-    {
       "name": "vite-plus",
       "enablers": ["vite-plus"],
       "entryPoints": ["vite.config.ts"],

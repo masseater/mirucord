@@ -4,9 +4,8 @@ import { Array, Effect, Option } from "effect";
 import { guildIngestOf } from "#/features/ingest/model/channel-ingest";
 import type { GuildIngest } from "#/features/ingest/model/channel-ingest";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
-import { db, ingestConsent } from "#/shared/db/index.server";
+import { db, ingestConsent, message } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
-import { guildStore } from "#/shared/guild-store/index.server";
 
 import { managedGuild } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
@@ -62,7 +61,7 @@ const loadConsent = (guildId: string): Effect.Effect<Consent> =>
   );
 
 const countMessages = (guildId: string): Effect.Effect<number> =>
-  Effect.promise(() => guildStore(guildId).count());
+  Effect.promise(() => db.$count(message, eq(message.guildId, guildId)));
 
 const scopeOf = (consent: Consent): ConsentScope => {
   if (consent.status === "granted") {

@@ -1,7 +1,8 @@
 import type { WebEnv } from "./alchemy.run.ts";
 
-type BoundEnv = Omit<WebEnv, "MASTER_KEY"> &
+type BoundEnv = Omit<WebEnv, "MESSAGES" | "MASTER_KEY"> &
   Readonly<{
+    MESSAGES: Vectorize;
     MASTER_KEY: SecretsStoreSecret;
     MASTER_KEY_PREVIOUS?: SecretsStoreSecret;
   }>;

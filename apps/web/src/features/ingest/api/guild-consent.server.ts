@@ -13,6 +13,7 @@ import type { SettingsChannel } from "./guild-settings.server";
 import { whenManaged } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 import { requestWithdrawal } from "./withdraw-guild.server";
+import type { VectorizeError } from "./withdraw-guild.server";
 
 type ConsentRequest = Readonly<{
   guildId: string;
@@ -103,7 +104,7 @@ const applyConsent = (
   request: ConsentRequest,
   scope: ConsentScope,
   channels: readonly SettingsChannel[],
-): Effect.Effect<ConsentResult> => {
+): Effect.Effect<ConsentResult, VectorizeError> => {
   if (!isValidRequest(request, channels)) {
     return Effect.succeed({ status: "invalid" });
   }
@@ -120,7 +121,9 @@ const applyConsent = (
   );
 };
 
-const grantConsent = (request: ConsentRequest): Effect.Effect<ConsentResult, DiscordRequestError> =>
+const grantConsent = (
+  request: ConsentRequest,
+): Effect.Effect<ConsentResult, DiscordRequestError | VectorizeError> =>
   whenManaged({
     membership: request,
     denied: { status: "forbidden" },

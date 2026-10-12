@@ -2,12 +2,7 @@ import handler from "@tanstack/react-start/server-entry";
 import { Boolean, Effect } from "effect";
 
 import { SYNC_CRON } from "#/features/ingest";
-import {
-  ingestDeliveries,
-  pollGuilds,
-  startMigration,
-  syncGuilds,
-} from "#/features/ingest/index.server";
+import { ingestDeliveries, pollGuilds, syncGuilds } from "#/features/ingest/index.server";
 import { alertOperators } from "#/shared/alert/index.server";
 
 const SYNC_FAILED = "Guild sync could not list servers from Discord";
@@ -15,7 +10,7 @@ const SYNC_FAILED = "Guild sync could not list servers from Discord";
 const runCron = (cron: string): Effect.Effect<void> =>
   Boolean.match(cron === SYNC_CRON, {
     onTrue: () => syncGuilds,
-    onFalse: () => pollGuilds.pipe(Effect.andThen(startMigration)),
+    onFalse: () => pollGuilds,
   }).pipe(Effect.catchTag("DiscordRequestError", () => alertOperators(SYNC_FAILED)));
 
 const worker: ExportedHandler = {
@@ -24,5 +19,4 @@ const worker: ExportedHandler = {
   queue: (batch): Promise<void> => Effect.runPromise(ingestDeliveries(batch.messages)),
 };
 
-export { GuildStore } from "#/shared/guild-store/index.server";
 export default worker;

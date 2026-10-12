@@ -7,19 +7,21 @@ import {
   FIRST_OFFSET,
   ListChannelsInput,
   ReadMessagesInput,
+  SearchMessagesInput,
 } from "#/features/mcp/api/tool-input";
 import {
   FindMessagesOutput,
   ListChannelsOutput,
   ListServersOutput,
   ReadMessagesOutput,
+  SearchMessagesOutput,
 } from "#/features/mcp/api/tool-output";
 import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
 import { SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
 import { CATEGORY_TYPES, FORUM_TYPES } from "#/shared/discord";
 
-import { findMessages, readMessages } from "./messages.server";
+import { findMessages, readMessages, searchMessages } from "./messages.server";
 import { readableGuilds, resolveScope } from "./scope.server";
 import type { GuildScope, StoredChannel } from "./scope.server";
 
@@ -151,6 +153,27 @@ const listChannels =
       Effect.succeed(visibleChannels(scope)),
     );
 
+const search =
+  (discordUserId: string) =>
+  ({
+    serverId,
+    query,
+    channelId,
+    limit,
+  }: typeof SearchMessagesInput.Type): Promise<CallToolResult> =>
+    withScope({ guildId: serverId, discordUserId }, (scope) =>
+      withChannel(scope, Option.fromUndefinedOr(channelId), (channelIds) =>
+        searchMessages({ scope, query, channelIds, limit: limitOf(limit) }).pipe(
+          Effect.map((messages) =>
+            structuredResult({
+              messages,
+              notFullyIngested: notFullyIngested(scope, channelIds),
+            } satisfies typeof SearchMessagesOutput.Type),
+          ),
+        ),
+      ),
+    );
+
 const find =
   (discordUserId: string) =>
   ({
@@ -222,9 +245,17 @@ const LIST_CHANNELS_TOOL = {
   inputSchema: ListChannelsInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
+const SEARCH_MESSAGES_TOOL = {
+  title: "Search messages",
+  description: `Search messages in a server by meaning. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so results from them may be missing. ${INGEST_GUIDE}`,
+  ...TOOL_BASE,
+  outputSchema: SearchMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+  inputSchema: SearchMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+};
+
 const FIND_MESSAGES_TOOL = {
   title: "Find messages",
-  description: `Find messages whose text or image description contains \`query\` exactly, ignoring letter case. Matching is literal, so try other wordings and synonyms yourself when a search finds little. \`total\` counts every match in the searched channels, so it shows how often a topic comes up; \`messages\` holds up to \`limit\` of them, newest first, starting at \`offset\`. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
+  description: `Find messages whose text contains \`query\` exactly, ignoring letter case. \`total\` counts every match in the searched channels, so it shows how often a topic comes up; \`messages\` holds up to \`limit\` of them, newest first, starting at \`offset\`. Use search_messages instead to search by meaning. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${INGEST_GUIDE}`,
   ...TOOL_BASE,
   outputSchema: FindMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: FindMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
@@ -242,6 +273,7 @@ const buildServer = (discordUserId: string): McpServer => {
   const server = new McpServer(SERVER_INFO);
   server.registerTool("list_servers", LIST_SERVERS_TOOL, () => listServers(discordUserId));
   server.registerTool("list_channels", LIST_CHANNELS_TOOL, listChannels(discordUserId));
+  server.registerTool("search_messages", SEARCH_MESSAGES_TOOL, search(discordUserId));
   server.registerTool("find_messages", FIND_MESSAGES_TOOL, find(discordUserId));
   server.registerTool("read_messages", READ_MESSAGES_TOOL, read(discordUserId));
   return server;

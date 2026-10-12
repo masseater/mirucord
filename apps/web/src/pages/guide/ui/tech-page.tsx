@@ -81,7 +81,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: "Gateway からの通知は Standard Webhooks の形式で、Bot トークンを鍵にして署名します。署名が合わない通知は捨てます。Gateway への常時接続は Durable Object に置くと無料枠をすぐに超えるため、Gateway だけを fly.io に置いています。",
+        text: "Gateway からの通知は Standard Webhooks の形式で、Bot トークンを鍵にして署名します。署名が合わない通知は捨てます。Workers は Gateway の WebSocket につなぎっぱなしにする常駐プロセスを置く場所ではないので、Gateway だけを fly.io に置いています。",
       },
     ],
   },

@@ -21,7 +21,7 @@ const copy = Command.make(
   "copy",
   move,
   Effect.fn("copy")(function* copy({ from, to, stage, required }) {
-    const result = yield* copyStackState({ from, to, stage });
+    const result = yield* copyStackState({ from, to, stage }, required);
     yield* Effect.logInfo(`${from}/${stage} -> ${to}/${stage}: ${result.status}`).pipe(
       Effect.annotateLogs(result),
     );

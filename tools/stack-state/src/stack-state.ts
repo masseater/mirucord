@@ -1,4 +1,4 @@
-import { State } from "alchemy/State";
+import { State, isResourceState } from "alchemy/State";
 import { Array as Arr, Effect, Option, Predicate } from "effect";
 
 type StackMove = Readonly<{ from: string; to: string; stage: string }>;
@@ -35,6 +35,14 @@ const copyRecords = Effect.fn("copyRecords")(function* copyRecords(move: StackMo
     state.list({ stack: move.from, stage: move.stage }),
     state.list({ stack: move.to, stage: move.stage }),
   ]);
+  const foreign = Arr.difference(targetFqns, sourceFqns);
+  if (Arr.isReadonlyArrayNonEmpty(foreign)) {
+    return yield* Effect.die(
+      new Error(
+        `${move.to}/${move.stage} に ${move.from} に無い state がある: ${foreign.join(", ")}`,
+      ),
+    );
+  }
   const missing = Arr.difference(sourceFqns, targetFqns);
   yield* Effect.forEach(missing, (fqn) => copyRecord(move, fqn), {
     concurrency: 8,
@@ -47,8 +55,42 @@ const copyRecords = Effect.fn("copyRecords")(function* copyRecords(move: StackMo
   });
 });
 
-const copyStackState = Effect.fn("copyStackState")(function* copyStackState(move: StackMove) {
+const instanceIdOf = Effect.fn("instanceIdOf")(function* instanceIdOf(
+  stack: string,
+  stage: string,
+  fqn: string,
+) {
   const state = yield* yield* State;
+  const value = yield* state.get({ stack, stage, fqn });
+  return Option.liftPredicate(value, isResourceState).pipe(
+    Option.map((resource) => resource.instanceId),
+  );
+});
+
+const requireSameInstance = Effect.fn("requireSameInstance")(function* requireSameInstance(
+  { from, to, stage }: StackMove,
+  fqn: string,
+) {
+  const [source, target] = yield* Effect.all([
+    instanceIdOf(from, stage, fqn),
+    instanceIdOf(to, stage, fqn),
+  ]);
+  const conflicting =
+    Option.isSome(source) && Option.isSome(target) && source.value !== target.value;
+  if (conflicting) {
+    return yield* Effect.die(
+      new Error(`${to}/${stage}/${fqn} は ${from}/${stage}/${fqn} と別のリソースの state である`),
+    );
+  }
+  return fqn;
+});
+
+const copyStackState = Effect.fn("copyStackState")(function* copyStackState(
+  move: StackMove,
+  required: readonly string[],
+) {
+  const state = yield* yield* State;
+  yield* Effect.forEach(required, (fqn) => requireSameInstance(move, fqn), { discard: true });
   const targetOutput = yield* state.getOutput({ stack: move.to, stage: move.stage });
   if (Predicate.isNotUndefined(targetOutput)) {
     return { status: "already-copied" } satisfies CopyResult;

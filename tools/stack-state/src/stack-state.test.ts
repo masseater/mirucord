@@ -69,7 +69,7 @@ const overwriteMasterKey = Effect.gen(function* overwriteMasterKey() {
 
 it.effect("copies every record and the output to the new stack", () =>
   Effect.gen(function* copied() {
-    const result = yield* copyStackState(MOVE);
+    const result = yield* copyStackState(MOVE, REQUIRED);
     yield* requireStackState("mirucord", STAGE, REQUIRED);
     expect(result).toStrictEqual({ status: "copied", fqns: SOURCE.map(({ fqn }) => fqn) });
     expect(yield* snapshot).toStrictEqual({
@@ -83,16 +83,16 @@ it.effect("copies every record and the output to the new stack", () =>
 
 it.effect("leaves a stack that already has an output untouched", () =>
   Effect.gen(function* twice() {
-    yield* copyStackState(MOVE);
+    yield* copyStackState(MOVE, REQUIRED);
     const deployed = yield* overwriteMasterKey;
-    expect(yield* copyStackState(MOVE)).toStrictEqual({ status: "already-copied" });
+    expect(yield* copyStackState(MOVE, REQUIRED)).toStrictEqual({ status: "already-copied" });
     expect(yield* overwriteMasterKey).toStrictEqual(deployed);
   }).pipe(Effect.provideService(State, seeded())),
 );
 
 it.effect("fails when the required records are missing", () =>
   Effect.gen(function* missing() {
-    expect(yield* copyStackState({ ...MOVE, from: "absent" })).toStrictEqual({
+    expect(yield* copyStackState({ ...MOVE, from: "absent" }, REQUIRED)).toStrictEqual({
       status: "nothing-to-copy",
     });
     const exit = yield* Effect.exit(requireStackState("mirucord", STAGE, REQUIRED));
@@ -102,7 +102,7 @@ it.effect("fails when the required records are missing", () =>
 
 it.effect("drops only the old stage after the copy", () =>
   Effect.gen(function* dropped() {
-    yield* copyStackState(MOVE);
+    yield* copyStackState(MOVE, REQUIRED);
     expect(yield* dropStackState(MOVE, REQUIRED)).toBe(true);
     expect(yield* dropStackState(MOVE, REQUIRED)).toBe(false);
     expect(yield* snapshot).toStrictEqual({
@@ -119,5 +119,35 @@ it.effect("refuses to drop before the new stack holds the state", () =>
     const exit = yield* Effect.exit(dropStackState(MOVE, REQUIRED));
     expect(Exit.isFailure(exit)).toBe(true);
     expect((yield* snapshot).sourceStages).toStrictEqual([STAGE]);
+  }).pipe(Effect.provideService(State, seeded())),
+);
+
+it.effect("refuses to copy over another stack's state under the new name", () =>
+  Effect.gen(function* foreign() {
+    const state = yield* yield* State;
+    yield* state.set({
+      stack: "mirucord",
+      stage: STAGE,
+      fqn: "MasterKey",
+      value: { ...resource("MasterKey", { value: "other" }), instanceId: "other-instance" },
+    });
+    yield* state.setOutput({ stack: "mirucord", stage: STAGE, value: OUTPUT });
+    const exit = yield* Effect.exit(copyStackState(MOVE, REQUIRED));
+    expect(Exit.isFailure(exit)).toBe(true);
+  }).pipe(Effect.provideService(State, seeded())),
+);
+
+it.effect("refuses to mix records the old stack does not have", () =>
+  Effect.gen(function* mixed() {
+    const state = yield* yield* State;
+    yield* state.set({
+      stack: "mirucord",
+      stage: STAGE,
+      fqn: "Unknown",
+      value: resource("Unknown", {}),
+    });
+    const exit = yield* Effect.exit(copyStackState(MOVE, REQUIRED));
+    expect(Exit.isFailure(exit)).toBe(true);
+    expect((yield* snapshot).target).toStrictEqual([resource("Unknown", {})]);
   }).pipe(Effect.provideService(State, seeded())),
 );

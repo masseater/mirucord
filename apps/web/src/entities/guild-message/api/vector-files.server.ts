@@ -67,12 +67,8 @@ const openEntries = ({
     Effect.map(Array.getSomes),
   );
 
-const namedBlocks = (through: number, grouped: Grouped): readonly NamedBlock[] => [
-  ...Option.toArray(
-    grouped.centroids.pipe(Option.map((entries) => ({ file: `v${through}c`, entries }))),
-  ),
-  ...grouped.clusters.map((entries, cluster) => ({ file: `v${through}-${cluster}`, entries })),
-];
+const namedBlocks = (through: number, grouped: Grouped): readonly NamedBlock[] =>
+  grouped.clusters.map((entries, cluster) => ({ file: `v${through}-${cluster}`, entries }));
 
 const sealFiles = ({
   keys,

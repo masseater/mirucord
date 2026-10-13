@@ -16,6 +16,7 @@ const PROBE_SHARE = 0.05;
 const MIN_PROBES = 1;
 const SINGLE_CLUSTER = 1;
 const FIRST_CLUSTER = 0;
+const ONE_FILE = 1;
 
 type SimilarRequest = Readonly<{
   guildId: string;
@@ -57,32 +58,6 @@ const readBlock = (
     ),
   );
 
-const probedClusters = (
-  request: SimilarRequest,
-  { entry, vectors }: VectorSegment,
-): Effect.Effect<readonly number[]> => {
-  if (vectors.clusters <= SINGLE_CLUSTER) {
-    return Effect.succeed([FIRST_CLUSTER]);
-  }
-  const probes = Math.max(MIN_PROBES, Math.ceil(vectors.clusters * PROBE_SHARE));
-  const key = centroidsKey({
-    guildId: request.guildId,
-    segment: entry.name,
-    through: vectors.through,
-  });
-  return readBlock(request, key).pipe(
-    Effect.map(
-      Option.match({
-        onNone: () => [],
-        onSome: (block) =>
-          nearestRows({ query: request.query, block, keep: () => true, limit: probes }).map(
-            ({ row }) => block.ordinals[row] ?? FIRST_CLUSTER,
-          ),
-      }),
-    ),
-  );
-};
-
 type Scan = Readonly<{
   request: SimilarRequest;
   segment: string;
@@ -105,10 +80,12 @@ const scoreBlock = ({ request, segment, keep }: Scan, block: VectorBlock): reado
     score,
   }));
 
-const scanSegment = (
+type Probe = Readonly<{ segment: VectorSegment; cluster: number }>;
+
+const scanProbe = (
   request: SimilarRequest,
   head: SearchHead,
-  segment: VectorSegment,
+  { segment, cluster }: Probe,
 ): Effect.Effect<Scanned> => {
   const invalid = new Set(Option.getOrElse(Record.get(head.invalid, segment.entry.name), () => []));
   const allowed = new Set(request.channelIds);
@@ -117,28 +94,20 @@ const scanSegment = (
     segment: segment.entry.name,
     keep: ({ ordinal, channelId }) => allowed.has(channelId) && !invalid.has(ordinal),
   };
-  return probedClusters(request, segment).pipe(
-    Effect.flatMap((clusters) =>
-      Effect.forEach(
-        clusters,
-        (cluster) =>
-          readBlock(
-            request,
-            clusterKey({
-              guildId: request.guildId,
-              segment: segment.entry.name,
-              through: segment.vectors.through,
-              cluster,
-            }),
-          ),
-        { concurrency: "unbounded" },
-      ),
-    ),
-    Effect.map((blocks) => {
-      const found = Array.getSomes(blocks);
+  return readBlock(
+    request,
+    clusterKey({
+      guildId: request.guildId,
+      segment: segment.entry.name,
+      through: segment.vectors.through,
+      cluster,
+    }),
+  ).pipe(
+    Effect.map((block) => {
+      const found = Option.toArray(block);
       return {
-        hits: found.flatMap((block) => scoreBlock(scan, block)),
-        files: blocks.length,
+        hits: found.flatMap((opened) => scoreBlock(scan, opened)),
+        files: ONE_FILE,
         vectors: Number.sumAll(found.map(({ ordinals }) => ordinals.length)),
       };
     }),
@@ -152,13 +121,79 @@ const vectorSegments = (head: SearchHead): readonly VectorSegment[] =>
     ),
   );
 
+const probeCount = (clusters: number): number =>
+  Math.max(MIN_PROBES, Math.ceil(clusters * PROBE_SHARE));
+
+const nearestProbes = (
+  request: SimilarRequest,
+  clustered: readonly VectorSegment[],
+  block: VectorBlock,
+): readonly Probe[] => {
+  const byName = new Map(clustered.map((segment) => [segment.entry.name, segment]));
+  const totalClusters = Number.sumAll(clustered.map(({ vectors }) => vectors.clusters));
+  const segmentAt = (row: number): Option.Option<VectorSegment> =>
+    Option.fromUndefinedOr(byName.get(block.channelIds[row] ?? ""));
+  return nearestRows({
+    query: request.query,
+    block,
+    keep: (row) => Option.isSome(segmentAt(row)),
+    limit: probeCount(totalClusters),
+  }).flatMap(({ row }) =>
+    Option.toArray(
+      Option.map(segmentAt(row), (segment) => ({
+        segment,
+        cluster: block.ordinals[row] ?? FIRST_CLUSTER,
+      })),
+    ),
+  );
+};
+
+const clusteredProbes = (
+  request: SimilarRequest,
+  head: SearchHead,
+  clustered: readonly VectorSegment[],
+): Effect.Effect<readonly Probe[]> =>
+  Option.match(Option.fromUndefinedOr(head.centroids), {
+    onNone: () => Effect.succeed([]),
+    onSome: (stamp) =>
+      readBlock(request, centroidsKey({ guildId: request.guildId, stamp })).pipe(
+        Effect.map(
+          Option.match({
+            onNone: () => [],
+            onSome: (block) => nearestProbes(request, clustered, block),
+          }),
+        ),
+      ),
+  });
+
+const probesOf = (
+  request: SimilarRequest,
+  head: SearchHead,
+  segments: readonly VectorSegment[],
+): Effect.Effect<readonly Probe[]> => {
+  const isClustered = ({ vectors }: VectorSegment): boolean => vectors.clusters > SINGLE_CLUSTER;
+  const flat = segments.filter((segment) => !isClustered(segment));
+  const clustered = segments.filter((segment) => isClustered(segment));
+  return clusteredProbes(request, head, clustered).pipe(
+    Effect.map((probes) => [
+      ...flat.map((segment) => ({ segment, cluster: FIRST_CLUSTER })),
+      ...probes,
+    ]),
+  );
+};
+
 const searchSimilar = (request: SimilarRequest): Effect.Effect<SimilarResult> =>
   readHead(request.guildId).pipe(
     Effect.flatMap((head) => {
       const segments = vectorSegments(head);
-      return Effect.forEach(segments, (segment) => scanSegment(request, head, segment), {
-        concurrency: "unbounded",
-      }).pipe(Effect.map((scans) => ({ scans, segments: segments.length })));
+      return probesOf(request, head, segments).pipe(
+        Effect.flatMap((probes) =>
+          Effect.forEach(probes, (probe) => scanProbe(request, head, probe), {
+            concurrency: "unbounded",
+          }),
+        ),
+        Effect.map((scans) => ({ scans, segments: segments.length })),
+      );
     }),
     Effect.flatMap(({ scans, segments }) => {
       const top = Array.take(scans.flatMap(({ hits }) => hits).toSorted(byScore), request.limit);

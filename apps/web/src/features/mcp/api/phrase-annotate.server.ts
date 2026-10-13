@@ -91,12 +91,14 @@ ${subject}は、このサーバーで${uses}回、${people}人が使いました
 
 ${examples}
 
-まず、これがどのサーバーでも普通に使う一般的な言葉・相づち・挨拶なら common、このサーバー独自の意味や使われ方があるなら server と判定してください。
-server なら、これを知らない人が会話を正しく読めるように、次のことを日本語で1〜2文にまとめて note に書いてください。
-1. 何を意味するか、どんな気持ちや反応を表すか
-2. どんな発言を受けて使われるか、使われた後に何が起きるか。毎回直後に決まった形の返答が来るなら、それはボットのコマンドなので、何のコマンドで何が返るかを書く
-3. 絵文字なら見た目
-「会話の内容に合わせて」「様々な場面で」「反応として」のように、どの言葉にも当てはまる書き方はしないでください。使用例や画像から読み取れないことは書かず、分からない部分は「意味は不明」と書いてください。人物の名前や仮名、人物の評価は書かないでください。
+まず、これがどのサーバーでも普通に使う一般的な言葉・相づち・挨拶・数字なら common、このサーバー独自の意味や使われ方があるなら server と判定してください。
+server なら、用語集の見出しの説明として note を書きます。
+- 「〇〇を表す」「〇〇のときに使う」の形で、意味と使う場面を言い切る。
+- 毎回直後に決まった形の返答が来るなら、ボットのコマンドとして「〇〇を返すボットのコマンド」と書く。
+- 絵文字なら、最初に見た目を短く書く。
+- 60字以内。「あるいは」「様々な」「など」で候補を並べない。
+- 使用例から意味を言い切れないなら、推測せず「意味は不明。〇〇のときに使われる」と書く。
+- 人物の名前や仮名、人物の評価、使用例にない固有名は書かない。
 次のJSONだけを答えてください: {"type":"common"か"server","note":"serverなら説明、commonなら空文字"}`;
 };
 
@@ -170,7 +172,8 @@ const noteOf = (input: NoteInput, { type, note }: Answered): Note => {
     return { status: "common" };
   }
   const trimmed = String.trim(note);
-  const named = namesIn(input).some((name) => trimmed.includes(name));
+  const unlabelled = trimmed.replaceAll(input.label.label, "");
+  const named = namesIn(input).some((name) => unlabelled.includes(name));
   const shown = Option.liftPredicate(trimmed, (text) => String.isNonEmpty(text) && !named);
   return { status: "server", note: Option.getOrNull(shown) };
 };

@@ -93,8 +93,12 @@ const writeMessages = (
     ),
   );
 
-const drainAlarms = Effect.promise(() => runDurableObjectAlarm(guildStore(GUILD_A))).pipe(
+const runAlarms = Effect.promise(() => runDurableObjectAlarm(guildStore(GUILD_A))).pipe(
   Effect.repeat({ while: (ran) => ran, times: MAX_ALARMS }),
+);
+
+const drainAlarms = Effect.promise(() => guildStore(GUILD_A).publish()).pipe(
+  Effect.andThen(runAlarms),
   Effect.asVoid,
 );
 

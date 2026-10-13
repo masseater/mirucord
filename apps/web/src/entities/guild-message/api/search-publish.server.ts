@@ -1,4 +1,3 @@
-import { eq, inArray } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Effect, Option } from "effect";
 
@@ -20,6 +19,8 @@ import { EARLIEST, recentOf, sealedOf, segmentNames, searchLedger } from "./sear
 import type { Range, Segment } from "./search-ledger.server";
 import { PURGE_AFTER_MS, searchPlanner } from "./search-plan.server";
 import type { PieceRow, PieceSpec, Plan } from "./search-plan.server";
+import { recentPlan } from "./search-recent.server";
+import type { Flush } from "./search-recent.server";
 import { searchRows } from "./search-rows.server";
 
 type Publisher = Readonly<{
@@ -27,6 +28,7 @@ type Publisher = Readonly<{
   bucket: Readonly<R2Bucket>;
   guildId: string;
   now: number;
+  flush: Flush;
 }>;
 
 type BuiltPiece = Readonly<{
@@ -91,6 +93,7 @@ const recordPieces = ({ db, now }: Publisher, { kind, pieces, built }: Recorded)
         fromCreatedAt: range.from,
         toCreatedAt: Option.getOrNull(range.to),
         builtThrough: built,
+        builtAt: now,
         count: entry.count,
         shards: entry.shards,
         ids: [...ids],
@@ -102,18 +105,6 @@ const recordPieces = ({ db, now }: Publisher, { kind, pieces, built }: Recorded)
         .map((ordinal) => ({ segment: entry.name, ordinal })),
       now,
     );
-  }
-};
-
-const dropSegments = (db: DrizzleSqliteDODatabase, segments: readonly Segment[]): void => {
-  const names = segmentNames(segments);
-  if (Array.isReadonlyArrayNonEmpty(names)) {
-    db.delete(searchSegment)
-      .where(inArray(searchSegment.name, [...names]))
-      .run();
-    db.delete(searchInvalid)
-      .where(inArray(searchInvalid.segment, [...names]))
-      .run();
   }
 };
 
@@ -135,7 +126,7 @@ const replaceSegments = (
       writeFiles({ bucket: publisher.bucket, files: placed.flatMap(({ files }) => files) }),
     ),
     Effect.map((placed) => {
-      dropSegments(publisher.db, replaced);
+      searchLedger(publisher.db).drop(replaced);
       recordPieces(publisher, { kind, pieces: placed, built });
       return replaced;
     }),
@@ -153,32 +144,6 @@ const rebuildSealed = (publisher: Publisher, plan: Plan): Effect.Effect<readonly
   });
 };
 
-const hasInvalid = (db: DrizzleSqliteDODatabase, segment: Segment): boolean => {
-  const found = db
-    .select({ segment: searchInvalid.segment })
-    .from(searchInvalid)
-    .where(eq(searchInvalid.segment, segment.name))
-    .get();
-  return Option.isSome(Option.fromUndefinedOr(found));
-};
-
-const recentIsStale = (
-  publisher: Publisher,
-  recent: Option.Option<Segment>,
-  sealedChanged: boolean,
-): boolean => {
-  const newest = searchLedger(publisher.db).latestPending(
-    sealedOf(searchLedger(publisher.db).segments()),
-  );
-  return (
-    sealedChanged ||
-    Option.match(recent, {
-      onNone: () => newest > EARLIEST,
-      onSome: (segment) => newest > segment.builtThrough || hasInvalid(publisher.db, segment),
-    })
-  );
-};
-
 type RecentRebuild = Readonly<{ replaced: readonly Segment[]; rows: readonly PieceRow[] }>;
 
 const replaceRecent = (
@@ -186,7 +151,7 @@ const replaceRecent = (
   { replaced, rows }: RecentRebuild,
 ): Effect.Effect<readonly Segment[]> => {
   if (Array.isReadonlyArrayEmpty(rows)) {
-    dropSegments(publisher.db, replaced);
+    searchLedger(publisher.db).drop(replaced);
     return Effect.succeed(replaced);
   }
   const pieces = [{ range: { from: EARLIEST, to: Option.none<number>() }, rows }];
@@ -199,7 +164,7 @@ const rebuildRecent = (
 ): Effect.Effect<readonly Segment[]> => {
   const segments = searchLedger(publisher.db).segments();
   const recent = recentOf(segments);
-  if (!recentIsStale(publisher, recent, sealedChanged)) {
+  if (!recentPlan({ ...publisher, sealedChanged }).rebuild) {
     return Effect.succeed([]);
   }
   return replaceRecent(publisher, {
@@ -235,15 +200,29 @@ const headOf = (db: DrizzleSqliteDODatabase): SearchHead => ({
   invalid: ordinalsBySegment(db.select().from(searchInvalid).all()),
 });
 
-const nextRun = ({ db, now }: Publisher): Option.Option<number> => {
+const nextRun = (publisher: Publisher): Option.Option<number> => {
+  const { db, now } = publisher;
   if (searchPlanner(db).plan(now).status === "rebuild") {
     return Option.some(now);
   }
   const sealed = segmentNames(sealedOf(searchLedger(db).segments()));
-  return Option.map(searchLedger(db).oldestInvalid(sealed), (since) => since + PURGE_AFTER_MS);
+  const purge = Option.map(
+    searchLedger(db).oldestInvalid(sealed),
+    (since) => since + PURGE_AFTER_MS,
+  );
+  return Array.match(
+    [
+      ...Option.toArray(purge),
+      ...Option.toArray(recentPlan({ ...publisher, sealedChanged: false }).waitUntil),
+    ],
+    {
+      onEmpty: () => Option.none(),
+      onNonEmpty: (times) => Option.some(Math.min(...times)),
+    },
+  );
 };
 
-type HeadTarget = Omit<Publisher, "now">;
+type HeadTarget = Omit<Publisher, "now" | "flush">;
 
 const writeSearchHead = ({ db, bucket, guildId }: HeadTarget): Effect.Effect<void> =>
   Effect.suspend(() => writeHead({ bucket, guildId, head: headOf(db) }));

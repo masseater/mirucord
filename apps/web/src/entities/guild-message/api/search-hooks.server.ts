@@ -1,10 +1,13 @@
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Clock, Effect, Option, Semaphore } from "effect";
 
-import { FLUSH_DELAY_MS, forgetRows, publishGuild, scheduleSearch } from "./search-alarm.server";
+import { FLUSH_DELAY_MS } from "#/entities/guild-message/lib/search-layout";
+
+import { forgetRows, publishGuild, scheduleSearch } from "./search-alarm.server";
 import type { Alarms } from "./search-alarm.server";
 import { deletePrefix } from "./search-files.server";
 import { writeSearchHead } from "./search-publish.server";
+import type { Flush } from "./search-recent.server";
 import type { TrackedRow } from "./store-types";
 import { publishGuildVectors } from "./vector-alarm.server";
 
@@ -22,7 +25,7 @@ type SearchHooks = Readonly<{
   forget: (rows: readonly TrackedRow[]) => Effect.Effect<void>;
   flushLater: () => Effect.Effect<void>;
   scheduleAt: (at: number) => Effect.Effect<void>;
-  publish: () => Effect.Effect<void>;
+  publish: (flush: Flush) => Effect.Effect<void>;
   vectors: () => Effect.Effect<void>;
   clearFiles: () => Effect.Effect<void>;
 }>;
@@ -46,8 +49,10 @@ const searchHooks = ({ db, alarms, bucket, guildId }: HookTarget): SearchHooks =
           scheduleSearch({ db, alarms, delay: Math.max(at - now, NO_DELAY) }),
         ),
       ),
-    publish: () =>
-      named((id) => publishing.withPermit(publishGuild({ db, alarms, bucket, guildId: id }))),
+    publish: (flush) =>
+      named((id) =>
+        publishing.withPermit(publishGuild({ db, alarms, bucket, guildId: id, flush })),
+      ),
     vectors: () =>
       named((id) =>
         publishing.withPermit(publishGuildVectors({ db, alarms, bucket, guildId: id })),

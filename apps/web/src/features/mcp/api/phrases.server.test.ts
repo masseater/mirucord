@@ -83,6 +83,8 @@ const SEEDS: readonly Seed[] = [
   { prefix: "74", channelId: A_OPEN, content: COMMON_PHRASE, phrases: extracted },
 ];
 
+const publishAll = Effect.promise(() => guildStore(GUILD_A).publish());
+
 const network = setupNetwork();
 
 beforeAll(() => {
@@ -92,7 +94,9 @@ beforeAll(() => {
     SEEDS,
     Effect.forEach((seed) => seedMessages(seed)),
   );
-  return Effect.runPromise(Effect.promise(seedScenario).pipe(Effect.andThen(seedAll)));
+  return Effect.runPromise(
+    Effect.promise(seedScenario).pipe(Effect.andThen(seedAll), Effect.andThen(publishAll)),
+  );
 });
 
 beforeEach(() => {

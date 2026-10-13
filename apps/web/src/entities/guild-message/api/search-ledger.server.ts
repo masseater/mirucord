@@ -131,6 +131,18 @@ const invalidate = (
   return Array.isReadonlyArrayNonEmpty(positions);
 };
 
+const dropSegments = (db: DrizzleSqliteDODatabase, segments: readonly Segment[]): void => {
+  const names = segments.map(({ name }) => name);
+  if (Array.isReadonlyArrayNonEmpty(names)) {
+    db.delete(searchSegment)
+      .where(inArray(searchSegment.name, [...names]))
+      .run();
+    db.delete(searchInvalid)
+      .where(inArray(searchInvalid.segment, [...names]))
+      .run();
+  }
+};
+
 const segmentNames = (segments: readonly Segment[]): readonly string[] =>
   segments.map(({ name }) => name);
 
@@ -159,6 +171,7 @@ type SearchLedger = Readonly<{
   positions: (rows: readonly TrackedRow[]) => readonly Position[];
   invalidate: (positions: readonly Position[], now: number) => boolean;
   oldestInvalid: (names: readonly string[]) => Option.Option<number>;
+  drop: (segments: readonly Segment[]) => void;
 }>;
 
 const searchLedger = (db: DrizzleSqliteDODatabase): SearchLedger => ({
@@ -172,6 +185,9 @@ const searchLedger = (db: DrizzleSqliteDODatabase): SearchLedger => ({
   invalidate: (positions: readonly Position[], now: number): boolean =>
     invalidate(db, positions, now),
   oldestInvalid: (names: readonly string[]): Option.Option<number> => invalidSince(db, names),
+  drop: (segments: readonly Segment[]): void => {
+    dropSegments(db, segments);
+  },
 });
 
 export {

@@ -14,6 +14,8 @@ import {
 import type { GemmaOutput } from "#/shared/ai/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 
+import { narrowNote } from "./phrase-narrow.server";
+
 const MAX_TOKENS = 240;
 const RESERVED_INPUT_TOKENS = 3000;
 const RESERVED_NEURONS = gemmaNeurons({ input: RESERVED_INPUT_TOKENS, output: MAX_TOKENS });
@@ -193,8 +195,14 @@ const annotatePhrase = (input: NoteInput): Effect.Effect<Option.Option<Note>> =>
             emojiImage(input.label).pipe(
               Effect.flatMap((image) => askModel(promptOf(input), image)),
               Effect.tap((output) => settleGemma({ output, reserved: RESERVED_NEURONS })),
-              Effect.map((output) =>
-                Option.map(answerOf(output), (answer) => noteOf(input, answer)),
+              Effect.flatMap((output) =>
+                Option.match(answerOf(output), {
+                  onNone: () => Effect.succeedNone,
+                  onSome: (answer) =>
+                    narrowNote({ label: input.label.label, note: answer.note }).pipe(
+                      Effect.map((note) => Option.some(noteOf(input, { ...answer, note }))),
+                    ),
+                }),
               ),
             ),
         },

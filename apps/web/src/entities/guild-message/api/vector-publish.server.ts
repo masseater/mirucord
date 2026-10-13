@@ -4,8 +4,8 @@ import { Array, Effect, Option } from "effect";
 import { groupEntries } from "#/entities/guild-message/lib/clusters";
 
 import { deleteKeys, vectorKeys, writeFiles } from "./search-files.server";
+import { writeSearchHead } from "./search-head.server";
 import type { Segment } from "./search-ledger.server";
-import { writeSearchHead } from "./search-publish.server";
 import type { Keys } from "./vector-embed.server";
 import { openEntries, sealFiles } from "./vector-files.server";
 import { vectorLedger } from "./vector-ledger.server";

@@ -6,6 +6,7 @@ import { expect } from "vite-plus/test";
 import { guildStore } from "#/entities/guild-message/index.server";
 import type { IndexedMessage } from "#/entities/guild-message/index.server";
 
+import { readHead } from "./search-files.server";
 import { searchMessages } from "./search-messages.server";
 
 const CHANNEL = "600";
@@ -34,6 +35,8 @@ const LOST_ROWS = 2;
 const GROWN_PUBLISHES = 3;
 const SPLIT_PUBLISHES = 2;
 const NOTHING = 0;
+const ARCHIVED_EDIT = 100;
+const ARCHIVED_REMOVAL = 200;
 
 type Seed = Readonly<{ index: number; tokens: readonly number[]; channelId?: string }>;
 
@@ -193,9 +196,33 @@ const splitHistory = Effect.gen(function* split() {
   });
 });
 
+const archiveHistory = Effect.gen(function* archived() {
+  const head = yield* readHead("930");
+  expect(Option.isSome(Option.fromUndefinedOr(head.archive))).toBe(true);
+  expect(head.segments.filter((entry) => entry.archived).length).toBeGreaterThanOrEqual(SECOND);
+  yield* write("930", [messageAt({ index: ARCHIVED_EDIT, tokens: [OTHER_WORD] })]);
+  yield* remove("930", ARCHIVED_REMOVAL);
+  yield* publish("930");
+  const total = SPLIT_ROWS - LOST_ROWS - LOST_ROWS;
+  expect(yield* find({ guildId: "930", tokens: [WORD], offset: total - SECOND })).toStrictEqual({
+    total,
+    ids: [idOf(FIRST), idOf(OLDEST)],
+  });
+  expect(yield* find({ guildId: "930", tokens: [OTHER_WORD] })).toStrictEqual({
+    total: 2,
+    ids: [idOf(ARCHIVED_EDIT), idOf(EDITED)],
+  });
+  expect(yield* totalOf({ guildId: "930", tokens: [WORD], channelIds: [OTHER_CHANNEL] })).toBe(
+    NOTHING,
+  );
+});
+
 it.effect(
   "seals large histories into segments and keeps edits and pages consistent",
-  () => Effect.all([sealHistory, editSealed, growHistory, splitHistory], { discard: true }),
+  () =>
+    Effect.all([sealHistory, editSealed, growHistory, splitHistory, archiveHistory], {
+      discard: true,
+    }),
   BIG_TIMEOUT,
 );
 

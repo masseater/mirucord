@@ -114,7 +114,16 @@ export default defineConfig({
           allow: [
             {
               from: "lib",
-              name: ["Request", "CryptoKey", "Int8Array", "Float32Array", "Uint8Array"],
+              name: [
+                "Request",
+                "CryptoKey",
+                "Int8Array",
+                "Float32Array",
+                "Float64Array",
+                "Uint8Array",
+                "Uint16Array",
+                "Uint32Array",
+              ],
             },
             {
               from: "package",

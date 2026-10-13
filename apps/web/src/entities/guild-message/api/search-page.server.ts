@@ -6,7 +6,7 @@ import { CHUNK_SIZE, chunkOf } from "#/entities/guild-message/lib/search-segment
 import type { SealedEntry } from "#/entities/guild-message/lib/search-segment";
 
 import { cachedBytes } from "./search-cache.server";
-import type { FileRead } from "./search-cache.server";
+import type { FileGate, FileRead } from "./search-cache.server";
 import { chunkKey } from "./search-files.server";
 
 class MissingFile extends Data.TaggedError("MissingFile")<Readonly<{ key: string }>> {}
@@ -22,7 +22,10 @@ const chunkId = ({ segment, chunk }: ChunkRef): string => `${segment}/${chunk}`;
 
 type LoadedChunk = Readonly<{ id: string; entries: readonly SealedEntry[]; read: FileRead }>;
 
-const loadChunk = (guildId: string, ref: ChunkRef): Effect.Effect<LoadedChunk, MissingFile> =>
+const loadChunk = (
+  guildId: string,
+  ref: ChunkRef,
+): Effect.Effect<LoadedChunk, MissingFile, FileGate> =>
   cachedBytes(chunkKey({ guildId, ...ref })).pipe(
     Effect.flatMap((read) =>
       required(read).pipe(
@@ -47,7 +50,11 @@ const entryAt = (
 const loadPage = ({
   guildId,
   page,
-}: Readonly<{ guildId: string; page: readonly Hit[] }>): Effect.Effect<LoadedPage, MissingFile> =>
+}: Readonly<{ guildId: string; page: readonly Hit[] }>): Effect.Effect<
+  LoadedPage,
+  MissingFile,
+  FileGate
+> =>
   Effect.forEach(
     Array.dedupeWith(
       page.map(({ segment, ordinal }) => ({ segment, chunk: chunkOf(ordinal) })),

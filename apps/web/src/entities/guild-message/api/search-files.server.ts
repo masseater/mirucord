@@ -1,11 +1,8 @@
-import { env, waitUntil } from "cloudflare:workers";
+import { env } from "cloudflare:workers";
 import { Array, Effect, Option, Schema } from "effect";
 
 import { chunkCountOf } from "#/entities/guild-message/lib/search-segment";
-import { SITE_ORIGIN } from "#/shared/config";
 
-const CACHE_CONTROL = "public, max-age=86400, immutable";
-const CACHE_NAME = "search-files";
 const WRITE_CONCURRENCY = 16;
 const DELETE_BATCH = 1000;
 
@@ -13,10 +10,21 @@ const SegmentVectorsSchema = Schema.Struct({ through: Schema.Int, clusters: Sche
 
 const SegmentEntrySchema = Schema.Struct({
   name: Schema.String,
+  kind: Schema.Literals(["sealed", "recent"]),
+  from: Schema.Finite,
+  archived: Schema.Boolean,
   count: Schema.Int,
   shards: Schema.Int,
   vectors: Schema.optionalKey(SegmentVectorsSchema),
 });
+
+const ArchiveEntrySchema = Schema.Struct({
+  name: Schema.String,
+  shards: Schema.Int,
+  pieces: Schema.Array(Schema.Struct({ name: Schema.String, offset: Schema.Int })),
+});
+
+type ArchiveEntry = typeof ArchiveEntrySchema.Type;
 
 type SegmentVectors = typeof SegmentVectorsSchema.Type;
 
@@ -24,6 +32,8 @@ type SegmentEntry = typeof SegmentEntrySchema.Type;
 
 const SearchHeadSchema = Schema.Struct({
   segments: Schema.Array(SegmentEntrySchema),
+  channels: Schema.Array(Schema.String),
+  archive: Schema.optionalKey(ArchiveEntrySchema),
   invalid: Schema.Record(Schema.String, Schema.Array(Schema.Int)),
 });
 
@@ -36,9 +46,15 @@ const encodeHead = Schema.encodeEffect(SearchHeadJson);
 type SegmentFile = Readonly<{ guildId: string; segment: string }>;
 
 const headKey = (guildId: string): string => `${guildId}/head`;
-const metaKey = ({ guildId, segment }: SegmentFile): string => `${guildId}/${segment}/meta`;
+const recentKey = ({ guildId, segment }: SegmentFile): string => `${guildId}/${segment}/x`;
 const shardKey = ({ guildId, segment, shard }: SegmentFile & Readonly<{ shard: number }>): string =>
   `${guildId}/${segment}/i${shard}`;
+const archiveKey = ({
+  guildId,
+  archive,
+  shard,
+}: Readonly<{ guildId: string; archive: string; shard: number }>): string =>
+  `${guildId}/${archive}/a${shard}`;
 const chunkKey = ({ guildId, segment, chunk }: SegmentFile & Readonly<{ chunk: number }>): string =>
   `${guildId}/${segment}/b${chunk}`;
 
@@ -105,78 +121,28 @@ const vectorKeys = ({
     onSome: (vectors) => keysOfVectors(guildId, row.name, vectors),
   });
 
-const segmentKeys = (
+const indexKeys = (
   guildId: string,
-  { name, count, shards, vectors }: SegmentEntry,
-): readonly string[] => [
-  ...Option.match(Option.fromUndefinedOr(vectors), {
+  { name, kind, shards }: Pick<SegmentEntry, "name" | "kind" | "shards">,
+): readonly string[] => {
+  if (kind === "recent") {
+    return [recentKey({ guildId, segment: name })];
+  }
+  return Array.makeBy(shards, (shard) => shardKey({ guildId, segment: name, shard }));
+};
+
+const segmentKeys = (guildId: string, entry: SegmentEntry): readonly string[] => [
+  ...Option.match(Option.fromUndefinedOr(entry.vectors), {
     onNone: () => [],
-    onSome: (found) => keysOfVectors(guildId, name, found),
+    onSome: (found) => keysOfVectors(guildId, entry.name, found),
   }),
-  metaKey({ guildId, segment: name }),
-  ...Array.makeBy(shards, (shard) => shardKey({ guildId, segment: name, shard })),
-  ...Array.makeBy(chunkCountOf(count), (chunk) => chunkKey({ guildId, segment: name, chunk })),
+  ...indexKeys(guildId, entry),
+  ...Array.makeBy(chunkCountOf(entry.count), (chunk) =>
+    chunkKey({ guildId, segment: entry.name, chunk }),
+  ),
 ];
 
-const cacheUrl = (key: string): string => `${SITE_ORIGIN}/search-files/${key}`;
-
-const searchCache = Effect.promise(() => caches.open(CACHE_NAME));
-
-const objectBytes = (key: string): Effect.Effect<Option.Option<ArrayBuffer>> =>
-  Effect.promise(() => env.SEARCH.get(key)).pipe(
-    Effect.map(Option.fromNullOr),
-    Effect.flatMap(
-      Option.match({
-        onNone: () => Effect.succeedNone,
-        onSome: (object) => Effect.promise(() => object.arrayBuffer()).pipe(Effect.asSome),
-      }),
-    ),
-    Effect.withSpan("search.r2Get", { attributes: { key } }),
-  );
-
-const putInCache = (key: string, bytes: Readonly<ArrayBuffer>): Effect.Effect<void> =>
-  searchCache.pipe(
-    Effect.flatMap((cache) =>
-      Effect.promise(() =>
-        cache.put(
-          cacheUrl(key),
-          new Response(bytes, { headers: { "cache-control": CACHE_CONTROL } }),
-        ),
-      ),
-    ),
-  );
-
-const remember = (key: string, bytes: Readonly<ArrayBuffer>): Effect.Effect<void> =>
-  Effect.sync(() => {
-    waitUntil(Effect.runPromise(putInCache(key, bytes)));
-  });
-
-type FileRead = Readonly<{ key: string; bytes: Option.Option<ArrayBuffer>; cached: boolean }>;
-
-const fromBucket = (key: string): Effect.Effect<FileRead> =>
-  objectBytes(key).pipe(
-    Effect.tap(
-      Option.match({ onNone: () => Effect.void, onSome: (bytes) => remember(key, bytes) }),
-    ),
-    Effect.map((bytes): FileRead => ({ key, bytes, cached: false })),
-  );
-
-const cachedBytes = (key: string): Effect.Effect<FileRead> =>
-  searchCache.pipe(
-    Effect.flatMap((cache) => Effect.promise(() => cache.match(cacheUrl(key)))),
-    Effect.map(Option.fromNullishOr),
-    Effect.flatMap(
-      Option.match({
-        onNone: () => fromBucket(key),
-        onSome: (response) =>
-          Effect.promise(() => response.arrayBuffer()).pipe(
-            Effect.map((bytes): FileRead => ({ key, bytes: Option.some(bytes), cached: true })),
-          ),
-      }),
-    ),
-  );
-
-const EMPTY_HEAD: SearchHead = { segments: [], invalid: {} };
+const EMPTY_HEAD: SearchHead = { segments: [], channels: [], invalid: {} };
 
 const readHead = (guildId: string): Effect.Effect<SearchHead> =>
   Effect.promise(() => env.SEARCH.get(headKey(guildId))).pipe(
@@ -257,14 +223,14 @@ const deleteSegments = ({
   deleteKeys({ bucket, keys: segments.flatMap((segment) => segmentKeys(guildId, segment)) });
 
 export {
-  cachedBytes,
+  archiveKey,
   centroidsKey,
   chunkKey,
   clusterKey,
   deleteKeys,
   deletePrefix,
   deleteSegments,
-  metaKey,
+  recentKey,
   readHead,
   shardKey,
   vectorFileKey,
@@ -274,8 +240,8 @@ export {
   writeHead,
 };
 export type {
+  ArchiveEntry,
   Bucketed,
-  FileRead,
   SearchHead,
   SegmentEntry,
   SegmentFile,

@@ -7,9 +7,10 @@ import type { VectorBlock } from "#/entities/guild-message/lib/vector-block";
 import type { Quantized } from "#/shared/ai";
 import { openBytes } from "#/shared/crypto/index.server";
 
-import { cachedBytes, centroidsKey, clusterKey, readHead } from "./search-files.server";
+import { cachedBytes } from "./search-cache.server";
+import { centroidsKey, clusterKey, readHead } from "./search-files.server";
 import type { SearchHead, SegmentEntry, SegmentVectors } from "./search-files.server";
-import { loadPage } from "./search-messages.server";
+import { loadPage } from "./search-page.server";
 
 const PROBE_SHARE = 0.05;
 const MIN_PROBES = 1;

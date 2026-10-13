@@ -26,4 +26,22 @@ const searchInvalid = sqliteTable(
   (table) => [primaryKey({ columns: [table.segment, table.ordinal] })],
 );
 
-export { searchInvalid, searchSegment };
+const searchChannel = sqliteTable("search_channel", {
+  id: text().primaryKey(),
+  position: integer().notNull().unique(),
+});
+
+type ArchivePiece = Readonly<{ name: string; offset: number; count: number; shards: number }>;
+
+const searchArchive = sqliteTable("search_archive", {
+  name: text().primaryKey(),
+  status: text({ enum: ["live", "building"] }).notNull(),
+  shards: integer().notNull(),
+  count: integer().notNull(),
+  pieces: text({ mode: "json" }).$type<readonly ArchivePiece[]>().notNull(),
+  sources: text({ mode: "json" }).$type<readonly string[]>().notNull(),
+  nextShard: integer().notNull(),
+});
+
+export { searchArchive, searchChannel, searchInvalid, searchSegment };
+export type { ArchivePiece };

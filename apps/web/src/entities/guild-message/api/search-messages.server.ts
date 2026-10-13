@@ -1,20 +1,25 @@
-import { Array, Clock, Data, Effect, Number, Option, Record } from "effect";
+import { Array, Clock, Effect, Number, Option, Record } from "effect";
 
 import {
-  decodeMeta,
-  matchSegment,
-  newestFirst,
-  postingsOf,
-  readChunk,
+  decodeRecent,
+  matchPostings,
+  orderedHits,
 } from "#/entities/guild-message/lib/search-query";
-import type { Hit, SegmentHits } from "#/entities/guild-message/lib/search-query";
-import { CHUNK_SIZE, chunkOf, shardOf } from "#/entities/guild-message/lib/search-segment";
+import type { Filter, RecentHits, SealedHits } from "#/entities/guild-message/lib/search-query";
 import type { SealedEntry } from "#/entities/guild-message/lib/search-segment";
+import { postingsIn, shardOf } from "#/entities/guild-message/lib/search-shard";
+import type { PostingView } from "#/entities/guild-message/lib/search-shard";
 
-import { cachedBytes, chunkKey, metaKey, readHead, shardKey } from "./search-files.server";
-import type { FileRead, SearchHead, SegmentEntry } from "./search-files.server";
+import { archivedHits } from "./search-archive-hits.server";
+import { cachedBytes } from "./search-cache.server";
+import type { FileRead } from "./search-cache.server";
+import { archiveKey, readHead, recentKey, shardKey } from "./search-files.server";
+import type { SearchHead, SegmentEntry } from "./search-files.server";
+import { loadPage, required } from "./search-page.server";
+import type { MissingFile } from "./search-page.server";
 
 const NONE = 0;
+const ONE_SHARD = 1;
 
 type SearchRequest = Readonly<{
   guildId: string;
@@ -40,127 +45,137 @@ type SearchResult = Readonly<{
   stats: SearchStats;
 }>;
 
-class MissingFile extends Data.TaggedError("MissingFile")<Readonly<{ key: string }>> {}
+type Scope = Readonly<{
+  request: SearchRequest;
+  head: SearchHead;
+  allowed: Option.Option<ReadonlySet<number>>;
+}>;
 
-const required = (read: FileRead): Effect.Effect<ArrayBuffer, MissingFile> =>
-  Effect.fromOption(read.bytes).pipe(Effect.mapError(() => new MissingFile({ key: read.key })));
+type Scanned<Hits> = Readonly<{ hits: Hits; reads: readonly FileRead[] }>;
 
-type SegmentScan = Readonly<{ hits: SegmentHits; reads: readonly FileRead[] }>;
+const invalidOf = (head: SearchHead, segment: string): ReadonlySet<number> =>
+  new Set(Option.getOrElse(Record.get(head.invalid, segment), () => []));
 
-type ScanTarget = Readonly<{ request: SearchRequest; head: SearchHead; segment: SegmentEntry }>;
+type ShardSet = Readonly<{ count: number; shardAt: (shard: number) => Option.Option<ArrayBuffer> }>;
 
-type ShardRead = Readonly<{ shard: number; read: FileRead }>;
+const allViews = (
+  set: ShardSet,
+  tokens: readonly number[],
+): Option.Option<readonly PostingView[]> => {
+  const viewOf = (token: number): Option.Option<PostingView> =>
+    Option.flatMap(set.shardAt(shardOf({ token, shards: set.count })), (shard) =>
+      postingsIn({ shard, token }),
+    );
+  return Option.all(tokens.map((token) => viewOf(token)));
+};
 
-const readShards = ({ request, segment }: ScanTarget): Effect.Effect<readonly ShardRead[]> =>
+const readShardSet = (
+  tokens: readonly number[],
+  shardCount: number,
+  keyOf: (shard: number) => string,
+): Effect.Effect<Readonly<{ set: ShardSet; reads: readonly FileRead[] }>, MissingFile> =>
   Effect.forEach(
-    Array.dedupe(request.tokens.map((token) => shardOf({ token, shards: segment.shards }))),
+    Array.dedupe(tokens.map((token) => shardOf({ token, shards: shardCount }))),
     (shard) =>
-      cachedBytes(shardKey({ guildId: request.guildId, segment: segment.name, shard })).pipe(
-        Effect.map((read) => ({ shard, read })),
+      cachedBytes(keyOf(shard)).pipe(
+        Effect.flatMap((read) =>
+          required(read).pipe(Effect.map((bytes) => ({ shard, bytes, read }))),
+        ),
       ),
-    { concurrency: "unbounded" },
-  );
-
-const postingsFor = (
-  target: ScanTarget,
-  shardReads: readonly ShardRead[],
-): Effect.Effect<readonly (readonly number[])[], MissingFile> =>
-  Effect.forEach(
-    shardReads,
-    ({ shard, read }) => required(read).pipe(Effect.map((bytes) => [shard, bytes] as const)),
     { concurrency: "unbounded" },
   ).pipe(
     Effect.map((loaded) => {
-      const byShard = new Map(loaded);
-      return target.request.tokens.map((token) => {
-        const shard = byShard.get(shardOf({ token, shards: target.segment.shards }));
-        return Option.match(Option.fromUndefinedOr(shard), {
-          onNone: () => [],
-          onSome: (bytes) => postingsOf({ shard: bytes, token }),
-        });
-      });
+      const shards = new Map(loaded.map(({ shard, bytes }) => [shard, bytes]));
+      return {
+        set: { count: shardCount, shardAt: (shard) => Option.fromUndefinedOr(shards.get(shard)) },
+        reads: loaded.map(({ read }) => read),
+      };
     }),
   );
 
-const scanSegment = (target: ScanTarget): Effect.Effect<SegmentScan, MissingFile> => {
-  const { request, head, segment } = target;
-  return Effect.all(
-    {
-      meta: cachedBytes(metaKey({ guildId: request.guildId, segment: segment.name })),
-      shards: readShards(target),
-    },
-    { concurrency: "unbounded" },
+const matched = (views: Option.Option<readonly PostingView[]>, filter: Filter): readonly number[] =>
+  Option.match(views, {
+    onNone: () => [],
+    onSome: (found) => matchPostings({ views: found, filter }),
+  });
+
+const scanPiece = (
+  { request, head, allowed }: Scope,
+  segment: SegmentEntry,
+): Effect.Effect<Scanned<SealedHits>, MissingFile> => {
+  const invalid = invalidOf(head, segment.name);
+  return readShardSet(request.tokens, segment.shards, (shard) =>
+    shardKey({ guildId: request.guildId, segment: segment.name, shard }),
   ).pipe(
-    Effect.flatMap(({ meta, shards }) =>
-      Effect.all({
-        decoded: required(meta).pipe(Effect.flatMap(decodeMeta)),
-        postings: postingsFor(target, shards),
-      }).pipe(
-        Effect.map(({ decoded, postings }) => ({
-          hits: {
-            segment: segment.name,
-            createdAt: decoded.createdAt,
-            ordinals: matchSegment({
-              meta: decoded,
-              postings,
-              invalid: Option.getOrElse(Record.get(head.invalid, segment.name), () => []),
-              channelIds: request.channelIds,
-            }),
-          },
-          reads: [meta, ...shards.map(({ read }) => read)],
-        })),
-      ),
-    ),
-  );
-};
-
-const textDecoder = new TextDecoder();
-
-type ChunkRef = Readonly<{ segment: string; chunk: number }>;
-
-const chunkId = ({ segment, chunk }: ChunkRef): string => `${segment}/${chunk}`;
-
-type LoadedChunk = Readonly<{ id: string; entries: readonly SealedEntry[]; read: FileRead }>;
-
-const loadChunk = (guildId: string, ref: ChunkRef): Effect.Effect<LoadedChunk, MissingFile> =>
-  cachedBytes(chunkKey({ guildId, ...ref })).pipe(
-    Effect.flatMap((read) =>
-      required(read).pipe(
-        Effect.flatMap((bytes) => readChunk(textDecoder.decode(bytes))),
-        Effect.map((entries) => ({ id: chunkId(ref), entries, read })),
-      ),
-    ),
-  );
-
-type LoadedPage = Readonly<{ entries: readonly SealedEntry[]; reads: readonly FileRead[] }>;
-
-const entryAt = (
-  chunks: readonly LoadedChunk[],
-  { segment, ordinal }: Hit,
-): Option.Option<SealedEntry> => {
-  const id = chunkId({ segment, chunk: chunkOf(ordinal) });
-  return Option.fromUndefinedOr(chunks.find((chunk) => chunk.id === id)).pipe(
-    Option.flatMap(({ entries }) => Option.fromUndefinedOr(entries[ordinal % CHUNK_SIZE])),
-  );
-};
-
-const loadPage = ({
-  guildId,
-  page,
-}: Readonly<{ guildId: string; page: readonly Hit[] }>): Effect.Effect<LoadedPage, MissingFile> =>
-  Effect.forEach(
-    Array.dedupeWith(
-      page.map(({ segment, ordinal }) => ({ segment, chunk: chunkOf(ordinal) })),
-      (left, right) => chunkId(left) === chunkId(right),
-    ),
-    (ref) => loadChunk(guildId, ref),
-    { concurrency: "unbounded" },
-  ).pipe(
-    Effect.map((chunks) => ({
-      entries: page.flatMap((hit) => Option.toArray(entryAt(chunks, hit))),
-      reads: chunks.map(({ read }) => read),
+    Effect.map(({ set, reads }) => ({
+      hits: {
+        segment: segment.name,
+        from: segment.from,
+        ordinals: matched(allViews(set, request.tokens), {
+          allowed,
+          skipped: (ordinal) => invalid.has(ordinal),
+        }),
+      },
+      reads,
     })),
   );
+};
+
+const scanRecent = (
+  { request, head, allowed }: Scope,
+  segment: SegmentEntry,
+): Effect.Effect<Scanned<RecentHits>, MissingFile> => {
+  const invalid = invalidOf(head, segment.name);
+  return cachedBytes(recentKey({ guildId: request.guildId, segment: segment.name })).pipe(
+    Effect.flatMap((read) =>
+      required(read).pipe(Effect.map((bytes) => ({ read, file: decodeRecent(bytes) }))),
+    ),
+    Effect.map(({ read, file }) => ({
+      hits: {
+        segment: segment.name,
+        createdAt: file.createdAt,
+        ordinals: matched(
+          allViews({ count: ONE_SHARD, shardAt: () => Option.some(file.index) }, request.tokens),
+          {
+            allowed,
+            skipped: (ordinal) => invalid.has(ordinal),
+          },
+        ),
+      },
+      reads: [read],
+    })),
+  );
+};
+
+const scanArchive = (scope: Scope): Effect.Effect<Scanned<readonly SealedHits[]>, MissingFile> =>
+  Option.match(Option.fromUndefinedOr(scope.head.archive), {
+    onNone: () => Effect.succeed({ hits: [], reads: [] }),
+    onSome: (archive) =>
+      readShardSet(scope.request.tokens, archive.shards, (shard) =>
+        archiveKey({ guildId: scope.request.guildId, archive: archive.name, shard }),
+      ).pipe(
+        Effect.map(({ set, reads }) => ({
+          hits: archivedHits({
+            head: scope.head,
+            archive,
+            allowed: scope.allowed,
+            views: allViews(set, scope.request.tokens),
+          }),
+          reads,
+        })),
+      ),
+  });
+
+const allowedOf = (
+  head: SearchHead,
+  channelIds: readonly string[],
+): Option.Option<ReadonlySet<number>> => {
+  const wanted = new Set(channelIds);
+  const positions = head.channels.flatMap((id, position) =>
+    Array.filter([position], () => wanted.has(id)),
+  );
+  return Option.liftPredicate(new Set(positions), (set) => set.size < head.channels.length);
+};
 
 const timed = <Value, Failure>(
   effect: Effect.Effect<Value, Failure>,
@@ -181,45 +196,63 @@ const tallyOf = (
   ),
 });
 
-type Scanned = Readonly<{
-  head: SearchHead;
-  headMs: number;
-  scans: readonly SegmentScan[];
-  indexMs: number;
+type Gathered = Readonly<{
+  recent: Option.Option<RecentHits>;
+  sealed: readonly SealedHits[];
+  reads: readonly FileRead[];
 }>;
 
-const scanAll = (request: SearchRequest): Effect.Effect<Scanned, MissingFile> =>
-  timed(readHead(request.guildId)).pipe(
-    Effect.flatMap(([head, headMs]) =>
-      timed(
-        Effect.forEach(head.segments, (segment) => scanSegment({ request, head, segment }), {
-          concurrency: "unbounded",
-        }),
-      ).pipe(Effect.map(([scans, indexMs]) => ({ head, headMs, scans, indexMs }))),
-    ),
+const gather = (scope: Scope): Effect.Effect<Gathered, MissingFile> => {
+  const recent = scope.head.segments.filter(({ kind }) => kind === "recent");
+  const pieces = scope.head.segments.filter(({ kind, archived }) => kind === "sealed" && !archived);
+  return Effect.all(
+    {
+      recent: Effect.forEach(recent, (segment) => scanRecent(scope, segment), {
+        concurrency: "unbounded",
+      }),
+      pieces: Effect.forEach(pieces, (segment) => scanPiece(scope, segment), {
+        concurrency: "unbounded",
+      }),
+      archive: scanArchive(scope),
+    },
+    { concurrency: "unbounded" },
+  ).pipe(
+    Effect.map(({ recent: recentScans, pieces: pieceScans, archive }) => ({
+      recent: Array.head(recentScans.map(({ hits }) => hits)),
+      sealed: [...pieceScans.map(({ hits }) => hits), ...archive.hits],
+      reads: [...recentScans, ...pieceScans, archive].flatMap(({ reads }) => reads),
+    })),
   );
+};
+
+const totalOf = ({ recent, sealed }: Gathered): number =>
+  Number.sumAll([
+    ...Option.toArray(recent).map(({ ordinals }) => ordinals.length),
+    ...sealed.map(({ ordinals }) => ordinals.length),
+  ]);
 
 const searchOnce = (request: SearchRequest): Effect.Effect<SearchResult, MissingFile> =>
-  scanAll(request).pipe(
-    Effect.flatMap(({ head, headMs, scans, indexMs }) => {
-      const segments = scans.map(({ hits }) => hits);
-      const page = newestFirst({ segments, take: request.offset + request.limit }).slice(
-        request.offset,
-      );
-      return timed(loadPage({ guildId: request.guildId, page })).pipe(
-        Effect.map(([loaded, bodyMs]) => ({
-          total: Number.sumAll(segments.map(({ ordinals }) => ordinals.length)),
-          entries: loaded.entries,
-          stats: {
-            segments: head.segments.length,
-            ...tallyOf([...scans.flatMap(({ reads }) => reads), ...loaded.reads]),
-            headMs,
-            indexMs,
-            bodyMs,
-          },
-        })),
-      );
-    }),
+  timed(readHead(request.guildId)).pipe(
+    Effect.flatMap(([head, headMs]) =>
+      timed(gather({ request, head, allowed: allowedOf(head, request.channelIds) })).pipe(
+        Effect.flatMap(([gathered, indexMs]) => {
+          const page = orderedHits({ ...gathered, offset: request.offset, limit: request.limit });
+          return timed(loadPage({ guildId: request.guildId, page })).pipe(
+            Effect.map(([loaded, bodyMs]) => ({
+              total: totalOf(gathered),
+              entries: loaded.entries,
+              stats: {
+                segments: head.segments.length,
+                ...tallyOf([...gathered.reads, ...loaded.reads]),
+                headMs,
+                indexMs,
+                bodyMs,
+              },
+            })),
+          );
+        }),
+      ),
+    ),
   );
 
 const NO_STATS: SearchStats = {
@@ -254,5 +287,5 @@ const searchMessages = (request: SearchRequest): Effect.Effect<SearchResult> =>
     Effect.withSpan("search.messages", { attributes: { guildId: request.guildId } }),
   );
 
-export { loadPage, searchMessages };
-export type { LoadedPage, MissingFile, SearchRequest, SearchResult, SearchStats };
+export { searchMessages };
+export type { SearchRequest, SearchResult, SearchStats };

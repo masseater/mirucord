@@ -11,8 +11,8 @@ import { postingsIn, shardOf } from "#/entities/guild-message/lib/search-shard";
 import type { PostingView } from "#/entities/guild-message/lib/search-shard";
 
 import { archivedHits } from "./search-archive-hits.server";
-import { cachedBytes } from "./search-cache.server";
-import type { FileRead } from "./search-cache.server";
+import { cachedBytes, withFileGate } from "./search-cache.server";
+import type { FileGate, FileRead } from "./search-cache.server";
 import { archiveKey, readHead, recentKey, shardKey } from "./search-files.server";
 import type { SearchHead, SegmentEntry } from "./search-files.server";
 import { loadPage, required } from "./search-page.server";
@@ -73,7 +73,7 @@ const readShardSet = (
   tokens: readonly number[],
   shardCount: number,
   keyOf: (shard: number) => string,
-): Effect.Effect<Readonly<{ set: ShardSet; reads: readonly FileRead[] }>, MissingFile> =>
+): Effect.Effect<Readonly<{ set: ShardSet; reads: readonly FileRead[] }>, MissingFile, FileGate> =>
   Effect.forEach(
     Array.dedupe(tokens.map((token) => shardOf({ token, shards: shardCount }))),
     (shard) =>
@@ -102,7 +102,7 @@ const matched = (views: Option.Option<readonly PostingView[]>, filter: Filter): 
 const scanPiece = (
   { request, head, allowed }: Scope,
   segment: SegmentEntry,
-): Effect.Effect<Scanned<SealedHits>, MissingFile> => {
+): Effect.Effect<Scanned<SealedHits>, MissingFile, FileGate> => {
   const invalid = invalidOf(head, segment.name);
   return readShardSet(request.tokens, segment.shards, (shard) =>
     shardKey({ guildId: request.guildId, segment: segment.name, shard }),
@@ -124,7 +124,7 @@ const scanPiece = (
 const scanRecent = (
   { request, head, allowed }: Scope,
   segment: SegmentEntry,
-): Effect.Effect<Scanned<RecentHits>, MissingFile> => {
+): Effect.Effect<Scanned<RecentHits>, MissingFile, FileGate> => {
   const invalid = invalidOf(head, segment.name);
   return cachedBytes(recentKey({ guildId: request.guildId, segment: segment.name })).pipe(
     Effect.flatMap((read) =>
@@ -147,7 +147,9 @@ const scanRecent = (
   );
 };
 
-const scanArchive = (scope: Scope): Effect.Effect<Scanned<readonly SealedHits[]>, MissingFile> =>
+const scanArchive = (
+  scope: Scope,
+): Effect.Effect<Scanned<readonly SealedHits[]>, MissingFile, FileGate> =>
   Option.match(Option.fromUndefinedOr(scope.head.archive), {
     onNone: () => Effect.succeed({ hits: [], reads: [] }),
     onSome: (archive) =>
@@ -177,9 +179,9 @@ const allowedOf = (
   return Option.liftPredicate(new Set(positions), (set) => set.size < head.channels.length);
 };
 
-const timed = <Value, Failure>(
-  effect: Effect.Effect<Value, Failure>,
-): Effect.Effect<readonly [Value, number], Failure> =>
+const timed = <Value, Failure, Needs>(
+  effect: Effect.Effect<Value, Failure, Needs>,
+): Effect.Effect<readonly [Value, number], Failure, Needs> =>
   Effect.all([Clock.currentTimeMillis, effect, Clock.currentTimeMillis]).pipe(
     Effect.map(([started, value, finished]) => [value, finished - started] as const),
   );
@@ -202,7 +204,7 @@ type Gathered = Readonly<{
   reads: readonly FileRead[];
 }>;
 
-const gather = (scope: Scope): Effect.Effect<Gathered, MissingFile> => {
+const gather = (scope: Scope): Effect.Effect<Gathered, MissingFile, FileGate> => {
   const recent = scope.head.segments.filter(({ kind }) => kind === "recent");
   const pieces = scope.head.segments.filter(({ kind, archived }) => kind === "sealed" && !archived);
   return Effect.all(
@@ -231,7 +233,7 @@ const totalOf = ({ recent, sealed }: Gathered): number =>
     ...sealed.map(({ ordinals }) => ordinals.length),
   ]);
 
-const searchOnce = (request: SearchRequest): Effect.Effect<SearchResult, MissingFile> =>
+const searchOnce = (request: SearchRequest): Effect.Effect<SearchResult, MissingFile, FileGate> =>
   timed(readHead(request.guildId)).pipe(
     Effect.flatMap(([head, headMs]) =>
       timed(gather({ request, head, allowed: allowedOf(head, request.channelIds) })).pipe(
@@ -268,6 +270,7 @@ const NO_STATS: SearchStats = {
 const searchMessages = (request: SearchRequest): Effect.Effect<SearchResult> =>
   searchOnce(request).pipe(
     Effect.catchTag("MissingFile", () => searchOnce(request)),
+    withFileGate,
     Effect.catchTag("MissingFile", ({ key }) =>
       Effect.logError("Search file is missing").pipe(
         Effect.annotateLogs({ key }),

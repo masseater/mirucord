@@ -1,5 +1,5 @@
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Effect, Number, Option, Order } from "effect";
+import { Array, Boolean, Effect, Number, Option, Order } from "effect";
 
 import { encodeShard, rangeAt, tokensIn } from "#/entities/guild-message/lib/search-shard";
 import type { PostingView, TokenPostings } from "#/entities/guild-message/lib/search-shard";
@@ -20,6 +20,7 @@ type Merging = Readonly<{
   bucket: Readonly<R2Bucket>;
   guildId: string;
   now: number;
+  mayStart: boolean;
 }>;
 
 type Remap = (ordinal: number) => number;
@@ -162,7 +163,12 @@ const continueArchive = (merging: Merging, target: Archive): Effect.Effect<Archi
 
 const archiveStep = (merging: Merging): Effect.Effect<ArchiveStatus> => {
   const ledger = archiveLedger(merging.db);
-  const target = Option.orElse(ledger.building(), () => ledger.start(merging.now));
+  const target = Option.orElse(ledger.building(), () =>
+    Boolean.match(merging.mayStart, {
+      onTrue: () => ledger.start(merging.now),
+      onFalse: () => Option.none(),
+    }),
+  );
   return Option.match(target, {
     onNone: () => Effect.succeed<ArchiveStatus>("idle"),
     onSome: (found) => continueArchive(merging, found),

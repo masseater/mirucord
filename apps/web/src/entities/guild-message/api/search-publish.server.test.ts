@@ -36,6 +36,8 @@ const GROWN_PUBLISHES = 3;
 const SPLIT_PUBLISHES = 2;
 const NOTHING = 0;
 const ARCHIVED_EDIT = 100;
+const MANY_PIECES_ROWS = 50_000;
+const MANY_PUBLISHES = 7;
 const ARCHIVED_REMOVAL = 200;
 
 type Seed = Readonly<{ index: number; tokens: readonly number[]; channelId?: string }>;
@@ -199,7 +201,9 @@ const splitHistory = Effect.gen(function* split() {
 const archiveHistory = Effect.gen(function* archived() {
   const head = yield* readHead("930");
   expect(Option.isSome(Option.fromUndefinedOr(head.archive))).toBe(true);
-  expect(head.segments.filter((entry) => entry.archived).length).toBeGreaterThanOrEqual(SECOND);
+  expect(
+    head.segments.filter((entry) => entry.kind === "sealed" && !entry.archived).length,
+  ).toBeLessThanOrEqual(SECOND);
   yield* write("930", [messageAt({ index: ARCHIVED_EDIT, tokens: [OTHER_WORD] })]);
   yield* remove("930", ARCHIVED_REMOVAL);
   yield* publish("930");
@@ -248,4 +252,19 @@ it.effect("keeps new messages for the next flush when an alarm comes early", () 
       ids: [idOf(SECOND)],
     });
   }),
+);
+
+it.effect(
+  "archives every full piece of a large history built at once",
+  () =>
+    Effect.gen(function* many() {
+      yield* seedRange({ guildId: "960", from: OLDEST, upTo: MANY_PIECES_ROWS });
+      yield* publish("960", MANY_PUBLISHES);
+      const head = yield* readHead("960");
+      expect(
+        head.segments.filter((entry) => entry.kind === "sealed" && !entry.archived).length,
+      ).toBeLessThanOrEqual(SECOND);
+      expect(yield* totalOf({ guildId: "960", tokens: [WORD] })).toBe(MANY_PIECES_ROWS);
+    }),
+  BIG_TIMEOUT,
 );

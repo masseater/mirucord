@@ -7,7 +7,8 @@ import type { VectorBlock } from "#/entities/guild-message/lib/vector-block";
 import type { Quantized } from "#/shared/ai";
 import { openBytes } from "#/shared/crypto/index.server";
 
-import { cachedBytes } from "./search-cache.server";
+import { cachedBytes, withFileGate } from "./search-cache.server";
+import type { FileGate } from "./search-cache.server";
 import { centroidsKey, clusterKey, readHead } from "./search-files.server";
 import type { SearchHead, SegmentEntry, SegmentVectors } from "./search-files.server";
 import { loadPage } from "./search-page.server";
@@ -44,7 +45,7 @@ const byScore = Order.flip(Order.mapInput(Number.Order, ({ score }: ScoredHit) =
 const readBlock = (
   request: SimilarRequest,
   key: string,
-): Effect.Effect<Option.Option<VectorBlock>> =>
+): Effect.Effect<Option.Option<VectorBlock>, never, FileGate> =>
   cachedBytes(key).pipe(
     Effect.flatMap(({ bytes }) =>
       Option.match(bytes, {
@@ -86,7 +87,7 @@ const scanProbe = (
   request: SimilarRequest,
   head: SearchHead,
   { segment, cluster }: Probe,
-): Effect.Effect<Scanned> => {
+): Effect.Effect<Scanned, never, FileGate> => {
   const invalid = new Set(Option.getOrElse(Record.get(head.invalid, segment.entry.name), () => []));
   const allowed = new Set(request.channelIds);
   const scan: Scan = {
@@ -152,7 +153,7 @@ const clusteredProbes = (
   request: SimilarRequest,
   head: SearchHead,
   clustered: readonly VectorSegment[],
-): Effect.Effect<readonly Probe[]> =>
+): Effect.Effect<readonly Probe[], never, FileGate> =>
   Option.match(Option.fromUndefinedOr(head.centroids), {
     onNone: () => Effect.succeed([]),
     onSome: (stamp) =>
@@ -170,7 +171,7 @@ const probesOf = (
   request: SimilarRequest,
   head: SearchHead,
   segments: readonly VectorSegment[],
-): Effect.Effect<readonly Probe[]> => {
+): Effect.Effect<readonly Probe[], never, FileGate> => {
   const isClustered = ({ vectors }: VectorSegment): boolean => vectors.clusters > SINGLE_CLUSTER;
   const flat = segments.filter((segment) => !isClustered(segment));
   const clustered = segments.filter((segment) => isClustered(segment));
@@ -209,6 +210,7 @@ const searchSimilar = (request: SimilarRequest): Effect.Effect<SimilarResult> =>
         })),
       );
     }),
+    withFileGate,
     Effect.catchTag("MissingFile", () =>
       Effect.succeed({
         entries: [],

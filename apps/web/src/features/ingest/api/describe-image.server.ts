@@ -1,9 +1,16 @@
 import { env } from "cloudflare:workers";
-import { Array, Data, Effect, Layer, Option, Schedule, String } from "effect";
+import { Data, Effect, Layer, Option, Schedule, String } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { fromUint8Array } from "js-base64";
 
-import { GEMMA_MODEL, gemmaNeurons, settleNeurons, spendNeurons } from "#/shared/ai/index.server";
+import {
+  GEMMA_MODEL,
+  gemmaNeurons,
+  gemmaText,
+  settleGemma,
+  spendNeurons,
+} from "#/shared/ai/index.server";
+import type { GemmaOutput } from "#/shared/ai/index.server";
 
 const DESCRIBE_MODEL = GEMMA_MODEL;
 const OK_STATUS = 200;
@@ -59,20 +66,6 @@ const reserveNeurons = spendNeurons("live", RESERVED_NEURONS).pipe(
   ),
 );
 
-type ModelOutput = Readonly<{
-  choices: readonly Readonly<{ message: Readonly<{ content?: string | null }> }>[];
-  usage?: Readonly<{ prompt_tokens: number; completion_tokens: number }>;
-}>;
-
-const settleUsage = ({ usage }: ModelOutput): Effect.Effect<void> =>
-  Option.match(Option.fromUndefinedOr(usage), {
-    onNone: () => Effect.void,
-    onSome: ({ prompt_tokens, completion_tokens }) =>
-      settleNeurons(
-        gemmaNeurons({ input: prompt_tokens, output: completion_tokens }) - RESERVED_NEURONS,
-      ),
-  });
-
 const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, DescribeError> =>
   Effect.tryPromise({
     try: () =>
@@ -91,12 +84,9 @@ const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, De
       }),
     catch: (cause) => new DescribeError({ stage: "model", reason: reasonOf(cause) }),
   }).pipe(
-    Effect.tap((output: ModelOutput) => settleUsage(output)),
-    Effect.map(({ choices }) =>
-      Array.head(choices).pipe(
-        Option.flatMap(({ message }) => Option.fromNullishOr(message.content)),
-        Option.match({ onNone: () => "", onSome: String.trim }),
-      ),
+    Effect.tap((output: GemmaOutput) => settleGemma({ output, reserved: RESERVED_NEURONS })),
+    Effect.map((output) =>
+      Option.match(gemmaText(output), { onNone: () => "", onSome: String.trim }),
     ),
   );
 

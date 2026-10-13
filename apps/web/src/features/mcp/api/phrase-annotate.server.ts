@@ -4,7 +4,14 @@ import { FetchHttpClient, HttpClient } from "effect/http";
 import { fromUint8Array } from "js-base64";
 
 import type { Phrase } from "#/entities/guild-message/index.server";
-import { GEMMA_MODEL, gemmaNeurons, settleNeurons, spendNeurons } from "#/shared/ai/index.server";
+import {
+  GEMMA_MODEL,
+  gemmaNeurons,
+  gemmaText,
+  settleGemma,
+  spendNeurons,
+} from "#/shared/ai/index.server";
+import type { GemmaOutput } from "#/shared/ai/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 
 const MAX_TOKENS = 200;
@@ -37,11 +44,6 @@ const Answer = Schema.fromJsonString(
 const decodeAnswer = Schema.decodeUnknownOption(Answer);
 
 type Answered = typeof Answer.Type;
-
-type ModelOutput = Readonly<{
-  choices: readonly Readonly<{ message: Readonly<{ content?: string | null }> }>[];
-  usage?: Readonly<{ prompt_tokens: number; completion_tokens: number }>;
-}>;
 
 type Image = Readonly<{ data: string; contentType: string }>;
 
@@ -115,24 +117,14 @@ const contentOf = (prompt: string, image: Option.Option<Image>): readonly Conten
   })),
 ];
 
-const settleUsage = ({ usage }: ModelOutput): Effect.Effect<void> =>
-  Option.match(Option.fromUndefinedOr(usage), {
-    onNone: () => Effect.void,
-    onSome: ({ prompt_tokens, completion_tokens }) =>
-      settleNeurons(
-        gemmaNeurons({ input: prompt_tokens, output: completion_tokens }) - RESERVED_NEURONS,
-      ),
-  });
-
-const answerOf = ({ choices }: ModelOutput): Option.Option<Answered> =>
-  Array.head(choices).pipe(
-    Option.flatMap(({ message }) => Option.fromNullishOr(message.content)),
+const answerOf = (output: GemmaOutput): Option.Option<Answered> =>
+  gemmaText(output).pipe(
     Option.flatMap((content) => Option.fromNullishOr(JSON_OBJECT.exec(content))),
     Option.flatMap(([json]) => decodeAnswer(json)),
   );
 
-const askModel = (prompt: string, image: Option.Option<Image>): Effect.Effect<ModelOutput> =>
-  Effect.promise((): Promise<ModelOutput> =>
+const askModel = (prompt: string, image: Option.Option<Image>): Effect.Effect<GemmaOutput> =>
+  Effect.promise((): Promise<GemmaOutput> =>
     env.AI.run(GEMMA_MODEL, {
       messages: [{ role: "user", content: [...contentOf(prompt, image)] }],
       max_tokens: MAX_TOKENS,
@@ -166,7 +158,7 @@ const annotatePhrase = (input: NoteInput): Effect.Effect<Option.Option<Note>> =>
           onSome: () =>
             emojiImage(input.label).pipe(
               Effect.flatMap((image) => askModel(promptOf(input), image)),
-              Effect.tap((output) => settleUsage(output)),
+              Effect.tap((output) => settleGemma({ output, reserved: RESERVED_NEURONS })),
               Effect.map((output) =>
                 Option.map(answerOf(output), (answer) => noteOf(input, answer)),
               ),

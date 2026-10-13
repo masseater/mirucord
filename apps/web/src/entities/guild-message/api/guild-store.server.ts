@@ -1,11 +1,13 @@
 import { Clock, Effect, Option } from "effect";
 
+import { NoteStore } from "./note-store.server";
 import { backfillPhrases } from "./phrase-backfill.server";
-import { PhraseStore } from "./phrase-store.server";
 import type {
   ExtractedPhrases,
+  NoteClaim,
   PhraseContext,
   PhraseExample,
+  PhraseNote,
   PhraseRequest,
   PhraseStatsLookup,
   PhraseTally,
@@ -15,7 +17,7 @@ import type {
 import { vectorLedger } from "./vector-ledger.server";
 import type { Coverage } from "./vector-ledger.server";
 
-class GuildStore extends PhraseStore {
+class GuildStore extends NoteStore {
   public phraseStats({
     guildId,
     visibility,
@@ -60,6 +62,22 @@ class GuildStore extends PhraseStore {
     }
     this.countWrites(extracted.length);
     this.forgetStats();
+  }
+
+  public phraseNotes(phrases: readonly string[]): readonly PhraseNote[] {
+    return this.notesOf(phrases);
+  }
+
+  public claimPhraseNotes(claim: NoteClaim): readonly string[] {
+    return this.claimNotes(claim);
+  }
+
+  public savePhraseNotes(notes: readonly PhraseNote[], now: number): void {
+    this.saveNotes(notes, now);
+  }
+
+  public releasePhraseNotes(phrases: readonly string[]): void {
+    this.releaseNotes(phrases);
   }
 
   public vectorCoverage(): Coverage {

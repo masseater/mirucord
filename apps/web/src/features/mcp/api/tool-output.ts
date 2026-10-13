@@ -52,6 +52,7 @@ const ServerPhrase = Schema.Struct({
   lastUsedAt: Schema.String,
   channels: Schema.Array(Schema.Struct({ id: Schema.String, name: Schema.String })),
   examples: Schema.Array(Schema.Array(Schema.String)),
+  note: Schema.NullOr(Schema.String),
 });
 const ListServerPhrasesOutput = Schema.Struct({
   days: Schema.Int,

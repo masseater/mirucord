@@ -1,13 +1,14 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { runDurableObjectAlarm } from "cloudflare:test";
-import { Array, DateTime, Effect, Option, Schema, pipe } from "effect";
-import { afterAll, beforeAll, expect } from "vite-plus/test";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
+import { afterAll, beforeAll, beforeEach, expect } from "vite-plus/test";
 
 import { guildStore, indexTokens, phraseHashes } from "#/entities/guild-message/index.server";
 import type { IndexedMessage, PhraseState } from "#/entities/guild-message/index.server";
 import { sealMessage } from "#/shared/crypto/index.server";
 
+import { listPhrases, mockPhraseModel, prompts } from "./__tests__/phrase-model";
 import {
   A_OPEN,
   A_STAFF,
@@ -16,13 +17,13 @@ import {
   guildKeys,
   seedScenario,
 } from "./__tests__/scenario";
-import { callTool } from "./__tests__/tool-call";
-import { ListServerPhrasesOutput } from "./tool-output";
 
 const ERASED_AUTHOR = "501";
 const PEOPLE = [ERASED_AUTHOR, "502", "503", ERASED_AUTHOR, "502"];
 const OPEN_PHRASE = "ぷり";
 const STAFF_PHRASE = "ひみつ";
+const COMMON_PHRASE = "うん";
+const NOTE_SUFFIX = "を挨拶のように使う";
 const EMOJI = "<:aza_2:1234>";
 const MINUTE_MS = 60_000;
 
@@ -37,14 +38,6 @@ type Seed = Readonly<{
 
 const extracted: Seed["phrases"] = (hashes) => ({ status: "extracted", hashes });
 const pending: Seed["phrases"] = () => ({ status: "pending" });
-
-const decodePhrases = Schema.decodeUnknownEffect(ListServerPhrasesOutput);
-
-const listPhrases = callTool({ name: "list_server_phrases", args: { serverId: GUILD_A } }).pipe(
-  Effect.flatMap(({ structured }) => decodePhrases(Option.getOrUndefined(structured))),
-  Effect.map(({ phrases }) => phrases),
-  Effect.orDie,
-);
 
 const seedMessages = ({ prefix, channelId, content, phrases }: Seed): Effect.Effect<void> =>
   Effect.gen(function* seed() {
@@ -86,6 +79,7 @@ const SEEDS: readonly Seed[] = [
   { prefix: "71", channelId: A_OPEN, content: OPEN_PHRASE, phrases: extracted },
   { prefix: "72", channelId: A_STAFF, content: STAFF_PHRASE, phrases: extracted },
   { prefix: "73", channelId: A_OPEN, content: EMOJI, phrases: pending },
+  { prefix: "74", channelId: A_OPEN, content: COMMON_PHRASE, phrases: extracted },
 ];
 
 const network = setupNetwork();
@@ -100,6 +94,10 @@ beforeAll(() => {
   return Effect.runPromise(Effect.promise(seedScenario).pipe(Effect.andThen(seedAll)));
 });
 
+beforeEach(() => {
+  mockPhraseModel({ common: COMMON_PHRASE, note: `${OPEN_PHRASE}${NOTE_SUFFIX}` });
+});
+
 afterAll(() => {
   network.disable();
 });
@@ -111,6 +109,10 @@ it.effect("lists what several members repeat in channels the user can read", () 
       phrases.map(({ kind, phrase, uses, people }) => ({ kind, phrase, uses, people })),
     ).toContainEqual({ kind: "text", phrase: OPEN_PHRASE, uses: PEOPLE.length, people: 3 });
     expect(phrases.map(({ phrase }) => phrase)).not.toContain(STAFF_PHRASE);
+    expect(phrases.map(({ phrase }) => phrase)).not.toContain(COMMON_PHRASE);
+    expect(
+      phrases.filter(({ phrase }) => phrase === OPEN_PHRASE).map(({ note }) => note),
+    ).toStrictEqual([`${OPEN_PHRASE}${NOTE_SUFFIX}`]);
     expect(
       phrases
         .filter(({ phrase }) => phrase === OPEN_PHRASE)
@@ -118,6 +120,15 @@ it.effect("lists what several members repeat in channels the user can read", () 
           examples.flatMap((example) => Option.toArray(Array.last(example))),
         ),
     ).toStrictEqual([OPEN_PHRASE, OPEN_PHRASE]);
+  }),
+);
+
+it.effect("writes each note once and reuses it on the next call", () =>
+  Effect.gen(function* reused() {
+    yield* listPhrases;
+    const asked = prompts.length;
+    yield* listPhrases;
+    expect(prompts).toHaveLength(asked);
   }),
 );
 

@@ -11,6 +11,7 @@ export { searchMessages } from "./api/search-messages.server";
 export type {
   IndexedMessage,
   PhraseCandidate,
+  PhraseNote,
   PhraseState,
   SealedMessage,
   StoredRow,

@@ -9,3 +9,4 @@ const gemmaNeurons = ({ input, output }: Tokens): number =>
   (input * INPUT_NEURONS_PER_MILLION + output * OUTPUT_NEURONS_PER_MILLION) / MILLION;
 
 export { GEMMA_MODEL, gemmaNeurons };
+export type { Tokens };

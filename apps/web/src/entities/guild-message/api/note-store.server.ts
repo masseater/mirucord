@@ -1,16 +1,43 @@
-import { and, eq, gte, inArray, ne, or } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, inArray, lt, ne, or } from "drizzle-orm";
 import { Array, Duration, Option } from "effect";
 
+import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { phraseNote } from "#/entities/guild-message/model/phrase-note.schema";
+import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
+import { SEALED_COLUMNS } from "./message-store.server";
 import { PhraseStore } from "./phrase-store.server";
-import type { NoteClaim, NoteStatus, PhraseColumn, PhraseNote } from "./store-types";
+import type {
+  NoteClaim,
+  NoteSample,
+  NoteStatus,
+  PhraseColumn,
+  PhraseNote,
+  PhraseSamples,
+  SampleRequest,
+  SealedMessage,
+} from "./store-types";
 
 const BOUND_LIMIT = 90;
 const EXAMPLE_SEPARATOR = ",";
 const NEVER = 0;
 const CLAIM_MINUTES = 3;
 const CLAIM_MS = Duration.toMillis(Duration.minutes(CLAIM_MINUTES));
+const FIRST = 0;
+const SAMPLES_PER_PHRASE = 6;
+const SAMPLE_SCAN = 60;
+const AROUND = 2;
+
+type Use = Readonly<{ messageId: string; channelId: string; authorId: string }>;
+
+const spreadOf = (uses: readonly Use[]): readonly Use[] => {
+  const distinct = Array.dedupeWith(uses, (left, right) => left.authorId === right.authorId);
+  const picked = new Set(distinct.map(({ messageId }) => messageId));
+  return [...distinct, ...uses.filter(({ messageId }) => !picked.has(messageId))].slice(
+    FIRST,
+    SAMPLES_PER_PHRASE,
+  );
+};
 
 const examplesOf = (examples: string): readonly string[] =>
   examples.split(EXAMPLE_SEPARATOR).filter((id) => id.length > NEVER);
@@ -99,6 +126,59 @@ abstract class NoteStore extends PhraseStore {
         .where(inArray(phraseNote.phrase, [...chunk]))
         .run();
     }
+  }
+
+  protected samplesOf({ phrases, channelIds }: SampleRequest): readonly PhraseSamples[] {
+    const channels = new Set(channelIds);
+    return phrases.map((phrase) => ({
+      phrase,
+      samples: spreadOf(
+        this.db
+          .select({
+            messageId: phraseUse.messageId,
+            channelId: phraseUse.channelId,
+            authorId: phraseUse.authorId,
+          })
+          .from(phraseUse)
+          .where(eq(phraseUse.phrase, phrase))
+          .orderBy(desc(phraseUse.createdAt))
+          .limit(SAMPLE_SCAN)
+          .all()
+          .filter(({ channelId }) => channels.has(channelId)),
+      ).flatMap(({ messageId }) => Option.toArray(this.sampleAround(messageId))),
+    }));
+  }
+
+  private sampleAround(messageId: string): Option.Option<NoteSample> {
+    return Option.fromUndefinedOr(
+      this.db.select(SEALED_COLUMNS).from(guildMessage).where(eq(guildMessage.id, messageId)).get(),
+    ).pipe(
+      Option.map((use) => ({
+        before: this.neighbours(use, "before").toReversed(),
+        use,
+        after: this.neighbours(use, "after"),
+      })),
+    );
+  }
+
+  private neighbours(use: SealedMessage, side: "before" | "after"): readonly SealedMessage[] {
+    const sameChannel = eq(guildMessage.channelId, use.channelId);
+    if (side === "before") {
+      return this.db
+        .select(SEALED_COLUMNS)
+        .from(guildMessage)
+        .where(and(sameChannel, lt(guildMessage.createdAt, use.createdAt)))
+        .orderBy(desc(guildMessage.createdAt))
+        .limit(AROUND)
+        .all();
+    }
+    return this.db
+      .select(SEALED_COLUMNS)
+      .from(guildMessage)
+      .where(and(sameChannel, gt(guildMessage.createdAt, use.createdAt)))
+      .orderBy(asc(guildMessage.createdAt))
+      .limit(AROUND)
+      .all();
   }
 
   protected releaseNotes(phrases: readonly string[]): void {

@@ -90,6 +90,16 @@ type PhraseExample = Readonly<{ phrase: string; messageIds: readonly string[] }>
 
 type PhraseContext = Readonly<{ messageId: string; messages: readonly SealedMessage[] }>;
 
+type NoteSample = Readonly<{
+  before: readonly SealedMessage[];
+  use: SealedMessage;
+  after: readonly SealedMessage[];
+}>;
+
+type PhraseSamples = Readonly<{ phrase: string; samples: readonly NoteSample[] }>;
+
+type SampleRequest = Readonly<{ phrases: readonly string[]; channelIds: readonly string[] }>;
+
 type UnphrasedMessage = SealedMessage & Readonly<{ authorId: string }>;
 
 type ExtractedPhrases = Readonly<{ message: UnphrasedMessage; hashes: readonly PhraseHash[] }>;
@@ -101,6 +111,7 @@ export type {
   ExtractedPhrases,
   IndexedMessage,
   NoteClaim,
+  NoteSample,
   NoteStatus,
   PhraseCandidate,
   PhraseChannel,
@@ -109,10 +120,12 @@ export type {
   PhraseExample,
   PhraseNote,
   PhraseRequest,
+  PhraseSamples,
   PhraseState,
   PhraseStatsLookup,
   PhraseTally,
   ReadPage,
+  SampleRequest,
   SavedStats,
   SealedMessage,
   StoredRow,

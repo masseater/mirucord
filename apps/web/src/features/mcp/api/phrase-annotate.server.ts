@@ -14,24 +14,28 @@ import {
 import type { GemmaOutput } from "#/shared/ai/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 
-const MAX_TOKENS = 200;
-const RESERVED_INPUT_TOKENS = 1000;
+const MAX_TOKENS = 240;
+const RESERVED_INPUT_TOKENS = 3000;
 const RESERVED_NEURONS = gemmaNeurons({ input: RESERVED_INPUT_TOKENS, output: MAX_TOKENS });
 const EXCERPT_LENGTH = 100;
 const FIRST = 0;
 const OK_STATUS = 200;
 const SHORTEST_NAME = 2;
+const SPEAKERS = "ABCDEFGHIJ";
+const OTHER_SPEAKER = "他";
+const NUMBER_FROM = 1;
 const EMOJI_PREFIX = "emoji:";
 const JSON_OBJECT = /\{[\s\S]*\}/u;
 
-type NoteInput = Readonly<{
-  phrase: string;
-  label: Phrase;
-  uses: number;
-  people: number;
-  examples: readonly string[];
-  contexts: readonly (readonly MessageBody[])[];
+type NoteSubject = Readonly<{ phrase: string; label: Phrase; uses: number; people: number }>;
+
+type OpenedSample = Readonly<{
+  before: readonly MessageBody[];
+  use: MessageBody;
+  after: readonly MessageBody[];
 }>;
+
+type NoteInput = NoteSubject & Readonly<{ samples: readonly OpenedSample[] }>;
 
 type Note =
   | Readonly<{ status: "common" }>
@@ -53,11 +57,27 @@ const excerptOf = ({ content, stickers }: MessageBody): string =>
     .join(" ")
     .slice(FIRST, EXCERPT_LENGTH);
 
-const contextOf = (bodies: readonly MessageBody[]): string =>
-  bodies.map((body) => excerptOf(body).replaceAll("\n", " ")).join(" → ");
+const speakerOf =
+  (names: readonly string[]) =>
+  ({ authorName }: MessageBody): string =>
+    SPEAKERS.at(names.indexOf(authorName)) ?? OTHER_SPEAKER;
 
-const promptOf = ({ label, uses, people, contexts }: NoteInput): string => {
-  const examples = contexts.map((bodies) => `- ${contextOf(bodies)}`).join("\n");
+const lineOf = (speaker: string, body: MessageBody, mark: string): string =>
+  `${mark}${speaker}: ${excerptOf(body).replaceAll("\n", " ")}`;
+
+const sampleText = ({ before, use, after }: OpenedSample, index: number): string => {
+  const names = Array.dedupe([...before, use, ...after].map(({ authorName }) => authorName));
+  const speaker = speakerOf(names);
+  return [
+    `例${index + NUMBER_FROM}`,
+    ...before.map((body) => lineOf(speaker(body), body, "  ")),
+    lineOf(speaker(use), use, "▶ "),
+    ...after.map((body) => lineOf(speaker(body), body, "  ")),
+  ].join("\n");
+};
+
+const promptOf = ({ label, uses, people, samples }: NoteInput): string => {
+  const examples = samples.map((sample, index) => sampleText(sample, index)).join("\n\n");
   const subject = Option.match(
     Option.liftPredicate(label.kind, (kind) => kind === "emoji"),
     {
@@ -66,11 +86,18 @@ const promptOf = ({ label, uses, people, contexts }: NoteInput): string => {
     },
   );
   return `あなたはDiscordサーバーの会話を読むAIのために、サーバー内でよく使われる言葉の用語集を作っています。
-${subject}は、このサーバーで${uses}回、${people}人が使いました。直前の発言から順に使用例を示します。
+${subject}は、このサーバーで${uses}回、${people}人が使いました。
+使用例を前後の発言と一緒に示します。▶が対象を含む発言です。発言者は例ごとにA、Bなどの仮名にしています。
+
 ${examples}
-これが、どのサーバーでも普通に使う一般的な言葉・相づち・挨拶か、このサーバー独自の使われ方をするもの（内輪ネタ、独自の絵文字、コマンド、定番の掛け合いなど）かを判定してください。
-独自のものなら、このサーバーでの使われ方を日本語で1文で書いてください。絵文字なら見た目も添えてください。使用例や画像から読み取れないことは推測で書かず、意味が分からなければ「意味は不明、〜のときに使う」のように書いてください。人物の名前や人物の評価は書かないでください。
-次のJSONだけを答えてください: {"type":"common"か"server","note":"独自のものの説明。一般的な言葉なら空文字"}`;
+
+まず、これがどのサーバーでも普通に使う一般的な言葉・相づち・挨拶なら common、このサーバー独自の意味や使われ方があるなら server と判定してください。
+server なら、これを知らない人が会話を正しく読めるように、次のことを日本語で1〜2文にまとめて note に書いてください。
+1. 何を意味するか、どんな気持ちや反応を表すか
+2. どんな発言を受けて使われるか、使われた後に何が起きるか。毎回直後に決まった形の返答が来るなら、それはボットのコマンドなので、何のコマンドで何が返るかを書く
+3. 絵文字なら見た目
+「会話の内容に合わせて」「様々な場面で」「反応として」のように、どの言葉にも当てはまる書き方はしないでください。使用例や画像から読み取れないことは書かず、分からない部分は「意味は不明」と書いてください。人物の名前や仮名、人物の評価は書かないでください。
+次のJSONだけを答えてください: {"type":"common"か"server","note":"serverなら説明、commonなら空文字"}`;
 };
 
 const withFetchClient = <Value>(
@@ -133,8 +160,8 @@ const askModel = (prompt: string, image: Option.Option<Image>): Effect.Effect<Ge
   ).pipe(Effect.withSpan("annotatePhrase"));
 
 const namesIn = (input: NoteInput): readonly string[] =>
-  input.contexts
-    .flat()
+  input.samples
+    .flatMap(({ before, use, after }) => [...before, use, ...after])
     .map(({ authorName }) => authorName)
     .filter((name) => Array.fromIterable(name).length >= SHORTEST_NAME);
 
@@ -172,4 +199,4 @@ const annotatePhrase = (input: NoteInput): Effect.Effect<Option.Option<Note>> =>
   );
 
 export { annotatePhrase, excerptOf };
-export type { Note, NoteInput };
+export type { Note, NoteInput, NoteSubject, OpenedSample };

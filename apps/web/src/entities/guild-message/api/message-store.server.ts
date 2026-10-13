@@ -148,7 +148,7 @@ abstract class MessageStore extends DurableObject {
   }
 
   public publish(): Promise<void> {
-    return Effect.runPromise(this.search.publish());
+    return Effect.runPromise(this.search.publish("now"));
   }
 
   public stored(ids: readonly string[]): readonly StoredState[] {

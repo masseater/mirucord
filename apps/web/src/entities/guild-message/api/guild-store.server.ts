@@ -111,7 +111,7 @@ class GuildStore extends NoteStore {
         }),
     });
     const published = phrases.pipe(
-      Effect.andThen(this.search.publish()),
+      Effect.andThen(this.search.publish("due")),
       Effect.andThen(this.search.vectors()),
     );
     return Effect.runPromise(published);

@@ -1,0 +1,1 @@
+ALTER TABLE `search_segment` ADD `builtAt` integer DEFAULT 0 NOT NULL;

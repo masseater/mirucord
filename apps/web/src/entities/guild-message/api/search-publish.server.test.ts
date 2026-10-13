@@ -1,4 +1,5 @@
 import { it } from "@effect/vitest";
+import { runDurableObjectAlarm } from "cloudflare:test";
 import { Array, Effect, Option } from "effect";
 import { expect } from "vite-plus/test";
 
@@ -32,6 +33,7 @@ const SPLIT_ROWS = 43_000;
 const LOST_ROWS = 2;
 const GROWN_PUBLISHES = 3;
 const SPLIT_PUBLISHES = 2;
+const NOTHING = 0;
 
 type Seed = Readonly<{ index: number; tokens: readonly number[]; channelId?: string }>;
 
@@ -203,5 +205,20 @@ it.effect("removes every search file when the server is cleared", () =>
     yield* publish("940");
     yield* Effect.promise(() => guildStore("940").clear());
     expect(yield* find({ guildId: "940", tokens: [WORD] })).toStrictEqual({ total: 0, ids: [] });
+  }),
+);
+
+it.effect("keeps new messages for the next flush when an alarm comes early", () =>
+  Effect.gen(function* early() {
+    yield* write("950", [messageAt({ index: FIRST, tokens: [WORD] })]);
+    yield* publish("950");
+    yield* write("950", [messageAt({ index: SECOND, tokens: [OTHER_WORD] })]);
+    expect(yield* Effect.promise(() => runDurableObjectAlarm(guildStore("950")))).toBe(true);
+    expect(yield* totalOf({ guildId: "950", tokens: [OTHER_WORD] })).toBe(NOTHING);
+    yield* publish("950");
+    expect(yield* find({ guildId: "950", tokens: [OTHER_WORD] })).toStrictEqual({
+      total: 1,
+      ids: [idOf(SECOND)],
+    });
   }),
 );

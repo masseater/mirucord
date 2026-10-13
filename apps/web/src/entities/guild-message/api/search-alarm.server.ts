@@ -1,12 +1,14 @@
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Clock, Effect, Option } from "effect";
 
+import { FLUSH_DELAY_MS } from "#/entities/guild-message/lib/search-layout";
+
 import { reindexMissing } from "./reindex.server";
 import { searchLedger } from "./search-ledger.server";
 import { publishSearch } from "./search-publish.server";
+import type { Flush } from "./search-recent.server";
 import type { TrackedRow } from "./store-types";
 
-const FLUSH_DELAY_MS = 300_000;
 const NO_DELAY = 0;
 
 type Alarms = Readonly<{
@@ -22,6 +24,8 @@ type Forgotten = Alarmed &
   Readonly<{ rows: readonly TrackedRow[]; publishHead: Effect.Effect<void> }>;
 
 type Published = Alarmed & Readonly<{ bucket: Readonly<R2Bucket>; guildId: string }>;
+
+type Flushing = Published & Readonly<{ flush: Flush }>;
 
 const scheduleSearch = ({ alarms, delay }: Scheduled): Effect.Effect<void> =>
   Effect.all({
@@ -66,25 +70,25 @@ const scheduleNext = (alarmed: Alarmed, next: Option.Option<number>): Effect.Eff
 
 const nextVersion = (db: DrizzleSqliteDODatabase): number => searchLedger(db).nextVersion();
 
-const publishIndexed = (published: Published): Effect.Effect<void> => {
-  const { db, bucket, guildId } = published;
+const publishIndexed = (published: Flushing): Effect.Effect<void> => {
+  const { db, bucket, guildId, flush } = published;
   return Clock.currentTimeMillis.pipe(
-    Effect.flatMap((now) => publishSearch({ db, bucket, guildId, now })),
+    Effect.flatMap((now) => publishSearch({ db, bucket, guildId, now, flush })),
     Effect.flatMap((next) => scheduleNext(published, next)),
   );
 };
 
-const afterReindex = (published: Published, remaining: boolean): Effect.Effect<void> => {
+const afterReindex = (published: Flushing, remaining: boolean): Effect.Effect<void> => {
   if (remaining) {
     return scheduleSearch({ ...published, delay: NO_DELAY });
   }
   return publishIndexed(published);
 };
 
-const publishGuild = (published: Published): Effect.Effect<void> =>
+const publishGuild = (published: Flushing): Effect.Effect<void> =>
   reindexMissing({ store: published.db, guildId: published.guildId }).pipe(
     Effect.flatMap((remaining) => afterReindex(published, remaining)),
   );
 
-export { FLUSH_DELAY_MS, forgetRows, nextVersion, publishGuild, scheduleSearch };
-export type { Alarmed, Alarms, Forgotten, Published, Scheduled };
+export { forgetRows, nextVersion, publishGuild, scheduleSearch };
+export type { Alarmed, Alarms, Flushing, Forgotten, Published, Scheduled };

@@ -1,0 +1,132 @@
+import { DateTime, Effect, Option, pipe } from "effect";
+import { fromUint8Array, toUint8Array } from "js-base64";
+
+import { guildStore } from "#/entities/guild-message/index.server";
+import type { PhraseNote } from "#/entities/guild-message/index.server";
+import { openBytes, sealBytes } from "#/shared/crypto/index.server";
+
+import { annotatePhrase } from "./phrase-annotate.server";
+import type { Note, NoteInput } from "./phrase-annotate.server";
+
+const CONCURRENCY = 6;
+
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+type NotesRequest = Readonly<{
+  guildId: string;
+  key: CryptoKey;
+  inputs: readonly NoteInput[];
+}>;
+
+const contextFor = (guildId: string, phrase: string): string => `phrase-note:${guildId}:${phrase}`;
+
+type Settled = Exclude<Note, Readonly<{ status: "unknown" }>>;
+
+const shownOf = (note: Settled): Option.Option<string> => {
+  if (note.status === "common") {
+    return Option.none();
+  }
+  return Option.fromNullOr(note.note);
+};
+
+const sealNote = (
+  { guildId, key }: NotesRequest,
+  phrase: string,
+  note: Option.Option<string>,
+): Effect.Effect<string | null> =>
+  Option.match(note, {
+    onNone: () => Effect.succeed(Option.getOrNull(Option.none<string>())),
+    onSome: (text) =>
+      sealBytes({
+        bytes: textEncoder.encode(text),
+        key,
+        context: contextFor(guildId, phrase),
+      }).pipe(Effect.map((sealed) => fromUint8Array(sealed))),
+  });
+
+const openNote = (
+  { guildId, key }: NotesRequest,
+  { phrase, status, sealed }: PhraseNote,
+): Effect.Effect<readonly [string, Note]> => {
+  if (status === "common") {
+    return Effect.succeed([phrase, { status }]);
+  }
+  return Option.match(Option.fromNullOr(sealed), {
+    onNone: () =>
+      Effect.succeed([phrase, { status, note: Option.getOrNull(Option.none<string>()) }]),
+    onSome: (bytes) =>
+      openBytes({ bytes: toUint8Array(bytes), key, context: contextFor(guildId, phrase) }).pipe(
+        Effect.map((opened) => [phrase, { status, note: textDecoder.decode(opened) }]),
+      ),
+  });
+};
+
+const storedOf = (
+  request: NotesRequest,
+  input: NoteInput,
+  note: Settled,
+): Effect.Effect<PhraseNote> =>
+  sealNote(request, input.phrase, shownOf(note)).pipe(
+    Effect.map((sealed) => ({
+      phrase: input.phrase,
+      status: note.status,
+      sealed,
+      examples: input.examples,
+    })),
+  );
+
+const isSettled = (note: Note): note is Settled => note.status !== "unknown";
+
+const generateAll = Effect.fn("generatePhraseNotes")(function* generateAll(
+  request: NotesRequest,
+  claimed: readonly NoteInput[],
+  now: number,
+) {
+  const store = guildStore(request.guildId);
+  const generated = yield* Effect.forEach(
+    claimed,
+    (input) => annotatePhrase(input).pipe(Effect.map((note) => ({ input, note }))),
+    { concurrency: CONCURRENCY },
+  );
+  const settled = generated.flatMap(({ input, note }) =>
+    Option.toArray(pipe(note, Option.filter(isSettled))).map((value) => ({ input, note: value })),
+  );
+  const stored = yield* pipe(
+    settled,
+    Effect.forEach(({ input, note }) => storedOf(request, input, note)),
+  );
+  const failed = generated
+    .filter(({ note }) => Option.isNone(note))
+    .map(({ input }) => input.phrase);
+  yield* Effect.promise(() =>
+    Promise.all([store.savePhraseNotes(stored, now), store.releasePhraseNotes(failed)]),
+  );
+  return settled.map(({ input, note }): readonly [string, Note] => [input.phrase, note]);
+});
+
+const phraseNotesOf = Effect.fn("phraseNotes")(function* phraseNotes(request: NotesRequest) {
+  const store = guildStore(request.guildId);
+  const phrases = request.inputs.map(({ phrase }) => phrase);
+  const existing = yield* Effect.promise(() => store.phraseNotes(phrases));
+  const opened = yield* pipe(
+    existing,
+    Effect.forEach((note) => openNote(request, note)),
+  );
+  const known = new Set(existing.map(({ phrase }) => phrase));
+  const now = DateTime.toEpochMillis(yield* DateTime.now);
+  const claimed = new Set(
+    yield* Effect.promise(() =>
+      store.claimPhraseNotes({ phrases: phrases.filter((phrase) => !known.has(phrase)), now }),
+    ),
+  );
+  const generated = yield* generateAll(
+    request,
+    request.inputs.filter(({ phrase }) => claimed.has(phrase)),
+    now,
+  );
+  return new Map<string, Note>([...opened, ...generated]);
+});
+
+export { phraseNotesOf };
+export type { NotesRequest };

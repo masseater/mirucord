@@ -3,17 +3,14 @@ import { Array, Data, Effect, Layer, Option, Schedule, String } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { fromUint8Array } from "js-base64";
 
-import { settleNeurons, spendNeurons } from "#/shared/ai/index.server";
+import { GEMMA_MODEL, gemmaNeurons, settleNeurons, spendNeurons } from "#/shared/ai/index.server";
 
-const DESCRIBE_MODEL = "@cf/google/gemma-4-26b-a4b-it";
+const DESCRIBE_MODEL = GEMMA_MODEL;
 const OK_STATUS = 200;
 const MAX_TOKENS = 160;
 const RETRY_TIMES = 2;
 const RETRY_BASE = "500 millis";
 const MAX_IMAGE_BYTES = 4_000_000;
-const INPUT_NEURONS_PER_MILLION = 9091;
-const OUTPUT_NEURONS_PER_MILLION = 27_273;
-const MILLION = 1_000_000;
 const RESERVED_INPUT_TOKENS = 1000;
 const DESCRIBABLE_TYPES: ReadonlySet<string> = new Set(["image/jpeg", "image/png", "image/webp"]);
 const PROMPT =
@@ -53,10 +50,7 @@ const fetchImage = ({
     ),
   );
 
-const neuronsOf = (inputTokens: number, outputTokens: number): number =>
-  (inputTokens * INPUT_NEURONS_PER_MILLION + outputTokens * OUTPUT_NEURONS_PER_MILLION) / MILLION;
-
-const RESERVED_NEURONS = neuronsOf(RESERVED_INPUT_TOKENS, MAX_TOKENS);
+const RESERVED_NEURONS = gemmaNeurons({ input: RESERVED_INPUT_TOKENS, output: MAX_TOKENS });
 
 const reserveNeurons = spendNeurons("live", RESERVED_NEURONS).pipe(
   Effect.filterOrFail(
@@ -74,7 +68,9 @@ const settleUsage = ({ usage }: ModelOutput): Effect.Effect<void> =>
   Option.match(Option.fromUndefinedOr(usage), {
     onNone: () => Effect.void,
     onSome: ({ prompt_tokens, completion_tokens }) =>
-      settleNeurons(neuronsOf(prompt_tokens, completion_tokens) - RESERVED_NEURONS),
+      settleNeurons(
+        gemmaNeurons({ input: prompt_tokens, output: completion_tokens }) - RESERVED_NEURONS,
+      ),
   });
 
 const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, DescribeError> =>

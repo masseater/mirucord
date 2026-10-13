@@ -18,6 +18,17 @@ type ExtractedHashes = Extract<PhraseState, Readonly<{ status: "extracted" }>>["
 
 type PhraseColumn = "messageId" | "authorId" | "channelId";
 
+type NoteStatus = "pending" | "common" | "server";
+
+type PhraseNote = Readonly<{
+  phrase: string;
+  status: Exclude<NoteStatus, "pending">;
+  sealed: string | null;
+  examples: readonly string[];
+}>;
+
+type NoteClaim = Readonly<{ phrases: readonly string[]; now: number }>;
+
 type IndexedMessage = Readonly<{
   row: StoredRow;
   tokens: readonly number[];
@@ -89,11 +100,14 @@ export type {
   ExtractedHashes,
   ExtractedPhrases,
   IndexedMessage,
+  NoteClaim,
+  NoteStatus,
   PhraseCandidate,
   PhraseChannel,
   PhraseColumn,
   PhraseContext,
   PhraseExample,
+  PhraseNote,
   PhraseRequest,
   PhraseState,
   PhraseStatsLookup,

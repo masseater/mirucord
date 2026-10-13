@@ -23,8 +23,9 @@ type Embedded =
 
 const clip = (text: string): string => text.slice(CLIP_START, MAX_CHARS);
 
-const estimateNeurons = (texts: readonly string[]): number =>
-  (Array.reduce(texts, CLIP_START, (tokens, text) => tokens + clip(text).length + SPECIAL_TOKENS) *
+const estimateNeurons = (texts: Array.NonEmptyReadonlyArray<string>): number =>
+  (texts.length *
+    (Math.max(...texts.map((text) => clip(text).length)) + SPECIAL_TOKENS) *
     NEURONS_PER_MILLION_TOKENS) /
   MILLION;
 

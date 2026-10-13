@@ -44,13 +44,16 @@ const dueAt = (recent: Option.Option<Segment>): number =>
 
 type RecentPlan = Readonly<{ rebuild: boolean; waitUntil: Option.Option<number> }>;
 
-const recentPlan = (check: RecentCheck & Readonly<{ sealedChanged: boolean }>): RecentPlan => {
+type PlanCheck = RecentCheck & Readonly<{ sealedChanged: boolean }>;
+
+const mayWait = ({ flush, sealedChanged }: PlanCheck): boolean => flush === "due" && !sealedChanged;
+
+const isWaiting = (check: PlanCheck, recent: Option.Option<Segment>): boolean =>
+  mayWait(check) && check.now < dueAt(recent) && recentIsStale(check, recent, false);
+
+const recentPlan = (check: PlanCheck): RecentPlan => {
   const recent = recentOf(searchLedger(check.db).segments());
-  const waiting =
-    check.flush === "due" &&
-    !check.sealedChanged &&
-    recentIsStale(check, recent, false) &&
-    check.now < dueAt(recent);
+  const waiting = isWaiting(check, recent);
   return {
     rebuild: !waiting && recentIsStale(check, recent, check.sealedChanged),
     waitUntil: Option.map(
@@ -61,4 +64,4 @@ const recentPlan = (check: RecentCheck & Readonly<{ sealedChanged: boolean }>): 
 };
 
 export { recentPlan };
-export type { Flush, RecentCheck, RecentPlan };
+export type { Flush, PlanCheck, RecentCheck, RecentPlan };

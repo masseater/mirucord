@@ -55,3 +55,4 @@ const narrowNote = (hedged: Hedged): Effect.Effect<string> => {
 };
 
 export { narrowNote };
+export type { Hedged };

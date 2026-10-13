@@ -36,3 +36,4 @@ const mockPhraseModel = (answers: ModelAnswers): void => {
 };
 
 export { listPhrases, mockPhraseModel, prompts };
+export type { ModelAnswers };

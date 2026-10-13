@@ -51,4 +51,15 @@ const TRACKED_COLUMNS = {
   version: guildMessage.version,
 };
 
-export { BOUND_LIMIT, guildMessage, TRACKED_COLUMNS };
+const vectorCentroid = sqliteTable("vector_centroid", {
+  segment: text().primaryKey(),
+  through: integer().notNull(),
+  sealed: bytesColumn().notNull(),
+});
+
+const vectorCentroidFile = sqliteTable("vector_centroid_file", {
+  id: integer().primaryKey(),
+  stamp: integer().notNull(),
+});
+
+export { BOUND_LIMIT, guildMessage, TRACKED_COLUMNS, vectorCentroid, vectorCentroidFile };

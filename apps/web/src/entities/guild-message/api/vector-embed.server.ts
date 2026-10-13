@@ -1,6 +1,6 @@
 import { and, desc, eq, isNull, max } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Effect, Option, String, pipe } from "effect";
+import { Array, Effect, Option, Order, String, pipe } from "effect";
 
 import { searchableTexts } from "#/entities/guild-message/lib/search-tokens.server";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
@@ -115,35 +115,48 @@ const storeVectors = Effect.fnUntraced(function* storeVectors(
   }
 });
 
-const embedBatch = Effect.fn("vectors.embedBatch")(function* embedBatch(
+const embedChunk = Effect.fn("vectors.embedChunk")(function* embedChunk(
   batch: Batch,
-  rows: Array.NonEmptyReadonlyArray<PendingRow>,
+  chunk: readonly Embedding[],
 ) {
-  const texts = yield* textsOf(batch.keys, rows);
-  const worded = texts.filter(({ text }) => String.isNonEmpty(text));
-  const blank = texts.filter(({ text }) => String.isEmpty(text));
   const result = yield* embedTexts({
     priority: "background",
-    texts: worded.map(({ text }) => text),
+    texts: chunk.map(({ text }) => text),
   });
   if (result.status === "over-budget") {
     return false;
   }
-  const embedded = Array.zipWith(worded, result.vectors, ({ row }, vector) => ({ row, vector }));
-  yield* storeVectors(batch, { embedded, blank });
-  yield* Effect.annotateCurrentSpan({ embedded: worded.length, blank: blank.length });
+  const embedded = Array.zipWith(chunk, result.vectors, ({ row }, vector) => ({ row, vector }));
+  yield* storeVectors(batch, { embedded, blank: [] });
+  yield* Effect.annotateCurrentSpan({ embedded: chunk.length });
   return true;
+});
+
+const byLength = Order.mapInput(Order.Number, ({ text }: Embedding) => text.length);
+
+const wordedTexts = Effect.fnUntraced(function* wordedTexts(
+  batch: Batch,
+  rows: readonly PendingRow[],
+) {
+  const texts = yield* textsOf(batch.keys, rows);
+  const blank = texts.filter(({ text }) => String.isEmpty(text));
+  yield* storeVectors(batch, { embedded: [], blank });
+  return Array.sort(
+    texts.filter(({ text }) => String.isNonEmpty(text)),
+    byLength,
+  );
 });
 
 const embedPending = Effect.fn("vectors.embedPending")(function* embedPending(
   batch: Readonly<{ db: DrizzleSqliteDODatabase; keys: Keys }>,
 ) {
-  for (let run = NO_VECTOR; run < BATCHES_PER_RUN; run += NEXT) {
-    const rows = pendingRows(batch.db, EMBED_BATCH);
-    if (!Array.isReadonlyArrayNonEmpty(rows)) {
-      return { status: "done" } satisfies EmbedOutcome;
-    }
-    if (!(yield* embedBatch(batch, rows))) {
+  const rows = pendingRows(batch.db, EMBED_BATCH * BATCHES_PER_RUN);
+  if (!Array.isReadonlyArrayNonEmpty(rows)) {
+    return { status: "done" } satisfies EmbedOutcome;
+  }
+  const worded = yield* wordedTexts(batch, rows);
+  for (const chunk of Array.chunksOf(worded, EMBED_BATCH)) {
+    if (!(yield* embedChunk(batch, chunk))) {
       return { status: "waiting", until: yield* nextBudgetDay } satisfies EmbedOutcome;
     }
   }

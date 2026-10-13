@@ -16,6 +16,7 @@ import type { GuildScope } from "./scope.server";
 const CACHE_NAME = "query-vectors";
 const CACHE_CONTROL = "public, max-age=604800, immutable";
 const NONE = 0;
+const MAX_SCORE = 1;
 
 type SimilarRequest = Readonly<{
   scope: GuildScope;
@@ -135,7 +136,7 @@ const findSimilar = (request: SimilarRequest): Effect.Effect<SimilarMessages> =>
                         status: "found",
                         messages: views.map((view) => ({
                           ...view,
-                          score: scores.get(view.id) ?? NONE,
+                          score: Math.min(MAX_SCORE, scores.get(view.id) ?? NONE),
                         })),
                         coverage,
                       };

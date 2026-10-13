@@ -47,6 +47,7 @@ release. Add a tool name to select part of the graph. For example, run
 
 本番の Cloudflare は Workers Paid（月 5 ドル）を契約している前提で考える。2026-10-11 に Free から切り替えた。
 Paid に含まれる D1・Queues・Workers AI・Durable Objects などの無料枠は使ってよい。Free プランの日次上限は関係ないので、Free の話を持ち出さない。
+Workers Logs は 7 日で消えるので、Worker にはすべて `logpush: true` を付ける。Workers Logpush で R2 に書き出すジョブとバケットはアカウントに 1 つで、masseater.dev ゾーンを持つ masseater/masseater.dev の `apps/portfolio/log-archive.ts` が持つ。`Outcome` が `ok` でないものは全件、それ以外は 1% だけ残し、保持日数はそのファイルの `RETENTION_DAYS` にある。
 
 ## Cloudflare のエッジ防御
 

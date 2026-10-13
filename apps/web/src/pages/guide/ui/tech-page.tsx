@@ -60,6 +60,7 @@ const SECTIONS: readonly GuideSection[] = [
           ["検索用の索引", "北米東部に置いた Cloudflare R2 と Cache API"],
           ["画像の説明", "Workers AI の `@cf/google/gemma-4-26b-a4b-it`"],
           ["意味で探すためのベクトル", "Workers AI の `@cf/baai/bge-m3` と ml-kmeans"],
+          ["意味で探した結果の並べ替え", "Workers AI の `@cf/baai/bge-reranker-base`"],
           ["取り込みの待ち行列", "Cloudflare Queues"],
           ["鍵の保管", "Cloudflare Secrets Store"],
           ["Gateway の常駐", "fly.io の shared-cpu-1x、256MB の Machine 1 台"],
@@ -163,7 +164,7 @@ const SECTIONS: readonly GuideSection[] = [
         items: [
           "`find_similar_messages` のために、Durable Object が各メッセージを Workers AI の bge-m3 で 1,024 次元のベクトルにし、int8 に縮めてデータ鍵で暗号化します。",
           "ベクトルは索引と同じ期間ごとに R2 に置きます。件数の多い期間は k-means で近いもの同士の塊に分けます。全期間の塊の中心は、鯖ごとに 1 つのファイルにまとめます。",
-          "検索では検索の言葉をベクトルにし、鯖全体で中心が近い塊を 5% ほど選んで読み、距離を計算して、近い順に本文を R2 から読みます。同じ検索の言葉のベクトルは Cache API に置き、作り直しません。",
+          "検索では検索の言葉をベクトルにし、鯖全体で中心が近い塊を 5% ほど選んで読み、距離を計算して、近い 50 件の本文を R2 から読みます。その 50 件を bge-reranker-base で検索の言葉と 1 件ずつ照らし合わせ、関係の深い順に返します。同じ検索の言葉のベクトルは Cache API に置き、作り直しません。",
           "Workers AI は 1 日の無料枠の中で使います。その日に使った量を数え、過去のメッセージのベクトル作りは枠が近づいたら翌日（UTC 0 時）に回します。",
         ],
       },

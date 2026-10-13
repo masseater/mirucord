@@ -10,7 +10,7 @@ import type { Note, NoteSubject } from "./phrase-annotate.server";
 import { preparedOf } from "./phrase-samples.server";
 import type { Prepared } from "./phrase-samples.server";
 
-const CONCURRENCY = 6;
+const CONCURRENCY = 16;
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();

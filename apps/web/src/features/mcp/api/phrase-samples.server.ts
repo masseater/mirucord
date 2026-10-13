@@ -59,4 +59,4 @@ const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
 });
 
 export { preparedOf };
-export type { Prepared };
+export type { Prepared, SamplesRequest };

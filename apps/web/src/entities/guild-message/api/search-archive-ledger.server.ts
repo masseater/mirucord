@@ -78,10 +78,7 @@ const startArchive = (db: DrizzleSqliteDODatabase, now: number): Option.Option<A
   }
   const layout = layoutOf(pieces);
   const old = liveArchive(db);
-  const wanted = Number.sumAll([
-    ...layout.map(({ shards }) => shards),
-    ...Option.toArray(old).map(({ shards }) => shards),
-  ]);
+  const wanted = Number.sumAll(layout.map(({ shards }) => shards));
   const row: Archive = {
     name: `archive-${now}`,
     status: "building",

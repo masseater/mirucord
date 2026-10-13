@@ -36,11 +36,15 @@ type ShardJob = Readonly<{
   shard: number;
 }>;
 
+type Feeding = Readonly<{ from: number; shard: number; shards: number }>;
+
+const shardsFeeding = ({ from, shard, shards }: Feeding): readonly number[] =>
+  Array.makeBy(Math.max(from / shards, NEXT), (index) => (shard % from) + index * shards);
+
 const sourcesFor = ({ merging: { guildId }, target, old, shard }: ShardJob): readonly Source[] => {
   const placed = new Map(target.pieces.map((piece) => [piece.name, piece.offset]));
-  const fromOld = Option.toArray(old).map((archive): Source => ({
-    key: archiveKey({ guildId, archive: archive.name, shard: shard % archive.shards }),
-    remap: (ordinal) =>
+  const fromOld = Option.toArray(old).flatMap((archive) => {
+    const remap: Remap = (ordinal) =>
       Option.getOrElse(
         Option.flatMap(rangeAt({ pieces: archive.pieces, ordinal }), (piece) =>
           Option.map(
@@ -49,17 +53,27 @@ const sourcesFor = ({ merging: { guildId }, target, old, shard }: ShardJob): rea
           ),
         ),
         () => DROPPED,
-      ),
-  }));
+      );
+    return shardsFeeding({ from: archive.shards, shard, shards: target.shards }).map(
+      (feeding): Source => ({
+        key: archiveKey({ guildId, archive: archive.name, shard: feeding }),
+        remap,
+      }),
+    );
+  });
   const inOld = new Set(
     Option.toArray(old).flatMap(({ pieces }) => pieces.map(({ name }) => name)),
   );
   const fromPieces = target.pieces
     .filter(({ name }) => !inOld.has(name))
-    .map((piece): Source => ({
-      key: shardKey({ guildId, segment: piece.name, shard: shard % piece.shards }),
-      remap: (ordinal) => piece.offset + ordinal,
-    }));
+    .flatMap((piece) =>
+      shardsFeeding({ from: piece.shards, shard, shards: target.shards }).map(
+        (feeding): Source => ({
+          key: shardKey({ guildId, segment: piece.name, shard: feeding }),
+          remap: (ordinal) => piece.offset + ordinal,
+        }),
+      ),
+    );
   return [...fromOld, ...fromPieces];
 };
 

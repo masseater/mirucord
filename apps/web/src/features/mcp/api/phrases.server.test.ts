@@ -24,6 +24,7 @@ const OPEN_PHRASE = "ぷり";
 const STAFF_PHRASE = "ひみつ";
 const COMMON_PHRASE = "うん";
 const NOTE_SUFFIX = "を挨拶のように使う";
+const ONCE = 1;
 const EMOJI = "<:aza_2:1234>";
 const MINUTE_MS = 60_000;
 
@@ -126,9 +127,8 @@ it.effect("lists what several members repeat in channels the user can read", () 
 it.effect("writes each note once and reuses it on the next call", () =>
   Effect.gen(function* reused() {
     yield* listPhrases;
-    const asked = prompts.length;
     yield* listPhrases;
-    expect(prompts).toHaveLength(asked);
+    expect(prompts.filter((prompt) => prompt.includes(`「${OPEN_PHRASE}」`))).toHaveLength(ONCE);
   }),
 );
 

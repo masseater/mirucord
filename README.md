@@ -1,5 +1,10 @@
 # typescript-template
 
+## 公開先
+
+- Web: https://mirucord.masseater.dev
+- MCP サーバー: https://mirucord.masseater.dev/mcp
+
 ## セットアップ
 
 ```sh

@@ -178,7 +178,7 @@
     },
     "measure-dont-guess": {
       "source": "masseater/skills",
-      "ref": "e0ac8eabaafbf78d9e7e1731d75e4236d45cc6e4",
+      "ref": "7e5f902fefc75b1f1736a0f9d2a580fb7cc4a5b3",
       "sourceType": "github",
       "skillPath": "skills/measure-dont-guess/SKILL.md",
       "computedHash": "26c3183fedaad983b439d63804240dd4d822ce87f0ca0718e85e6b96b4ef910d"

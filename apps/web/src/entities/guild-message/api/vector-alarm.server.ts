@@ -1,8 +1,9 @@
 import { Boolean, Clock, Effect, Match, Option } from "effect";
 
+import { FLUSH_DELAY_MS } from "#/entities/guild-message/lib/search-layout";
 import { openGuildKey } from "#/shared/crypto/index.server";
 
-import { FLUSH_DELAY_MS, scheduleSearch } from "./search-alarm.server";
+import { scheduleSearch } from "./search-alarm.server";
 import type { Published } from "./search-alarm.server";
 import { embedPending } from "./vector-embed.server";
 import type { EmbedOutcome } from "./vector-embed.server";

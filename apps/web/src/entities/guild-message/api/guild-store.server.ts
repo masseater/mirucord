@@ -9,8 +9,10 @@ import type {
   PhraseExample,
   PhraseNote,
   PhraseRequest,
+  PhraseSamples,
   PhraseStatsLookup,
   PhraseTally,
+  SampleRequest,
   SavedStats,
   UnphrasedMessage,
 } from "./store-types";
@@ -74,6 +76,10 @@ class GuildStore extends NoteStore {
 
   public savePhraseNotes(notes: readonly PhraseNote[], now: number): void {
     this.saveNotes(notes, now);
+  }
+
+  public phraseSamples(request: SampleRequest): readonly PhraseSamples[] {
+    return this.samplesOf(request);
   }
 
   public releasePhraseNotes(phrases: readonly string[]): void {

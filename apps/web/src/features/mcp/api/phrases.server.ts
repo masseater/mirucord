@@ -6,7 +6,7 @@ import { openGuildKey, openMessage, openSearchKey } from "#/shared/crypto/index.
 import type { MessageBody } from "#/shared/crypto/index.server";
 
 import { excerptOf } from "./phrase-annotate.server";
-import type { Note, NoteInput } from "./phrase-annotate.server";
+import type { Note, NoteSubject } from "./phrase-annotate.server";
 import { phraseNotesOf } from "./phrase-notes.server";
 import { phraseStatsOf } from "./phrase-stats.server";
 import type { StoredPhrase, StoredStats } from "./phrase-stats.server";
@@ -29,7 +29,7 @@ type PhrasesRequest = Readonly<{ scope: GuildScope; channelIds: readonly string[
 
 type Example = Readonly<{ message: MessageBody; context: readonly MessageBody[] }>;
 
-type Labelled = Readonly<{ view: Omit<PhraseView, "note">; input: NoteInput }>;
+type Labelled = Readonly<{ view: Omit<PhraseView, "note">; input: NoteSubject }>;
 
 const openExamples = Effect.fn("openPhraseExamples")(function* open(
   scope: GuildScope,
@@ -99,8 +99,6 @@ const viewOf =
             label: phrase,
             uses: stored.uses,
             people: stored.people,
-            examples: stored.examples,
-            contexts: found.map(({ context }) => context),
           },
         })),
       ),
@@ -123,7 +121,10 @@ const noteView = (note: Option.Option<Note>): Option.Option<string | null> =>
     },
   });
 
-const viewsOf = Effect.fn("phraseViews")(function* views(scope: GuildScope, stats: StoredStats) {
+const viewsOf = Effect.fn("phraseViews")(function* views(
+  { scope, channelIds }: PhrasesRequest,
+  stats: StoredStats,
+) {
   const searchKey = yield* openSearchKey(scope.guild.wrappedKey);
   const examples = yield* openExamples(scope, stats);
   const found = yield* pipe(stats.phrases, Effect.forEach(viewOf(scope, searchKey, examples)));
@@ -131,7 +132,8 @@ const viewsOf = Effect.fn("phraseViews")(function* views(scope: GuildScope, stat
   const notes = yield* phraseNotesOf({
     guildId: scope.guild.guildId,
     key: yield* openGuildKey(scope.guild.wrappedKey),
-    inputs: labelled.map(({ input }) => input),
+    channelIds,
+    subjects: labelled.map(({ input }) => input),
   });
   const noteOf = (phrase: string): Option.Option<string | null> =>
     noteView(Option.fromUndefinedOr(notes.get(phrase)));
@@ -145,7 +147,7 @@ const serverPhrases = ({ scope, channelIds }: PhrasesRequest): Effect.Effect<Ser
     return Effect.succeed({ days: PHRASE_WINDOW_DAYS, phrases: [] });
   }
   return phraseStatsOf({ guildId: scope.guild.guildId, channelIds }).pipe(
-    Effect.flatMap((stats) => viewsOf(scope, stats)),
+    Effect.flatMap((stats) => viewsOf({ scope, channelIds }, stats)),
     Effect.map((phrases) => ({ days: PHRASE_WINDOW_DAYS, phrases })),
   );
 };

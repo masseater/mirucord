@@ -86,7 +86,7 @@ overrides:
   "@effect/vitest": "catalog:stack"
   vite@*: "catalog:"
   eslint-plugin-react-hooks>zod-validation-error: ^5.0.0
-  "@hono/node-server@<1.19.15": ^1.19.15
+  "@hono/node-server@<1.19.15": ^2.0.0
   hono@<4.13.7: ^4.13.7
   http-cache-semantics@<=4.2.0: ^4.3.0
   lodash@<=4.17.23: ^4.18.1

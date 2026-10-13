@@ -133,6 +133,7 @@
             "claimPhraseNotes",
             "savePhraseNotes",
             "releasePhraseNotes",
+            "phraseSamples",
             "phraseStats",
             "phraseTally",
             "phraseExamples",

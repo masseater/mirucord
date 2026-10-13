@@ -5,7 +5,7 @@ import { AppFrame } from "#/shared/ui/app-frame";
 
 import { LegalSection } from "./legal-section";
 
-const REVISED = "2026 年 10 月 10 日 制定、2026 年 10 月 11 日 改定";
+const REVISED = "2026 年 10 月 10 日 制定、2026 年 10 月 13 日 改定";
 const CONTACT = "本サービスに関するお問い合わせは、GitHub の Issues にて受け付ける。";
 const ISSUES_URL = `${REPOSITORY_URL}/issues`;
 

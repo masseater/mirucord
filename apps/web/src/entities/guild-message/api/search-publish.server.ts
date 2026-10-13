@@ -99,7 +99,7 @@ const laterRun = (publisher: Publisher): Option.Option<number> => {
 
 const nextRun = (publisher: Publisher, archive: ArchiveStatus): Option.Option<number> => {
   const { db, now } = publisher;
-  if (archive === "more" || searchPlanner(db).plan(now).status === "rebuild") {
+  if (archive !== "idle" || searchPlanner(db).plan(now).status === "rebuild") {
     return Option.some(now);
   }
   return laterRun(publisher);
@@ -129,7 +129,13 @@ const rebuildAll = (publisher: Publisher): Effect.Effect<Rebuilt> => {
 
 const publishSearch = (publisher: Publisher): Effect.Effect<Option.Option<number>> => {
   const { bucket, guildId } = publisher;
-  return Effect.all([rebuildAll(publisher), archiveStep(publisher)], {
+  const archiving = Effect.suspend(() =>
+    archiveStep({
+      ...publisher,
+      mayStart: searchPlanner(publisher.db).plan(publisher.now).status !== "rebuild",
+    }),
+  );
+  return Effect.all([rebuildAll(publisher), archiving], {
     concurrency: SEQUENTIAL,
   }).pipe(
     Effect.tap(([{ changed }, archive]) =>

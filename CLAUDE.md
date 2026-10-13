@@ -5,7 +5,7 @@
 ## このリポジトリ
 
 mirucord は、Discord のサーバーを読むだけの MCP サーバーをホスティングで提供するサービスである。本番は `https://mirucord.masseater.dev` で動いている。
-これからやることと未決の検討事項は docs/roadmap.md に書く。今ある機能は文書に書かず、コードから読む。画面と文言は DESIGN.md に従う。
+これからやることと未決の検討事項は docs/roadmap.md に書く。画面と文言は DESIGN.md に従う。
 
 ## 進め方
 
@@ -15,75 +15,50 @@ mirucord は、Discord のサーバーを読むだけの MCP サーバーをホ�
 
 ## 最上位原則
 
-強制・推奨・指示の手段は次の順で選ぶ。
+強制・推奨・指示の手段は次の順で選ぶ。自作するときは、何を探して何が合わなかったかをコミットメッセージに残す。
 
-1. ライブラリ公式の統合手段を使う。lint ルール、skill、plugin、CLI、diagnostics などである。
-2. 公式になければ、既にそれを実現しているライブラリやツールを探して使う。
-3. それもなければ、方針や注意点を提言しているブログ・issue・discussion を探して従う。
-4. 自作は本当の最終手段である。自作するときは、何を探して何が合わなかったかをコミットメッセージに残す。
+1. ライブラリ公式の統合手段（lint ルール、skill、plugin、CLI、diagnostics など）
+2. それを実現している既存のライブラリやツール
+3. 方針を提言しているブログ・issue・discussion
+4. 自作
 
-検査を通すために設定を無効化・簡易化したり、閾値を下げたりしてはならない。
-数値の設定はツールの既定値を保つ。ただし既定値のままでは検査が機能しない場合（例: 0 が「上限なし」を意味する閾値）は、ツール公式の指針に従って機能する値を設定する。
+検査を通すために設定を無効化・簡易化したり、閾値を下げたり、抑止ディレクティブを使ったりしない。
+数値の設定はツールの既定値を保ち、既定値で検査が機能しないときだけ公式の指針で設定する。
 
-## ドキュメントとコメント
+## 文書
 
-ドキュメントはすぐ腐るため、必要最小限にする。
-コードを説明する手書きドキュメントは書かない。価値があるのは自動生成されたものだけである。
-手書きの文章はルートのCLAUDE.md・README.md・DESIGN.mdとルートのdocs/に限る。
-docs/ に新しいファイルを増やさない。書き足すときは既存のファイルを更新し、終わった計画や経緯は消す。
+手書きの文章はルートの CLAUDE.md・README.md・DESIGN.md と docs/ に限り、コードを読めば分かることは書かない。
+docs/ に新しいファイルを増やさない。既存のファイルを更新し、終わった計画や経緯は消す。
 リポジトリで管理するスキルは .claude/skills/ に置く。
-コードコメントは書かず、lintが落とす。「なぜ」はコミットメッセージに書く。
-lintの抑止ディレクティブはツールの既定で通るが、検査を通すために使ってはならない。
+「なぜ」はコミットメッセージに書く。
 
 ## 配置
 
-設定を含むあらゆるものをワークスペース内に置く。
-lint・fmt・checkだけは、Vite+の仕様によりルートの単一設定とする。
-ワークスペースはnxに倣ってapps・libs・tools・infraに分ける。参照してよい向きは、libsをapps・tools・infraから、infraをappsからだけである。apps同士、tools同士、infra同士も参照しない。fallowのboundariesが落とす。
-アプリのデプロイ設定はappsにコロケーションし、infraの部品を使う。
-必須技術のパッケージはpnpmのstackカタログから参照する。未参照のカタログ項目と未使用の依存はfallowが落とす。
-アプリのsrc/直下には、FSDのレイヤーだけを置く。
-FSDはコロケーションが本質である。使われる場所の近くに置き、再利用されるまで切り出さない。
-定数・設定値・スキーマ・ルールのIDは一か所で定義し、ほかの場所はimportか導出で参照する。同じ値を書き写さない。
-サービス名「mirucord」とキャラクター名「ミル」は、`#/shared/config` の `SERVICE_NAME` と `MASCOT_NAME` から参照し、直書きしない。ESLint が落とす。
-ドメイン、リポジトリ名、鍵の導出に使う文字列は、変えると壊れる識別子なので定数に寄せない。Cloudflare のリソース名は `APP_NAME` から作る。
+設定を含め、すべてワークスペース内に置く。
+ワークスペースは apps・libs・tools・infra に分け、アプリのデプロイ設定は apps に置いて infra の部品を使う。
+アプリの src/ 直下には FSD のレイヤーだけを置く。使われる場所の近くに置き、再利用されるまで切り出さない。
+定数・設定値・スキーマ・ルールの ID は一か所で定義し、ほかはそこから参照する。
+ドメイン、リポジトリ名、鍵の導出に使う文字列は定数に寄せない。
 
 ## Alchemy
 
-Alchemy のリソース定義に足りない設定があるときは、alchemy にパッチを当てず、公式の拡張手段であるカスタムリソースを定義する。
-アプリ名は `libs/shared/util-app-name/src/app-name.ts` の `APP_NAME` だけで定義し、各アプリは `@repo/shared-util-app-name` から参照する。`APP_NAME` は `SERVICE_NAME` と別に持つ。
-スタック名は `APP_NAME` か、`APP_NAME-` で始まる名前にする。今は `mirucord`・`mirucord-gateway`・`mirucord-ci` である。
-スタックの最後では、`@repo/shared-util-app-name` の `requireAppPrefix` を `yield*` する。守らなければ ESLint か実行時検査が落とす。
-Cloudflare のリソースには `name` を明示し、`APP_NAME-` で始める。prod 以外のステージでは末尾に `-<stage>` を付ける。Rules.List と Fly.Secret は `-` を使えないので `APP_NAME_` で始める。
-`APP_NAME` やスタック名を変えるとリソース名や state が変わり、Random の値も含めてリソースは作り直される。スタック名を変えるときは、先に state を新しいスタック名へ写す。
+足りない設定は alchemy にパッチを当てず、カスタムリソースで定義する。
+`APP_NAME` は `SERVICE_NAME` と別に持つ。
+`APP_NAME` やスタック名を変えると、Random の値も含めてリソースは作り直される。スタック名を変えるときは、先に state を新しいスタック名へ写す。
 
-## パッケージマネージャー
+## その他
 
-pnpmは直接実行せず、`vp install`・`vp add`・`vp exec`・`vp dlx`・`vp pm`を使う。
-Claude Codeでは `.claude/settings.json` の deny と PreToolUse フック（`.claude/hooks/block-pnpm.ts`）が pnpm・pnpx・pn・pnx の実行を拒否する。フックは npx・env・bash -c・コマンド置換などを経由した呼び出しも止める。
-生成されたブロックにある `pnpm exec`・`pnpm dlx` は `vp exec`・`vp dlx` に読み替える。
-
-## 状態
-
-UI状態はeffect-atom、サーバー状態はTanStack Queryだけで扱う。
-状態は排他的なstatusを持つ判別共用体で表し、booleanフラグの組を使わない。
-
-## 自己改善
-
-ユーザーと対話するセッションを始めたら、テンプレート更新の確認を求められていればそれを済ませてから、引数なしの `/loop` を起動する。内容は .claude/loop.md にある。
-
-## 検証
-
+生成されたブロックの `pnpm exec`・`pnpm dlx` は `vp exec`・`vp dlx` に読み替える。
+UI 状態は effect-atom、サーバー状態は TanStack Query だけで扱う。状態は排他的な status を持つ判別共用体で表す。
+ユーザーと対話するセッションを始めたら、テンプレート更新の確認を求められていればそれを済ませてから、引数なしの `/loop` を起動する。
 作業の完了は `vp run verify` が通ることである。
-pre-push フックは `vp run verify` と `vp run jev-lint` を動かす。`--no-verify` で飛ばさない。
-jev-lint は LLM の利用料がかかるため、pre-push の差分検査と main の CI だけで動かし、デプロイの条件にしない。verify や編集フックに戻さない。
-`.claude/hooks/fallow-gate.sh` は、未使用のコードがある間は Claude の commit と push を止める。部品だけを先に入れず、使う側と同じ PR にする。
+pre-push フックを `--no-verify` で飛ばさない。
+jev-lint は pre-push の差分検査と main の CI だけで動かし、デプロイの条件にしない。verify や編集フックに戻さない。
+部品だけを先に入れず、使う側と同じ PR にする。
 
-クラウドのセッションでは、uv が `pypi.org` の証明書で失敗するので、`~/.config/uv/uv.toml` に `system-certs = true` を書いてから verify する。
-GitHub Actions の Secrets API と Cloudflare の Global API Key はクラウドから使えない。`ci` スタックの適用など、それらが要る作業はユーザーの Mac で Remote Control を開いて行う。
+クラウドのセッションでは、`~/.config/uv/uv.toml` に `system-certs = true` を書いてから verify する。
+GitHub Actions の Secrets API と Cloudflare の Global API Key が要る作業（`ci` スタックの適用など）は、ユーザーの Mac で Remote Control を開いて行う。
 
 ## テンプレート
 
-このリポジトリは masseater/typescript-template から作り、取り込んだバージョンを `.github/release-please/manifest.json` で追う。
-フック・lint・CI など足場を変えたら、テンプレートにも同じ変更を入れ、release-please でリリースを出す。
-新しいバージョンが出ると、セッション開始時に `.claude/hooks/template-release.ts` が知らせる。
+フック・lint・CI など足場を変えたら、masseater/typescript-template にも同じ変更を入れ、release-please でリリースを出す。

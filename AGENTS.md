@@ -40,24 +40,23 @@ release. Add a tool name to select part of the graph. For example, run
 
 ## 運用の段階
 
-2026-10-12 時点では、本運用も本リリースもしていない。masseater 自身とその友人だけが試している。
-そのため、データベースの破壊やアーキテクチャの再構築は好きなだけやってよい。
+本運用も本リリースもしていない（2026-10-12 時点）。データベースの破壊やアーキテクチャの再構築は好きなだけやってよい。
 
-## Cloudflare のプラン
+## 環境変数
 
-本番の Cloudflare は Workers Paid（月 5 ドル）を契約している前提で考える。2026-10-11 に Free から切り替えた。
-Paid に含まれる D1・Queues・Workers AI・Durable Objects などの無料枠は使ってよい。Free プランの日次上限は関係ないので、Free の話を持ち出さない。
-Workers Logs は 7 日で消えるので、Worker にはすべて `logpush: true` を付ける。Workers Logpush で R2 に書き出すジョブとバケットはアカウントに 1 つで、masseater.dev ゾーンを持つ masseater/masseater.dev の `apps/portfolio/log-archive.ts` が持つ。`Outcome` が `ok` でないものは全件、それ以外は 1% だけ残し、保持日数はそのファイルの `RETENTION_DAYS` にある。
+- 環境変数は環境ごとに変わる値だけにする。変わらない値はコードか Alchemy の設定に、ツールにフラグがあればフラグにする。
 
-## Cloudflare のエッジ防御
+## Cloudflare
 
-- `.php` や `.env` を総当たりする脆弱性スキャンは、ゾーンの WAF カスタムルールで block する。`/.env` と `/wp-login.php` だけはハニーポットの Worker が受け、404 を返して Analytics Engine に 1 件ずつ記録する。どちらも `apps/web/edge-guard.ts` にある。block した分は Security Events に残り、Worker に届かないので普段の Workers Logs やトレースには混ざらない。
-- ゾーンの WAF カスタムルールは、1 つのゾーンにつき 1 つのスタックだけが持つ。ゾーンを持つリポだけが `apps/web/alchemy.run.ts` の `OWNED_ZONE` にゾーン名を入れる。mirucord は masseater.dev ゾーンのサブドメインで動くので入れず、ゾーンを持つ masseater/masseater.dev のルールで守られる。
-- Bot Fight Mode は、GitHub Actions からの送信や MCP クライアントのような正当な自動アクセスまで止めるので使わない。
+- Workers Paid プランを前提にする。
+- Paid に含まれる D1・Queues・Workers AI・Durable Objects などの無料枠は使ってよい。Free プランの上限は持ち出さない。
+- ゾーンの WAF カスタムルールと Logpush のジョブは、masseater.dev ゾーンの持ち主の masseater/masseater.dev だけが持つ。ほかのリポは `OWNED_ZONE` を入れない。
+- Worker にはすべて `logpush: true` を付ける。
+- Bot Fight Mode は使わない。
 
 ## 想定規模と性能要件
 
-設計・負荷試算・費用試算は、今の規模ではなく次の規模を前提にする。参加者の半分が日常的に使うのが当たり前になった状態で困らないことが目標である。
+設計・負荷試算・費用試算は、今の規模ではなく次の規模を前提にする。
 
 | 項目 | 前提 |
 | --- | --- |
@@ -65,79 +64,48 @@ Workers Logs は 7 日で消えるので、Worker にはすべて `logpush: true
 | 1 鯖の人数 | 平均 200 人、最大 1,000 人 |
 | 日常的に使う人 | 各鯖の参加者の半数 |
 
-この規模で次の量を捌けることを要件とする。1 人あたりの使い方から導いた値ではなく、目標として置いた値である。
-
 | 項目 | 要件 |
 | --- | --- |
 | 1 鯖の同時リクエスト | 1,000 件 |
 | 全体のリクエスト | 毎秒 1,000 件 |
 | 取り込むメッセージ | 1 鯖 1 日 2,000 件 |
-| 検索 1 回の応答時間 | 上の負荷を並列にさばけること。各リクエストは Worker が受けてから返すまで 3 分以内とする。その範囲で、応答時間も費用も小さいほどよい。MCP の tasks 拡張は主要なクライアントが対応していないので前提にしない |
+| 応答時間 | 上の負荷を並列にさばき、各リクエストは Worker が受けてから 3 分以内に返す。その範囲で、応答時間も費用も小さいほどよい。MCP の tasks 拡張は前提にしない |
 
-- 鯖の人数・投稿数・リクエスト数・DO の行数や容量や実時間は、推定で済ませず、Cloudflare の GraphQL Analytics API と Discord API で本番の値を取ってから試算に使う。取った値と日付を試算に書く。
+- 試算に使う鯖の人数・投稿数・リクエスト数・DO の行数や容量や実時間は、Cloudflare の GraphQL Analytics API と Discord API で本番の値を取り、取った値と日付を試算に書く。
 - 「作業配信」はサーバー名であり、配信者の鯖ではない。
 
-## 環境変数と認証
+## ライブラリ
 
-- 環境変数は必要最小限にする。環境変数が一つ増えるだけで、どの環境で何を設定するかという考慮事項が爆発的に増えるためである。
-- 環境変数にしてよいのは、設定や認証に限らず、本当に環境ごとに変わる値だけである。環境で変わらない値はコードや Alchemy の設定に書き、ツールにフラグがあればフラグを使う。
-- Cloudflare などのクラウドの認証は Alchemy のプロファイルで管理する。
+- ライブラリが型を提供する値は、その型のまま `Schema.decode*` に渡す。
+- ライブラリが export する型・スキーマ・enum・定数を書き写さない。
+- 外部 API のクライアントは手で包まず、Effect 公式のパッケージ、distilled.cloud（Cloudflare は `@distilled.cloud/cloudflare`）、公開 OpenAPI から `@effect/openapi-generator` で生成、の順に選ぶ。
 
-## ライブラリの型
+## PR とマージ
 
-- ライブラリが型を提供する値は、`Schema.decodeUnknown*` で受けて型を捨てない。ライブラリの型のまま受けて `Schema.decode*` に渡す。入力の型が Schema の Encoded と食い違えばコンパイルが落ちる。
-- ライブラリが export する型・スキーマ・enum・定数を自前で書き写さない。一部だけ使うときも `Pick` などでライブラリの型から作る。
-- 入力が `unknown` でなければ、`@effect/tsgo` の `prefer-typed-schema-decoder`（error）が `decode*` を求める。
-
-## 外部 API クライアント
-
-Effect から外部 API や SaaS を呼ぶクライアントは手で包まず、次の順で選ぶ。
-
-1. Effect 公式のパッケージ（https://github.com/Effect-TS/effect#packages）にあれば使う。
-2. distilled.cloud に Effect 定義があれば使う。Cloudflare は生成済みの `@distilled.cloud/cloudflare` を使う。
-3. どちらにもなければ、公開されている OpenAPI から `@effect/openapi-generator` の `openapigen` で生成する。
-
-## レビューとCI
-
-- PRのレビューは行わない。PRは作ったらすぐマージする。
-- PRのタイトルと本文は基本的に人間が読まないので、人間向けの説明を書かない。後でエージェント自身が検索したときに、自然に思いつく単語で引っかかり、何をしたか分かる程度でよい。
-- PR単位のCIは走らせない。`pull_request` トリガーのワークフローは、最新の main を取り込んでいない PR のマージをルールセットで拒むための `up-to-date`（何も検査しない）だけにする。
-- CIはmainへのpushで必ず走らせる。ワークフローは `.github/workflows/verify.yml` である。
-- デプロイやリリースのジョブは、同じワークフローで `needs: verify` を指定し、mainの必須CIが通ってから実行する。
-- マージ前に必ず base ブランチを取り込み、手元の `vp run verify` を通してからマージする。コンフリクトしないからといって、取り込まないままマージしない。マージしてよいかは聞かない。
-- PRごとの動作検証やデプロイはしない。動作の確認は、mainにマージしてデプロイされた本番で実測して行う。
-- Claude のクラウドセッションではプロキシが GitHub API を拒むため、`actions-lint` タスク（`vite.config.ts`）は `CLAUDE_CODE_REMOTE` が設定されていると zizmor に `--no-online-audits` を付け、オフライン監査だけを行う。フックにも渡る環境変数で切り替えるため、Stop フックの verify でも同じになる。オンライン監査は main の CI（`.github/workflows/verify.yml`）が担う。
+- PR のレビュー、PR ごとの CI・動作検証・デプロイはしない。動作は本番で確かめる。
+- マージ前に base を取り込み、手元の `vp run verify` を通してから自分でマージする。マージしてよいかは聞かない。ルールセットのバイパスや `--admin` は使わない。
 
 ## jev-lint
 
-- ルールは `.jev-lint.yaml` に置き、無料の `respan/span-01-lite` で判定できないものだけを有料の decider で判定する。判定できるかは、正解の分かる違反例と、このリポジトリの書き方どおりに書いた違反でない例を `--cache none --retry 3` で判定させて確かめる。無料で判定できるルールにまで課金しないためである。
-- span-01-lite は `kind: noul` のルールしか判定できない。
+- 有料の decider は、無料の `respan/span-01-lite` で判定できないルールだけに使う。判定できるかは、正解の分かる違反例と違反でない例を `--cache none --retry 3` で確かめる。span-01-lite は `kind: noul` のルールしか判定できない。
+- ルールが使うモデルは、ユーザーの指示なしに変えない。
 
 ## 計測
 
-- 推測するな、計測しろ。仮説を立てたら、実装や修正の前に計測で事実を確かめ、その結果だけで判断する。
-- 機能開発に取り掛かる前に、AIが自分でデバッグできる仕組みを必ず作る。再現手段、ログやスパン、その出力を読む経路の3つである。
-- 時間かお金を使う処理（外部APIやモデルへのリクエスト、子プロセス、ファイルの入出力など）は、Workersに限らずすべてスパンにし、外から読めるようにする。Workers以外のプロセス（CLI、ライブラリ、ワーカースレッド）は、Effect公式の `OtlpTracer.layerFromConfig` を使い、標準の `OTEL_TRACES_EXPORTER=otlp` と `OTEL_EXPORTER_OTLP_ENDPOINT` が設定されたときだけOTLPに出す。Effect は `OTEL_TRACES_EXPORTER` が無いと送らない。
-- スパンは時間を使っている処理そのものに仕込む。計測のためだけにコマンドやプロセスを包まない。
-- GitHub Actions も計測対象である。各ワークフローの最後に `.github/scripts/ci-telemetry.sh` を動かすジョブを置き、ジョブとステップの所要時間を `apps/web/ci-telemetry.worker.ts` の Worker に送る。Worker は GitHub の OIDC トークンで送り元のリポジトリを確かめ、1 件ずつ構造化ログとして Workers Logs に残す。受け口は Alchemy で定義し、Cloudflare の外にサービスやシークレットを増やさない。
-- 計測は本番環境で行えるようにする。できないときは、あらゆる手段で本番同等を保証したステージング環境を作って行う。手元やテスト環境だけの計測は判断の根拠にしない。
-- 実践の手順は `measure-dont-guess` スキルにある。不具合の調査は `systematic-debugging`、完了の確認は `verification-before-completion` スキルに従う。
+- 推測せず計測する。実装や修正の前に本番で事実を確かめ、その結果だけで判断する。
+- 機能開発の前に、AI が自分でデバッグできる仕組み（再現手段、ログやスパン、それを読む経路）を作る。
+- 時間かお金を使う処理はすべてスパンにする。Workers 以外は `OtlpTracer.layerFromConfig` で出す。計測のためだけにコマンドやプロセスを包まない。
+- ワークフローの最後には `.github/scripts/ci-telemetry.sh` を動かすジョブを置く。
 
-## 脆弱性スキャン
+## 脆弱性
 
-- OWASP ZAP のベースラインスキャンを `.github/workflows/zap.yml` に置く。verify とは別のワークフローで、毎週と手動で動く。
-- 既定では動かない。リポジトリの Variables に `ZAP_TARGET_URL`（本番の URL）を設定すると有効になる。
-- 警告を含め、ZAP のアラートが 1 件でもあればジョブを失敗にし、すぐ直す。レポートはワークフローの成果物 `zap_scan` に残る。誤検知だけを `.github/zap/rules.tsv` に `ルールID<TAB>IGNORE<TAB>(ルール名)` で書く。
-- 依存パッケージの既知の脆弱性は、verify の `audit` タスク（`vp pm audit`）が落とす。直すときは `vp pm audit --fix` で `pnpm-workspace.yaml` の overrides に修正版を足す。修正版が出ていない勧告だけを、`auditConfig.ignoreGhsas` に GHSA の ID で載せ、理由をコミットメッセージに書く。
-
-## スキル
-
-- 複数のリポジトリで共通に使う自作のスキルは https://github.com/masseater/skills に置き、skills CLI で `skills-lock.json` に追加する。リポジトリにコピーしない。
+- ZAP のアラートは警告も含めすぐ直す。誤検知だけを `.github/zap/rules.tsv` に書く。
+- `audit` は `vp pm audit --fix` で直す。修正版の無い勧告だけを `auditConfig.ignoreGhsas` に載せ、理由をコミットメッセージに書く。
 
 ## 公開先
 
 - デプロイ先や外部公開しているもの（サイト、API、npm パッケージなど）があれば、その URL を README に一覧で載せる。
 
-## ベース
+## スキル
 
-- このリポジトリのベースは https://github.com/masseater/typescript-template である。テンプレート由来の構成・方針はテンプレートに従う。
+- 複数リポで使う自作スキルは masseater/skills に置き、skills CLI で入れる。

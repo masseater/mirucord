@@ -1,4 +1,3 @@
-import handler from "@tanstack/react-start/server-entry";
 import { Effect, Option } from "effect";
 
 import { ingestDeliveries } from "#/features/ingest/index.server";
@@ -23,6 +22,15 @@ const unlessRejected = (
   return Effect.runPromise(rejection.pipe(Effect.flatMap(respond)));
 };
 
+const renderPage = (request: Request): Promise<Response> =>
+  Effect.runPromise(
+    Effect.promise(() => import("@tanstack/react-start/server-entry")).pipe(
+      Effect.flatMap(({ default: pages }) =>
+        Effect.promise(() => Promise.resolve(pages.fetch(request))),
+      ),
+    ),
+  );
+
 const route = (request: Request): Response | Promise<Response> => {
   const { pathname } = new URL(request.url);
   if (pathname === MCP_PATH) {
@@ -34,7 +42,7 @@ const route = (request: Request): Response | Promise<Response> => {
   if (pathname.startsWith(API_PREFIX)) {
     return api.handle(request);
   }
-  return handler.fetch(request);
+  return renderPage(request);
 };
 
 const unindexed = (request: Request): Promise<Response> =>

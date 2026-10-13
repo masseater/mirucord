@@ -12,13 +12,18 @@ import { SITE_HOST } from "./src/shared/config/site.ts";
 const repo = { owner: "masseater", repository: "mirucord" };
 const NonEmptySecret = Schema.Redacted(Schema.NonEmptyString);
 
-const deployToken = Effect.gen(function* deployToken() {
+const siteZone = Effect.gen(function* siteZone() {
   const { accountId } = yield* yield* CloudflareEnvironment;
   const zoneId = yield* Zone.resolveZoneId({
     accountId,
     zone: SITE_HOST,
     hostname: SITE_HOST,
   }).pipe(Effect.orDie);
+  return { accountId, zoneId };
+});
+
+const deployToken = Effect.gen(function* deployToken() {
+  const { accountId, zoneId } = yield* siteZone;
   const token = yield* ApiToken.AccountApiToken("DeployToken", {
     name: `${PREFIX}deploy`,
     accountId,
@@ -49,7 +54,7 @@ const deployToken = Effect.gen(function* deployToken() {
 });
 
 const observerToken = Effect.gen(function* observerToken() {
-  const { accountId } = yield* yield* CloudflareEnvironment;
+  const { accountId, zoneId } = yield* siteZone;
   return yield* ApiToken.AccountApiToken("ObserverToken", {
     name: `${PREFIX}observer`,
     accountId,
@@ -61,8 +66,18 @@ const observerToken = Effect.gen(function* observerToken() {
           "Vectorize Read",
           "Workers Scripts Read",
           "Workers Observability Write",
+          "Account Analytics Read",
+          "Account Rulesets Read",
+          "Account Rule Lists Read",
+          "Logs Read",
+          "Workers R2 Storage Read",
         ],
         resources: { [`com.cloudflare.api.account.${accountId}`]: "*" },
+      },
+      {
+        effect: "allow",
+        permissionGroups: ["Analytics Read", "Zone WAF Read"],
+        resources: { [`com.cloudflare.api.account.zone.${zoneId}`]: "*" },
       },
     ],
   });

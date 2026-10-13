@@ -9,6 +9,8 @@ const searchSegment = sqliteTable("search_segment", {
   count: integer().notNull(),
   shards: integer().notNull(),
   ids: text({ mode: "json" }).$type<readonly string[]>().notNull(),
+  vectorThrough: integer(),
+  vectorClusters: integer(),
 });
 
 const searchInvalid = sqliteTable(

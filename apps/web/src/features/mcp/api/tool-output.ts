@@ -37,6 +37,13 @@ const FindMessagesOutput = Schema.Struct({
   messages: Schema.Array(Message),
   notFullyIngested: Schema.Array(PendingChannel),
 });
+const SimilarMessage = Schema.Struct({ ...Message.fields, score: Schema.Finite });
+const FindSimilarMessagesOutput = Schema.Struct({
+  messages: Schema.Array(SimilarMessage),
+  embedded: Schema.Int,
+  stored: Schema.Int,
+  notFullyIngested: Schema.Array(PendingChannel),
+});
 const ServerPhrase = Schema.Struct({
   kind: Schema.Literals(["text", "emoji", "sticker"]),
   phrase: Schema.String,
@@ -54,6 +61,7 @@ const ReadMessagesOutput = Schema.Struct({ ingest: Ingest, messages: Schema.Arra
 
 export {
   FindMessagesOutput,
+  FindSimilarMessagesOutput,
   ListChannelsOutput,
   ListServerPhrasesOutput,
   ListServersOutput,

@@ -101,6 +101,8 @@ abstract class MessageStore extends DurableObject {
       phrases: phrases.status,
       tokens: row.tokens,
       version: row.version,
+      vector: Option.getOrNull(Option.none<Uint8Array>()),
+      vectorAt: Option.getOrNull(Option.none<number>()),
     };
     return insert
       .onConflictDoUpdate({ target: guildMessage.id, set: changes })

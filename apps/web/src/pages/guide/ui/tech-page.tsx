@@ -46,6 +46,7 @@ const SECTIONS: readonly GuideSection[] = [
           },
           { from: "Durable Object", label: "検索用の索引と暗号文の写し", to: "R2" },
           { from: "Worker", label: "画像の説明を作る", to: "Workers AI" },
+          { from: "Durable Object", label: "意味で探すためのベクトルを作る", to: "Workers AI" },
           { from: "Worker", label: "マスター鍵を読む", to: "Secrets Store" },
         ],
       },
@@ -58,6 +59,7 @@ const SECTIONS: readonly GuideSection[] = [
           ["メッセージ", "サーバーごとに 1 つ置く Durable Object の SQLite"],
           ["検索用の索引", "北米東部に置いた Cloudflare R2 と Cache API"],
           ["画像の説明", "Workers AI の `@cf/google/gemma-4-26b-a4b-it`"],
+          ["意味で探すためのベクトル", "Workers AI の `@cf/baai/bge-m3` と ml-kmeans"],
           ["取り込みの待ち行列", "Cloudflare Queues"],
           ["鍵の保管", "Cloudflare Secrets Store"],
           ["Gateway の常駐", "fly.io の shared-cpu-1x、256MB の Machine 1 台"],
@@ -139,6 +141,7 @@ const SECTIONS: readonly GuideSection[] = [
           ["`list_servers`", "使えるサーバーの一覧"],
           ["`list_channels`", "読めるチャンネル、スレッド、フォーラムの投稿の一覧"],
           ["`find_messages`", "言葉をそのまま含むメッセージを探し、件数も数える"],
+          ["`find_similar_messages`", "言葉が違っても意味の近いメッセージを、近い順に探す"],
           ["`read_messages`", "チャンネルの最新のメッセージを新しい順に読む"],
         ],
       },
@@ -154,6 +157,15 @@ const SECTIONS: readonly GuideSection[] = [
       {
         type: "text",
         text: "ハッシュの索引なので、運営も索引から本文を読めません。照合は文字どおりなので、言い回しが違うメッセージは見つかりません。画像は、Workers AI が付けた説明文も検索の対象にします。",
+      },
+      {
+        type: "steps",
+        items: [
+          "`find_similar_messages` のために、Durable Object が各メッセージを Workers AI の bge-m3 で 1,024 次元のベクトルにし、int8 に縮めてデータ鍵で暗号化します。",
+          "ベクトルは索引と同じ期間ごとに R2 に置きます。件数の多い期間は k-means で近いもの同士の塊に分け、塊の中心も一緒に置きます。",
+          "検索では検索の言葉をベクトルにし、各期間で中心が近い塊を 5% ほど読んで距離を計算し、近い順に本文を R2 から読みます。同じ検索の言葉のベクトルは Cache API に置き、作り直しません。",
+          "Workers AI は 1 日の無料枠の中で使います。その日に使った量を数え、過去のメッセージのベクトル作りは枠が近づいたら翌日（UTC 0 時）に回します。",
+        ],
       },
       {
         type: "text",

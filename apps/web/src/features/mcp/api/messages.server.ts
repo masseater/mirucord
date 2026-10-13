@@ -44,10 +44,13 @@ const viewOf = (guildId: string, row: SealedMessage, body: MessageBody): Message
   url: `https://discord.com/channels/${guildId}/${row.channelId}/${row.id}`,
 });
 
-const openStored = (
-  scope: GuildScope,
-  stored: readonly SealedMessage[],
-): Effect.Effect<readonly MessageView[]> => {
+const openStored = ({
+  scope,
+  stored,
+}: Readonly<{
+  scope: GuildScope;
+  stored: readonly SealedMessage[];
+}>): Effect.Effect<readonly MessageView[]> => {
   const { guildId, wrappedKey } = scope.guild;
   return openGuildKey(wrappedKey).pipe(
     Effect.flatMap((key) =>
@@ -93,7 +96,7 @@ const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
       }),
     ),
     Effect.flatMap(({ total, entries }) =>
-      openStored(request.scope, entries).pipe(
+      openStored({ scope: request.scope, stored: entries }).pipe(
         Effect.map((views) => ({
           total,
           messages: views.filter((view) =>
@@ -118,7 +121,7 @@ const readMessages = (request: ReadRequest): Effect.Effect<readonly MessageView[
       before: Option.getOrNull(request.before),
       limit: request.limit,
     }),
-  ).pipe(Effect.flatMap((stored) => openStored(request.scope, stored)));
+  ).pipe(Effect.flatMap((stored) => openStored({ scope: request.scope, stored })));
 
-export { findMessages, readMessages };
+export { findMessages, openStored, readMessages };
 export type { FindRequest, FoundMessages, MessageView, ReadRequest };

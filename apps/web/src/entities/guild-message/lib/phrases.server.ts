@@ -9,6 +9,7 @@ const PHRASE_WINDOW_DAYS = 30;
 const CUSTOM_EMOJI = /<a?:(?<name>\w+):(?<id>\d+)>/gu;
 const NOT_PLAIN_TEXT = /<a?:\w+:\d+>|<[@#]|https?:\/\//u;
 const WHITESPACE = /\s+/gu;
+const WORDLIKE = /[\p{L}\p{Extended_Pictographic}]/u;
 
 type PhraseKind = "text" | "emoji" | "sticker";
 
@@ -33,12 +34,15 @@ const isShort = (text: string): boolean => Array.fromIterable(text).length <= LO
 
 const isPlainText = (text: string): boolean => !NOT_PLAIN_TEXT.test(text);
 
+const isWordlike = ({ kind, label }: Phrase): boolean => kind !== "text" || WORDLIKE.test(label);
+
 const textPhrase = (content: string): Option.Option<Phrase> =>
   Option.some(normalize(content)).pipe(
     Option.filter(String.isNonEmpty),
     Option.filter(isShort),
     Option.filter(isPlainText),
-    Option.map((text) => ({ kind: "text", key: `text:${text}`, label: text })),
+    Option.map((text): Phrase => ({ kind: "text", key: `text:${text}`, label: text })),
+    Option.filter(isWordlike),
   );
 
 const emojiPhrases = (content: string): readonly Phrase[] =>

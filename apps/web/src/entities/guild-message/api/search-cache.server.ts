@@ -5,6 +5,7 @@ import { SITE_ORIGIN } from "#/shared/config";
 
 const CACHE_CONTROL = "public, max-age=86400, immutable";
 const CACHE_NAME = "search-files";
+const MATCH_TIMEOUT = "2 seconds";
 
 const cacheUrl = (key: string): string => `${SITE_ORIGIN}/search-files/${key}`;
 
@@ -51,8 +52,12 @@ const fromBucket = (key: string): Effect.Effect<FileRead> =>
 
 const cachedBytes = (key: string): Effect.Effect<FileRead> =>
   searchCache.pipe(
-    Effect.flatMap((cache) => Effect.promise(() => cache.match(cacheUrl(key)))),
-    Effect.map(Option.fromNullishOr),
+    Effect.flatMap((cache) =>
+      Effect.promise(() => cache.match(cacheUrl(key))).pipe(
+        Effect.timeoutOption(MATCH_TIMEOUT),
+        Effect.map(Option.flatMap(Option.fromNullishOr)),
+      ),
+    ),
     Effect.flatMap(
       Option.match({
         onNone: () => fromBucket(key),

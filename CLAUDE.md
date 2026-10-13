@@ -57,7 +57,7 @@ jev-lint は pre-push の差分検査と main の CI だけで動かし、デプ
 部品だけを先に入れず、使う側と同じ PR にする。
 
 クラウドのセッションでは、`~/.config/uv/uv.toml` に `system-certs = true` を書いてから verify する。
-GitHub Actions の Secrets API と Cloudflare の Global API Key が要る作業（`ci` スタックの適用など）は、ユーザーの Mac で Remote Control を開いて行う。
+`mirucord-ci` スタックの適用など、GitHub Actions の Secrets API と Cloudflare の Global API Key が要る作業は、ユーザーの Mac の Remote Control で行う。
 
 ## テンプレート
 

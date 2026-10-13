@@ -35,6 +35,7 @@ const SearchHeadSchema = Schema.Struct({
   channels: Schema.Array(Schema.String),
   archive: Schema.optionalKey(ArchiveEntrySchema),
   invalid: Schema.Record(Schema.String, Schema.Array(Schema.Int)),
+  centroids: Schema.optionalKey(Schema.Int),
 });
 
 type SearchHead = typeof SearchHeadSchema.Type;
@@ -58,20 +59,14 @@ const archiveKey = ({
 const chunkKey = ({ guildId, segment, chunk }: SegmentFile & Readonly<{ chunk: number }>): string =>
   `${guildId}/${segment}/b${chunk}`;
 
-const CENTROIDS = "c";
-
 const vectorFileKey = ({
   guildId,
   segment,
   file,
 }: SegmentFile & Readonly<{ file: string }>): string => `${guildId}/${segment}/${file}`;
 
-const centroidsKey = ({
-  guildId,
-  segment,
-  through,
-}: SegmentFile & Readonly<{ through: number }>): string =>
-  vectorFileKey({ guildId, segment, file: `v${through}${CENTROIDS}` });
+const centroidsKey = ({ guildId, stamp }: Readonly<{ guildId: string; stamp: number }>): string =>
+  `${guildId}/vc${stamp}`;
 
 const clusterKey = ({
   guildId,
@@ -81,16 +76,12 @@ const clusterKey = ({
 }: SegmentFile & Readonly<{ through: number; cluster: number }>): string =>
   vectorFileKey({ guildId, segment, file: `v${through}-${cluster}` });
 
-const SINGLE_CLUSTER = 1;
-
 const keysOfVectors = (
   guildId: string,
   segment: string,
   { through, clusters }: SegmentVectors,
-): readonly string[] => [
-  ...Array.makeBy(clusters, (cluster) => clusterKey({ guildId, segment, through, cluster })),
-  ...Array.filter([centroidsKey({ guildId, segment, through })], () => clusters > SINGLE_CLUSTER),
-];
+): readonly string[] =>
+  Array.makeBy(clusters, (cluster) => clusterKey({ guildId, segment, through, cluster }));
 
 const vectorsOfRow = ({
   vectorThrough,

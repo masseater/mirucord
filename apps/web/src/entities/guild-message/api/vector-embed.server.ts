@@ -1,6 +1,6 @@
 import { and, desc, eq, isNull, max } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Effect, Option, Order, String, pipe } from "effect";
+import { Array, Boolean, Effect, Option, Order, String, pipe } from "effect";
 
 import { searchableTexts } from "#/entities/guild-message/lib/search-tokens.server";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
@@ -11,6 +11,7 @@ import { openMessage, sealBytes } from "#/shared/crypto/index.server";
 
 const EMBED_BATCH = 50;
 const BATCHES_PER_RUN = 4;
+const RUN_SIZE = EMBED_BATCH * BATCHES_PER_RUN;
 const NO_VECTOR = 0;
 const NEXT = 1;
 const TEXT_SEPARATOR = "\n";
@@ -147,20 +148,23 @@ const wordedTexts = Effect.fnUntraced(function* wordedTexts(
   );
 });
 
+const runOutcome = (rows: number): EmbedOutcome =>
+  Boolean.match(rows < RUN_SIZE, {
+    onTrue: () => ({ status: "done" }),
+    onFalse: () => ({ status: "more" }),
+  });
+
 const embedPending = Effect.fn("vectors.embedPending")(function* embedPending(
   batch: Readonly<{ db: DrizzleSqliteDODatabase; keys: Keys }>,
 ) {
-  const rows = pendingRows(batch.db, EMBED_BATCH * BATCHES_PER_RUN);
-  if (!Array.isReadonlyArrayNonEmpty(rows)) {
-    return { status: "done" } satisfies EmbedOutcome;
-  }
+  const rows = pendingRows(batch.db, RUN_SIZE);
   const worded = yield* wordedTexts(batch, rows);
   for (const chunk of Array.chunksOf(worded, EMBED_BATCH)) {
     if (!(yield* embedChunk(batch, chunk))) {
       return { status: "waiting", until: yield* nextBudgetDay } satisfies EmbedOutcome;
     }
   }
-  return { status: "more" } satisfies EmbedOutcome;
+  return runOutcome(rows.length);
 });
 
 export { embedPending, vectorContext };

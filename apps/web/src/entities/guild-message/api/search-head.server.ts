@@ -9,6 +9,7 @@ import { vectorsOfRow, writeHead } from "./search-files.server";
 import type { ArchiveEntry, SearchHead, SegmentEntry } from "./search-files.server";
 import { searchLedger } from "./search-ledger.server";
 import type { Segment } from "./search-ledger.server";
+import { centroidStamp } from "./vector-centroids.server";
 
 const entryOf = (segment: Segment, isArchived: (name: string) => boolean): SegmentEntry => ({
   name: segment.name,
@@ -60,6 +61,10 @@ const headOf = (db: DrizzleSqliteDODatabase): SearchHead => {
     channels: searchChannels(db).list(),
     invalid: ordinalsBySegment(db.select().from(searchInvalid).all()),
     ...Option.match(archive, { onNone: () => ({}), onSome: (found) => ({ archive: found }) }),
+    ...Option.match(centroidStamp(db), {
+      onNone: () => ({}),
+      onSome: (centroids) => ({ centroids }),
+    }),
   };
 };
 

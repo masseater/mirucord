@@ -88,32 +88,50 @@ const lateBody = (pending: () => Promise<Response | undefined>): Effect.Effect<v
     ),
   );
 
-const matchOnce = (cache: Readonly<Cache>, key: string): Effect.Effect<Option.Option<Response>> =>
-  Effect.promise((signal) => {
-    const pending = cache.match(cacheUrl(key));
-    signal.addEventListener("abort", () => {
-      waitUntil(Effect.runPromise(lateBody(() => pending)));
-    });
-    return pending;
-  }).pipe(Effect.timeoutOption(MATCH_TIMEOUT), Effect.map(Option.flatMap(Option.fromNullishOr)));
-
-const readFile = (key: string): Effect.Effect<FileRead, never, FileGate> =>
-  searchCache.pipe(
-    Effect.flatMap((cache) => matchOnce(cache, key)),
-    Effect.flatMap(
-      Option.match({
-        onNone: () => fromBucket(key),
-        onSome: (response) =>
-          Effect.promise(() => response.arrayBuffer()).pipe(
-            Effect.map((bytes): FileRead => ({ key, bytes: Option.some(bytes), cached: true })),
-          ),
-      }),
-    ),
+const matchOnce = (
+  cache: Readonly<Cache>,
+  key: string,
+): Effect.Effect<Option.Option<ArrayBuffer>, never, FileGate> =>
+  Effect.service(FileGate).pipe(
+    Effect.flatMap(({ reads }) => {
+      const matching = Effect.promise((signal) => {
+        const pending = cache.match(cacheUrl(key));
+        signal.addEventListener("abort", () => {
+          const settled = lateBody(() => pending).pipe(Effect.ensuring(reads.release(ONE)));
+          waitUntil(Effect.runPromise(settled));
+        });
+        return pending;
+      }).pipe(Effect.timeoutOption(MATCH_TIMEOUT));
+      return reads.take(ONE).pipe(
+        Effect.andThen(matching),
+        Effect.flatMap(
+          Option.match({
+            onNone: () => Effect.succeedNone,
+            onSome: (found) =>
+              Option.match(Option.fromUndefinedOr(found), {
+                onNone: () => Effect.succeedNone,
+                onSome: (response) =>
+                  Effect.promise(() => response.arrayBuffer()).pipe(Effect.asSome),
+              }).pipe(Effect.ensuring(reads.release(ONE))),
+          }),
+        ),
+      );
+    }),
   );
 
 const cachedBytes = (key: string): Effect.Effect<FileRead, never, FileGate> =>
-  Effect.service(FileGate).pipe(
-    Effect.flatMap(({ reads }) => reads.withPermits(ONE)(readFile(key))),
+  Effect.all([Effect.service(FileGate), searchCache]).pipe(
+    Effect.flatMap(([{ reads }, cache]) =>
+      matchOnce(cache, key).pipe(
+        Effect.flatMap(
+          Option.match({
+            onNone: () => reads.withPermits(ONE)(fromBucket(key)),
+            onSome: (bytes) =>
+              Effect.succeed<FileRead>({ key, bytes: Option.some(bytes), cached: true }),
+          }),
+        ),
+      ),
+    ),
   );
 
 export { cachedBytes, withFileGate };

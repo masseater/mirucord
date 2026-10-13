@@ -1,8 +1,8 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "8d06da23-3257-439f-bd06-20f71af2462d",
-  "prevIds": ["467fca63-19ec-4c50-aa11-0fb34a3274ee", "ed971fb7-ef0e-4658-84cf-417e4ed633ed"],
+  "id": "8d6cc6a1-20e0-48b8-89a2-8fd73645fb81",
+  "prevIds": ["467fca63-19ec-4c50-aa11-0fb34a3274ee", "9ee5d1ff-685a-42f8-accc-d2fd8bda6972"],
   "ddl": [
     {
       "name": "erased_author",

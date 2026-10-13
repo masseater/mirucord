@@ -9,7 +9,7 @@ import { guildMessage } from "#/entities/guild-message/model/guild-message.schem
 import { phraseLedger, phraseStats } from "#/entities/guild-message/model/phrase-stats.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
-import { MessageStore } from "./message-store.server";
+import { MessageStore, SEALED_COLUMNS } from "./message-store.server";
 import type {
   PhraseContext,
   PhraseExample,
@@ -46,14 +46,6 @@ const BACKFILL_RETRY_MINUTES = 10;
 const REFRESH_AFTER_MS = Duration.toMillis(Duration.days(REFRESH_AFTER_DAYS));
 const BACKFILL_RETRY_MS = Duration.toMillis(Duration.minutes(BACKFILL_RETRY_MINUTES));
 const PHRASE_WINDOW_MS = Duration.toMillis(Duration.days(PHRASE_WINDOW_DAYS));
-
-const SEALED_COLUMNS = {
-  id: guildMessage.id,
-  channelId: guildMessage.channelId,
-  sealed: guildMessage.sealed,
-  createdAt: guildMessage.createdAt,
-  editedAt: guildMessage.editedAt,
-};
 
 const EMPTY_LEDGER: Ledger = {
   guildId: Option.getOrNull(Option.none<string>()),

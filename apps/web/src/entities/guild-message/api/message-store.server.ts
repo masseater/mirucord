@@ -296,4 +296,4 @@ abstract class MessageStore extends DurableObject {
   }
 }
 
-export { MessageStore };
+export { MessageStore, SEALED_COLUMNS };

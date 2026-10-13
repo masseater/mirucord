@@ -17,6 +17,10 @@ const FULL_WEIGHT = 1;
 const NO_WEIGHT = 0;
 const MINUTE_MS = 60_000;
 const MAX_ALARMS = 30;
+const RERANK_MODEL = "@cf/baai/bge-reranker-base";
+const RELEVANT = 0.9;
+const IRRELEVANT = 0.1;
+const CAT = "猫";
 
 type SimilarSeed = Readonly<{ id: string; channelId: string; content: string }>;
 
@@ -26,7 +30,7 @@ const axisOf = (text: string): number => {
   if (text.includes("ラーメン") || text.includes("麺")) {
     return RAMEN_AXIS;
   }
-  if (text.includes("猫")) {
+  if (text.includes(CAT)) {
     return CAT_AXIS;
   }
   return OTHER_AXIS;
@@ -61,6 +65,37 @@ const answerEmbedding = (inputs: unknown): Promise<Record<string, unknown>> =>
       })),
     ),
   );
+
+const RerankInput = Schema.Struct({
+  query: Schema.String,
+  contexts: Schema.Array(Schema.Struct({ text: Schema.String })),
+});
+
+const decodeRerank = Schema.decodeUnknownEffect(RerankInput);
+
+const relevanceOf = (query: string, text: string): number => {
+  if (query.includes(CAT) && text.includes(CAT)) {
+    return RELEVANT;
+  }
+  return IRRELEVANT;
+};
+
+const scoreContexts = ({
+  query,
+  contexts,
+}: typeof RerankInput.Type): Readonly<{ response: readonly Record<string, number>[] }> => ({
+  response: contexts.map(({ text }, id) => ({ id, score: relevanceOf(query, text) })),
+});
+
+const answerAi = ({
+  model,
+  inputs,
+}: Readonly<{ model: string; inputs: unknown }>): Promise<Record<string, unknown>> => {
+  if (model === RERANK_MODEL) {
+    return Effect.runPromise(decodeRerank(inputs).pipe(Effect.map(scoreContexts)));
+  }
+  return answerEmbedding(inputs);
+};
 
 const indexedOf = ({ id, channelId, content }: SimilarSeed): Effect.Effect<IndexedMessage> =>
   Effect.gen(function* seed() {
@@ -102,4 +137,4 @@ const drainAlarms = Effect.promise(() => guildStore(GUILD_A).publish()).pipe(
   Effect.asVoid,
 );
 
-export { answerEmbedding, drainAlarms, embeddedTexts, writeMessages };
+export { answerAi, drainAlarms, embeddedTexts, writeMessages };

@@ -7,12 +7,7 @@ import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 import { settleNeurons } from "#/shared/ai/index.server";
 
 import { A_OPEN, A_STAFF, discordMembers, GUILD_A, seedScenario } from "./__tests__/scenario";
-import {
-  answerEmbedding,
-  drainAlarms,
-  embeddedTexts,
-  writeMessages,
-} from "./__tests__/similar-guild";
+import { answerAi, drainAlarms, embeddedTexts, writeMessages } from "./__tests__/similar-guild";
 import { callTool } from "./__tests__/tool-call";
 import { FindSimilarMessagesOutput } from "./tool-output";
 
@@ -42,7 +37,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   embeddedTexts.length = NOTHING;
-  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => answerEmbedding(inputs));
+  vi.spyOn(env.AI, "run").mockImplementation((model, inputs) => answerAi({ model, inputs }));
 });
 
 afterAll(() => {
@@ -63,6 +58,15 @@ it.live("finds messages by meaning only in the channels the user can read", () =
     expect(ids).toContain(CAT);
     expect(ids).not.toContain(STAFF_RAMEN);
     expect(found.embedded).toBe(found.stored);
+  }),
+);
+
+it.live("puts the messages the reranker finds relevant first", () =>
+  Effect.gen(function* reranked() {
+    const found = yield* findSimilar("ラーメン好きな猫はいる？");
+    const ids = found.messages.map(({ id }) => id);
+    expect(Array.head(ids)).toStrictEqual(Option.some(CAT));
+    expect(ids).toContain(RAMEN);
   }),
 );
 

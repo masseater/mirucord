@@ -224,7 +224,7 @@ const FIND_MESSAGES_TOOL = {
 
 const FIND_SIMILAR_MESSAGES_TOOL = {
   title: "Find similar messages",
-  description: `Find messages whose meaning is close to \`query\`, even when they share no words with it, most similar first. Write \`query\` as a sentence or a few words describing what you are looking for. Use it when \`find_messages\` finds nothing because people worded things differently; use \`find_messages\` for exact words, names and counts. \`score\` is the cosine similarity. The closest messages come back even when none is about \`query\`, so read them before treating them as matches. \`embedded\` of \`stored\` messages can be searched this way so far; older messages are added a day's share at a time, so say so when \`embedded\` is below \`stored\`. ${UNTRUSTED_CONTENT} ${INGEST_GUIDE}`,
+  description: `Find messages whose meaning is close to \`query\`, even when they share no words with it, most relevant first. Write \`query\` as a sentence or a few words describing what you are looking for. Use it when \`find_messages\` finds nothing because people worded things differently; use \`find_messages\` for exact words, names and counts. \`score\` is how relevant the message is to \`query\`, higher is closer. The closest messages come back even when none is about \`query\`, so read them before treating them as matches. \`embedded\` of \`stored\` messages can be searched this way so far; older messages are added a day's share at a time, so say so when \`embedded\` is below \`stored\`. ${UNTRUSTED_CONTENT} ${INGEST_GUIDE}`,
   ...TOOL_BASE,
   outputSchema: FindSimilarMessagesOutput.pipe(
     Schema.toStandardSchemaV1,

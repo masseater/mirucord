@@ -1,56 +1,40 @@
-# typescript-template
+# mirucord
+
+Claude のような AI アプリから、自分が入っている Discord サーバーの過去の会話を探して読めるようにする、読み取り専用の MCP サーバーである。
+チャンネルやスレッドに散らばった話を、キーワードや意味の近さで AI に探させられる。
 
 ## 公開先
 
 - Web: https://mirucord.masseater.dev
 - MCP サーバー: https://mirucord.masseater.dev/mcp
 
-## セットアップ
+いまは無料で、入れられるのは先着 80 サーバーまでである。
 
-```sh
-vp install
-cp .env.example .env
-cp apps/web/.env.example apps/web/.env
-vp run verify
-```
+## 使い方
 
-## 環境変数
+サーバーの管理権限が要るのは、最初の招待と同意のときだけである。
+そのあとはメンバーの誰でも、自分が読めるチャンネルの中だけを探せる。
 
-ルートの `.env` に書く。
+### サーバーに入れる
 
-| 名前                 | 用途                          |
-| -------------------- | ----------------------------- |
-| `OPENROUTER_API_KEY` | push 前に走る jev-lint の判定 |
+サーバーの管理者が https://mirucord.masseater.dev を開き、招待ボタンから Bot をサーバーに入れる。
+続けて https://mirucord.masseater.dev/dashboard に Discord でログインし、サーバーの取り込みに同意する。
 
-`apps/web/.env` に書く。
+### AI アプリにつなぐ
 
-| 名前                    | 用途                                                        |
-| ----------------------- | ----------------------------------------------------------- |
-| `CLOUDFLARE_ACCOUNT_ID` | デプロイ先の Cloudflare アカウント                          |
-| `CLOUDFLARE_API_TOKEN`  | Cloudflare の認証                                           |
-| `CLOUDFLARE_API_KEY`    | `CLOUDFLARE_API_TOKEN` の代わりに Global API Key を使う場合 |
-| `CLOUDFLARE_EMAIL`      | `CLOUDFLARE_API_KEY` と組で使う                             |
-| `ALCHEMY_STAGE`         | Alchemy のステージ名（任意）                                |
+使う人は、AI アプリに `https://mirucord.masseater.dev/mcp` を MCP のコネクタとして登録する。
+Claude なら、設定のコネクタからカスタムコネクタを追加して URL を入れる。
+初めて使うときに Discord でログインし、同意の画面で許可する。
 
-## GitHub の設定
+取り込みが終わったら、AI に「去年の夏の思い出を教えて」のように聞くと、サーバーの会話から探して答える。
 
-リポジトリの Actions secrets に次を登録する。
+Bot は Discord に書き込まず、DM も読まない。
+メッセージの本文は暗号化して保存し、Bot をサーバーから外すとそのサーバーのデータは消える。
 
-| 名前                      | 用途                                       |
-| ------------------------- | ------------------------------------------ |
-| `OPENROUTER_API_KEY`      | verify ワークフローの jev-lint             |
-| `CLAUDE_CODE_OAUTH_TOKEN` | verify 失敗時に Claude Code が自動修正する |
+## 自分の環境で動かす
 
-Settings → Actions → General で「Allow GitHub Actions to create and approve pull requests」を有効にする。
-release-pleaseと自動修正がPRを作るためである。
-
-## 起動とデプロイ
-
-```sh
-cd apps/web
-vp run dev
-vp run deploy
-```
+コードとインフラの定義はすべて公開している。
+自分の Cloudflare と fly.io のアカウントで同じものを動かす手順は、[セルフホストのページ](https://mirucord.masseater.dev/self-host)にある。
 
 ## ライセンス
 

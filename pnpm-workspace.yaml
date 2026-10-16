@@ -9,7 +9,7 @@ catalogMode: prefer
 
 catalog:
   "@ast-grep/cli": 0.50.0
-  "@cloudflare/workers-types": 5.20261010.1
+  "@cloudflare/workers-types": 5.20261013.1
   "@effect/platform-node": 4.0.2
   "@eslint-react/eslint-plugin": 5.26.1
   "@shadcn/lint": 0.2.1

@@ -310,8 +310,8 @@ catalogs:
       version: 1.1.0
   stack:
     '@distilled.cloud/cloudflare':
-      specifier: 1.0.0-rc.13
-      version: 1.0.0-rc.13
+      specifier: 1.0.0-rc.15
+      version: 1.0.0-rc.15
     '@effect/atom-react':
       specifier: 4.0.2
       version: 4.0.2
@@ -481,7 +481,7 @@ importers:
     dependencies:
       '@distilled.cloud/cloudflare':
         specifier: catalog:stack
-        version: 1.0.0-rc.13(effect@4.0.2)
+        version: 1.0.0-rc.15(effect@4.0.2)
       '@effect/platform-node':
         specifier: 'catalog:'
         version: 4.0.2(effect@4.0.2)(redis@6.2.1(@opentelemetry/api@1.9.1))
@@ -1527,8 +1527,18 @@ packages:
     peerDependencies:
       effect: 4.0.2
 
+  '@distilled.cloud/cloudflare@1.0.0-rc.15':
+    resolution: {integrity: sha512-UBnEpZGkf+lnMF33IJXcu7DD99vC+3314N01pnWNuKxLtsVNNLF/DxFbPxBU1Cb+aLE3Cs35aSiHZrYO7EiR0g==}
+    peerDependencies:
+      effect: 4.0.2
+
   '@distilled.cloud/core@1.0.0-rc.13':
     resolution: {integrity: sha512-RYyrxW+F5zrTuu1UWV/JoycholBCIkXIusYJdDniDwCdmbjdKGl07KlkkeeY774uBawNGf+pt1ESNGeLVnNHsg==}
+    peerDependencies:
+      effect: 4.0.2
+
+  '@distilled.cloud/core@1.0.0-rc.15':
+    resolution: {integrity: sha512-TPXxuwcxQ85Pvm0g7ZQSLTQkPc1Wmcb6p6KOk+Be2fP14Xpj5a+7HOSUyPNwbqOP+vPK5Sj0ZLN7M6spKnO2LA==}
     peerDependencies:
       effect: 4.0.2
 
@@ -10966,10 +10976,19 @@ snapshots:
       '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.2)
       effect: 4.0.2
 
+  '@distilled.cloud/cloudflare@1.0.0-rc.15(effect@4.0.2)':
+    dependencies:
+      '@distilled.cloud/core': 1.0.0-rc.15(effect@4.0.2)
+      effect: 4.0.2
+
   '@distilled.cloud/core@1.0.0-rc.13(effect@4.0.2)':
     dependencies:
       effect: 4.0.2
       graphql: 16.11.0
+
+  '@distilled.cloud/core@1.0.0-rc.15(effect@4.0.2)':
+    dependencies:
+      effect: 4.0.2
 
   '@distilled.cloud/doppler@1.0.0-rc.13(effect@4.0.2)':
     dependencies:

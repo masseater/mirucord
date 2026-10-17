@@ -41,7 +41,7 @@ catalog:
   "@better-auth/mcp": 1.7.7
   jose: 6.2.12
   "@better-auth/oauth-provider": 1.7.7
-  simple-icons: 16.34.0
+  simple-icons: 16.35.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
   "@cloudflare/vitest-plugin": 1.4.0

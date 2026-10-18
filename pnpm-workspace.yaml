@@ -32,7 +32,7 @@ catalog:
   "@commitlint/config-conventional": 21.2.3
   "@tanstack/react-query-devtools": 5.104.2
   "@vitejs/plugin-react": 6.1.2
-  "@vitejs/plugin-rsc": 0.5.36
+  "@vitejs/plugin-rsc": 0.5.38
   skills: 1.7.2
   "@tanstack/intent": 0.5.5
   "@modelcontextprotocol/server": 2.3.1

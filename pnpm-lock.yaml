@@ -285,8 +285,8 @@ catalogs:
       specifier: 3.0.3
       version: 3.0.3
     simple-icons:
-      specifier: 16.34.0
-      version: 16.34.0
+      specifier: 16.35.0
+      version: 16.35.0
     skills:
       specifier: 1.7.2
       version: 1.7.2
@@ -633,7 +633,7 @@ importers:
         version: 0.28.0
       simple-icons:
         specifier: 'catalog:'
-        version: 16.34.0
+        version: 16.35.0
       tailwind-merge:
         specifier: 'catalog:'
         version: 3.7.0
@@ -8809,8 +8809,8 @@ packages:
   simple-git@4.0.2:
     resolution: {integrity: sha512-l0sIsv9VrPwovKELFDBOj/lhmIcbMvxBk2B+hRhsMM4/VL3gKtuZvYnBNixVo+N/0HnqQx2cBdLvxnAbygHpqA==}
 
-  simple-icons@16.34.0:
-    resolution: {integrity: sha512-UTxKn0PVspk84B2hHF3Dqiqht1yDjJmDc/t4cO7PyCQxCMk6OjEu95pnpGjhLaGeQ4qBrGASbefTIe/+czrX7g==}
+  simple-icons@16.35.0:
+    resolution: {integrity: sha512-TCfl/2+GTrx0nCo4pEWGvxhOb8c6NsqOU1OpwjtF4lwJAthB8IYVD0fuIMjLMg6JFuG1YBO0t1iETQqJLqkoJA==}
     engines: {node: '>=0.12.18'}
 
   sirv@3.0.2:
@@ -18758,7 +18758,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  simple-icons@16.34.0: {}
+  simple-icons@16.35.0: {}
 
   sirv@3.0.2:
     dependencies:

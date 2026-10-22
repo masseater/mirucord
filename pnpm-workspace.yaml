@@ -34,7 +34,7 @@ catalog:
   "@vitejs/plugin-react": 6.1.2
   "@vitejs/plugin-rsc": 0.5.38
   skills: 1.7.2
-  "@tanstack/intent": 0.5.5
+  "@tanstack/intent": 0.5.6
   "@modelcontextprotocol/server": 2.3.1
   "@sapphire/bitfield": 1.2.4
   discord-api-types: 0.38.56

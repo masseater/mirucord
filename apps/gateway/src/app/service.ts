@@ -68,6 +68,7 @@ class Gateway extends Service<Gateway>()(
     name: `${PREFIX}gateway`,
     main: import.meta.url,
     handler: "Gateway",
+    image: "node:26.12.1-slim",
     region: "iad",
     services: [],
   },

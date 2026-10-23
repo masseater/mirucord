@@ -246,8 +246,8 @@ catalogs:
       specifier: 2.1.1
       version: 2.1.1
     dfx:
-      specifier: 1.1.0
-      version: 1.1.0
+      specifier: 1.1.1
+      version: 1.1.1
     discord-api-types:
       specifier: 0.38.56
       version: 0.38.56
@@ -518,7 +518,7 @@ importers:
         version: 2.0.0-beta.81(@effect/platform-node@4.0.2(effect@4.0.2)(redis@6.2.1(@opentelemetry/api@1.9.1)))(@effect/vitest@4.0.2(effect@4.0.2)(vitest@5.0.3))(@types/node@26.6.5)(@types/react@19.3.0)(drizzle-kit@1.0.0-rc.5-ab785fc)(drizzle-orm@1.0.0-rc.5-ab785fc(@cloudflare/workers-types@5.20261009.1)(@effect/sql-d1@4.0.2(effect@4.0.2))(@effect/sql-sqlite-do@4.0.2(effect@4.0.2))(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.4)(@opentelemetry/api@1.9.1)(@sinclair/typebox@0.34.52)(effect@4.0.2)(valibot@1.5.0(typescript@5.9.3))(zod@4.6.5))(effect@4.0.2)(esbuild@0.28.2)(hono@4.13.13)(jiti@2.7.0)(terser@5.51.2)(typescript@5.9.3)(ws@8.22.0)
       dfx:
         specifier: 'catalog:'
-        version: 1.1.0(effect@4.0.2)
+        version: 1.1.1(effect@4.0.2)
       effect:
         specifier: 4.0.2
         version: 4.0.2
@@ -597,7 +597,7 @@ importers:
         version: 2.1.1
       dfx:
         specifier: 'catalog:'
-        version: 1.1.0(effect@4.0.2)
+        version: 1.1.1(effect@4.0.2)
       discord-api-types:
         specifier: 'catalog:'
         version: 0.38.56
@@ -5958,8 +5958,8 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
-  dfx@1.1.0:
-    resolution: {integrity: sha512-1FkKFM/780mvAVewqfBi0ePyq3BQr/v+dppzMNyNggG4ITLQOdUxks4hyzPz4GGag19WOiavlVXutfO6SjnzUQ==}
+  dfx@1.1.1:
+    resolution: {integrity: sha512-g22vKD6+WtOX6a6PoUjZoryJGp3Ut//ve6jjvEFQ8ONB0zNRkDGdf4IVitNmzZcW8G9Ewsr1FR47A98UWWbmIA==}
     peerDependencies:
       effect: 4.0.2
 
@@ -15328,7 +15328,7 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  dfx@1.1.0(effect@4.0.2):
+  dfx@1.1.1(effect@4.0.2):
     dependencies:
       discord-api-types: 0.38.56
       effect: 4.0.2

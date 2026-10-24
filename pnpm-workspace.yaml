@@ -37,7 +37,7 @@ catalog:
   "@tanstack/intent": 0.5.6
   "@modelcontextprotocol/server": 2.3.1
   "@sapphire/bitfield": 1.2.4
-  discord-api-types: 0.38.56
+  discord-api-types: 0.38.57
   "@better-auth/mcp": 1.7.7
   jose: 6.2.12
   "@better-auth/oauth-provider": 1.7.7

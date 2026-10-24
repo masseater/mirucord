@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import cutinMiru from "./cutin-miru.svg";
@@ -17,14 +18,17 @@ const GatherCard = (): ReactNode => (
     <span aria-hidden="true" className="finale-stripe finale-part bg-butter-deep" />
     <span aria-hidden="true" className="finale-ring finale-part" />
     <ul aria-hidden="true" className="finale-frags">
-      {FRAGMENTS.map((fragment) => (
-        <FragmentCard
-          key={fragment.text}
-          className="finale-frag finale-part"
-          member={fragment.member}
-          text={fragment.text}
-        />
-      ))}
+      {pipe(
+        FRAGMENTS,
+        Array.map((fragment) => (
+          <FragmentCard
+            key={fragment.text}
+            className="finale-frag finale-part"
+            member={fragment.member}
+            text={fragment.text}
+          />
+        )),
+      )}
     </ul>
     <img
       src={cutinMiru}
@@ -34,11 +38,14 @@ const GatherCard = (): ReactNode => (
       loading="lazy"
       className="finale-miru finale-part"
     />
-    {SPARKS.map((spark) => (
-      <span key={spark} aria-hidden="true" className="finale-spark finale-part">
-        {SPARK}
-      </span>
-    ))}
+    {pipe(
+      SPARKS,
+      Array.map((spark) => (
+        <span key={spark} aria-hidden="true" className="finale-spark finale-part">
+          {SPARK}
+        </span>
+      )),
+    )}
     <FinaleTitle />
     <FinaleCount />
   </div>

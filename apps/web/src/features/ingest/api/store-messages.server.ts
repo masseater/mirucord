@@ -1,5 +1,5 @@
 import { Discord } from "dfx";
-import { Array, Boolean, DateTime, Effect, Equal, Option, String, pipe } from "effect";
+import { Array, Boolean, DateTime, Effect, Equal, Option, pipe, String } from "effect";
 
 import {
   guildStore,
@@ -127,9 +127,15 @@ const describeMessage = (incoming: DiscordMessage): Effect.Effect<DescribedMessa
     Effect.forEach((attachment, index) => describeAttachment(attachment, index)),
     Effect.map((results) => ({
       incoming,
-      attachments: results.map(({ attachment }) => attachment),
+      attachments: pipe(
+        results,
+        Array.map(({ attachment }) => attachment),
+      ),
       describedWith: Boolean.match(
-        results.some(({ status }) => status === "failed"),
+        pipe(
+          results,
+          Array.some(({ status }) => status === "failed"),
+        ),
         {
           onTrue: () => Option.getOrNull(Option.none<string>()),
           onFalse: () => describedModelOf(incoming),
@@ -193,13 +199,30 @@ const storeMessages = ({
   page,
   ...target
 }: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<void> => {
-  const kept = page.filter(({ type }) => STORED_TYPES.has(type));
-  return findStored({ guildId: target.job.guildId, ids: kept.map(({ id }) => id) }).pipe(
+  const kept = pipe(
+    page,
+    Array.filter(({ type }) => STORED_TYPES.has(type)),
+  );
+  return findStored({
+    guildId: target.job.guildId,
+    ids: pipe(
+      kept,
+      Array.map(({ id }) => id),
+    ),
+  }).pipe(
     Effect.flatMap((stored) => {
-      const byId = new Map(stored.map((row) => [row.id, row]));
+      const byId = new Map(
+        pipe(
+          stored,
+          Array.map((row) => [row.id, row]),
+        ),
+      );
       return describeAll(
-        kept.filter((incoming) =>
-          isChanged(Option.fromUndefinedOr(byId.get(incoming.id)), incoming),
+        pipe(
+          kept,
+          Array.filter((incoming) =>
+            isChanged(Option.fromUndefinedOr(byId.get(incoming.id)), incoming),
+          ),
         ),
       );
     }),

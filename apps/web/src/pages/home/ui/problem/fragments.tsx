@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { MEMBERS } from "#/pages/home/ui/common/members";
@@ -22,9 +23,12 @@ const ROWS = [
 const ghost = (): ReactNode => (
   <span aria-hidden="true" className="scene-frag-ghost">
     <span className="scene-frag-scroll grid gap-1.5">
-      {ROWS.map((row) => (
-        <span key={row.id} className={cn("bg-dc-line h-2 rounded-full", row.width)} />
-      ))}
+      {pipe(
+        ROWS,
+        Array.map((row) => (
+          <span key={row.id} className={cn("bg-dc-line h-2 rounded-full", row.width)} />
+        )),
+      )}
     </span>
   </span>
 );
@@ -86,7 +90,12 @@ const FRAGMENTS = [
 ] as const;
 
 const Fragments = (): ReactNode => (
-  <ul className="scene-frags">{FRAGMENTS.map((fragment) => tile(fragment))}</ul>
+  <ul className="scene-frags">
+    {pipe(
+      FRAGMENTS,
+      Array.map((fragment) => tile(fragment)),
+    )}
+  </ul>
 );
 
 export { FRAGMENTS, Fragments };

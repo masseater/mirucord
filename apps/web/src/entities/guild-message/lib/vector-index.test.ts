@@ -1,5 +1,5 @@
 import { it } from "@effect/vitest";
-import { Effect } from "effect";
+import { Array, Effect, pipe } from "effect";
 import { describe, expect } from "vite-plus/test";
 
 import { DIMENSIONS, quantize } from "#/shared/ai";
@@ -12,8 +12,7 @@ const ROW_COUNT = 3;
 const NOISE_COUNT = 5;
 const GROUP_COUNT = 4;
 const FIRST = 0;
-const countUp = (length: number): readonly number[] =>
-  Array.from({ length }, (_value, index) => index);
+const countUp = (length: number): readonly number[] => Array.makeBy(length, (index) => index);
 const ROWS = countUp(ROW_COUNT);
 const NOISES = countUp(NOISE_COUNT);
 const GROUPS = countUp(GROUP_COUNT);
@@ -33,7 +32,7 @@ const HUGE = 10_000_000;
 const MAX_CLUSTERS = 256;
 
 const axis = (index: number, noise: number): readonly number[] =>
-  Array.from({ length: DIMENSIONS }, (_value, dimension) => {
+  Array.makeBy(DIMENSIONS, (dimension) => {
     if (dimension === index) {
       return ONE;
     }
@@ -49,33 +48,60 @@ const entryAt = (index: number): Parameters<typeof blockOf>[typeof FIRST][number
 describe("vector blocks", () => {
   it.effect("round-trips ordinals, channels and vectors through bytes", () =>
     Effect.gen(function* roundTrip() {
-      const entries: readonly ReturnType<typeof entryAt>[] = ROWS.map((index) => entryAt(index));
+      const entries: readonly ReturnType<typeof entryAt>[] = pipe(
+        ROWS,
+        Array.map((index) => entryAt(index)),
+      );
       const bytes = yield* encodeBlock(blockOf(entries));
       const decoded = entriesOf(yield* decodeBlock(bytes));
       const plain = (list: readonly (typeof entries)[number][]): readonly unknown[] =>
-        list.map(({ ordinal, channelId, vector }) => ({
-          ordinal,
-          channelId,
-          values: [...vector.values],
-        }));
+        pipe(
+          list,
+          Array.map(({ ordinal, channelId, vector }) => ({
+            ordinal,
+            channelId,
+            values: [...vector.values],
+          })),
+        );
       expect(plain(decoded)).toStrictEqual(plain(entries));
     }),
   );
 
   it("ranks the closest vector first and skips filtered rows", () => {
-    const block = blockOf(ROWS.map((index) => entryAt(index)));
+    const block = blockOf(
+      pipe(
+        ROWS,
+        Array.map((index) => entryAt(index)),
+      ),
+    );
     const query = quantize(axis(SECOND, QUERY_NOISE));
     const best = nearestRows({ query, block, keep: () => true, limit: ONE });
     const filtered = nearestRows({ query, block, keep: (row) => row !== SECOND, limit: ONE });
-    expect(best.map(({ row }) => row)).toStrictEqual([SECOND]);
-    expect(filtered.map(({ row }) => row)).not.toContain(SECOND);
+    expect(
+      pipe(
+        best,
+        Array.map(({ row }) => row),
+      ),
+    ).toStrictEqual([SECOND]);
+    expect(
+      pipe(
+        filtered,
+        Array.map(({ row }) => row),
+      ),
+    ).not.toContain(SECOND);
   });
 });
 
 describe("clusters", () => {
   it("separates distinct groups and finds the right one for a query", () => {
-    const sample = GROUPS.flatMap((group) =>
-      NOISES.map((noise) => quantize(axis(group * GROUP_SPACING, noise))),
+    const sample = pipe(
+      GROUPS,
+      Array.flatMap((group) =>
+        pipe(
+          NOISES,
+          Array.map((noise) => quantize(axis(group * GROUP_SPACING, noise))),
+        ),
+      ),
     );
     const centroids = trainCentroids({ sample, clusters: GROUPS.length });
     const block = centroidBlockOf(centroids);
@@ -83,16 +109,21 @@ describe("clusters", () => {
       nearestCentroids({ vector, centroids: block, count: ONE })[FIRST] ?? MISSING;
     const query = quantize(axis(THIRD_GROUP * GROUP_SPACING, QUERY_NOISE));
     expect(centroids).toHaveLength(GROUPS.length);
-    expect(new Set(sample.map((vector) => groupOf(vector))).size).toBe(GROUPS.length);
+    const groups = pipe(
+      sample,
+      Array.map((vector) => groupOf(vector)),
+    );
+    expect(new Set(groups).size).toBe(GROUPS.length);
     const neighbour = quantize(axis(THIRD_GROUP * GROUP_SPACING, ONE));
     expect(groupOf(query)).toBe(groupOf(neighbour));
   });
 
   it("uses about the square root of the count", () => {
-    expect([FIRST, SMALL, HUGE].map((vectors) => clusterCountFor(vectors))).toStrictEqual([
-      ONE,
-      SMALL_CLUSTERS,
-      MAX_CLUSTERS,
-    ]);
+    expect(
+      pipe(
+        [FIRST, SMALL, HUGE],
+        Array.map((vectors) => clusterCountFor(vectors)),
+      ),
+    ).toStrictEqual([ONE, SMALL_CLUSTERS, MAX_CLUSTERS]);
   });
 });

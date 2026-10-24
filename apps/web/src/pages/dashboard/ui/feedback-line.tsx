@@ -1,4 +1,4 @@
-import { Option } from "effect";
+import { Array, Option, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import type { Feedback } from "#/pages/dashboard/lib/feedback";
@@ -11,11 +11,14 @@ const ICON = { error: "alert", busy: "busy", done: "done" } as const;
 
 const FeedbackLine = ({ feedback }: Readonly<{ feedback: Option.Option<Feedback> }>): ReactNode => {
   const fix = Option.match(feedback, { onNone: () => "none", onSome: (shown) => shown.fix });
-  const lines = Option.toArray(feedback).map(({ tone, text }) => (
-    <IconLine key={text} icon={ICON[tone]}>
-      {text}
-    </IconLine>
-  ));
+  const lines = pipe(
+    Option.toArray(feedback),
+    Array.map(({ tone, text }) => (
+      <IconLine key={text} icon={ICON[tone]}>
+        {text}
+      </IconLine>
+    )),
+  );
   return (
     <output className="flex flex-col items-start gap-2 text-sm font-bold">
       {lines}

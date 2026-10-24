@@ -1,5 +1,5 @@
 import { waitUntil } from "cloudflare:workers";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe, Struct } from "effect";
 import { Hex } from "effect/encoding";
 
 import { guildStore, searchSimilar } from "#/entities/guild-message/index.server";
@@ -108,6 +108,24 @@ const kickVectors = (guildId: string, coverage: Coverage): Effect.Effect<void> =
     }
   });
 
+const withScores = (
+  views: readonly MessageView[],
+  entries: readonly Readonly<{ id: string; score: number }>[],
+): readonly (MessageView & Readonly<{ score: number }>)[] => {
+  const scores = new Map(
+    pipe(
+      entries,
+      Array.map(({ id, score }) => [id, score]),
+    ),
+  );
+  return pipe(
+    views,
+    Array.map((view) =>
+      Struct.assign(view, { score: Math.min(MAX_SCORE, scores.get(view.id) ?? NONE) }),
+    ),
+  );
+};
+
 const findSimilar = (request: SimilarRequest): Effect.Effect<SimilarMessages> => {
   const { guildId, wrappedKey } = request.scope.guild;
   return queryVector(request.query).pipe(
@@ -130,17 +148,11 @@ const findSimilar = (request: SimilarRequest): Effect.Effect<SimilarMessages> =>
               }).pipe(
                 Effect.flatMap(({ entries }) =>
                   openStored({ scope: request.scope, stored: entries }).pipe(
-                    Effect.map((views): SimilarMessages => {
-                      const scores = new Map(entries.map(({ id, score }) => [id, score]));
-                      return {
-                        status: "found",
-                        messages: views.map((view) => ({
-                          ...view,
-                          score: Math.min(MAX_SCORE, scores.get(view.id) ?? NONE),
-                        })),
-                        coverage,
-                      };
-                    }),
+                    Effect.map((views): SimilarMessages => ({
+                      status: "found",
+                      messages: withScores(views, entries),
+                      coverage,
+                    })),
                   ),
                 ),
               ),

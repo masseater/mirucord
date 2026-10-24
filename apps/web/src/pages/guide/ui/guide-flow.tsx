@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -17,7 +18,12 @@ const flowRow = (edge: FlowEdge): ReactNode => (
 );
 
 const GuideFlow = ({ edges }: Readonly<{ edges: readonly FlowEdge[] }>): ReactNode => (
-  <ul className="grid gap-3">{edges.map((edge) => flowRow(edge))}</ul>
+  <ul className="grid gap-3">
+    {pipe(
+      edges,
+      Array.map((edge) => flowRow(edge)),
+    )}
+  </ul>
 );
 
 export { GuideFlow };

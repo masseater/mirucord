@@ -1,5 +1,5 @@
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import {
   buildIndex,
@@ -54,10 +54,16 @@ const filesOf = (
     recent: () => recentKey(segment),
     sealed: (shard) => shardKey({ ...segment, shard }),
   };
-  const index = built.index.map((body, shard) => ({ key: keyOf[kind](shard), body }));
+  const index = pipe(
+    built.index,
+    Array.map((body, shard) => ({ key: keyOf[kind](shard), body })),
+  );
   return [
     ...index,
-    ...built.chunks.map((body, chunk) => ({ key: chunkKey({ ...segment, chunk }), body })),
+    ...pipe(
+      built.chunks,
+      Array.map((body, chunk) => ({ key: chunkKey({ ...segment, chunk }), body })),
+    ),
   ];
 };
 
@@ -65,12 +71,20 @@ const indexRowsOf = (
   db: DrizzleSqliteDODatabase,
   rows: readonly PieceRow[],
 ): readonly IndexRow[] => {
-  const positions = searchChannels(db).positions(rows.map(({ channelId }) => channelId));
-  return rows.map(({ channelId, createdAt, tokens }) => ({
-    channel: positions.get(channelId) ?? NO_CHANNEL,
-    createdAt,
-    tokens,
-  }));
+  const positions = searchChannels(db).positions(
+    pipe(
+      rows,
+      Array.map(({ channelId }) => channelId),
+    ),
+  );
+  return pipe(
+    rows,
+    Array.map(({ channelId, createdAt, tokens }) => ({
+      channel: positions.get(channelId) ?? NO_CHANNEL,
+      createdAt,
+      tokens,
+    })),
+  );
 };
 
 const indexFiles = (
@@ -91,7 +105,10 @@ const buildPiece = ({
   piece: { range, rows },
 }: PieceBuild): Effect.Effect<BuiltPiece> => {
   const name = pieceName(publisher, kind, range);
-  const ids = rows.map(({ id }) => id);
+  const ids = pipe(
+    rows,
+    Array.map(({ id }) => id),
+  );
   const index = indexFiles(kind, indexRowsOf(publisher.db, rows));
   return Effect.forEach(Array.chunksOf(ids, CHUNK_SIZE), (chunk) =>
     encodeChunk(searchRows(publisher.db).entries(chunk)),
@@ -128,9 +145,10 @@ const recordPieces = ({ publisher: { db, now }, kind, pieces, built }: Recorded)
       })
       .run();
     searchLedger(db).invalidate(
-      searchRows(db)
-        .changedSince(ids, built)
-        .map((ordinal) => ({ segment: entry.name, ordinal })),
+      pipe(
+        searchRows(db).changedSince(ids, built),
+        Array.map((ordinal) => ({ segment: entry.name, ordinal })),
+      ),
       now,
     );
   }

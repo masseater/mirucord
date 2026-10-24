@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { MASCOT_NAME } from "#/shared/config";
@@ -11,9 +12,10 @@ const ROWS = [
 
 const CipherList = (): ReactNode => (
   <ul className="grid gap-2.5 text-sm font-bold">
-    {ROWS.map((row) => (
-      <CipherRow key={row.before} before={row.before} after={row.after} />
-    ))}
+    {pipe(
+      ROWS,
+      Array.map((row) => <CipherRow key={row.before} before={row.before} after={row.after} />),
+    )}
   </ul>
 );
 

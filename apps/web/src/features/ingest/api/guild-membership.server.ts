@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
-import { Array, Config, ConfigProvider, Effect, Option } from "effect";
+import { Array, Config, ConfigProvider, Effect, Option, pipe } from "effect";
 
 import { FREE_GUILD_LIMIT } from "#/shared/config";
 import { db, guild, listGuildIds } from "#/shared/db/index.server";
@@ -25,8 +25,14 @@ const admitGuilds = (
 ): Effect.Effect<readonly string[]> =>
   guildLimit.pipe(
     Effect.map((limit) => {
-      const kept = current.filter((id) => stored.includes(id));
-      const fresh = current.filter((id) => !stored.includes(id));
+      const kept = pipe(
+        current,
+        Array.filter((id) => stored.includes(id)),
+      );
+      const fresh = pipe(
+        current,
+        Array.filter((id) => !stored.includes(id)),
+      );
       return [...kept, ...Array.take(fresh, limit - kept.length)];
     }),
   );
@@ -53,7 +59,10 @@ const removeDepartedGuilds = (
   stored: readonly string[],
 ): Effect.Effect<void> =>
   Effect.forEach(
-    stored.filter((id) => !current.includes(id)),
+    pipe(
+      stored,
+      Array.filter((id) => !current.includes(id)),
+    ),
     forgetGuild,
     { discard: true },
   );
@@ -71,15 +80,29 @@ const reconcileMembership: Effect.Effect<Membership, DiscordRequestError> = Effe
       { botGuilds: listBotGuilds, stored: listGuildIds, botUserId: getBotUserId },
       { concurrency: "unbounded" },
     );
-    const current = botGuilds.map(({ id }) => id);
+    const current = pipe(
+      botGuilds,
+      Array.map(({ id }) => id),
+    );
     const admitted = yield* admitGuilds(current, stored);
-    yield* leaveOverLimit(current.filter((id) => !admitted.includes(id)));
+    yield* leaveOverLimit(
+      pipe(
+        current,
+        Array.filter((id) => !admitted.includes(id)),
+      ),
+    );
     yield* removeDepartedGuilds(admitted, stored);
     return {
       botUserId,
       admitted,
-      fresh: admitted.filter((id) => !stored.includes(id)),
-      known: admitted.filter((id) => stored.includes(id)),
+      fresh: pipe(
+        admitted,
+        Array.filter((id) => !stored.includes(id)),
+      ),
+      known: pipe(
+        admitted,
+        Array.filter((id) => stored.includes(id)),
+      ),
     };
   },
 );

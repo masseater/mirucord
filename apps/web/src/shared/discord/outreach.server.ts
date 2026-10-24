@@ -1,5 +1,5 @@
 import { Discord, UI } from "dfx";
-import { Array, Effect, Option, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema } from "effect";
 
 import { decodeBody, withDiscord } from "./client.server";
 import type { DiscordRequestError } from "./client.server";
@@ -47,7 +47,12 @@ const linkRow = (
   links: NonNullable<OutgoingMessage["links"]>,
 ): Discord.ActionRowComponentForMessageRequest =>
   UI.row(
-    links.map(({ label, url }) => UI.button({ style: Discord.ButtonStyleTypes.LINK, label, url })),
+    pipe(
+      links,
+      Array.map(({ label, url }) =>
+        UI.button({ style: Discord.ButtonStyleTypes.LINK, label, url }),
+      ),
+    ),
   );
 
 const postChannelMessage = ({

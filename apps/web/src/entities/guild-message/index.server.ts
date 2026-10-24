@@ -23,6 +23,7 @@ export {
   containsQuery,
   indexTokens,
   queryTokens,
+  sealedTokens,
   searchableTexts,
 } from "./lib/search-tokens.server";
 export { searchSimilar } from "./api/vector-search.server";

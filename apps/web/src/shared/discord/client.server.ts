@@ -1,14 +1,19 @@
 import { env } from "cloudflare:workers";
 import { DiscordConfig, DiscordREST, DiscordRESTMemoryLive } from "dfx";
 import type { DiscordRestService } from "dfx/DiscordREST";
-import { Context, Data, Effect, Layer, ManagedRuntime, Option, Redacted, Schema } from "effect";
+import { Context, Effect, Layer, ManagedRuntime, Option, Redacted, Schema } from "effect";
 import { FetchHttpClient } from "effect/http";
 import type { ReadonlyDeep } from "type-fest";
 
-class DiscordRequestError extends Data.TaggedError("DiscordRequestError")<{
-  readonly status: Option.Option<number>;
-  readonly cause: unknown;
-}> {}
+const taggedError = Schema.TaggedError;
+
+class DiscordRequestError extends taggedError<
+  DiscordRequestError,
+  { readonly brand: unique symbol }
+>()("DiscordRequestError", {
+  status: Schema.Option(Schema.Finite),
+  cause: Schema.Unknown,
+}) {}
 
 type DiscordFailure = Readonly<{ response?: Readonly<{ status: number }> | undefined }>;
 
@@ -23,7 +28,7 @@ const discordRest = discordRuntime.contextEffect.pipe(
 );
 
 const requestErrorOf = (cause: DiscordFailure): DiscordRequestError =>
-  new DiscordRequestError({
+  DiscordRequestError.make({
     status: Option.fromUndefinedOr(cause.response).pipe(Option.map(({ status }) => status)),
     cause,
   });

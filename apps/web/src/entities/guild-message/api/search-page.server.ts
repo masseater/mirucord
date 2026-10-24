@@ -1,4 +1,4 @@
-import { Array, Data, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe, Schema } from "effect";
 
 import { readChunk } from "#/entities/guild-message/lib/search-query";
 import type { Hit } from "#/entities/guild-message/lib/search-query";
@@ -9,10 +9,17 @@ import { cachedBytes } from "./search-cache.server";
 import type { FileGate, FileRead } from "./search-cache.server";
 import { chunkKey } from "./search-files.server";
 
-class MissingFile extends Data.TaggedError("MissingFile")<Readonly<{ key: string }>> {}
+const taggedError = Schema.TaggedError;
+
+class MissingFile extends taggedError<MissingFile, { readonly brand: unique symbol }>()(
+  "MissingFile",
+  {
+    key: Schema.String,
+  },
+) {}
 
 const required = (read: FileRead): Effect.Effect<ArrayBuffer, MissingFile> =>
-  Effect.fromOption(read.bytes).pipe(Effect.mapError(() => new MissingFile({ key: read.key })));
+  Effect.fromOption(read.bytes).pipe(Effect.mapError(() => MissingFile.make({ key: read.key })));
 
 const textDecoder = new TextDecoder();
 
@@ -42,7 +49,9 @@ const entryAt = (
   { segment, ordinal }: Hit,
 ): Option.Option<SealedEntry> => {
   const id = chunkId({ segment, chunk: chunkOf(ordinal) });
-  return Option.fromUndefinedOr(chunks.find((chunk) => chunk.id === id)).pipe(
+  return pipe(
+    chunks,
+    Array.findFirst((chunk) => chunk.id === id),
     Option.flatMap(({ entries }) => Option.fromUndefinedOr(entries[ordinal % CHUNK_SIZE])),
   );
 };
@@ -56,16 +65,23 @@ const loadPage = ({
   FileGate
 > =>
   Effect.forEach(
-    Array.dedupeWith(
-      page.map(({ segment, ordinal }) => ({ segment, chunk: chunkOf(ordinal) })),
-      (left, right) => chunkId(left) === chunkId(right),
+    pipe(
+      page,
+      Array.map(({ segment, ordinal }) => ({ segment, chunk: chunkOf(ordinal) })),
+      Array.dedupeWith((left, right) => chunkId(left) === chunkId(right)),
     ),
     (ref) => loadChunk(guildId, ref),
     { concurrency: "unbounded" },
   ).pipe(
     Effect.map((chunks) => ({
-      entries: page.flatMap((hit) => Option.toArray(entryAt(chunks, hit))),
-      reads: chunks.map(({ read }) => read),
+      entries: pipe(
+        page,
+        Array.flatMap((hit) => Option.toArray(entryAt(chunks, hit))),
+      ),
+      reads: pipe(
+        chunks,
+        Array.map(({ read }) => read),
+      ),
     })),
   );
 

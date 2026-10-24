@@ -1,5 +1,5 @@
 import { createMcpHandler } from "@modelcontextprotocol/server";
-import { Effect, Option, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema } from "effect";
 
 import { buildServer } from "#/features/mcp/api/tools.server";
 import { SITE_ORIGIN } from "#/shared/config";
@@ -48,11 +48,12 @@ const requestOf = (body: string): Request =>
   });
 
 const sseData = (body: string): string =>
-  body
-    .split("\n")
-    .filter((line) => line.startsWith(SSE_DATA))
-    .map((line) => line.slice(SSE_DATA.length))
-    .join("");
+  pipe(
+    body.split("\n"),
+    Array.filter((line) => line.startsWith(SSE_DATA)),
+    Array.map((line) => line.slice(SSE_DATA.length)),
+    Array.join(""),
+  );
 
 const callTool = ({
   name,
@@ -87,7 +88,12 @@ const idsOf =
     outcome.pipe(
       Effect.flatMap(({ structured }) => decodeListing(Option.getOrUndefined(structured))),
       Effect.map((listing) => Option.getOrElse(Option.fromUndefinedOr(listing[key]), () => [])),
-      Effect.map((items) => items.map(({ id }) => id)),
+      Effect.map((items) =>
+        pipe(
+          items,
+          Array.map(({ id }) => id),
+        ),
+      ),
       Effect.orDie,
     );
 

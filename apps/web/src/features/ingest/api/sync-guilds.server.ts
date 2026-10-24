@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Array, DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { db, guild, listGuildIds, role } from "#/shared/db/index.server";
@@ -70,8 +70,11 @@ const replaceRoles = (discordGuild: DiscordGuild): Effect.Effect<void> =>
     Effect.promise(() =>
       db.batch([
         db.delete(role).where(eq(role.guildId, discordGuild.id)),
-        ...discordGuild.roles.map(({ id, permissions }) =>
-          db.insert(role).values({ id, guildId: discordGuild.id, permissions }),
+        ...pipe(
+          discordGuild.roles,
+          Array.map(({ id, permissions }) =>
+            db.insert(role).values({ id, guildId: discordGuild.id, permissions }),
+          ),
         ),
       ]),
     ),
@@ -115,7 +118,10 @@ const admitJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestEr
   reconcileMembership.pipe(
     Effect.flatMap(({ botUserId, fresh }) =>
       eachGuild(
-        fresh.filter((id) => id === guildId),
+        pipe(
+          fresh,
+          Array.filter((id) => id === guildId),
+        ),
         (id) => syncGuild(botUserId, id),
       ),
     ),

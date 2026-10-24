@@ -1,4 +1,4 @@
-import { Array, Effect, Number, Option, Schema } from "effect";
+import { Array, Effect, Number, Option, pipe, Schema } from "effect";
 
 import { STAMP_BYTES } from "./search-layout";
 import { encodeShard, shardCountOf, shardOf } from "./search-shard";
@@ -40,11 +40,14 @@ interface Collecting {
 type Bucket = Map<number, Collecting>;
 
 const entriesOf = (bucket: readonly (readonly [number, Postings])[]): readonly TokenPostings[] =>
-  bucket.map(([token, { ordinals, channels }]) => ({
-    token,
-    ordinals,
-    channels,
-  }));
+  pipe(
+    bucket,
+    Array.map(([token, { ordinals, channels }]) => ({
+      token,
+      ordinals,
+      channels,
+    })),
+  );
 
 const collect = (
   rows: readonly IndexRow[],
@@ -66,14 +69,25 @@ const collect = (
       add(token, ordinal, row.channel);
     }
   }
-  return buckets.map((bucket) => entriesOf(Array.fromIterable(bucket)));
+  return pipe(
+    buckets,
+    Array.map((bucket) => entriesOf(Array.fromIterable(bucket))),
+  );
 };
 
 const encodeShards = (rows: readonly IndexRow[], shards: number): readonly ArrayBuffer[] =>
-  collect(rows, shards).map((entries) => encodeShard(entries));
+  pipe(
+    collect(rows, shards),
+    Array.map((entries) => encodeShard(entries)),
+  );
 
 const postingsOf = (rows: readonly IndexRow[]): number =>
-  Number.sumAll(rows.map(({ tokens }) => tokens.length));
+  Number.sumAll(
+    pipe(
+      rows,
+      Array.map(({ tokens }) => tokens.length),
+    ),
+  );
 
 const buildIndex = (rows: readonly IndexRow[]): BuiltIndex => ({
   count: rows.length,
@@ -87,7 +101,12 @@ const encodeRecent = (rows: readonly IndexRow[]): ArrayBuffer => {
   const indexAt = stampsAt + rows.length * STAMP_BYTES;
   const buffer = new ArrayBuffer(indexAt + indexBytes.byteLength);
   new DataView(buffer).setUint32(FIRST, rows.length, true);
-  new Float64Array(buffer, stampsAt, rows.length).set(rows.map(({ createdAt }) => createdAt));
+  new Float64Array(buffer, stampsAt, rows.length).set(
+    pipe(
+      rows,
+      Array.map(({ createdAt }) => createdAt),
+    ),
+  );
   new Uint8Array(buffer, indexAt).set(new Uint8Array(indexBytes));
   return buffer;
 };

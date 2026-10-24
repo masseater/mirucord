@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { MASCOT_NAME } from "#/shared/config";
@@ -16,9 +17,10 @@ const CutIn = (): ReactNode => (
     <img src={cutinMiru} alt="" width="2048" height="2048" loading="lazy" className="cutin-miru" />
     <p className="cutin-title text-milk font-maru font-black">
       <span className="cutin-lead">{LEAD}</span>
-      {TITLE.map((line) => (
-        <span key={line}>{line}</span>
-      ))}
+      {pipe(
+        TITLE,
+        Array.map((line) => <span key={line}>{line}</span>),
+      )}
     </p>
   </div>
 );

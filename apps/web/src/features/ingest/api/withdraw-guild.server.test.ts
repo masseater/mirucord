@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
-import { Array, DateTime, Effect, Exit } from "effect";
+import { Array, DateTime, Effect, Exit, pipe } from "effect";
 import { beforeEach, expect, vi } from "vite-plus/test";
 
 import { createGuildKey } from "#/shared/crypto/index.server";
@@ -76,7 +76,14 @@ const stateOf = (guildId: string): Effect.Effect<readonly string[]> =>
       .select({ state: ingestConsent.state })
       .from(ingestConsent)
       .where(eq(ingestConsent.guildId, guildId)),
-  ).pipe(Effect.map((rows) => rows.map(({ state }) => state)));
+  ).pipe(
+    Effect.map((rows) =>
+      pipe(
+        rows,
+        Array.map(({ state }) => state),
+      ),
+    ),
+  );
 
 const deliverWithdrawal = (guildId: string, attempts: number): Effect.Effect<void> =>
   ingestDeliveries([

@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import { useId } from "react";
 import type { ReactNode } from "react";
 
@@ -41,16 +42,19 @@ const FlowDiagram = ({ layout }: Readonly<{ layout: keyof typeof LAYOUTS }>): Re
   return (
     <svg viewBox={viewBox} aria-labelledby={titleId} className={`block h-auto w-full ${className}`}>
       <title id={titleId}>{LABEL}</title>
-      {links.map((path) => (
-        <path
-          key={path}
-          d={path}
-          className="stroke-lavender-deep dash-flow motion-safe:animate-flow"
-          fill="none"
-          strokeWidth="5"
-          strokeLinecap="round"
-        />
-      ))}
+      {pipe(
+        links,
+        Array.map((path) => (
+          <path
+            key={path}
+            d={path}
+            className="stroke-lavender-deep dash-flow motion-safe:animate-flow"
+            fill="none"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+        )),
+      )}
       <FlowCarry starts={carry} />
       <ServerNode left={server.left} top={server.top} />
       <MiruNode left={miru.left} top={miru.top} />

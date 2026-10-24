@@ -1,3 +1,5 @@
+import { Array, Record, pipe } from "effect";
+
 const REACT_STATE_HOOKS: readonly string[] = [
   "useState",
   "useReducer",
@@ -129,22 +131,32 @@ const requiredStack: Readonly<Record<string, readonly string[]>> = {
   ],
 };
 
-const requiredStackEntries = Object.entries(requiredStack).flatMap(([message, modules]) =>
-  modules.map((module) => ({ message, module })),
+const requiredStackEntries = pipe(
+  Record.toEntries(requiredStack),
+  Array.flatMap(([message, modules]) =>
+    pipe(
+      modules,
+      Array.map((module) => ({ message, module })),
+    ),
+  ),
 );
 
-const requiredStackPaths: readonly Readonly<{ name: string; message: string }>[] =
-  requiredStackEntries
-    .filter(({ module }) => !module.includes("*"))
-    .map(({ message, module }) => ({ name: module, message }));
+const requiredStackPaths: readonly Readonly<{ name: string; message: string }>[] = pipe(
+  requiredStackEntries,
+  Array.filter(({ module }) => !module.includes("*")),
+  Array.map(({ message, module }) => ({ name: module, message })),
+);
 
 const requiredStackPatterns: readonly Readonly<{ group: readonly string[]; message: string }>[] =
-  requiredStackEntries.map(({ message, module }) => {
-    if (module.includes("*")) {
-      return { group: [module, `${module}/**`], message };
-    }
-    return { group: [`${module}/**`], message };
-  });
+  pipe(
+    requiredStackEntries,
+    Array.map(({ message, module }) => {
+      if (module.includes("*")) {
+        return { group: [module, `${module}/**`], message };
+      }
+      return { group: [`${module}/**`], message };
+    }),
+  );
 
 const restrictedImports = {
   paths: [
@@ -172,4 +184,69 @@ const generated = [
   "CHANGELOG.md",
 ];
 
-export { generated, requiredStack, restrictedImports };
+type RuleMap = Readonly<Record<string, unknown>>;
+type Rules = Readonly<Record<string, "error">>;
+
+const ruleNamesOf = (rules: RuleMap | undefined): readonly string[] => Record.keys(rules ?? {});
+
+const asErrors = (names: readonly string[]): Rules =>
+  Record.fromEntries(
+    pipe(
+      names,
+      Array.map((name) => [name, "error"] as const),
+    ),
+  );
+
+const allRulesOf = ({ prefix, rules }: Readonly<{ prefix: string; rules: RuleMap }>): Rules =>
+  asErrors(
+    pipe(
+      ruleNamesOf(rules),
+      Array.map((rule) => `${prefix}/${rule}`),
+    ),
+  );
+
+const renamedRulesOf = ({
+  rules,
+  from,
+  to,
+}: Readonly<{ rules: RuleMap; from: string; to: string }>): Rules =>
+  asErrors(
+    pipe(
+      ruleNamesOf(rules),
+      Array.map((name) => name.replace(from, to)),
+    ),
+  );
+
+const rulesMissingFrom = ({
+  rules,
+  from,
+  to,
+  taken,
+}: Readonly<{ rules: RuleMap | undefined; from: string; to: string; taken: Rules }>): Rules =>
+  asErrors(
+    pipe(
+      ruleNamesOf(rules),
+      Array.filter((name) => !(name.replace(from, to) in taken)),
+    ),
+  );
+
+const presetRulesOf = (presets: Readonly<Record<string, Readonly<{ rules?: RuleMap }>>>): Rules =>
+  asErrors(
+    pipe(
+      Record.values(presets),
+      Array.flatMap((preset) => ruleNamesOf(preset.rules)),
+    ),
+  );
+
+export {
+  allRulesOf,
+  asErrors,
+  generated,
+  presetRulesOf,
+  renamedRulesOf,
+  requiredStack,
+  restrictedImports,
+  ruleNamesOf,
+  rulesMissingFrom,
+};
+export type { RuleMap, Rules };

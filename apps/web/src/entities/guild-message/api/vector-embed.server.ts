@@ -1,6 +1,6 @@
 import { and, desc, eq, isNull, max } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Boolean, Effect, Option, Order, String, pipe } from "effect";
+import { Array, Boolean, Effect, Option, Order, pipe, String } from "effect";
 
 import { searchableTexts } from "#/entities/guild-message/lib/search-tokens.server";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
@@ -82,7 +82,12 @@ const textsOf = (keys: Keys, rows: readonly PendingRow[]): Effect.Effect<readonl
         guildId: keys.guildId,
         channelId: row.channelId,
         messageId: row.id,
-      }).pipe(Effect.map((body) => ({ row, text: searchableTexts(body).join(TEXT_SEPARATOR) }))),
+      }).pipe(
+        Effect.map((body) => ({
+          row,
+          text: pipe(searchableTexts(body), Array.join(TEXT_SEPARATOR)),
+        })),
+      ),
     ),
   );
 
@@ -122,7 +127,10 @@ const embedChunk = Effect.fn("vectors.embedChunk")(function* embedChunk(
 ) {
   const result = yield* embedTexts({
     priority: "background",
-    texts: chunk.map(({ text }) => text),
+    texts: pipe(
+      chunk,
+      Array.map(({ text }) => text),
+    ),
   });
   if (result.status === "over-budget") {
     return false;
@@ -140,10 +148,16 @@ const wordedTexts = Effect.fnUntraced(function* wordedTexts(
   rows: readonly PendingRow[],
 ) {
   const texts = yield* textsOf(batch.keys, rows);
-  const blank = texts.filter(({ text }) => String.isEmpty(text));
+  const blank = pipe(
+    texts,
+    Array.filter(({ text }) => String.isEmpty(text)),
+  );
   yield* storeVectors(batch, { embedded: [], blank });
   return Array.sort(
-    texts.filter(({ text }) => String.isNonEmpty(text)),
+    pipe(
+      texts,
+      Array.filter(({ text }) => String.isNonEmpty(text)),
+    ),
     byLength,
   );
 });

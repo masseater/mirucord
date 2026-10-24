@@ -2,7 +2,7 @@ import { Stack, isResourceOfType } from "alchemy";
 import { Rules } from "alchemy/Cloudflare";
 import { Secret } from "alchemy/Fly";
 import { Secret as GitHubSecret, Variable as GitHubVariable } from "alchemy/GitHub";
-import { Array as Arr, Effect, Match, Option, Schema } from "effect";
+import { Array as Arr, Effect, Match, Option, pipe, Record, Schema } from "effect";
 
 import { prefixesOf } from "./app-name";
 
@@ -44,8 +44,9 @@ const offendersOf = (prefixes: Prefixes): Effect.Effect<readonly string[], never
     const stack = yield* Stack;
     return [
       ...unprefixedStack(prefixes, stack.name),
-      ...Object.values(stack.resources).flatMap((resource) =>
-        describeUnprefixed(prefixes, resource),
+      ...pipe(
+        Record.values(stack.resources),
+        Arr.flatMap((resource) => describeUnprefixed(prefixes, resource)),
       ),
     ];
   });
@@ -58,7 +59,7 @@ export const checkAppPrefix = (name: string): Effect.Effect<readonly string[], n
       onNonEmpty: (found) =>
         Effect.die(
           new Error(
-            `Alchemy のスタック名は "${name}" か "${prefixes.prefix}" で始まる名前、リソース名は "${prefixes.prefix}"（Rules.List と Fly.Secret は "${prefixes.envPrefix}"、GitHub の Secret と Variable は対象外）で始める: ${found.join(", ")}`,
+            `Alchemy のスタック名は "${name}" か "${prefixes.prefix}" で始まる名前、リソース名は "${prefixes.prefix}"（Rules.List と Fly.Secret は "${prefixes.envPrefix}"、GitHub の Secret と Variable は対象外）で始める: ${Arr.join(found, ", ")}`,
           ),
         ),
     }),

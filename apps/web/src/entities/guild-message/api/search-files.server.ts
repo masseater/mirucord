@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Array, Effect, Option, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema } from "effect";
 
 import { chunkCountOf } from "#/entities/guild-message/lib/search-segment";
 
@@ -192,7 +192,15 @@ const sweepFrom = (
       ...Option.match(cursor, { onNone: () => ({}), onSome: (from) => ({ cursor: from }) }),
     }),
   ).pipe(
-    Effect.tap((listed) => deleteKeys({ bucket, keys: listed.objects.map(({ key }) => key) })),
+    Effect.tap((listed) =>
+      deleteKeys({
+        bucket,
+        keys: pipe(
+          listed.objects,
+          Array.map(({ key }) => key),
+        ),
+      }),
+    ),
     Effect.flatMap((listed) =>
       Option.match(
         Option.liftPredicate(listed, (page) => page.truncated),
@@ -211,7 +219,13 @@ const deleteSegments = ({
   guildId,
   segments,
 }: Bucketed & Readonly<{ segments: readonly SegmentEntry[] }>): Effect.Effect<void> =>
-  deleteKeys({ bucket, keys: segments.flatMap((segment) => segmentKeys(guildId, segment)) });
+  deleteKeys({
+    bucket,
+    keys: pipe(
+      segments,
+      Array.flatMap((segment) => segmentKeys(guildId, segment)),
+    ),
+  });
 
 export {
   archiveKey,

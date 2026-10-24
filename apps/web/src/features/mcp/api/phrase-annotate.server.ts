@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Array, Effect, Layer, Option, Schema, String } from "effect";
+import { Array, Effect, Layer, Option, pipe, Schema, String } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { fromUint8Array } from "js-base64";
 
@@ -54,10 +54,17 @@ type Answered = typeof Answer.Type;
 type Image = Readonly<{ data: string; contentType: string }>;
 
 const excerptOf = ({ content, stickers }: MessageBody): string =>
-  [content, ...stickers.map((name) => `[sticker: ${name}]`)]
-    .filter((text) => String.isNonEmpty(text))
-    .join(" ")
-    .slice(FIRST, EXCERPT_LENGTH);
+  pipe(
+    [
+      content,
+      ...pipe(
+        stickers,
+        Array.map((name) => `[sticker: ${name}]`),
+      ),
+    ],
+    Array.filter((text) => String.isNonEmpty(text)),
+    Array.join(" "),
+  ).slice(FIRST, EXCERPT_LENGTH);
 
 const speakerOf =
   (names: readonly string[]) =>
@@ -68,18 +75,36 @@ const lineOf = (speaker: string, body: MessageBody, mark: string): string =>
   `${mark}${speaker}: ${excerptOf(body).replaceAll("\n", " ")}`;
 
 const sampleText = ({ before, use, after }: OpenedSample, index: number): string => {
-  const names = Array.dedupe([...before, use, ...after].map(({ authorName }) => authorName));
+  const names = Array.dedupe(
+    pipe(
+      [...before, use, ...after],
+      Array.map(({ authorName }) => authorName),
+    ),
+  );
   const speaker = speakerOf(names);
-  return [
-    `例${index + NUMBER_FROM}`,
-    ...before.map((body) => lineOf(speaker(body), body, "  ")),
-    lineOf(speaker(use), use, "▶ "),
-    ...after.map((body) => lineOf(speaker(body), body, "  ")),
-  ].join("\n");
+  return pipe(
+    [
+      `例${index + NUMBER_FROM}`,
+      ...pipe(
+        before,
+        Array.map((body) => lineOf(speaker(body), body, "  ")),
+      ),
+      lineOf(speaker(use), use, "▶ "),
+      ...pipe(
+        after,
+        Array.map((body) => lineOf(speaker(body), body, "  ")),
+      ),
+    ],
+    Array.join("\n"),
+  );
 };
 
 const promptOf = ({ label, uses, people, samples }: NoteInput): string => {
-  const examples = samples.map((sample, index) => sampleText(sample, index)).join("\n\n");
+  const examples = pipe(
+    samples,
+    Array.map((sample, index) => sampleText(sample, index)),
+    Array.join("\n\n"),
+  );
   const subject = Option.match(
     Option.liftPredicate(label.kind, (kind) => kind === "emoji"),
     {
@@ -146,10 +171,13 @@ type ContentPart =
 
 const contentOf = (prompt: string, image: Option.Option<Image>): readonly ContentPart[] => [
   { type: "text" as const, text: prompt },
-  ...Option.toArray(image).map(({ data, contentType }) => ({
-    type: "image_url" as const,
-    image_url: { url: `data:${contentType};base64,${data}` },
-  })),
+  ...pipe(
+    Option.toArray(image),
+    Array.map(({ data, contentType }) => ({
+      type: "image_url" as const,
+      image_url: { url: `data:${contentType};base64,${data}` },
+    })),
+  ),
 ];
 
 const answerOf = (output: GemmaOutput): Option.Option<Answered> =>
@@ -168,10 +196,12 @@ const askModel = (prompt: string, image: Option.Option<Image>): Effect.Effect<Ge
   ).pipe(Effect.withSpan("annotatePhrase"));
 
 const namesIn = (input: NoteInput): readonly string[] =>
-  input.samples
-    .flatMap(({ before, use, after }) => [...before, use, ...after])
-    .map(({ authorName }) => authorName)
-    .filter((name) => Array.fromIterable(name).length >= SHORTEST_NAME);
+  pipe(
+    input.samples,
+    Array.flatMap(({ before, use, after }) => [...before, use, ...after]),
+    Array.map(({ authorName }) => authorName),
+    Array.filter((name) => Array.fromIterable(name).length >= SHORTEST_NAME),
+  );
 
 const noteOf = (input: NoteInput, { type, note }: Answered): Note => {
   if (type === "common") {
@@ -179,7 +209,10 @@ const noteOf = (input: NoteInput, { type, note }: Answered): Note => {
   }
   const trimmed = String.trim(note);
   const unlabelled = trimmed.replaceAll(input.label.label, "");
-  const named = namesIn(input).some((name) => unlabelled.includes(name));
+  const named = pipe(
+    namesIn(input),
+    Array.some((name) => unlabelled.includes(name)),
+  );
   const shown = Option.liftPredicate(trimmed, (text) => String.isNonEmpty(text) && !named);
   return { status: "server", note: Option.getOrNull(shown) };
 };

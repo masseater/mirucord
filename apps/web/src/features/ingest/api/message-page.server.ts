@@ -1,4 +1,4 @@
-import { Array, Effect, Option, Order } from "effect";
+import { Array, Effect, Option, Order, pipe } from "effect";
 
 import { listMessages, PAGE_SIZE } from "#/shared/discord/index.server";
 import type {
@@ -29,7 +29,11 @@ const oldestId = (ids: readonly string[]): Option.Option<string> =>
 
 const isNewerThan = Order.isGreaterThan(SnowflakeOrder);
 
-const idsOf = (page: readonly DiscordMessage[]): readonly string[] => page.map(({ id }) => id);
+const idsOf = (page: readonly DiscordMessage[]): readonly string[] =>
+  pipe(
+    page,
+    Array.map(({ id }) => id),
+  );
 
 const isFullPage = (page: readonly DiscordMessage[]): boolean => page.length >= PAGE_SIZE;
 

@@ -1,5 +1,5 @@
 import { eq, inArray } from "drizzle-orm";
-import { DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 
 import type { IngestRow } from "#/features/ingest/model/channel-ingest";
 import { channel, db } from "#/shared/db/index.server";
@@ -21,17 +21,29 @@ const isUnder = (parents: readonly string[], parentId: string | null): boolean =
   Option.exists(Option.fromNullOr(parentId), (id) => parents.includes(id));
 
 const settlementOf = (sync: ChannelSync, rows: readonly StoredRow[]): Settlement => {
-  const current = new Set(sync.stored.map(({ id }) => id));
-  const missing = rows.filter(({ id }) => !current.has(id));
+  const current = new Set(
+    pipe(
+      sync.stored,
+      Array.map(({ id }) => id),
+    ),
+  );
+  const missing = pipe(
+    rows,
+    Array.filter(({ id }) => !current.has(id)),
+  );
   return {
-    departed: missing
-      .filter(({ parentId }) => !isUnder(sync.unlisted, parentId))
-      .map(({ id }) => id),
-    orphaned: missing
-      .filter(
+    departed: pipe(
+      missing,
+      Array.filter(({ parentId }) => !isUnder(sync.unlisted, parentId)),
+      Array.map(({ id }) => id),
+    ),
+    orphaned: pipe(
+      missing,
+      Array.filter(
         ({ parentId, botAccess }) => isUnder(sync.unlisted, parentId) && botAccess === "readable",
-      )
-      .map(({ id }) => id),
+      ),
+      Array.map(({ id }) => id),
+    ),
   };
 };
 

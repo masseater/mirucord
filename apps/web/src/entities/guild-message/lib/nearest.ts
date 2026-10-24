@@ -36,7 +36,7 @@ const nearestRows = (request: ScoreRequest): readonly Scored[] =>
     Array.range(NO_SCORE, request.block.ordinals.length - NEXT),
     Array.filter((row) => row < request.block.ordinals.length && request.keep(row)),
     Array.map((row) => ({ row, score: scoreAt(request, row) })),
-    (scored) => scored.toSorted(byScore),
+    (rows) => Array.sort(rows, byScore),
     Array.take(request.limit),
   );
 

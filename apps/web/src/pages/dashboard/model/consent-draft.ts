@@ -1,4 +1,4 @@
-import { Array, Function, Option } from "effect";
+import { Array, Function, Option, pipe } from "effect";
 
 import { isNoticeCandidate } from "#/features/ingest";
 import type { GuildSettings } from "#/features/ingest/index.server";
@@ -13,10 +13,13 @@ type ConsentDraft =
 const UNTOUCHED: ConsentDraft = { status: "untouched" };
 
 const readableChannels = (settings: GuildSettings): GuildSettings["channels"] =>
-  settings.channels.filter(({ ingest }) => ingest !== "unreadable");
+  pipe(
+    settings.channels,
+    Array.filter(({ ingest }) => ingest !== "unreadable"),
+  );
 
 const noticeChannels = (settings: GuildSettings): GuildSettings["channels"] =>
-  settings.channels.filter(isNoticeCandidate);
+  pipe(settings.channels, Array.filter(isNoticeCandidate));
 
 const noticeChannelOfDataFirst = (settings: GuildSettings, draft: ConsentDraft): string => {
   if (draft.status === "edited") {

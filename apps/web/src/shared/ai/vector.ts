@@ -1,4 +1,4 @@
-import { Boolean, Option } from "effect";
+import { Array, Boolean, Option, pipe } from "effect";
 
 const DIMENSIONS = 1024;
 const INT8_MAX = 127;
@@ -13,7 +13,13 @@ type Quantized = Readonly<{ values: Int8Array; scale: number }>;
 const lengthOf = (vector: readonly number[]): number => Math.hypot(...vector);
 
 const peakOf = (vector: readonly number[]): number =>
-  Math.max(NO_SCALE, ...vector.map((value) => Math.abs(value)));
+  Math.max(
+    NO_SCALE,
+    ...pipe(
+      vector,
+      Array.map((value) => Math.abs(value)),
+    ),
+  );
 
 const quantize = (raw: readonly number[]): Quantized => {
   const length = lengthOf(raw);
@@ -31,7 +37,10 @@ const quantize = (raw: readonly number[]): Quantized => {
 };
 
 const dequantize = ({ values, scale }: Quantized): readonly number[] =>
-  Array.from(values, (value) => value * scale);
+  pipe(
+    Array.fromIterable(values),
+    Array.map((value) => value * scale),
+  );
 
 const encodeVector = ({ values, scale }: Quantized): Uint8Array => {
   const bytes = new Uint8Array(VECTOR_BYTES);

@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { MEMBERS } from "#/pages/home/ui/common/members";
@@ -41,17 +42,20 @@ const POSTS = [
 const ForumPosts = (): ReactNode => (
   <div className="relative mt-1 max-w-xl">
     <ul className="grid gap-2">
-      {POSTS.map((post) => (
-        <ForumPost
-          key={post.title}
-          tags={post.tags}
-          title={post.title}
-          member={post.member}
-          preview={post.preview}
-          replies={post.replies}
-          ago={post.ago}
-        />
-      ))}
+      {pipe(
+        POSTS,
+        Array.map((post) => (
+          <ForumPost
+            key={post.title}
+            tags={post.tags}
+            title={post.title}
+            member={post.member}
+            preview={post.preview}
+            replies={post.replies}
+            ago={post.ago}
+          />
+        )),
+      )}
     </ul>
     <span aria-hidden="true" className="forum-track">
       <Mascot className="forum-miru size-14" />

@@ -1,7 +1,7 @@
 import { BitField } from "@sapphire/bitfield";
 import { OverwriteType, PermissionFlagsBits } from "discord-api-types/v10";
 import type { APIOverwrite } from "discord-api-types/v10";
-import { Array, Function, Option, Record } from "effect";
+import { Array, Function, Option, pipe, Record } from "effect";
 
 const DATA_FIRST_ARITY = 2;
 
@@ -31,10 +31,13 @@ const applyOne = (permissions: bigint, overwrite: Option.Option<Overwrite>): big
 
 const basePermissions = (reader: ReaderContext): bigint =>
   Permissions.union(
-    ...[reader.guildId, ...reader.memberRoleIds].map((roleId) =>
-      Option.getOrElse(
-        Option.map(Record.get(reader.rolePermissions, roleId), BigInt),
-        () => Permissions.zero,
+    ...pipe(
+      [reader.guildId, ...reader.memberRoleIds],
+      Array.map((roleId) =>
+        Option.getOrElse(
+          Option.map(Record.get(reader.rolePermissions, roleId), BigInt),
+          () => Permissions.zero,
+        ),
       ),
     ),
   );
@@ -44,13 +47,24 @@ const channelPermissions = (reader: ReaderContext, overwrites: readonly Overwrit
     basePermissions(reader),
     Array.findFirst(overwrites, ({ id }) => id === reader.guildId),
   );
-  const roleOverwrites = overwrites.filter(
-    ({ id, type }) => type === OverwriteType.Role && reader.memberRoleIds.includes(id),
+  const roleOverwrites = pipe(
+    overwrites,
+    Array.filter(
+      ({ id, type }) => type === OverwriteType.Role && reader.memberRoleIds.includes(id),
+    ),
+  );
+  const allows = pipe(
+    roleOverwrites,
+    Array.map(({ allow }) => BigInt(allow)),
+  );
+  const denies = pipe(
+    roleOverwrites,
+    Array.map(({ deny }) => BigInt(deny)),
   );
   const afterRoles = applyOverwrite(
     afterEveryone,
-    Permissions.union(...roleOverwrites.map(({ allow }) => BigInt(allow))),
-    Permissions.union(...roleOverwrites.map(({ deny }) => BigInt(deny))),
+    Permissions.union(...allows),
+    Permissions.union(...denies),
   );
   return applyOne(
     afterRoles,

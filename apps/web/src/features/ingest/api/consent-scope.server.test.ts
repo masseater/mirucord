@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { Array, DateTime, Effect } from "effect";
+import { Array, DateTime, Effect, pipe } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vite-plus/test";
 
@@ -61,6 +61,18 @@ const JOBS_OUTSIDE_SCOPE = [
 const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
   Effect.gen(function* seedRows() {
     const wrappedKey = yield* createGuildKey;
+    const channelRows = pipe(
+      seed.channels,
+      Array.map(({ id, botAccess, backfill }) => ({
+        id,
+        backfill,
+        guildId: seed.id,
+        name: `channel ${id}`,
+        type: 0,
+        permissionOverwrites: [],
+        botAccess,
+      })),
+    );
     yield* Effect.promise(() =>
       db.batch([
         db.insert(guild).values({
@@ -70,29 +82,23 @@ const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
           wrappedKey,
           joinedAt: SEEDED_AT,
         }),
-        db.insert(channel).values(
-          seed.channels.map(({ id, botAccess, backfill }) => ({
-            id,
-            backfill,
-            guildId: seed.id,
-            name: `channel ${id}`,
-            type: 0,
-            permissionOverwrites: [],
-            botAccess,
-          })),
-        ),
+        db.insert(channel).values(channelRows),
       ]),
     );
   });
 
 const seedConsents = (): Promise<unknown> =>
   db.insert(ingestConsent).values(
-    GUILDS.filter(({ consented }) => consented).map(({ id }) => ({
-      guildId: id,
-      grantedBy: OWNER,
-      grantedAt: SEEDED_AT,
-      noticeChannelId: "0",
-    })),
+    pipe(
+      GUILDS,
+      Array.filter(({ consented }) => consented),
+      Array.map(({ id }) => ({
+        guildId: id,
+        grantedBy: OWNER,
+        grantedAt: SEEDED_AT,
+        noticeChannelId: "0",
+      })),
+    ),
   );
 
 const queuedBy = (
@@ -103,8 +109,14 @@ const queuedBy = (
     const sendBatch = vi.spyOn(env.INGEST, "sendBatch");
     sendBatch.mockClear();
     yield* refresh(guildId).pipe(Effect.orDie);
-    return sendBatch.mock.calls.flatMap(([messages]) =>
-      Array.fromIterable(messages).map(({ body }) => body),
+    return pipe(
+      sendBatch.mock.calls,
+      Array.flatMap(([messages]) =>
+        pipe(
+          Array.fromIterable(messages),
+          Array.map(({ body }) => body),
+        ),
+      ),
     );
   });
 

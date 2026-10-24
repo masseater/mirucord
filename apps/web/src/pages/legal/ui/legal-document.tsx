@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { REPOSITORY_URL } from "#/shared/config";
@@ -18,13 +19,16 @@ const LegalDocument = ({
   <AppFrame>
     <h1 className="text-dc-bright font-maru text-3xl font-black">{title}</h1>
     <p className="text-dc-muted text-sm font-bold">{REVISED}</p>
-    {sections.map((section) => (
-      <LegalSection
-        key={section.heading}
-        heading={section.heading}
-        paragraphs={section.paragraphs}
-      />
-    ))}
+    {pipe(
+      sections,
+      Array.map((section) => (
+        <LegalSection
+          key={section.heading}
+          heading={section.heading}
+          paragraphs={section.paragraphs}
+        />
+      )),
+    )}
     <a href={ISSUES_URL} className="hover:text-dc-bright self-start font-bold underline">
       {CONTACT}
     </a>

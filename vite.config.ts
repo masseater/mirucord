@@ -8,31 +8,31 @@ import baselineJs from "eslint-plugin-baseline-js";
 import reactHooks from "eslint-plugin-react-hooks";
 import { defineConfig } from "vite-plus";
 
-import { generated, restrictedImports } from "./lint.config.ts";
+import {
+  allRulesOf,
+  asErrors,
+  generated,
+  presetRulesOf,
+  renamedRulesOf,
+  restrictedImports,
+  ruleNamesOf,
+  rulesMissingFrom,
+} from "./lint.config.ts";
 
-type Rules = Readonly<Record<string, "error">>;
+const reactHooksRules = renamedRulesOf({
+  rules: reactHooks.configs["recommended-latest"].rules,
+  from: "react-hooks/",
+  to: "react-hooks-js/",
+});
 
-const asErrors = (names: readonly string[]): Rules =>
-  Object.fromEntries(names.map((name) => [name, "error"] as const));
+const eslintReactRules = rulesMissingFrom({
+  rules: eslintReact.configs["strict-typescript"].rules,
+  from: "@eslint-react/",
+  to: "react-hooks-js/",
+  taken: reactHooksRules,
+});
 
-const allRulesOf = (prefix: string, plugin: Readonly<{ rules: object }>): Rules =>
-  asErrors(Object.keys(plugin.rules).map((rule) => `${prefix}/${rule}`));
-
-const reactHooksRules = asErrors(
-  Object.keys(reactHooks.configs["recommended-latest"].rules).map((name) =>
-    name.replace("react-hooks/", "react-hooks-js/"),
-  ),
-);
-
-const eslintReactRules = asErrors(
-  Object.keys(eslintReact.configs["strict-typescript"].rules ?? {}).filter(
-    (name) => !(name.replace("@eslint-react/", "react-hooks-js/") in reactHooksRules),
-  ),
-);
-
-const effectRules = asErrors(
-  Object.values(effectPresets).flatMap((preset) => Object.keys(preset.rules ?? {})),
-);
+const effectRules = presetRulesOf(effectPresets);
 
 export default defineConfig({
   staged: {
@@ -84,21 +84,17 @@ export default defineConfig({
     rules: {
       "vite-plus/prefer-vite-plus-imports": "error",
       "no-comments/disallowComments": ["error", { allow: ["oxlint-disable", "eslint-disable"] }],
-      ...allRulesOf("tanstack-query", tanstackQuery),
-      ...allRulesOf("tanstack-router", tanstackRouter),
+      ...allRulesOf({ prefix: "tanstack-query", rules: tanstackQuery.rules }),
+      ...allRulesOf({ prefix: "tanstack-router", rules: tanstackRouter.rules }),
       "drizzle/enforce-delete-with-where": ["error", { drizzleObjectName: ["db"] }],
       "drizzle/enforce-update-with-where": ["error", { drizzleObjectName: ["db"] }],
-      ...allRulesOf("shadcn", shadcn),
-      ...allRulesOf("baseline-js", baselineJs),
+      ...allRulesOf({ prefix: "shadcn", rules: shadcn.rules }),
+      ...allRulesOf({ prefix: "baseline-js", rules: baselineJs.rules }),
       ...baselineJs.configs.recommended().rules,
-      ...asErrors(Object.keys(htmlReact.configs.all.rules ?? {})),
+      ...asErrors(ruleNamesOf(htmlReact.configs.all.rules)),
       ...reactHooksRules,
       ...eslintReactRules,
       ...effectRules,
-      "effecttsgo/prefer-effect-array": "off",
-      "effecttsgo/prefer-effect-record": "off",
-      "effecttsgo/duplicate-package": "off",
-      "effecttsgo/prefer-schema-tagged-error": "off",
       "eslint/sort-imports": "off",
       "eslint/sort-keys": "off",
       "import/no-named-export": "off",

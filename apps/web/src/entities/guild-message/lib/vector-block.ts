@@ -1,4 +1,4 @@
-import { Effect, Schema } from "effect";
+import { Array, Effect, pipe, Schema } from "effect";
 
 import { DIMENSIONS } from "#/shared/ai";
 import type { Quantized } from "#/shared/ai";
@@ -42,22 +42,31 @@ const blockOf = (entries: readonly VectorEntry[]): VectorBlock => {
     values.set(vector.values, row * DIMENSIONS);
   }
   return {
-    ordinals: entries.map(({ ordinal }) => ordinal),
-    channelIds: entries.map(({ channelId }) => channelId),
+    ordinals: pipe(
+      entries,
+      Array.map(({ ordinal }) => ordinal),
+    ),
+    channelIds: pipe(
+      entries,
+      Array.map(({ channelId }) => channelId),
+    ),
     scales: Float32Array.from(entries, ({ vector }) => vector.scale),
     values,
   };
 };
 
 const entriesOf = (block: VectorBlock): readonly VectorEntry[] =>
-  block.ordinals.map((ordinal, row) => ({
-    ordinal,
-    channelId: block.channelIds[row] ?? "",
-    vector: {
-      values: block.values.slice(row * DIMENSIONS, (row + NEXT_ROW) * DIMENSIONS),
-      scale: block.scales[row] ?? START,
-    },
-  }));
+  pipe(
+    block.ordinals,
+    Array.map((ordinal, row) => ({
+      ordinal,
+      channelId: block.channelIds[row] ?? "",
+      vector: {
+        values: block.values.slice(row * DIMENSIONS, (row + NEXT_ROW) * DIMENSIONS),
+        scale: block.scales[row] ?? START,
+      },
+    })),
+  );
 
 const asBytes = (view: Float32Array | Int8Array): Uint8Array =>
   new Uint8Array(view.buffer, view.byteOffset, view.byteLength);

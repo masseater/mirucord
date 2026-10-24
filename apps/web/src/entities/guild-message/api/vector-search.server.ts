@@ -1,4 +1,4 @@
-import { Array, Effect, Number, Option, Order, Record } from "effect";
+import { Array, Effect, Number, Option, Order, pipe, Record } from "effect";
 
 import { nearestRows } from "#/entities/guild-message/lib/nearest";
 import type { SealedEntry } from "#/entities/guild-message/lib/search-segment";
@@ -66,20 +66,23 @@ type Scan = Readonly<{
 }>;
 
 const scoreBlock = ({ request, segment, keep }: Scan, block: VectorBlock): readonly ScoredHit[] =>
-  nearestRows({
-    query: request.query,
-    block,
-    keep: (row) =>
-      keep({
-        ordinal: block.ordinals[row] ?? FIRST_CLUSTER,
-        channelId: block.channelIds[row] ?? "",
-      }),
-    limit: request.limit,
-  }).map(({ row, score }) => ({
-    segment,
-    ordinal: block.ordinals[row] ?? FIRST_CLUSTER,
-    score,
-  }));
+  pipe(
+    nearestRows({
+      query: request.query,
+      block,
+      keep: (row) =>
+        keep({
+          ordinal: block.ordinals[row] ?? FIRST_CLUSTER,
+          channelId: block.channelIds[row] ?? "",
+        }),
+      limit: request.limit,
+    }),
+    Array.map(({ row, score }) => ({
+      segment,
+      ordinal: block.ordinals[row] ?? FIRST_CLUSTER,
+      score,
+    })),
+  );
 
 type Probe = Readonly<{ segment: VectorSegment; cluster: number }>;
 
@@ -107,18 +110,29 @@ const scanProbe = (
     Effect.map((block) => {
       const found = Option.toArray(block);
       return {
-        hits: found.flatMap((opened) => scoreBlock(scan, opened)),
+        hits: pipe(
+          found,
+          Array.flatMap((opened) => scoreBlock(scan, opened)),
+        ),
         files: ONE_FILE,
-        vectors: Number.sumAll(found.map(({ ordinals }) => ordinals.length)),
+        vectors: Number.sumAll(
+          pipe(
+            found,
+            Array.map(({ ordinals }) => ordinals.length),
+          ),
+        ),
       };
     }),
   );
 };
 
 const vectorSegments = (head: SearchHead): readonly VectorSegment[] =>
-  head.segments.flatMap((entry) =>
-    Option.toArray(
-      Option.map(Option.fromUndefinedOr(entry.vectors), (vectors) => ({ entry, vectors })),
+  pipe(
+    head.segments,
+    Array.flatMap((entry) =>
+      Option.toArray(
+        Option.map(Option.fromUndefinedOr(entry.vectors), (vectors) => ({ entry, vectors })),
+      ),
     ),
   );
 
@@ -130,21 +144,34 @@ const nearestProbes = (
   clustered: readonly VectorSegment[],
   block: VectorBlock,
 ): readonly Probe[] => {
-  const byName = new Map(clustered.map((segment) => [segment.entry.name, segment]));
-  const totalClusters = Number.sumAll(clustered.map(({ vectors }) => vectors.clusters));
+  const byName = new Map(
+    pipe(
+      clustered,
+      Array.map((segment) => [segment.entry.name, segment]),
+    ),
+  );
+  const totalClusters = Number.sumAll(
+    pipe(
+      clustered,
+      Array.map(({ vectors }) => vectors.clusters),
+    ),
+  );
   const segmentAt = (row: number): Option.Option<VectorSegment> =>
     Option.fromUndefinedOr(byName.get(block.channelIds[row] ?? ""));
-  return nearestRows({
-    query: request.query,
-    block,
-    keep: (row) => Option.isSome(segmentAt(row)),
-    limit: probeCount(totalClusters),
-  }).flatMap(({ row }) =>
-    Option.toArray(
-      Option.map(segmentAt(row), (segment) => ({
-        segment,
-        cluster: block.ordinals[row] ?? FIRST_CLUSTER,
-      })),
+  return pipe(
+    nearestRows({
+      query: request.query,
+      block,
+      keep: (row) => Option.isSome(segmentAt(row)),
+      limit: probeCount(totalClusters),
+    }),
+    Array.flatMap(({ row }) =>
+      Option.toArray(
+        Option.map(segmentAt(row), (segment) => ({
+          segment,
+          cluster: block.ordinals[row] ?? FIRST_CLUSTER,
+        })),
+      ),
     ),
   );
 };
@@ -173,15 +200,38 @@ const probesOf = (
   segments: readonly VectorSegment[],
 ): Effect.Effect<readonly Probe[], never, FileGate> => {
   const isClustered = ({ vectors }: VectorSegment): boolean => vectors.clusters > SINGLE_CLUSTER;
-  const flat = segments.filter((segment) => !isClustered(segment));
-  const clustered = segments.filter((segment) => isClustered(segment));
+  const flat = pipe(
+    segments,
+    Array.filter((segment) => !isClustered(segment)),
+  );
+  const clustered = pipe(
+    segments,
+    Array.filter((segment) => isClustered(segment)),
+  );
   return clusteredProbes(request, head, clustered).pipe(
     Effect.map((probes) => [
-      ...flat.map((segment) => ({ segment, cluster: FIRST_CLUSTER })),
+      ...pipe(
+        flat,
+        Array.map((segment) => ({ segment, cluster: FIRST_CLUSTER })),
+      ),
       ...probes,
     ]),
   );
 };
+
+const statsOf = (scans: readonly Scanned[], segments: number): SimilarResult["stats"] => ({
+  segments,
+  files: pipe(
+    scans,
+    Array.map(({ files }) => files),
+    Number.sumAll,
+  ),
+  vectors: pipe(
+    scans,
+    Array.map(({ vectors }) => vectors),
+    Number.sumAll,
+  ),
+});
 
 const searchSimilar = (request: SimilarRequest): Effect.Effect<SimilarResult> =>
   readHead(request.guildId).pipe(
@@ -197,12 +247,13 @@ const searchSimilar = (request: SimilarRequest): Effect.Effect<SimilarResult> =>
       );
     }),
     Effect.flatMap(({ scans, segments }) => {
-      const top = Array.take(scans.flatMap(({ hits }) => hits).toSorted(byScore), request.limit);
-      const stats = {
-        segments,
-        files: Number.sumAll(scans.map(({ files }) => files)),
-        vectors: Number.sumAll(scans.map(({ vectors }) => vectors)),
-      };
+      const top = pipe(
+        scans,
+        Array.flatMap(({ hits }) => hits),
+        (rows) => Array.sort(rows, byScore),
+        Array.take(request.limit),
+      );
+      const stats = statsOf(scans, segments);
       return loadPage({ guildId: request.guildId, page: top }).pipe(
         Effect.map(({ entries }) => ({
           entries: Array.zipWith(entries, top, (entry, { score }) => ({ ...entry, score })),

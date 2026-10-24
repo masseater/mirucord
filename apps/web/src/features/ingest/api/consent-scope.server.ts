@@ -1,5 +1,5 @@
 import { and, eq, inArray, or } from "drizzle-orm";
-import { Array, DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import { isPastRetention } from "#/features/ingest/model/bot-access";
@@ -63,10 +63,14 @@ const purgeOutOfScope = (guildId: string, scope: ConsentScope): Effect.Effect<vo
   ).pipe(
     Effect.map(({ stored, channels, now }) => {
       const withMessages = new Set(stored);
-      return channels
-        .filter((row) => Option.isSome(Option.fromNullOr(row.newest)) || withMessages.has(row.id))
-        .filter((row) => scope.status === "awaiting" || isPastRetention(accessOf(row), now))
-        .map(({ id }) => id);
+      return pipe(
+        channels,
+        Array.filter(
+          (row) => Option.isSome(Option.fromNullOr(row.newest)) || withMessages.has(row.id),
+        ),
+        Array.filter((row) => scope.status === "awaiting" || isPastRetention(accessOf(row), now)),
+        Array.map(({ id }) => id),
+      );
     }),
     Effect.flatMap((outOfScope) =>
       Effect.forEach(outOfScope, (channelId) => purgeChannel({ guildId, channelId }), {
@@ -95,7 +99,16 @@ const enqueueReadable = ({ guildId, reach }: IngestRefresh): Effect.Effect<void>
       .select({ id: channel.id })
       .from(channel)
       .where(and(eq(channel.guildId, guildId), INGEST_REACH[reach])),
-  ).pipe(Effect.flatMap((rows) => enqueue(rows.map(({ id }) => ({ guildId, channelId: id })))));
+  ).pipe(
+    Effect.flatMap((rows) =>
+      enqueue(
+        pipe(
+          rows,
+          Array.map(({ id }) => ({ guildId, channelId: id })),
+        ),
+      ),
+    ),
+  );
 
 const enqueueInScope = (refresh: IngestRefresh, scope: ConsentScope): Effect.Effect<void> => {
   if (scope.status === "awaiting") {

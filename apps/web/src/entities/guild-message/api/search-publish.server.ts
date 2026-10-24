@@ -1,4 +1,4 @@
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import { SEQUENTIAL } from "#/entities/guild-message/lib/search-layout";
 
@@ -29,7 +29,13 @@ const replaceSegments = (
     concurrency: SEQUENTIAL,
   }).pipe(
     Effect.tap((placed) =>
-      writeFiles({ bucket: publisher.bucket, files: placed.flatMap(({ files }) => files) }),
+      writeFiles({
+        bucket: publisher.bucket,
+        files: pipe(
+          placed,
+          Array.flatMap(({ files }) => files),
+        ),
+      }),
     ),
     Effect.map((placed) => {
       searchLedger(publisher.db).drop(replaced);
@@ -145,7 +151,10 @@ const publishSearch = (publisher: Publisher): Effect.Effect<Option.Option<number
       deleteSegments({
         bucket,
         guildId,
-        segments: replaced.map((segment) => deletedEntry(segment)),
+        segments: pipe(
+          replaced,
+          Array.map((segment) => deletedEntry(segment)),
+        ),
       }),
     ),
     Effect.map(([, archive]) => nextRun(publisher, archive)),

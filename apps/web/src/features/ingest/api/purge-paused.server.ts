@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { Array, Effect } from "effect";
+import { Array, Effect, pipe } from "effect";
 
 import { channel, db } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
@@ -45,7 +45,13 @@ const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult> =>
       ).pipe(
         Effect.flatMap((threads) =>
           Effect.forEach(
-            [request.channelId, ...threads.map(({ id }) => id)],
+            [
+              request.channelId,
+              ...pipe(
+                threads,
+                Array.map(({ id }) => id),
+              ),
+            ],
             (channelId) => purgeChannel({ guildId: request.guildId, channelId }),
             { discard: true },
           ),

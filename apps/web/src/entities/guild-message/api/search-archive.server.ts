@@ -1,5 +1,5 @@
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Boolean, Effect, Number, Option, Order } from "effect";
+import { Array, Boolean, Effect, Number, Option, Order, pipe } from "effect";
 
 import { encodeShard, rangeAt, tokensIn } from "#/entities/guild-message/lib/search-shard";
 import type { PostingView, TokenPostings } from "#/entities/guild-message/lib/search-shard";
@@ -41,40 +41,74 @@ type Feeding = Readonly<{ from: number; shard: number; shards: number }>;
 const shardsFeeding = ({ from, shard, shards }: Feeding): readonly number[] =>
   Array.makeBy(Math.max(from / shards, NEXT), (index) => (shard % from) + index * shards);
 
-const sourcesFor = ({ merging: { guildId }, target, old, shard }: ShardJob): readonly Source[] => {
-  const placed = new Map(target.pieces.map((piece) => [piece.name, piece.offset]));
-  const fromOld = Option.toArray(old).flatMap((archive) => {
-    const remap: Remap = (ordinal) =>
-      Option.getOrElse(
-        Option.flatMap(rangeAt({ pieces: archive.pieces, ordinal }), (piece) =>
-          Option.map(
-            Option.fromUndefinedOr(placed.get(piece.name)),
-            (offset) => offset + ordinal - piece.offset,
-          ),
-        ),
-        () => DROPPED,
-      );
-    return shardsFeeding({ from: archive.shards, shard, shards: target.shards }).map(
-      (feeding): Source => ({
-        key: archiveKey({ guildId, archive: archive.name, shard: feeding }),
-        remap,
-      }),
-    );
-  });
-  const inOld = new Set(
-    Option.toArray(old).flatMap(({ pieces }) => pieces.map(({ name }) => name)),
+const oldArchiveSources = ({
+  merging: { guildId },
+  target,
+  old,
+  shard,
+}: ShardJob): readonly Source[] => {
+  const placed = new Map(
+    pipe(
+      target.pieces,
+      Array.map((piece) => [piece.name, piece.offset]),
+    ),
   );
-  const fromPieces = target.pieces
-    .filter(({ name }) => !inOld.has(name))
-    .flatMap((piece) =>
-      shardsFeeding({ from: piece.shards, shard, shards: target.shards }).map(
-        (feeding): Source => ({
+  return pipe(
+    Option.toArray(old),
+    Array.flatMap((archive) => {
+      const remap: Remap = (ordinal) =>
+        Option.getOrElse(
+          Option.flatMap(rangeAt({ pieces: archive.pieces, ordinal }), (piece) =>
+            Option.map(
+              Option.fromUndefinedOr(placed.get(piece.name)),
+              (offset) => offset + ordinal - piece.offset,
+            ),
+          ),
+          () => DROPPED,
+        );
+      return pipe(
+        shardsFeeding({ from: archive.shards, shard, shards: target.shards }),
+        Array.map((feeding): Source => ({
+          key: archiveKey({ guildId, archive: archive.name, shard: feeding }),
+          remap,
+        })),
+      );
+    }),
+  );
+};
+
+const sourcesFor = (job: ShardJob): readonly Source[] => {
+  const {
+    merging: { guildId },
+    target,
+    old,
+    shard,
+  } = job;
+  const inOld = new Set(
+    pipe(
+      Option.toArray(old),
+      Array.flatMap(({ pieces }) =>
+        pipe(
+          pieces,
+          Array.map(({ name }) => name),
+        ),
+      ),
+    ),
+  );
+  const fromPieces = pipe(
+    target.pieces,
+    Array.filter(({ name }) => !inOld.has(name)),
+    Array.flatMap((piece) =>
+      pipe(
+        shardsFeeding({ from: piece.shards, shard, shards: target.shards }),
+        Array.map((feeding): Source => ({
           key: shardKey({ guildId, segment: piece.name, shard: feeding }),
           remap: (ordinal) => piece.offset + ordinal,
-        }),
+        })),
       ),
-    );
-  return [...fromOld, ...fromPieces];
+    ),
+  );
+  return [...oldArchiveSources(job), ...fromPieces];
 };
 
 type Pair = Readonly<{ ordinal: number; channel: number }>;
@@ -104,15 +138,29 @@ const mergeShard = (
       }
     }
   }
-  const entries: TokenPostings[] = Array.fromIterable(collected).map(([token, pairs]) => {
-    const sorted = Array.sort(pairs, byOrdinal);
-    return {
-      token,
-      ordinals: sorted.map(({ ordinal }) => ordinal),
-      channels: sorted.map(({ channel }) => channel),
-    };
-  });
-  return encodeShard(entries.filter(({ ordinals }) => ordinals.length > FIRST));
+  const entries: TokenPostings[] = pipe(
+    Array.fromIterable(collected),
+    Array.map(([token, pairs]) => {
+      const sorted = Array.sort(pairs, byOrdinal);
+      return {
+        token,
+        ordinals: pipe(
+          sorted,
+          Array.map(({ ordinal }) => ordinal),
+        ),
+        channels: pipe(
+          sorted,
+          Array.map(({ channel }) => channel),
+        ),
+      };
+    }),
+  );
+  return encodeShard(
+    pipe(
+      entries,
+      Array.filter(({ ordinals }) => ordinals.length > FIRST),
+    ),
+  );
 };
 
 const readSource = (

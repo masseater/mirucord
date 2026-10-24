@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { Effect, Option, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema } from "effect";
 
 import {
   FindMessagesInput,
@@ -57,11 +57,14 @@ const listServers = (discordUserId: string): Promise<CallToolResult> =>
     readableGuilds(discordUserId).pipe(
       Effect.map((guilds) =>
         structuredResult({
-          servers: guilds.map(({ guildId, name, consent }) => ({
-            id: guildId,
-            name,
-            ingest: consent,
-          })),
+          servers: pipe(
+            guilds,
+            Array.map(({ guildId, name, consent }) => ({
+              id: guildId,
+              name,
+              ingest: consent,
+            })),
+          ),
         } satisfies typeof ListServersOutput.Type),
       ),
       Effect.orElseSucceed(() => errorResult(DISCORD_UNAVAILABLE)),
@@ -70,13 +73,16 @@ const listServers = (discordUserId: string): Promise<CallToolResult> =>
 
 const visibleChannels = (scope: GuildScope): CallToolResult =>
   structuredResult({
-    channels: readableChannels(scope).map((stored) => ({
-      id: stored.id,
-      name: stored.name,
-      type: stored.type,
-      parentId: Option.getOrNull(stored.parentId),
-      ingest: ingestOf({ scope, stored }),
-    })),
+    channels: pipe(
+      readableChannels(scope),
+      Array.map((stored) => ({
+        id: stored.id,
+        name: stored.name,
+        type: stored.type,
+        parentId: Option.getOrNull(stored.parentId),
+        ingest: ingestOf({ scope, stored }),
+      })),
+    ),
     hint: PHRASES_HINT,
   } satisfies typeof ListChannelsOutput.Type);
 
@@ -91,7 +97,13 @@ const phrases =
   (discordUserId: string) =>
   ({ serverId }: typeof ListChannelsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: serverId, discordUserId })((scope) =>
-      serverPhrases({ scope, channelIds: readableChannels(scope).map(({ id }) => id) }).pipe(
+      serverPhrases({
+        scope,
+        channelIds: pipe(
+          readableChannels(scope),
+          Array.map(({ id }) => id),
+        ),
+      }).pipe(
         Effect.map((found) =>
           structuredResult(found satisfies typeof ListServerPhrasesOutput.Type),
         ),

@@ -1,4 +1,4 @@
-import { Array, DateTime, Effect, Option, Record, pipe } from "effect";
+import { Array, DateTime, Effect, Option, pipe, Record } from "effect";
 
 import { guildStore, labelOf, PHRASE_WINDOW_DAYS } from "#/entities/guild-message/index.server";
 import type { Phrase, PhraseKind } from "#/entities/guild-message/index.server";
@@ -38,7 +38,12 @@ const openExamples = Effect.fn("openPhraseExamples")(function* open(
   const { guildId, wrappedKey } = scope.guild;
   const key = yield* openGuildKey(wrappedKey);
   const contexts = yield* Effect.promise(() =>
-    guildStore(guildId).phraseContexts(stats.phrases.flatMap(({ examples }) => examples)),
+    guildStore(guildId).phraseContexts(
+      pipe(
+        stats.phrases,
+        Array.flatMap(({ examples }) => examples),
+      ),
+    ),
   );
   const opened = yield* pipe(
     contexts,
@@ -63,8 +68,27 @@ const openExamples = Effect.fn("openPhraseExamples")(function* open(
       ),
     ),
   );
-  return Object.fromEntries(opened.flat());
+  return Record.fromEntries(opened.flat());
 });
+
+const channelsOf = (
+  scope: GuildScope,
+  stored: StoredPhrase,
+): readonly Readonly<{ id: string; name: string }>[] => {
+  const names = Record.fromEntries(
+    pipe(
+      scope.guild.channels,
+      Array.map(({ id, name }) => [id, name]),
+    ),
+  );
+  return pipe(
+    stored.channels,
+    Array.map(({ channelId }) => ({
+      id: channelId,
+      name: Option.getOrElse(Record.get(names, channelId), () => channelId),
+    })),
+  );
+};
 
 const viewOf =
   (
@@ -73,8 +97,15 @@ const viewOf =
     examples: Readonly<Record<string, Example>>,
   ): ((stored: StoredPhrase) => Effect.Effect<Option.Option<Labelled>>) =>
   (stored) => {
-    const found = stored.examples.flatMap((id) => Option.toArray(Record.get(examples, id)));
-    const names = Object.fromEntries(scope.guild.channels.map(({ id, name }) => [id, name]));
+    const found = pipe(
+      stored.examples,
+      Array.flatMap((id) => Option.toArray(Record.get(examples, id))),
+    );
+    const channels = channelsOf(scope, stored);
+    const excerpts = pipe(
+      found,
+      Array.map(({ context }) => pipe(context, Array.map(excerptOf))),
+    );
     const labelled: Effect.Effect<Option.Option<Phrase>> = Option.match(Array.head(found), {
       onNone: () => Effect.succeedNone,
       onSome: ({ message }) => labelOf({ searchKey, source: message, phrase: stored.phrase }),
@@ -88,11 +119,8 @@ const viewOf =
             uses: stored.uses,
             people: stored.people,
             lastUsedAt: DateTime.formatIso(DateTime.makeUnsafe(stored.lastUsedAt)),
-            channels: stored.channels.map(({ channelId }) => ({
-              id: channelId,
-              name: Option.getOrElse(Record.get(names, channelId), () => channelId),
-            })),
-            examples: found.map(({ context }) => context.map((body) => excerptOf(body))),
+            channels,
+            examples: excerpts,
           },
           input: {
             phrase: stored.phrase,
@@ -133,12 +161,21 @@ const viewsOf = Effect.fn("phraseViews")(function* views(
     guildId: scope.guild.guildId,
     key: yield* openGuildKey(scope.guild.wrappedKey),
     channelIds,
-    subjects: labelled.map(({ input }) => input),
+    subjects: pipe(
+      labelled,
+      Array.map(({ input }) => input),
+    ),
   });
   const noteOf = (phrase: string): Option.Option<string | null> =>
     noteView(Option.fromUndefinedOr(notes.get(phrase)));
-  return labelled.flatMap(({ view, input }) =>
-    Option.toArray(noteOf(input.phrase)).map((note) => withNote(view, note)),
+  return pipe(
+    labelled,
+    Array.flatMap(({ view, input }) =>
+      pipe(
+        Option.toArray(noteOf(input.phrase)),
+        Array.map((note) => withNote(view, note)),
+      ),
+    ),
   );
 });
 

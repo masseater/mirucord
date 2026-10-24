@@ -1,5 +1,5 @@
 import { ChannelType } from "discord-api-types/v10";
-import { Function, Option } from "effect";
+import { Array, Function, Option, pipe } from "effect";
 
 import { THREAD_TYPES } from "#/shared/discord";
 
@@ -46,12 +46,14 @@ const allowedChannels = (
     rolePermissions: snapshot.rolePermissions,
   };
   return new Set(
-    snapshot.channels
-      .filter(
+    pipe(
+      snapshot.channels,
+      Array.filter(
         (guildChannel) =>
           !isThread(guildChannel) && check(reader, guildChannel.permissionOverwrites),
-      )
-      .map(({ id }) => id),
+      ),
+      Array.map(({ id }) => id),
+    ),
   );
 };
 
@@ -63,13 +65,15 @@ const visibleChannelIdsDataFirst = (
     onNone: () => new Set<string>(),
     onSome: (present) => {
       const readable = allowedChannels(snapshot, present, canReadHistory);
-      const threads = snapshot.channels
-        .filter(
+      const threads = pipe(
+        snapshot.channels,
+        Array.filter(
           (guildChannel) =>
             THREAD_TYPES.has(guildChannel.type) &&
             Option.exists(guildChannel.parentId, (parentId) => readable.has(parentId)),
-        )
-        .map(({ id }) => id);
+        ),
+        Array.map(({ id }) => id),
+      );
       return new Set([...readable, ...threads]);
     },
   });

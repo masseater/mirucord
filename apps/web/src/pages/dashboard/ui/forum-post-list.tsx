@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { forumPostsQuery } from "#/pages/dashboard/api/dashboard";
@@ -20,9 +21,10 @@ const ForumPostList = ({
   }
   return (
     <ul className="flex flex-col gap-2">
-      {view.posts.map((post) => (
-        <ForumPostRow key={post.id} post={post} />
-      ))}
+      {pipe(
+        view.posts,
+        Array.map((post) => <ForumPostRow key={post.id} post={post} />),
+      )}
     </ul>
   );
 };

@@ -6,7 +6,7 @@ import {
   Routes,
 } from "discord-api-types/v10";
 import { eq } from "drizzle-orm";
-import { Array, DateTime, Effect, Option, Record } from "effect";
+import { Array, DateTime, Effect, Option, pipe, Record } from "effect";
 import { http, HttpResponse } from "msw";
 
 import { guildStore, indexTokens } from "#/entities/guild-message/index.server";
@@ -220,24 +220,30 @@ const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
     );
     yield* Effect.promise(() =>
       db.insert(role).values(
-        Object.entries(seed.roles).map(([id, permissions]) => ({
-          id,
-          guildId: seed.id,
-          permissions,
-        })),
+        pipe(
+          Record.toEntries(seed.roles),
+          Array.map(([id, permissions]) => ({
+            id,
+            guildId: seed.id,
+            permissions,
+          })),
+        ),
       ),
     );
     yield* Effect.promise(() =>
       db.insert(channel).values(
-        seed.channels.map((seedChannel) => ({
-          id: seedChannel.id,
-          guildId: seed.id,
-          name: `channel ${seedChannel.id}`,
-          type: seedChannel.type,
-          parentId: Option.getOrNull(seedChannel.parentId),
-          permissionOverwrites: seedChannel.overwrites,
-          ...ingestedProgress(seed, seedChannel),
-        })),
+        pipe(
+          seed.channels,
+          Array.map((seedChannel) => ({
+            id: seedChannel.id,
+            guildId: seed.id,
+            name: `channel ${seedChannel.id}`,
+            type: seedChannel.type,
+            parentId: Option.getOrNull(seedChannel.parentId),
+            permissionOverwrites: seedChannel.overwrites,
+            ...ingestedProgress(seed, seedChannel),
+          })),
+        ),
       ),
     );
     yield* seedConsent(seed);

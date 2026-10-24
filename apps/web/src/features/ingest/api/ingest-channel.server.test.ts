@@ -2,7 +2,7 @@ import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
-import { Array, DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vite-plus/test";
 
@@ -54,8 +54,9 @@ const seed: Effect.Effect<void> = Effect.gen(function* seedChannel() {
       backfill: "done",
     }),
   );
-  const messages = [DELETED, KEPT].map((id) =>
-    storedMessage({ id, channelId: CHANNEL, createdAt: SEEDED_AT.getTime() }),
+  const messages = pipe(
+    [DELETED, KEPT],
+    Array.map((id) => storedMessage({ id, channelId: CHANNEL, createdAt: SEEDED_AT.getTime() })),
   );
   yield* putMessages({ guildId: GUILD, messages });
 });

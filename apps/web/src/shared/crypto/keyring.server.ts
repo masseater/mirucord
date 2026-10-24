@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Data, Effect, Option } from "effect";
+import { Effect, Option, Schema } from "effect";
 import { CompactEncrypt, compactDecrypt } from "jose";
 
 const KEY_BITS = 256;
@@ -11,7 +11,12 @@ const GUILD_KEY_ALGORITHMS = { alg: "A256KW", enc: "A256GCM" } as const;
 
 const textEncoder = new TextEncoder();
 
-class WrongMasterKey extends Data.TaggedError("WrongMasterKey") {}
+const taggedError = Schema.TaggedError;
+
+class WrongMasterKey extends taggedError<WrongMasterKey, { readonly brand: unique symbol }>()(
+  "WrongMasterKey",
+  {},
+) {}
 
 const currentMasterKey: Effect.Effect<SecretsStoreSecret> = Effect.sync(() => env.MASTER_KEY);
 
@@ -108,7 +113,7 @@ const unwrapWith = (
             keyManagementAlgorithms: [GUILD_KEY_ALGORITHMS.alg],
             contentEncryptionAlgorithms: [GUILD_KEY_ALGORITHMS.enc],
           }),
-        catch: () => new WrongMasterKey(),
+        catch: () => WrongMasterKey.make({}),
       }),
     ),
     Effect.map(({ plaintext }) => plaintext),

@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { ComposerHint } from "./composer-hint";
@@ -16,9 +17,12 @@ const Composer = (): ReactNode => (
       <ComposerHint />
     </div>
     <p className="composer-typing text-dc-muted flex h-6 items-center gap-0.5 text-xs">
-      {DOTS.map((dot) => (
-        <span key={dot} className="bg-dc-text size-1.5 rounded-full motion-safe:animate-pulse" />
-      ))}
+      {pipe(
+        DOTS,
+        Array.map((dot) => (
+          <span key={dot} className="bg-dc-text size-1.5 rounded-full motion-safe:animate-pulse" />
+        )),
+      )}
       <span className="text-dc-text mr-1 ml-1.5 font-bold">{TYPER}</span>
       {TYPING}
     </p>

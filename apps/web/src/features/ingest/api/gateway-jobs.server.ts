@@ -1,5 +1,5 @@
 import type { ForgetJob, RefreshJob, StoreJob } from "@repo/ingest-util-gateway-contract";
-import { Effect, Option, pipe } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import { openGuildKeys } from "#/shared/crypto/index.server";
 import { FORBIDDEN, NOT_FOUND, findMessage, listMessages } from "#/shared/discord/index.server";
@@ -52,14 +52,24 @@ const lookUpInPage = (
 ): Effect.Effect<readonly Lookup[], IngestError> =>
   pageFrom(job.channelId, oldest).pipe(
     Effect.flatMap((page) => {
-      const listed = new Set(page.map(({ id }) => id));
+      const listed = new Set(
+        pipe(
+          page,
+          Array.map(({ id }) => id),
+        ),
+      );
       const wanted = new Set(job.messageIds);
-      const missing = job.messageIds.filter((id) => !listed.has(id));
+      const missing = pipe(
+        job.messageIds,
+        Array.filter((id) => !listed.has(id)),
+      );
       return lookUpEach(job.channelId, missing).pipe(
         Effect.map((fetched) => [
-          ...page
-            .filter(({ id }) => wanted.has(id))
-            .map((found) => ({ id: found.id, found: Option.some(found) })),
+          ...pipe(
+            page,
+            Array.filter(({ id }) => wanted.has(id)),
+            Array.map((found) => ({ id: found.id, found: Option.some(found) })),
+          ),
           ...fetched,
         ]),
       );
@@ -79,8 +89,15 @@ const refreshWith = (job: RefreshJob, wrappedKey: string): Effect.Effect<void, I
   Effect.gen(function* refresh() {
     const keys = yield* openGuildKeys(wrappedKey);
     const lookups = yield* lookUp(job);
-    const page = lookups.flatMap(({ found }) => Option.toArray(found));
-    const gone = lookups.filter(({ found }) => Option.isNone(found)).map(({ id }) => id);
+    const page = pipe(
+      lookups,
+      Array.flatMap(({ found }) => Option.toArray(found)),
+    );
+    const gone = pipe(
+      lookups,
+      Array.filter(({ found }) => Option.isNone(found)),
+      Array.map(({ id }) => id),
+    );
     yield* storeConsented({
       ...keys,
       job: { guildId: job.guildId, channelId: job.channelId },

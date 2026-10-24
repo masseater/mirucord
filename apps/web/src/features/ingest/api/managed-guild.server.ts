@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import { guildIngestOf, SCOPE_OF_CONSENT } from "#/features/ingest/model/channel-ingest";
 import type { GuildConsent, GuildIngest } from "#/features/ingest/model/channel-ingest";
@@ -78,7 +78,10 @@ const managedIngest = (guildId: string, consent: GuildConsent): Effect.Effect<Gu
     Effect.map(({ channels }) =>
       guildIngestOf(
         consent,
-        channels.map(({ ingest }) => ingest),
+        pipe(
+          channels,
+          Array.map(({ ingest }) => ingest),
+        ),
       ),
     ),
   );

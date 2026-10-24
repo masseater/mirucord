@@ -1,5 +1,5 @@
 import { runDurableObjectAlarm } from "cloudflare:test";
-import { Array, DateTime, Effect, Option, Schema, pipe } from "effect";
+import { Array, DateTime, Effect, Option, pipe, Schema } from "effect";
 
 import { guildStore, indexTokens } from "#/entities/guild-message/index.server";
 import type { IndexedMessage } from "#/entities/guild-message/index.server";
@@ -57,7 +57,10 @@ const answerEmbedding = (inputs: unknown): Promise<Record<string, unknown>> =>
       ),
       Effect.map(({ text }) => ({
         shape: [text.length, DIMENSIONS],
-        data: text.map((piece) => fakeEmbedding(piece)),
+        data: pipe(
+          text,
+          Array.map((piece) => fakeEmbedding(piece)),
+        ),
       })),
     ),
   );

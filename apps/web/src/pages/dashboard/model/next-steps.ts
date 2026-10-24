@@ -1,4 +1,4 @@
-import { Array } from "effect";
+import { Array, pipe } from "effect";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
 import type { Dashboard } from "#/pages/dashboard/api/dashboard.server";
@@ -18,10 +18,16 @@ type NextSteps =
 
 const canSearch = ({ guilds, readable }: ReadyDashboard): boolean =>
   (readable.status === "ready" && Array.isReadonlyArrayNonEmpty(readable.guilds)) ||
-  guilds.some(({ ingest }) => ingest !== "withdrawing");
+  pipe(
+    guilds,
+    Array.some(({ ingest }) => ingest !== "withdrawing"),
+  );
 
 const consentStepOf = (dashboard: ReadyDashboard): ConsentStep => {
-  const awaiting = dashboard.guilds.filter(({ ingest }) => ingest === "awaiting");
+  const awaiting = pipe(
+    dashboard.guilds,
+    Array.filter(({ ingest }) => ingest === "awaiting"),
+  );
   if (Array.isReadonlyArrayNonEmpty(awaiting)) {
     return { status: "awaiting", guilds: awaiting };
   }

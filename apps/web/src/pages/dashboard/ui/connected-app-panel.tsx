@@ -1,4 +1,4 @@
-import { Array } from "effect";
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import type { ConnectedApp } from "#/shared/auth/index.server";
@@ -13,9 +13,10 @@ const ConnectedAppPanel = ({ apps }: Readonly<{ apps: readonly ConnectedApp[] }>
     <Panel>
       <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
       <ul className="flex flex-col gap-3">
-        {apps.map((app) => (
-          <ConnectedAppRow key={app.clientId} app={app} />
-        ))}
+        {pipe(
+          apps,
+          Array.map((app) => <ConnectedAppRow key={app.clientId} app={app} />),
+        )}
       </ul>
     </Panel>
   );

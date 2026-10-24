@@ -1,4 +1,4 @@
-import { Array, Boolean, Number, Option } from "effect";
+import { Array, Boolean, Number, Option, pipe } from "effect";
 
 import { CHANNEL_BYTES, ORDINAL_BYTES, WORD_BYTES } from "./search-layout";
 
@@ -41,7 +41,13 @@ const shardOf = ({ token, shards }: Readonly<{ token: number; shards: number }>)
   token % shards;
 
 const concatBytes = (parts: readonly Readonly<ArrayBuffer>[]): ArrayBuffer => {
-  const joined = new Uint8Array(Number.sumAll(parts.map((part) => part.byteLength)));
+  const joined = new Uint8Array(
+    pipe(
+      parts,
+      Array.map((part) => part.byteLength),
+      Number.sumAll,
+    ),
+  );
   let offset = FIRST;
   for (const part of parts) {
     joined.set(new Uint8Array(part), offset);
@@ -62,11 +68,24 @@ const encodeShard = (entries: readonly TokenPostings[]): ArrayBuffer => {
   const sorted = Array.sortWith(entries, ({ token }) => token, Number.Order);
   const header = Uint32Array.from([
     sorted.length,
-    ...sorted.map(({ token }) => token),
+    ...pipe(
+      sorted,
+      Array.map(({ token }) => token),
+    ),
     ...startsOf(sorted),
   ]);
-  const ordinals = Uint32Array.from(sorted.flatMap((entry) => entry.ordinals));
-  const channels = Uint16Array.from(sorted.flatMap((entry) => entry.channels));
+  const ordinals = Uint32Array.from(
+    pipe(
+      sorted,
+      Array.flatMap((entry) => entry.ordinals),
+    ),
+  );
+  const channels = Uint16Array.from(
+    pipe(
+      sorted,
+      Array.flatMap((entry) => entry.channels),
+    ),
+  );
   return concatBytes([header.buffer, ordinals.buffer, channels.buffer]);
 };
 

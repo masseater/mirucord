@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
@@ -12,18 +13,21 @@ const OPERATIONS = [
 
 const OperationChips = (): ReactNode => (
   <ul className="flex flex-wrap gap-2 text-sm font-bold">
-    {OPERATIONS.map((operation) => (
-      <li
-        key={operation.label}
-        className={cn(
-          "rounded-sm px-3 py-1",
-          operation.allowed && "bg-dc-active text-dc-bright",
-          !operation.allowed && "text-dc-muted line-through",
-        )}
-      >
-        {operation.label}
-      </li>
-    ))}
+    {pipe(
+      OPERATIONS,
+      Array.map((operation) => (
+        <li
+          key={operation.label}
+          className={cn(
+            "rounded-sm px-3 py-1",
+            operation.allowed && "bg-dc-active text-dc-bright",
+            !operation.allowed && "text-dc-muted line-through",
+          )}
+        >
+          {operation.label}
+        </li>
+      )),
+    )}
   </ul>
 );
 

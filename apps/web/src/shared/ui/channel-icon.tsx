@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import type { ChannelKind } from "#/shared/discord";
@@ -44,9 +45,10 @@ const ChannelIcon = ({
       strokeLinejoin="round"
       className={SIZE[size].icon}
     >
-      {PATHS[kind].map((path) => (
-        <path key={path} d={path} />
-      ))}
+      {pipe(
+        PATHS[kind],
+        Array.map((path) => <path key={path} d={path} />),
+      )}
     </svg>
   );
 };

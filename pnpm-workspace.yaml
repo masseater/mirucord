@@ -33,7 +33,7 @@ catalog:
   "@tanstack/react-query-devtools": 5.104.5
   "@vitejs/plugin-react": 6.1.2
   "@vitejs/plugin-rsc": 0.5.38
-  skills: 1.7.2
+  skills: 1.7.4
   "@tanstack/intent": 0.5.6
   "@modelcontextprotocol/server": 2.3.1
   "@sapphire/bitfield": 1.2.4

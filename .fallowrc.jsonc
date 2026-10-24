@@ -163,6 +163,11 @@
       ],
     },
     {
+      "name": "oxlint-plugin-decision",
+      "enablers": ["@r_masseater/oxlint-plugin-decision"],
+      "entryPoints": ["decision-rules.ts"],
+    },
+    {
       "name": "syncpack-ts",
       "enablers": ["syncpack"],
       "entryPoints": ["syncpack.config.ts"],
@@ -175,12 +180,6 @@
         "@textlint-ja/textlint-rule-preset-ai-writing",
         "textlint-rule-preset-ja-technical-writing",
       ],
-    },
-    {
-      "name": "jev-lint",
-      "enablers": ["jev-lint"],
-      "configPatterns": [".jev-lint.yaml"],
-      "toolingDependencies": ["jev-lint"],
     },
     {
       "name": "skills",

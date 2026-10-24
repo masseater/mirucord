@@ -11,6 +11,9 @@ import { defineConfig } from "vite-plus";
 import {
   allRulesOf,
   asErrors,
+  decisionPluginName,
+  decisionRules,
+  decisionRulesOff,
   generated,
   presetRulesOf,
   renamedRulesOf,
@@ -80,6 +83,7 @@ export default defineConfig({
       { name: "no-comments", specifier: "eslint-plugin-no-comments" },
       { name: "baseline-js", specifier: "eslint-plugin-baseline-js" },
       { name: "@html-eslint/react", specifier: "@html-eslint/eslint-plugin-react" },
+      { name: decisionPluginName, specifier: "./decision-rules.ts" },
     ],
     rules: {
       "vite-plus/prefer-vite-plus-imports": "error",
@@ -182,6 +186,7 @@ export default defineConfig({
           "**/*.worker.ts",
           "**/alchemy.ci.ts",
           "**/src/app/server/index.ts",
+          "decision-rules.ts",
         ],
         rules: { "import/no-default-export": "off" },
       },
@@ -189,7 +194,18 @@ export default defineConfig({
         files: ["**/shared/ui/**"],
         rules: { "shadcn/no-restyle": "off", "react/jsx-props-no-spreading": "off" },
       },
+      {
+        files: ["apps/web/src/**/*.{ts,tsx}"],
+        rules: decisionRules,
+      },
+      {
+        files: ["**/*.test.ts"],
+        rules: decisionRulesOff,
+      },
     ],
+    settings: {
+      [decisionPluginName]: { model: "openrouter/typesafe/jev-1.14" },
+    },
     options: {
       typeAware: true,
       typeCheck: true,
@@ -218,7 +234,11 @@ export default defineConfig({
       verify: {
         command: "vp check",
         cache: {
+          env: ["OPENROUTER_API_KEY"],
           untrackedEnv: [
+            "CLAUDECODE",
+            "CLAUDE_CODE_REMOTE",
+            "GITHUB_ACTIONS",
             "HTTPS_PROXY",
             "https_proxy",
             "NO_PROXY",
@@ -247,10 +267,6 @@ export default defineConfig({
       "steiger-all": "vp run -r steiger",
       "db-check-all": "vp run -r db:check",
       "fallow-all": "vp run -r fallow",
-      "jev-lint": {
-        command: "jev-lint review --base origin/main",
-        cache: false,
-      },
       audit: {
         command: "vp pm audit",
         cache: false,

@@ -1,5 +1,7 @@
 import { Array, Record, pipe } from "effect";
 
+import decisionPlugin from "./decision-rules.ts";
+
 const REACT_STATE_HOOKS: readonly string[] = [
   "useState",
   "useReducer",
@@ -238,9 +240,26 @@ const presetRulesOf = (presets: Readonly<Record<string, Readonly<{ rules?: RuleM
     ),
   );
 
+const decisionPluginName = decisionPlugin.meta.name;
+
+const decisionRules = asErrors(
+  pipe(
+    Record.keys(decisionPlugin.rules),
+    Array.map((id) => `${decisionPluginName}/${id}`),
+  ),
+);
+
+const decisionRulesOff = pipe(
+  decisionRules,
+  Record.map(() => "off" as const),
+);
+
 export {
   allRulesOf,
   asErrors,
+  decisionPluginName,
+  decisionRules,
+  decisionRulesOff,
   generated,
   presetRulesOf,
   renamedRulesOf,

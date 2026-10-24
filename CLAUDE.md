@@ -53,7 +53,6 @@ UI 状態は effect-atom、サーバー状態は TanStack Query だけで扱う�
 ユーザーと対話するセッションを始めたら、テンプレート更新の確認を求められていればそれを済ませてから、引数なしの `/loop` を起動する。
 作業の完了は `vp run verify` が通ることである。
 pre-push フックを `--no-verify` で飛ばさない。
-jev-lint は pre-push の差分検査と main の CI だけで動かし、デプロイの条件にしない。verify や編集フックに戻さない。
 部品だけを先に入れず、使う側と同じ PR にする。
 
 クラウドのセッションでは、`~/.config/uv/uv.toml` に `system-certs = true` を書いてから verify する。

@@ -52,7 +52,7 @@ release. Add a tool name to select part of the graph. For example, run
 
 ## コマンド
 
-- `vp run verify` はルートの `vite.config.ts` のタスクで、`vp check` に加えてテスト・ESLint・textlint と yomiyasu・steiger・drizzle の差分検査・fallow・gitleaks・audit などを流す。pre-push フックは verify と jev-lint を動かす。
+- `vp run verify` はルートの `vite.config.ts` のタスクで、`vp check` に加えてテスト・ESLint・textlint と yomiyasu・steiger・drizzle の差分検査・fallow・gitleaks・audit などを流す。pre-push フックは verify を動かす。`vp check` は oxlint-plugin-decision の判定に `OPENROUTER_API_KEY` を使う。
 - 1 つのテストだけを流すときは、そのワークスペースで `vp exec vp test run <ファイル>` を実行する。`apps/web` のテストは `@cloudflare/vitest-plugin` の上で D1・R2・Queue・Durable Object をそろえて動く。
 
 ## 環境変数
@@ -98,10 +98,12 @@ release. Add a tool name to select part of the graph. For example, run
 - PR のレビュー、PR ごとの CI・動作検証・デプロイはしない。動作は本番で確かめる。
 - マージ前に base を取り込み、手元の `vp run verify` を通してから自分でマージする。マージしてよいかは聞かない。ルールセットのバイパスや `--admin` は使わない。
 
-## jev-lint
+## oxlint-plugin-decision
 
-- 有料の decider は、無料の `respan/span-01-lite` で判定できないルールだけに使う。判定できるかは、正解の分かる違反例と違反でない例を `--cache none --retry 3` で確かめる。span-01-lite は `kind: noul` のルールしか判定できない。
+- 文章で書く lint ルールは `decision-rules.ts` に `defineDecisionRule` で書き、`vite.config.ts` で有効にする。答えは `node_modules/.cache/oxlint-plugin-decision` にキャッシュされる。
+- 有料の decider は、無料の `openrouter/respan/span-01-lite` で判定できないルールだけに使う。判定できるかは、正解の分かる違反例と違反でない例を、キャッシュを消して `OXLINT_DECISION_EXPLAIN=json` で確かめる。
 - ルールが使うモデルは、ユーザーの指示なしに変えない。
+- 確信できるものだけを違反にする。閾値を下げて取りこぼしを拾いにいかない。
 
 ## 計測
 

@@ -1,14 +1,8 @@
-import { Array, Clock, Effect, Number, Option, Record } from "effect";
+import { Array, Clock, Effect, Number, Option, pipe } from "effect";
 
-import {
-  decodeRecent,
-  matchPostings,
-  orderedHits,
-} from "#/entities/guild-message/lib/search-query";
-import type { Filter, RecentHits, SealedHits } from "#/entities/guild-message/lib/search-query";
+import { decodeRecent, orderedHits } from "#/entities/guild-message/lib/search-query";
+import type { RecentHits, SealedHits } from "#/entities/guild-message/lib/search-query";
 import type { SealedEntry } from "#/entities/guild-message/lib/search-segment";
-import { postingsIn, shardOf } from "#/entities/guild-message/lib/search-shard";
-import type { PostingView } from "#/entities/guild-message/lib/search-shard";
 
 import { archivedHits } from "./search-archive-hits.server";
 import { cachedBytes, withFileGate } from "./search-cache.server";
@@ -17,6 +11,7 @@ import { archiveKey, readHead, recentKey, shardKey } from "./search-files.server
 import type { SearchHead, SegmentEntry } from "./search-files.server";
 import { loadPage, required } from "./search-page.server";
 import type { MissingFile } from "./search-page.server";
+import { allViews, invalidOf, matched, readShardSet } from "./search-shard-set.server";
 
 const NONE = 0;
 const ONE_SHARD = 1;
@@ -53,67 +48,23 @@ type Scope = Readonly<{
 
 type Scanned<Hits> = Readonly<{ hits: Hits; reads: readonly FileRead[] }>;
 
-const invalidOf = (head: SearchHead, segment: string): ReadonlySet<number> =>
-  new Set(Option.getOrElse(Record.get(head.invalid, segment), () => []));
-
-type ShardSet = Readonly<{ count: number; shardAt: (shard: number) => Option.Option<ArrayBuffer> }>;
-
-const allViews = (
-  set: ShardSet,
-  tokens: readonly number[],
-): Option.Option<readonly PostingView[]> => {
-  const viewOf = (token: number): Option.Option<PostingView> =>
-    Option.flatMap(set.shardAt(shardOf({ token, shards: set.count })), (shard) =>
-      postingsIn({ shard, token }),
-    );
-  return Option.all(tokens.map((token) => viewOf(token)));
-};
-
-const readShardSet = (
-  tokens: readonly number[],
-  shardCount: number,
-  keyOf: (shard: number) => string,
-): Effect.Effect<Readonly<{ set: ShardSet; reads: readonly FileRead[] }>, MissingFile, FileGate> =>
-  Effect.forEach(
-    Array.dedupe(tokens.map((token) => shardOf({ token, shards: shardCount }))),
-    (shard) =>
-      cachedBytes(keyOf(shard)).pipe(
-        Effect.flatMap((read) =>
-          required(read).pipe(Effect.map((bytes) => ({ shard, bytes, read }))),
-        ),
-      ),
-    { concurrency: "unbounded" },
-  ).pipe(
-    Effect.map((loaded) => {
-      const shards = new Map(loaded.map(({ shard, bytes }) => [shard, bytes]));
-      return {
-        set: { count: shardCount, shardAt: (shard) => Option.fromUndefinedOr(shards.get(shard)) },
-        reads: loaded.map(({ read }) => read),
-      };
-    }),
-  );
-
-const matched = (views: Option.Option<readonly PostingView[]>, filter: Filter): readonly number[] =>
-  Option.match(views, {
-    onNone: () => [],
-    onSome: (found) => matchPostings({ views: found, filter }),
-  });
-
 const scanPiece = (
   { request, head, allowed }: Scope,
   segment: SegmentEntry,
 ): Effect.Effect<Scanned<SealedHits>, MissingFile, FileGate> => {
-  const invalid = invalidOf(head, segment.name);
-  return readShardSet(request.tokens, segment.shards, (shard) =>
-    shardKey({ guildId: request.guildId, segment: segment.name, shard }),
-  ).pipe(
+  const invalid = invalidOf({ head, segment: segment.name });
+  return readShardSet({
+    tokens: request.tokens,
+    shardCount: segment.shards,
+    keyOf: (shard) => shardKey({ guildId: request.guildId, segment: segment.name, shard }),
+  }).pipe(
     Effect.map(({ set, reads }) => ({
       hits: {
         segment: segment.name,
         from: segment.from,
-        ordinals: matched(allViews(set, request.tokens), {
-          allowed,
-          skipped: (ordinal) => invalid.has(ordinal),
+        ordinals: matched({
+          views: allViews({ set, tokens: request.tokens }),
+          filter: { allowed, skipped: (ordinal) => invalid.has(ordinal) },
         }),
       },
       reads,
@@ -125,7 +76,7 @@ const scanRecent = (
   { request, head, allowed }: Scope,
   segment: SegmentEntry,
 ): Effect.Effect<Scanned<RecentHits>, MissingFile, FileGate> => {
-  const invalid = invalidOf(head, segment.name);
+  const invalid = invalidOf({ head, segment: segment.name });
   return cachedBytes(recentKey({ guildId: request.guildId, segment: segment.name })).pipe(
     Effect.flatMap((read) =>
       required(read).pipe(Effect.map((bytes) => ({ read, file: decodeRecent(bytes) }))),
@@ -134,13 +85,13 @@ const scanRecent = (
       hits: {
         segment: segment.name,
         createdAt: file.createdAt,
-        ordinals: matched(
-          allViews({ count: ONE_SHARD, shardAt: () => Option.some(file.index) }, request.tokens),
-          {
-            allowed,
-            skipped: (ordinal) => invalid.has(ordinal),
-          },
-        ),
+        ordinals: matched({
+          views: allViews({
+            set: { count: ONE_SHARD, shardAt: () => Option.some(file.index) },
+            tokens: request.tokens,
+          }),
+          filter: { allowed, skipped: (ordinal) => invalid.has(ordinal) },
+        }),
       },
       reads: [read],
     })),
@@ -153,15 +104,18 @@ const scanArchive = (
   Option.match(Option.fromUndefinedOr(scope.head.archive), {
     onNone: () => Effect.succeed({ hits: [], reads: [] }),
     onSome: (archive) =>
-      readShardSet(scope.request.tokens, archive.shards, (shard) =>
-        archiveKey({ guildId: scope.request.guildId, archive: archive.name, shard }),
-      ).pipe(
+      readShardSet({
+        tokens: scope.request.tokens,
+        shardCount: archive.shards,
+        keyOf: (shard) =>
+          archiveKey({ guildId: scope.request.guildId, archive: archive.name, shard }),
+      }).pipe(
         Effect.map(({ set, reads }) => ({
           hits: archivedHits({
             head: scope.head,
             archive,
             allowed: scope.allowed,
-            views: allViews(set, scope.request.tokens),
+            views: allViews({ set, tokens: scope.request.tokens }),
           }),
           reads,
         })),
@@ -173,8 +127,9 @@ const allowedOf = (
   channelIds: readonly string[],
 ): Option.Option<ReadonlySet<number>> => {
   const wanted = new Set(channelIds);
-  const positions = head.channels.flatMap((id, position) =>
-    Array.filter([position], () => wanted.has(id)),
+  const positions = pipe(
+    head.channels,
+    Array.flatMap((id, position) => Array.filter([position], () => wanted.has(id))),
   );
   return Option.liftPredicate(new Set(positions), (set) => set.size < head.channels.length);
 };
@@ -190,10 +145,16 @@ const tallyOf = (
   reads: readonly FileRead[],
 ): Pick<SearchStats, "filesRead" | "filesCached" | "bytesRead"> => ({
   filesRead: reads.length,
-  filesCached: reads.filter(({ cached }) => cached).length,
+  filesCached: pipe(
+    reads,
+    Array.filter(({ cached }) => cached),
+  ).length,
   bytesRead: Number.sumAll(
-    reads.map(({ bytes }) =>
-      Option.match(bytes, { onNone: () => NONE, onSome: (found) => found.byteLength }),
+    pipe(
+      reads,
+      Array.map(({ bytes }) =>
+        Option.match(bytes, { onNone: () => NONE, onSome: (found) => found.byteLength }),
+      ),
     ),
   ),
 });
@@ -205,8 +166,14 @@ type Gathered = Readonly<{
 }>;
 
 const gather = (scope: Scope): Effect.Effect<Gathered, MissingFile, FileGate> => {
-  const recent = scope.head.segments.filter(({ kind }) => kind === "recent");
-  const pieces = scope.head.segments.filter(({ kind, archived }) => kind === "sealed" && !archived);
+  const recent = pipe(
+    scope.head.segments,
+    Array.filter(({ kind }) => kind === "recent"),
+  );
+  const pieces = pipe(
+    scope.head.segments,
+    Array.filter(({ kind, archived }) => kind === "sealed" && !archived),
+  );
   return Effect.all(
     {
       recent: Effect.forEach(recent, (segment) => scanRecent(scope, segment), {
@@ -220,17 +187,37 @@ const gather = (scope: Scope): Effect.Effect<Gathered, MissingFile, FileGate> =>
     { concurrency: "unbounded" },
   ).pipe(
     Effect.map(({ recent: recentScans, pieces: pieceScans, archive }) => ({
-      recent: Array.head(recentScans.map(({ hits }) => hits)),
-      sealed: [...pieceScans.map(({ hits }) => hits), ...archive.hits],
-      reads: [...recentScans, ...pieceScans, archive].flatMap(({ reads }) => reads),
+      recent: Array.head(
+        pipe(
+          recentScans,
+          Array.map(({ hits }) => hits),
+        ),
+      ),
+      sealed: [
+        ...pipe(
+          pieceScans,
+          Array.map(({ hits }) => hits),
+        ),
+        ...archive.hits,
+      ],
+      reads: pipe(
+        [...recentScans, ...pieceScans, archive],
+        Array.flatMap(({ reads }) => reads),
+      ),
     })),
   );
 };
 
 const totalOf = ({ recent, sealed }: Gathered): number =>
   Number.sumAll([
-    ...Option.toArray(recent).map(({ ordinals }) => ordinals.length),
-    ...sealed.map(({ ordinals }) => ordinals.length),
+    ...pipe(
+      Option.toArray(recent),
+      Array.map(({ ordinals }) => ordinals.length),
+    ),
+    ...pipe(
+      sealed,
+      Array.map(({ ordinals }) => ordinals.length),
+    ),
   ]);
 
 const searchOnce = (request: SearchRequest): Effect.Effect<SearchResult, MissingFile, FileGate> =>

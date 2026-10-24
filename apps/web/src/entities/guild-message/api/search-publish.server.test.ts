@@ -1,6 +1,6 @@
 import { it } from "@effect/vitest";
 import { runDurableObjectAlarm } from "cloudflare:test";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 import { expect } from "vite-plus/test";
 
 import { guildStore } from "#/entities/guild-message/index.server";
@@ -68,7 +68,10 @@ type SeedRange = Readonly<{ guildId: string; from: number; upTo: number }>;
 const seedRange = ({ guildId, from, upTo }: SeedRange): Effect.Effect<void> =>
   write(
     guildId,
-    Array.range(from, upTo - FIRST).map((index) => messageAt({ index, tokens: [WORD] })),
+    pipe(
+      Array.range(from, upTo - FIRST),
+      Array.map((index) => messageAt({ index, tokens: [WORD] })),
+    ),
   );
 
 const publish = (guildId: string, times = FIRST): Effect.Effect<void> =>
@@ -99,7 +102,13 @@ const find = ({
   channelIds = [CHANNEL],
 }: Query): Effect.Effect<Found> =>
   searchMessages({ guildId, tokens, channelIds, offset, limit }).pipe(
-    Effect.map(({ total, entries }) => ({ total, ids: entries.map(({ id }) => id) })),
+    Effect.map(({ total, entries }) => ({
+      total,
+      ids: pipe(
+        entries,
+        Array.map(({ id }) => id),
+      ),
+    })),
   );
 
 const totalOf = (query: Query): Effect.Effect<number> =>
@@ -134,7 +143,10 @@ it.effect("drops edited and removed messages at once and finds new text once pub
   Effect.gen(function* edits() {
     yield* write(
       "920",
-      [FIRST, SECOND, THIRD].map((index) => messageAt({ index, tokens: [WORD] })),
+      pipe(
+        [FIRST, SECOND, THIRD],
+        Array.map((index) => messageAt({ index, tokens: [WORD] })),
+      ),
     );
     yield* publish("920");
     yield* write("920", [messageAt({ index: SECOND, tokens: [OTHER_WORD] })]);
@@ -163,9 +175,11 @@ const sealHistory = Effect.gen(function* sealed() {
     yield* find({ guildId: "930", tokens: [WORD], offset: EDGE_OFFSET, limit: EDGE_PAGE }),
   ).toStrictEqual({
     total: SEALED_ROWS,
-    ids: Array.range(RECENT_EDGE - EDGE_PAGE + FIRST, RECENT_EDGE)
-      .toReversed()
-      .map((index) => idOf(index)),
+    ids: pipe(
+      Array.range(RECENT_EDGE - EDGE_PAGE + FIRST, RECENT_EDGE),
+      Array.reverse,
+      Array.map((index) => idOf(index)),
+    ),
   });
 });
 
@@ -202,7 +216,10 @@ const archiveHistory = Effect.gen(function* archived() {
   const head = yield* readHead("930");
   expect(Option.isSome(Option.fromUndefinedOr(head.archive))).toBe(true);
   expect(
-    head.segments.filter((entry) => entry.kind === "sealed" && !entry.archived).length,
+    pipe(
+      head.segments,
+      Array.filter((entry) => entry.kind === "sealed" && !entry.archived),
+    ).length,
   ).toBeLessThanOrEqual(SECOND);
   yield* write("930", [messageAt({ index: ARCHIVED_EDIT, tokens: [OTHER_WORD] })]);
   yield* remove("930", ARCHIVED_REMOVAL);
@@ -262,7 +279,10 @@ it.effect(
       yield* publish("960", MANY_PUBLISHES);
       const head = yield* readHead("960");
       expect(
-        head.segments.filter((entry) => entry.kind === "sealed" && !entry.archived).length,
+        pipe(
+          head.segments,
+          Array.filter((entry) => entry.kind === "sealed" && !entry.archived),
+        ).length,
       ).toBeLessThanOrEqual(SECOND);
       expect(yield* totalOf({ guildId: "960", tokens: [WORD] })).toBe(MANY_PIECES_ROWS);
     }),

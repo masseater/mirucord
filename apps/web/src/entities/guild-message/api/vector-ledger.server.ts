@@ -1,7 +1,7 @@
 import { and, count, eq, gt, inArray, isNotNull, isNull, max } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Option } from "effect";
+import { Array, Option, pipe } from "effect";
 
 import { BOUND_LIMIT, guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { searchSegment } from "#/entities/guild-message/model/search-segment.schema";
@@ -28,13 +28,17 @@ const segmentConditions = (segment: Segment): readonly SQL[] => {
     const range = inRange(rangeOf(segment));
     return [and(range, isNotNull(guildMessage.tokens)) ?? range];
   }
-  return Array.chunksOf(segment.ids, BOUND_LIMIT).map((chunk) =>
-    inArray(guildMessage.id, [...chunk]),
+  return pipe(
+    Array.chunksOf(segment.ids, BOUND_LIMIT),
+    Array.map((chunk) => inArray(guildMessage.id, [...chunk])),
   );
 };
 
 const anyWhere = (db: DrizzleSqliteDODatabase, segment: Segment, extra: SQL): boolean =>
-  segmentConditions(segment).some((condition) => hasRow(db, and(condition, extra) ?? condition));
+  pipe(
+    segmentConditions(segment),
+    Array.some((condition) => hasRow(db, and(condition, extra) ?? condition)),
+  );
 
 const latestVectorAt = (db: DrizzleSqliteDODatabase): number =>
   Option.fromUndefinedOr(
@@ -57,24 +61,28 @@ const isReady = (db: DrizzleSqliteDODatabase, segment: Segment): boolean =>
   segment.kind === "recent" || !anyWhere(db, segment, isNull(guildMessage.vector));
 
 const staleSegments = (db: DrizzleSqliteDODatabase): readonly Segment[] =>
-  searchLedger(db)
-    .segments()
-    .filter((segment) => isStale(db, segment) && isReady(db, segment));
+  pipe(
+    searchLedger(db).segments(),
+    Array.filter((segment) => isStale(db, segment) && isReady(db, segment)),
+  );
 
 const storedVectors = (
   db: DrizzleSqliteDODatabase,
   ids: readonly string[],
 ): readonly StoredVector[] =>
-  Array.chunksOf(ids, BOUND_LIMIT).flatMap((chunk) =>
-    db
-      .select({
-        id: guildMessage.id,
-        channelId: guildMessage.channelId,
-        vector: guildMessage.vector,
-      })
-      .from(guildMessage)
-      .where(inArray(guildMessage.id, [...chunk]))
-      .all(),
+  pipe(
+    Array.chunksOf(ids, BOUND_LIMIT),
+    Array.flatMap((chunk) =>
+      db
+        .select({
+          id: guildMessage.id,
+          channelId: guildMessage.channelId,
+          vector: guildMessage.vector,
+        })
+        .from(guildMessage)
+        .where(inArray(guildMessage.id, [...chunk]))
+        .all(),
+    ),
   );
 
 const markPublished = (

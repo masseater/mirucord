@@ -23,19 +23,27 @@ const sealedVectors = (
   segment: Segment,
   stored: readonly StoredVector[],
 ): readonly SealedVector[] => {
-  const ordinals = new Map(segment.ids.map((id, ordinal) => [id, ordinal]));
-  return stored.flatMap(({ id, channelId, vector }) =>
-    Option.fromNullOr(vector).pipe(
-      Option.filter((bytes) => bytes.length > EMPTY),
-      Option.flatMap((bytes) =>
-        Option.map(Option.fromUndefinedOr(ordinals.get(id)), (ordinal) => ({
-          ordinal,
-          channelId,
-          id,
-          bytes,
-        })),
+  const ordinals = new Map(
+    pipe(
+      segment.ids,
+      Array.map((id, ordinal) => [id, ordinal]),
+    ),
+  );
+  return pipe(
+    stored,
+    Array.flatMap(({ id, channelId, vector }) =>
+      Option.fromNullOr(vector).pipe(
+        Option.filter((bytes) => bytes.length > EMPTY),
+        Option.flatMap((bytes) =>
+          Option.map(Option.fromUndefinedOr(ordinals.get(id)), (ordinal) => ({
+            ordinal,
+            channelId,
+            id,
+            bytes,
+          })),
+        ),
+        Option.toArray,
       ),
-      Option.toArray,
     ),
   );
 };
@@ -68,7 +76,10 @@ const openEntries = ({
   );
 
 const namedBlocks = (through: number, grouped: Grouped): readonly NamedBlock[] =>
-  grouped.clusters.map((entries, cluster) => ({ file: `v${through}-${cluster}`, entries }));
+  pipe(
+    grouped.clusters,
+    Array.map((entries, cluster) => ({ file: `v${through}-${cluster}`, entries })),
+  );
 
 const sealFiles = ({
   keys,

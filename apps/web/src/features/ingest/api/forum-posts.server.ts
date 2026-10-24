@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { Array, Effect, Order } from "effect";
+import { Array, Effect, Order, pipe } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import { ingestOf } from "#/features/ingest/model/channel-ingest";
@@ -47,22 +47,32 @@ const loadForumPosts = ({
     },
     { concurrency: "unbounded" },
   ).pipe(
-    Effect.flatMap(({ scope, rows }) =>
-      Effect.promise(() => guildStore(guildId).countByChannel(rows.map(({ id }) => id))).pipe(
+    Effect.flatMap(({ scope, rows }) => {
+      const channelIds = pipe(
+        rows,
+        Array.map(({ id }) => id),
+      );
+      return Effect.promise(() => guildStore(guildId).countByChannel(channelIds)).pipe(
         Effect.map((counts) => {
-          const messagesOf = new Map(counts.map((row) => [row.channelId, row.messages]));
-          return Array.sort(
-            rows.map((row): ForumPost => ({
+          const messagesOf = new Map(
+            pipe(
+              counts,
+              Array.map((row) => [row.channelId, row.messages]),
+            ),
+          );
+          return pipe(
+            rows,
+            Array.map((row): ForumPost => ({
               id: row.id,
               name: row.name,
               ingest: ingestOf(scope, row),
               messages: messagesOf.get(row.id) ?? NO_MESSAGES,
             })),
-            NewestFirst,
+            (posts) => Array.sort(posts, NewestFirst),
           );
         }),
-      ),
-    ),
+      );
+    }),
   );
 
 const forumPosts = (

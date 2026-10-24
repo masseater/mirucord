@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest/index.server";
@@ -17,9 +18,10 @@ const GuildList = ({
   <Panel>
     <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
     <ul className="grid gap-4 sm:grid-cols-2">
-      {guilds.map((guild) => (
-        <GuildCard key={guild.id} guild={guild} />
-      ))}
+      {pipe(
+        guilds,
+        Array.map((guild) => <GuildCard key={guild.id} guild={guild} />),
+      )}
     </ul>
     <a href={inviteUrl} className={popButtonVariants({ tone: "secondary", size: "md" })}>
       {INVITE}

@@ -1,4 +1,4 @@
-import { Array, Effect, Option, Record } from "effect";
+import { Array, Effect, Option, pipe, Record } from "effect";
 
 import { findMember } from "#/shared/discord/index.server";
 import type {
@@ -27,17 +27,23 @@ const botReader = ({
         guildId: discordGuild.id,
         ownerId: discordGuild.owner_id,
         rolePermissions: Record.fromEntries(
-          discordGuild.roles.map(({ id, permissions }) => [id, permissions]),
-        ),
-        channels: channels.map((discordChannel) => ({
-          id: discordChannel.id,
-          parentId: Option.fromNullishOr(discordChannel.parent_id),
-          type: discordChannel.type,
-          permissionOverwrites: Option.getOrElse(
-            Option.fromNullishOr(discordChannel.permission_overwrites),
-            Array.empty,
+          pipe(
+            discordGuild.roles,
+            Array.map(({ id, permissions }) => [id, permissions]),
           ),
-        })),
+        ),
+        channels: pipe(
+          channels,
+          Array.map((discordChannel) => ({
+            id: discordChannel.id,
+            parentId: Option.fromNullishOr(discordChannel.parent_id),
+            type: discordChannel.type,
+            permissionOverwrites: Option.getOrElse(
+              Option.fromNullishOr(discordChannel.permission_overwrites),
+              Array.empty,
+            ),
+          })),
+        ),
       };
       const bot = member.pipe(Option.map(({ roles }) => ({ userId: botUserId, roleIds: roles })));
       return {

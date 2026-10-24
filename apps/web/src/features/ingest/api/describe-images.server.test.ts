@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
@@ -69,7 +69,11 @@ const answerWith = (id: string, image: () => Response, size = PHOTO_SIZE): void 
 const photoBytes = Uint8Array.from({ length: PHOTO_BYTES }, (_value, index) => index % BYTE_VALUES);
 
 const expectedPhoto = `data:image/jpeg;base64,${btoa(
-  [...photoBytes].map((byte) => String.fromCodePoint(byte)).join(""),
+  pipe(
+    [...photoBytes],
+    Array.map((byte) => String.fromCodePoint(byte)),
+    Array.join(""),
+  ),
 )}`;
 
 const photo = (): Response =>
@@ -77,20 +81,22 @@ const photo = (): Response =>
 
 const seedGuild = Effect.gen(function* seed() {
   const wrappedKey = yield* createGuildKey;
+  const channelRows = pipe(
+    [PHOTO_CHANNEL, LARGE_CHANNEL, BROKEN_CHANNEL],
+    Array.map((id) => ({
+      id,
+      guildId: GUILD,
+      name: `channel ${id}`,
+      type: DEFAULT_MESSAGE,
+      permissionOverwrites: [],
+    })),
+  );
   yield* Effect.promise(() =>
     db.batch([
       db
         .insert(guild)
         .values({ id: GUILD, name: "guild", ownerId: OWNER, wrappedKey, joinedAt: SEEDED_AT }),
-      db.insert(channel).values(
-        [PHOTO_CHANNEL, LARGE_CHANNEL, BROKEN_CHANNEL].map((id) => ({
-          id,
-          guildId: GUILD,
-          name: `channel ${id}`,
-          type: DEFAULT_MESSAGE,
-          permissionOverwrites: [],
-        })),
-      ),
+      db.insert(channel).values(channelRows),
       db.insert(ingestConsent).values({
         guildId: GUILD,
         grantedBy: OWNER,
@@ -155,10 +161,13 @@ it.effect("indexes an image-only message by the description of its image", () =>
   Effect.gen(function* described() {
     answerWith(PHOTO, photo);
     yield* ingestChannel({ guildId: GUILD, channelId: PHOTO_CHANNEL });
-    expect(modelImages.join("")).toContain(expectedPhoto);
-    expect(photoRequests.map(({ pathname }) => pathname)).toStrictEqual([
-      new URL(PHOTO_URL).pathname,
-    ]);
+    expect(pipe(modelImages, Array.join(""))).toContain(expectedPhoto);
+    expect(
+      pipe(
+        photoRequests,
+        Array.map(({ pathname }) => pathname),
+      ),
+    ).toStrictEqual([new URL(PHOTO_URL).pathname]);
     expect(yield* describedWithOf({ guildId: GUILD, id: PHOTO })).toStrictEqual([
       "@cf/google/gemma-4-26b-a4b-it",
     ]);

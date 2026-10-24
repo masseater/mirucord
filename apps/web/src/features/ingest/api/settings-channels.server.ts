@@ -1,6 +1,6 @@
 import type { ChannelType } from "discord-api-types/v10";
 import { eq } from "drizzle-orm";
-import { Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import { forumRowOf, ingestOf } from "#/features/ingest/model/channel-ingest";
 import type { ChannelIngest, IngestRow } from "#/features/ingest/model/channel-ingest";
@@ -65,7 +65,10 @@ const settingsChannelOf = (
   if (kind !== "forum") {
     return { ...base, kind, ingest: ingestOf(scope, row) };
   }
-  const posts = rows.filter(({ parentId }) => parentId === row.id);
+  const posts = pipe(
+    rows,
+    Array.filter(({ parentId }) => parentId === row.id),
+  );
   return {
     ...base,
     kind,
@@ -95,11 +98,17 @@ const loadChannels = ({
       .where(eq(channel.guildId, guildId)),
   ).pipe(
     Effect.map((rows) => ({
-      categories: inDiscordOrder(rows.filter(({ type }) => CATEGORY_TYPES.has(type))).map(
-        ({ id, name }) => ({ id, name }),
+      categories: pipe(
+        rows,
+        Array.filter(({ type }) => CATEGORY_TYPES.has(type)),
+        inDiscordOrder,
+        Array.map(({ id, name }) => ({ id, name })),
       ),
-      channels: inDiscordOrder(rows.filter(({ type }) => LISTED_TYPES.has(type))).map((row) =>
-        settingsChannelOf(scope, row, rows),
+      channels: pipe(
+        rows,
+        Array.filter(({ type }) => LISTED_TYPES.has(type)),
+        inDiscordOrder,
+        Array.map((row) => settingsChannelOf(scope, row, rows)),
       ),
     })),
   );

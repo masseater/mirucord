@@ -1,8 +1,7 @@
-import { Array, Number, Option, Order } from "effect";
+import { Array, Number, Option, Order, pipe, Record } from "effect";
 
 const LONG_AGO = 0;
 const TOP_CHANNELS = 2;
-const FIRST = 0;
 
 type TallyRow = Readonly<{
   phrase: string;
@@ -22,7 +21,13 @@ type PhraseTotal = Readonly<{
   channels: readonly Readonly<{ channelId: string; uses: number }>[];
 }>;
 
-const usesOf = (rows: readonly TallyRow[]): number => Number.sumAll(rows.map(({ uses }) => uses));
+const usesOf = (rows: readonly TallyRow[]): number =>
+  Number.sumAll(
+    pipe(
+      rows,
+      Array.map(({ uses }) => uses),
+    ),
+  );
 
 const byUses = Order.mapInput(
   Order.flip(Order.Number),
@@ -35,24 +40,33 @@ const totalOf = (rows: Array.NonEmptyReadonlyArray<TallyRow>): PhraseTotal => {
     phrase,
     common,
     uses: usesOf(rows),
-    people: new Set(rows.map(({ authorId }) => authorId)).size,
+    people: new Set(
+      pipe(
+        rows,
+        Array.map(({ authorId }) => authorId),
+      ),
+    ).size,
     lastUsedAt: Array.reduce(rows, LONG_AGO, (latest, row) =>
       Number.max(
         latest,
         Option.getOrElse(Option.fromNullOr(row.lastUsedAt), () => LONG_AGO),
       ),
     ),
-    channels: Array.sort(
-      Object.entries(Array.groupBy(rows, ({ channelId }) => channelId)).map(
-        ([channelId, inChannel]) => ({ channelId, uses: usesOf(inChannel) }),
-      ),
-      byUses,
-    ).slice(FIRST, TOP_CHANNELS),
+    channels: pipe(
+      Array.groupBy(rows, ({ channelId }) => channelId),
+      Record.toEntries,
+      Array.map(([channelId, inChannel]) => ({ channelId, uses: usesOf(inChannel) })),
+      (channels) => Array.sort(channels, byUses),
+      Array.take(TOP_CHANNELS),
+    ),
   };
 };
 
 const phraseTotals = (rows: readonly TallyRow[]): readonly PhraseTotal[] =>
-  Object.values(Array.groupBy(rows, ({ phrase }) => phrase)).map((group) => totalOf(group));
+  pipe(
+    Record.values(Array.groupBy(rows, ({ phrase }) => phrase)),
+    Array.map((group) => totalOf(group)),
+  );
 
 export { phraseTotals };
 export type { PhraseTotal, TallyRow };

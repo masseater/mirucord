@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 const RATE_LIMIT_PERIOD = 60;
 
@@ -33,9 +33,11 @@ const tokenOrIp = (request: Request): string =>
 const digestOf = (key: string): Effect.Effect<string> =>
   Effect.promise(() => crypto.subtle.digest("SHA-256", textEncoder.encode(key))).pipe(
     Effect.map((digest) =>
-      Array.fromIterable(new Uint8Array(digest))
-        .map((byte) => byte.toString(HEX_RADIX).padStart(HEX_WIDTH, "0"))
-        .join(""),
+      pipe(
+        Array.fromIterable(new Uint8Array(digest)),
+        Array.map((byte) => byte.toString(HEX_RADIX).padStart(HEX_WIDTH, "0")),
+        Array.join(""),
+      ),
     ),
   );
 

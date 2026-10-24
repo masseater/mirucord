@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { CATEGORIES } from "./sidebar-categories";
@@ -15,9 +16,10 @@ const ChannelSidebar = (): ReactNode => (
       {SERVER}
     </p>
     <div className="ch-groups grid content-start gap-3 overflow-y-auto px-2 py-3">
-      {CATEGORIES.map((category) => (
-        <SidebarGroup key={category.name} category={category} />
-      ))}
+      {pipe(
+        CATEGORIES,
+        Array.map((category) => <SidebarGroup key={category.name} category={category} />),
+      )}
     </div>
   </nav>
 );

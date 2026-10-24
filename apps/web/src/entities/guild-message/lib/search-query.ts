@@ -1,4 +1,4 @@
-import { Array, Effect, Number, Option, Order, Schema } from "effect";
+import { Array, Effect, Number, Option, Order, pipe, Schema } from "effect";
 
 import { STAMP_BYTES } from "./search-layout";
 import { SealedEntrySchema } from "./search-segment";
@@ -148,7 +148,10 @@ const orderedHits = ({ recent, sealed, offset, limit }: Ordering): readonly Hit[
     picked.push(...nextRecent(group.from, take - picked.length));
     const room = Math.max(take - picked.length, FIRST);
     picked.push(
-      ...group.ordinals.slice(FIRST, room).map((ordinal) => ({ segment: group.segment, ordinal })),
+      ...pipe(
+        group.ordinals.slice(FIRST, room),
+        Array.map((ordinal) => ({ segment: group.segment, ordinal })),
+      ),
     );
   }
   picked.push(...nextRecent(BEFORE_EVERYTHING, take - picked.length));

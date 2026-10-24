@@ -1,4 +1,4 @@
-import { Array, Number, Option, Order, Record } from "effect";
+import { Array, Number, Option, Order, pipe, Record } from "effect";
 
 import { matchPostings } from "#/entities/guild-message/lib/search-query";
 import type { SealedHits } from "#/entities/guild-message/lib/search-query";
@@ -20,14 +20,21 @@ const invalidIn = (head: SearchHead, name: string): ReadonlySet<number> =>
   new Set(Option.getOrElse(Record.get(head.invalid, name), () => []));
 
 const livePieces = (head: SearchHead, archive: ArchiveEntry): readonly LivePiece[] => {
-  const entries = new Map(head.segments.map((entry) => [entry.name, entry]));
-  const live = archive.pieces.flatMap(({ name, offset }) =>
-    Option.toArray(Option.fromUndefinedOr(entries.get(name))).map((entry) => ({
-      name,
-      offset,
-      count: entry.count,
-      from: entry.from,
-    })),
+  const entries = new Map(
+    pipe(
+      head.segments,
+      Array.map((entry) => [entry.name, entry]),
+    ),
+  );
+  const live = pipe(
+    archive.pieces,
+    Array.flatMap(({ name, offset }) => {
+      const entry = Option.fromUndefinedOr(entries.get(name));
+      return pipe(
+        Option.toArray(entry),
+        Array.map(({ count, from }) => ({ name, offset, count, from })),
+      );
+    }),
   );
   return Array.sort(live, byOffset);
 };
@@ -44,11 +51,14 @@ const groupByPiece = (
       grouped.set(piece.name, found);
     }
   }
-  return Array.fromIterable(grouped.values()).map(({ piece, ordinals: local }) => ({
-    segment: piece.name,
-    from: piece.from,
-    ordinals: local,
-  }));
+  return pipe(
+    Array.fromIterable(grouped.values()),
+    Array.map(({ piece, ordinals: local }) => ({
+      segment: piece.name,
+      from: piece.from,
+      ordinals: local,
+    })),
+  );
 };
 
 type ArchiveScan = Readonly<{
@@ -60,7 +70,12 @@ type ArchiveScan = Readonly<{
 
 const archivedHits = ({ head, archive, allowed, views }: ArchiveScan): readonly SealedHits[] => {
   const pieces = livePieces(head, archive);
-  const invalid = new Map(pieces.map(({ name }) => [name, invalidIn(head, name)]));
+  const invalid = new Map(
+    pipe(
+      pieces,
+      Array.map(({ name }) => [name, invalidIn(head, name)]),
+    ),
+  );
   const isHidden = (ordinal: number): boolean =>
     Option.match(rangeAt({ pieces, ordinal }), {
       onNone: () => true,

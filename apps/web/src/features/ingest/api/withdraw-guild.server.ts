@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Data, Effect } from "effect";
+import { Effect, Schema } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import { channel, db, ingestConsent } from "#/shared/db/index.server";
@@ -7,10 +7,15 @@ import { channel, db, ingestConsent } from "#/shared/db/index.server";
 import { purgeChannel } from "./consent-scope.server";
 import { enqueueWithdrawal } from "./enqueue.server";
 
-class GuildDataRemainsError extends Data.TaggedError("GuildDataRemainsError")<{
-  readonly guildId: string;
-  readonly remaining: number;
-}> {}
+const taggedError = Schema.TaggedError;
+
+class GuildDataRemainsError extends taggedError<
+  GuildDataRemainsError,
+  { readonly brand: unique symbol }
+>()("GuildDataRemainsError", {
+  guildId: Schema.String,
+  remaining: Schema.Finite,
+}) {}
 
 const NOTHING_STORED = 0;
 
@@ -29,7 +34,7 @@ const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError>
     Effect.andThen(storedCount(guildId)),
     Effect.filterOrFail(
       (remaining) => remaining === NOTHING_STORED,
-      (remaining) => new GuildDataRemainsError({ guildId, remaining }),
+      (remaining) => GuildDataRemainsError.make({ guildId, remaining }),
     ),
     Effect.asVoid,
   );

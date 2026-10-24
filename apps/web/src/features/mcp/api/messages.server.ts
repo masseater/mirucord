@@ -1,4 +1,4 @@
-import { DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 
 import {
   containsQuery,
@@ -55,7 +55,10 @@ const openStored = ({
   return openGuildKey(wrappedKey).pipe(
     Effect.flatMap((key) =>
       Effect.forEach(
-        stored.filter((row) => holdsMessage(scope, row)),
+        pipe(
+          stored,
+          Array.filter((row) => holdsMessage(scope, row)),
+        ),
         (row) =>
           openMessage(row.sealed, key, {
             guildId,
@@ -99,8 +102,11 @@ const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
       openStored({ scope: request.scope, stored: entries }).pipe(
         Effect.map((views) => ({
           total,
-          messages: views.filter((view) =>
-            containsQuery({ texts: searchableTexts(view), query: request.query }),
+          messages: pipe(
+            views,
+            Array.filter((view) =>
+              containsQuery({ texts: searchableTexts(view), query: request.query }),
+            ),
           ),
         })),
       ),

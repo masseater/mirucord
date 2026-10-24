@@ -60,7 +60,11 @@ const forumRowOfDataFirst = (
 ): IngestRow => ({
   newest: newestOfPosts(posts),
   backfill: Boolean.match(
-    Array.isReadonlyArrayNonEmpty(posts) && posts.every(({ backfill }) => backfill === "done"),
+    Array.isReadonlyArrayNonEmpty(posts) &&
+      pipe(
+        posts,
+        Array.every(({ backfill }) => backfill === "done"),
+      ),
     { onTrue: () => "done" as const, onFalse: () => "pending" as const },
   ),
   botAccess: forum.botAccess,
@@ -91,11 +95,24 @@ const IN_PROGRESS: ReadonlySet<ChannelIngest> = new Set(["waiting", "backfilling
 const COUNTED: ReadonlySet<ChannelIngest> = new Set(["waiting", "backfilling", "done"]);
 
 const grantedIngest = (channels: readonly ChannelIngest[]): GuildIngest => {
-  const counted = channels.filter((ingest) => COUNTED.has(ingest));
-  if (!counted.some((ingest) => IN_PROGRESS.has(ingest))) {
+  const counted = pipe(
+    channels,
+    Array.filter((ingest) => COUNTED.has(ingest)),
+  );
+  if (
+    !pipe(
+      counted,
+      Array.some((ingest) => IN_PROGRESS.has(ingest)),
+    )
+  ) {
     return "done";
   }
-  if (counted.every((ingest) => ingest === "waiting")) {
+  if (
+    pipe(
+      counted,
+      Array.every((ingest) => ingest === "waiting"),
+    )
+  ) {
     return "waiting";
   }
   return "backfilling";

@@ -1,4 +1,4 @@
-import { Array, Option } from "effect";
+import { Array, Option, pipe } from "effect";
 
 type Consent = "consented" | "notConsented";
 
@@ -29,13 +29,37 @@ type ForumRule = Readonly<{
 
 const FORUM_RULES: readonly ForumRule[] = [
   { status: "waiting", matches: (statuses) => !Array.isReadonlyArrayNonEmpty(statuses) },
-  { status: "empty", matches: (statuses) => statuses.every((status) => status === "empty") },
-  { status: "done", matches: (statuses) => statuses.every((status) => READY.has(status)) },
-  { status: "waiting", matches: (statuses) => statuses.every((status) => status === "waiting") },
+  {
+    status: "empty",
+    matches: (statuses) =>
+      pipe(
+        statuses,
+        Array.every((status) => status === "empty"),
+      ),
+  },
+  {
+    status: "done",
+    matches: (statuses) =>
+      pipe(
+        statuses,
+        Array.every((status) => READY.has(status)),
+      ),
+  },
+  {
+    status: "waiting",
+    matches: (statuses) =>
+      pipe(
+        statuses,
+        Array.every((status) => status === "waiting"),
+      ),
+  },
 ];
 
 const postsStatus = (posts: readonly ChannelProgress[]): IngestStatus => {
-  const statuses = posts.map((post) => progressStatus(post));
+  const statuses = pipe(
+    posts,
+    Array.map((post) => progressStatus(post)),
+  );
   return Array.findFirst(FORUM_RULES, ({ matches }) => matches(statuses)).pipe(
     Option.map(({ status }) => status),
     Option.getOrElse((): IngestStatus => "backfilling"),

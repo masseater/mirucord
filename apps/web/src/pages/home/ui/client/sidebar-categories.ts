@@ -1,3 +1,5 @@
+import { Array, pipe } from "effect";
+
 import { CHANNELS } from "#/pages/home/ui/common/channels";
 import type { Place, PlaceId } from "#/pages/home/ui/common/places";
 import { SERVICE_NAME } from "#/shared/config";
@@ -64,7 +66,10 @@ const CATEGORIES: readonly SidebarCategory[] = [
       { type: "link", channel: start },
       { type: "link", channel: safety },
       { type: "link", channel: faq },
-      ...GUIDE_CHANNELS.map((page) => ({ type: "page", page }) as const),
+      ...pipe(
+        GUIDE_CHANNELS,
+        Array.map((page) => ({ type: "page", page }) as const),
+      ),
     ],
   },
   { state: "collapsed", name: "イベント" },

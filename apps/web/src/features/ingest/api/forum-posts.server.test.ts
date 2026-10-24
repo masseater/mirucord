@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { ChannelType } from "discord-api-types/v10";
-import { DateTime, Effect } from "effect";
+import { Array, DateTime, Effect, pipe } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
@@ -22,7 +22,10 @@ const TEXT_THREAD = "605";
 const DISCORD = "https://discord.com/api/v10";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 
-const LIVELY_MESSAGES = ["701", "702"].map((id) => storedMessage({ id, channelId: LIVELY_POST }));
+const LIVELY_MESSAGES = pipe(
+  ["701", "702"],
+  Array.map((id) => storedMessage({ id, channelId: LIVELY_POST })),
+);
 
 const network = setupNetwork();
 

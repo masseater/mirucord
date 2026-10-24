@@ -1,5 +1,5 @@
 import { count, countDistinct, eq, inArray } from "drizzle-orm";
-import { Array, DateTime, Effect, Number, Option, Record, Schema } from "effect";
+import { Array, DateTime, Effect, Number, Option, Order, pipe, Record, Schema } from "effect";
 import { Hex } from "effect/encoding";
 
 import { guildStore } from "#/entities/guild-message/index.server";
@@ -11,7 +11,6 @@ const ROWS_PER_INSERT = 50;
 const BOUND_LIMIT = 90;
 const NO_GUILDS = 0;
 const ONE_GUILD = 1;
-const FIRST = 0;
 const CHANNEL_SEPARATOR = ",";
 
 const StoredPhraseSchema = Schema.Struct({
@@ -36,12 +35,10 @@ type Tallied = Readonly<{ stats: StoredStats; written: number; generation: numbe
 const textEncoder = new TextEncoder();
 
 const visibilityOf = (channelIds: readonly string[]): Effect.Effect<string> =>
-  Effect.promise(() =>
-    crypto.subtle.digest(
-      "SHA-256",
-      textEncoder.encode(channelIds.toSorted().join(CHANNEL_SEPARATOR)),
-    ),
-  ).pipe(Effect.map((digest) => Hex.encode(new Uint8Array(digest))));
+  Effect.promise(() => {
+    const joined = Array.join(Array.sort(channelIds, Order.String), CHANNEL_SEPARATOR);
+    return crypto.subtle.digest("SHA-256", textEncoder.encode(joined));
+  }).pipe(Effect.map((digest) => Hex.encode(new Uint8Array(digest))));
 
 const replacePresence = ({
   guildId,
@@ -50,11 +47,19 @@ const replacePresence = ({
   Effect.promise(() =>
     db.batch([
       db.delete(commonPhrase).where(eq(commonPhrase.guildId, guildId)),
-      ...Array.chunksOf(presence, ROWS_PER_INSERT).map((chunk) =>
-        db
-          .insert(commonPhrase)
-          .values(chunk.map((phrase) => ({ phrase, guildId })))
-          .onConflictDoNothing(),
+      ...pipe(
+        Array.chunksOf(presence, ROWS_PER_INSERT),
+        Array.map((chunk) =>
+          db
+            .insert(commonPhrase)
+            .values(
+              pipe(
+                chunk,
+                Array.map((phrase) => ({ phrase, guildId })),
+              ),
+            )
+            .onConflictDoNothing(),
+        ),
       ),
     ]),
   );
@@ -81,7 +86,12 @@ const guildsUsing = (commons: readonly string[]): Effect.Effect<Readonly<Record<
     ),
   ).pipe(
     Effect.map((rows) =>
-      Object.fromEntries(rows.flat().map(({ phrase, guilds }) => [phrase, guilds])),
+      Record.fromEntries(
+        pipe(
+          rows.flat(),
+          Array.map(({ phrase, guilds }) => [phrase, guilds]),
+        ),
+      ),
     ),
   );
 
@@ -92,12 +102,18 @@ const scoreOf = ({ guilds, using }: Rarity, { uses, common }: PhraseCandidate): 
   return uses * Math.log((guilds + ONE_GUILD) / Number.max(sharing, ONE_GUILD));
 };
 
+const byScoreDescending = Order.flip(
+  Order.mapInput(Order.Number, ({ score }: Readonly<{ score: number }>) => score),
+);
+
 const rank = (candidates: readonly PhraseCandidate[], rarity: Rarity): readonly PhraseCandidate[] =>
-  candidates
-    .map((candidate) => ({ candidate, score: scoreOf(rarity, candidate) }))
-    .toSorted((left, right) => right.score - left.score)
-    .slice(FIRST, TOP_PHRASES)
-    .map(({ candidate }) => candidate);
+  pipe(
+    candidates,
+    Array.map((candidate) => ({ candidate, score: scoreOf(rarity, candidate) })),
+    (rows) => Array.sort(rows, byScoreDescending),
+    Array.take(TOP_PHRASES),
+    Array.map(({ candidate }) => candidate),
+  );
 
 const rankedCandidates = Effect.fn("rankPhrases")(function* ranked(
   guildId: string,
@@ -105,7 +121,12 @@ const rankedCandidates = Effect.fn("rankPhrases")(function* ranked(
 ) {
   yield* replacePresence({ guildId, presence: tally.presence });
   const guilds = yield* guildsWithPhrases;
-  const using = yield* guildsUsing(tally.candidates.map(({ common }) => common));
+  const using = yield* guildsUsing(
+    pipe(
+      tally.candidates,
+      Array.map(({ common }) => common),
+    ),
+  );
   yield* Effect.annotateCurrentSpan({ guildId, candidates: tally.candidates.length, guilds });
   return rank(tally.candidates, { guilds, using });
 });
@@ -119,21 +140,30 @@ const tallyStats = Effect.fn("tallyPhraseStats")(function* tally(
   const ranked = yield* rankedCandidates(guildId, tallied);
   const examples = yield* Effect.promise(() =>
     store.phraseExamples(
-      ranked.map(({ phrase }) => phrase),
+      pipe(
+        ranked,
+        Array.map(({ phrase }) => phrase),
+      ),
       channelIds,
     ),
   );
-  const examplesOf = Object.fromEntries(
-    examples.map(({ phrase, messageIds }) => [phrase, messageIds]),
+  const examplesOf = Record.fromEntries(
+    pipe(
+      examples,
+      Array.map(({ phrase, messageIds }) => [phrase, messageIds]),
+    ),
   );
-  const phrases = ranked.map(({ phrase, uses, people, lastUsedAt, channels }): StoredPhrase => ({
-    phrase,
-    uses,
-    people,
-    lastUsedAt,
-    channels,
-    examples: Option.getOrElse(Record.get(examplesOf, phrase), () => []),
-  }));
+  const phrases = pipe(
+    ranked,
+    Array.map(({ phrase, uses, people, lastUsedAt, channels }): StoredPhrase => ({
+      phrase,
+      uses,
+      people,
+      lastUsedAt,
+      channels,
+      examples: Option.getOrElse(Record.get(examplesOf, phrase), () => []),
+    })),
+  );
   return {
     stats: { phrases },
     written: tallied.written,

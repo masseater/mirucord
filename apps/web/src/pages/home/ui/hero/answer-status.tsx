@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
@@ -13,9 +14,12 @@ const AnswerStatus = (): ReactNode => (
     <span aria-hidden="true" className="answer-searching flex items-center gap-1.5">
       <Mascot className="motion-safe:animate-wiggle size-6" />
       {SEARCHING}
-      {DOTS.map((dot) => (
-        <span key={dot} className="bg-ink-soft size-1 rounded-full motion-safe:animate-pulse" />
-      ))}
+      {pipe(
+        DOTS,
+        Array.map((dot) => (
+          <span key={dot} className="bg-ink-soft size-1 rounded-full motion-safe:animate-pulse" />
+        )),
+      )}
     </span>
     <span className="answer-done flex items-center gap-1.5">
       <span

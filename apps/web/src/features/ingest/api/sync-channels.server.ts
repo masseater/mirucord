@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Array, Boolean, DateTime, Effect, Option } from "effect";
+import { Array, Boolean, DateTime, Effect, Option, pipe } from "effect";
 
 import { observeAccess } from "#/features/ingest/model/bot-access";
 import type { BotAccess } from "#/features/ingest/model/bot-access";
@@ -46,7 +46,17 @@ const loadAccess = (guildId: string): Effect.Effect<ReadonlyMap<string, BotAcces
       .select({ id: channel.id, botAccess: channel.botAccess, hiddenAt: channel.hiddenAt })
       .from(channel)
       .where(eq(channel.guildId, guildId)),
-  ).pipe(Effect.map((rows) => new Map(rows.map((row) => [row.id, accessOf(row)]))));
+  ).pipe(
+    Effect.map(
+      (rows) =>
+        new Map(
+          pipe(
+            rows,
+            Array.map((row) => [row.id, accessOf(row)]),
+          ),
+        ),
+    ),
+  );
 
 const UPSERT_BATCH = 50;
 
@@ -56,31 +66,34 @@ const upsertChannels = (sync: ChannelSync): Effect.Effect<void> =>
     now: DateTime.now,
   }).pipe(
     Effect.map(({ previous, now }) =>
-      sync.stored.map((discordChannel) => {
-        const known = Option.fromUndefinedOr(previous.get(discordChannel.id));
-        const access = observeAccess({
-          readable: sync.readable.includes(discordChannel.id),
-          previous: Option.getOrElse(known, () => READABLE),
-          now,
-        });
-        const row = { ...toChannelRow(sync, discordChannel), ...columnsOf(access) };
-        return db
-          .insert(channel)
-          .values(row)
-          .onConflictDoUpdate({
-            target: channel.id,
-            set: {
-              parentId: row.parentId,
-              name: row.name,
-              position: row.position,
-              permissionOverwrites: row.permissionOverwrites,
-              botAccess: row.botAccess,
-              hiddenAt: row.hiddenAt,
-              botPost: row.botPost,
-              archive: row.archive,
-            },
+      pipe(
+        sync.stored,
+        Array.map((discordChannel) => {
+          const known = Option.fromUndefinedOr(previous.get(discordChannel.id));
+          const access = observeAccess({
+            readable: sync.readable.includes(discordChannel.id),
+            previous: Option.getOrElse(known, () => READABLE),
+            now,
           });
-      }),
+          const row = { ...toChannelRow(sync, discordChannel), ...columnsOf(access) };
+          return db
+            .insert(channel)
+            .values(row)
+            .onConflictDoUpdate({
+              target: channel.id,
+              set: {
+                parentId: row.parentId,
+                name: row.name,
+                position: row.position,
+                permissionOverwrites: row.permissionOverwrites,
+                botAccess: row.botAccess,
+                hiddenAt: row.hiddenAt,
+                botPost: row.botPost,
+                archive: row.archive,
+              },
+            });
+        }),
+      ),
     ),
     Effect.flatMap((statements) =>
       Effect.forEach(

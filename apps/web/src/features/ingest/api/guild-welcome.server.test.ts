@@ -6,7 +6,7 @@ import type {
   RESTPostAPICurrentUserCreateDMChannelJSONBody,
 } from "discord-api-types/v10";
 import { eq } from "drizzle-orm";
-import { Effect } from "effect";
+import { Array, Effect, pipe } from "effect";
 import { http, HttpResponse } from "msw";
 import type { PathParams } from "msw";
 import { afterAll, afterEach, beforeAll, expect } from "vite-plus/test";
@@ -128,10 +128,19 @@ it.effect("a joined server sends the next steps to whoever invited the bot", () 
   Effect.gen(function* invited() {
     const sent = discordWith({ guildId: "730", auditLog: "readable", dm: "open" });
     yield* syncJoinedGuild("730");
-    expect(sent.map(({ channelId }) => channelId)).toStrictEqual([`dm:${INVITER}`, DM_CHANNEL]);
-    expect(sent.map(({ content }) => content).join("")).toMatch(
-      /"url":"https:\/\/mirucord\.masseater\.dev\/dashboard\/730"/u,
-    );
+    expect(
+      pipe(
+        sent,
+        Array.map(({ channelId }) => channelId),
+      ),
+    ).toStrictEqual([`dm:${INVITER}`, DM_CHANNEL]);
+    expect(
+      pipe(
+        sent,
+        Array.map(({ content }) => content),
+        Array.join(""),
+      ),
+    ).toMatch(/"url":"https:\/\/mirucord\.masseater\.dev\/dashboard\/730"/u);
     yield* Effect.promise(() => forget("730"));
   }),
 );
@@ -142,7 +151,12 @@ it.effect(
     Effect.gen(function* fallback() {
       const sent = discordWith({ guildId: "740", auditLog: "forbidden", dm: "closed" });
       yield* syncJoinedGuild("740");
-      expect(sent.map(({ channelId }) => channelId)).toStrictEqual([`dm:${OWNER}`, SYSTEM_CHANNEL]);
+      expect(
+        pipe(
+          sent,
+          Array.map(({ channelId }) => channelId),
+        ),
+      ).toStrictEqual([`dm:${OWNER}`, SYSTEM_CHANNEL]);
       yield* Effect.promise(() => forget("740"));
     }),
 );

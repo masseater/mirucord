@@ -1,4 +1,4 @@
-import { Effect, Option, pipe } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import { STORED_TYPES, THREAD_PARENT_TYPES } from "#/features/ingest/model/channel-kind";
 import {
@@ -44,23 +44,32 @@ const listArchived = (parentId: string): Effect.Effect<ArchivedListing, DiscordR
   );
 
 const archivedThreadsOf = (listings: readonly ArchivedListing[]): readonly DiscordChannel[] =>
-  listings.flatMap((listing) => {
-    if (listing.status === "listed") {
-      return listing.threads;
-    }
-    return [];
-  });
+  pipe(
+    listings,
+    Array.flatMap((listing) => {
+      if (listing.status === "listed") {
+        return listing.threads;
+      }
+      return [];
+    }),
+  );
 
 const unlistedParentsOf = (listings: readonly ArchivedListing[]): readonly string[] =>
-  listings.flatMap((listing) => {
-    if (listing.status === "forbidden") {
-      return [listing.parentId];
-    }
-    return [];
-  });
+  pipe(
+    listings,
+    Array.flatMap((listing) => {
+      if (listing.status === "forbidden") {
+        return [listing.parentId];
+      }
+      return [];
+    }),
+  );
 
 const idsOf = (channels: readonly DiscordChannel[]): readonly string[] =>
-  channels.map(({ id }) => id);
+  pipe(
+    channels,
+    Array.map(({ id }) => id),
+  );
 
 const listChannelsOf = (view: BotView): Effect.Effect<ChannelListing, DiscordRequestError> =>
   Effect.gen(function* listChannels() {
@@ -70,15 +79,29 @@ const listChannelsOf = (view: BotView): Effect.Effect<ChannelListing, DiscordReq
       botReader(view),
     ]);
     const readableParents = readableIn(channels).readable;
-    const allParents = idsOf(channels.filter(({ type }) => THREAD_PARENT_TYPES.has(type)));
-    const parents = allParents.filter((id) => readableParents.has(id));
-    const hiddenParents = allParents.filter((id) => !readableParents.has(id));
+    const allParents = idsOf(
+      pipe(
+        channels,
+        Array.filter(({ type }) => THREAD_PARENT_TYPES.has(type)),
+      ),
+    );
+    const parents = pipe(
+      allParents,
+      Array.filter((id) => readableParents.has(id)),
+    );
+    const hiddenParents = pipe(
+      allParents,
+      Array.filter((id) => !readableParents.has(id)),
+    );
     const listings = yield* pipe(parents, Effect.forEach(listArchived));
     const archived = archivedThreadsOf(listings);
     const everything = [...channels, ...active, ...archived];
     const access = readableIn(everything);
     return {
-      stored: everything.filter(({ type }) => STORED_TYPES.has(type)),
+      stored: pipe(
+        everything,
+        Array.filter(({ type }) => STORED_TYPES.has(type)),
+      ),
       readable: [...access.readable],
       postable: [...access.postable],
       archived: idsOf(archived),

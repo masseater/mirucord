@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import type { Author } from "./author";
@@ -16,12 +17,15 @@ type ChatLine = Readonly<{
 
 const Chatter = ({ lines }: Readonly<{ lines: readonly ChatLine[] }>): ReactNode => (
   <div>
-    {lines.map((line) => (
-      <Message key={line.text} author={line.author} time={line.time} reply={line.reply}>
-        <p>{line.text}</p>
-        <Reactions items={line.reactions} />
-      </Message>
-    ))}
+    {pipe(
+      lines,
+      Array.map((line) => (
+        <Message key={line.text} author={line.author} time={line.time} reply={line.reply}>
+          <p>{line.text}</p>
+          <Reactions items={line.reactions} />
+        </Message>
+      )),
+    )}
   </div>
 );
 

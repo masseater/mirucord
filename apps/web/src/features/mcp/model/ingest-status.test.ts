@@ -1,4 +1,4 @@
-import { Option } from "effect";
+import { Array, Option, pipe } from "effect";
 import { expect, it } from "vite-plus/test";
 
 import { ingestStatus } from "./ingest-status";
@@ -25,12 +25,12 @@ it("reports nothing as stored before the server consents", () => {
 });
 
 it("calls a channel empty only after its backfill found no messages", () => {
-  expect([STORED, EMPTY, PARTIAL, UNTOUCHED].map((progress) => channel(progress))).toStrictEqual([
-    "done",
-    "empty",
-    "backfilling",
-    "waiting",
-  ]);
+  expect(
+    pipe(
+      [STORED, EMPTY, PARTIAL, UNTOUCHED],
+      Array.map((progress) => channel(progress)),
+    ),
+  ).toStrictEqual(["done", "empty", "backfilling", "waiting"]);
 });
 
 it("does not call a forum empty before any of its posts are known", () => {
@@ -39,11 +39,14 @@ it("does not call a forum empty before any of its posts are known", () => {
 
 it("follows the posts of a forum", () => {
   expect(
-    [
-      [EMPTY, EMPTY],
-      [STORED, EMPTY],
-      [UNTOUCHED, UNTOUCHED],
-      [STORED, UNTOUCHED],
-    ].map((posts) => forum(posts)),
+    pipe(
+      [
+        [EMPTY, EMPTY],
+        [STORED, EMPTY],
+        [UNTOUCHED, UNTOUCHED],
+        [STORED, UNTOUCHED],
+      ],
+      Array.map((posts) => forum(posts)),
+    ),
   ).toStrictEqual(["empty", "done", "waiting", "backfilling"]);
 });

@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { Array, Effect, Option, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema } from "effect";
 import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
 import { settleNeurons } from "#/shared/ai/index.server";
@@ -58,7 +58,10 @@ it.live("finds messages by meaning only in the channels the user can read", () =
     ]);
     yield* drainAlarms;
     const found = yield* findSimilar("麺類の話をしていたのは？");
-    const ids = found.messages.map(({ id }) => id);
+    const ids = pipe(
+      found.messages,
+      Array.map(({ id }) => id),
+    );
     expect(Array.head(ids)).toStrictEqual(Option.some(RAMEN));
     expect(ids).toContain(CAT);
     expect(ids).not.toContain(STAFF_RAMEN);
@@ -71,7 +74,12 @@ it.live("reuses the vector of a query it has already embedded", () =>
     const query = "猫の写真ある？";
     yield* findSimilar(query);
     yield* findSimilar(query);
-    expect(embeddedTexts.filter((text) => text === query)).toHaveLength(ONCE);
+    expect(
+      pipe(
+        embeddedTexts,
+        Array.filter((text) => text === query),
+      ),
+    ).toHaveLength(ONCE);
   }),
 );
 

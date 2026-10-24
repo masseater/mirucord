@@ -1,4 +1,4 @@
-import { Option } from "effect";
+import { Array, Option, pipe } from "effect";
 import { expect, it } from "vite-plus/test";
 
 import { forumRowOf, guildIngestOf, ingestOf } from "./channel-ingest";
@@ -70,11 +70,10 @@ const SERVERS: readonly (readonly ChannelIngest[])[] = [
 ];
 
 it("calls a server done only when no channel it reads is still pending", () => {
-  expect(SERVERS.map((channels) => guildIngestOf("granted", channels))).toStrictEqual([
-    "done",
-    "backfilling",
-    "backfilling",
-    "waiting",
-    "done",
-  ]);
+  expect(
+    pipe(
+      SERVERS,
+      Array.map((channels) => guildIngestOf("granted", channels)),
+    ),
+  ).toStrictEqual(["done", "backfilling", "backfilling", "waiting", "done"]);
 });

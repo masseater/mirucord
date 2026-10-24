@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { DateTime, Effect } from "effect";
+import { Array, DateTime, Effect, pipe } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
@@ -91,7 +91,12 @@ it.effect("a new gateway session forgets departed servers and queues a catch-up 
       { body: { kind: "catchUp", guildId: KEPT } },
       { body: { kind: "catchUp", guildId: JOINED } },
     ]);
-    expect((yield* Effect.promise(storedGuilds)).map(({ id }) => id)).toStrictEqual([KEPT]);
+    expect(
+      pipe(
+        yield* Effect.promise(storedGuilds),
+        Array.map(({ id }) => id),
+      ),
+    ).toStrictEqual([KEPT]);
   }),
 );
 

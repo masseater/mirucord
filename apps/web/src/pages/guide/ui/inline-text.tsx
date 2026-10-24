@@ -1,4 +1,4 @@
-import { Match } from "effect";
+import { Array, Match, pipe } from "effect";
 import type { ReactNode } from "react";
 
 const CODE_PATTERN = /(?<code>`[^`]+`)/u;
@@ -18,9 +18,10 @@ const segment = (part: string): ReactNode =>
   );
 
 const InlineText = ({ text }: Readonly<{ text: string }>): ReactNode =>
-  text
-    .split(CODE_PATTERN)
-    .filter((part) => part !== "")
-    .map((part) => segment(part));
+  pipe(
+    text.split(CODE_PATTERN),
+    Array.filter((part) => part !== ""),
+    Array.map((part) => segment(part)),
+  );
 
 export { InlineText };

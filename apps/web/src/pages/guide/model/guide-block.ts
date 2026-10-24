@@ -1,4 +1,4 @@
-import { Match } from "effect";
+import { Array, Match, pipe } from "effect";
 
 type FlowEdge = Readonly<{ from: string; label: string; to: string }>;
 
@@ -13,16 +13,25 @@ type GuideBlock =
 type GuideSection = Readonly<{ heading: string; blocks: readonly GuideBlock[] }>;
 
 const rowsKey = (rows: readonly (readonly string[])[]): string =>
-  rows.map((row) => row.join("|")).join("/");
+  pipe(
+    rows,
+    Array.map((row) => pipe(row, Array.join("|"))),
+    Array.join("/"),
+  );
 
 const blockKey: (block: GuideBlock) => string = Match.type<GuideBlock>().pipe(
   Match.discriminatorsExhaustive("type")({
     text: ({ text }) => text,
-    list: ({ items }) => items.join("|"),
-    steps: ({ items }) => items.join("|"),
+    list: ({ items }) => pipe(items, Array.join("|")),
+    steps: ({ items }) => pipe(items, Array.join("|")),
     code: ({ code }) => code,
     table: ({ rows }) => rowsKey(rows),
-    flow: ({ edges }) => edges.map(({ from, to }) => `${from}>${to}`).join("/"),
+    flow: ({ edges }) =>
+      pipe(
+        edges,
+        Array.map(({ from, to }) => `${from}>${to}`),
+        Array.join("/"),
+      ),
   }),
 );
 

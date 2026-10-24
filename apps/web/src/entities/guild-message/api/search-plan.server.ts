@@ -1,6 +1,6 @@
 import { and, asc, desc, inArray, isNotNull, lt } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Number, Option, Order } from "effect";
+import { Array, Number, Option, Order, pipe } from "effect";
 
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { searchInvalid } from "#/entities/guild-message/model/search-segment.schema";
@@ -59,12 +59,15 @@ type LoadedRow = Readonly<{
 }>;
 
 const toPieceRows = (rows: readonly LoadedRow[]): readonly PieceRow[] =>
-  rows.map(({ id, channelId, createdAt, tokens }) => ({
-    id,
-    channelId,
-    createdAt,
-    tokens: Option.getOrElse(Option.fromNullOr(tokens), (): readonly number[] => []),
-  }));
+  pipe(
+    rows,
+    Array.map(({ id, channelId, createdAt, tokens }) => ({
+      id,
+      channelId,
+      createdAt,
+      tokens: Option.getOrElse(Option.fromNullOr(tokens), (): readonly number[] => []),
+    })),
+  );
 
 const rowsIn = (db: DrizzleSqliteDODatabase, range: Range): readonly PieceRow[] => {
   const indexedInRange = and(inRange(range), isNotNull(guildMessage.tokens));
@@ -78,31 +81,39 @@ const rowsIn = (db: DrizzleSqliteDODatabase, range: Range): readonly PieceRow[] 
   );
 };
 
-const cutIndex = (oldestFirst: readonly PieceRow[]): number =>
-  oldestFirst.findIndex(
-    (row, index) =>
-      index >= PIECE_TARGET &&
-      row.createdAt !==
-        Option.getOrElse(Option.fromUndefinedOr(oldestFirst[index - NEXT]), () => row).createdAt,
+const cutIndex = (oldestFirst: readonly PieceRow[]): Option.Option<number> =>
+  pipe(
+    oldestFirst,
+    Array.findFirstIndex(
+      (row, index) =>
+        index >= PIECE_TARGET &&
+        row.createdAt !==
+          Option.getOrElse(Option.fromUndefinedOr(oldestFirst[index - NEXT]), () => row).createdAt,
+    ),
   );
 
 const splitPieces = (range: Range, rows: readonly PieceRow[]): readonly PieceSpec[] => {
   const oldestFirst = Array.reverse(rows);
-  const cut = cutIndex(oldestFirst);
-  if (rows.length <= SPLIT_ABOVE || cut < NONE) {
-    return [{ range, rows }];
-  }
-  const boundary = Option.getOrElse(
-    Option.map(Option.fromUndefinedOr(oldestFirst[cut]), ({ createdAt }) => createdAt),
-    () => range.from,
+  return pipe(
+    cutIndex(oldestFirst),
+    Option.filter(() => rows.length > SPLIT_ABOVE),
+    Option.match({
+      onNone: (): readonly PieceSpec[] => [{ range, rows }],
+      onSome: (cut): readonly PieceSpec[] => {
+        const boundary = Option.getOrElse(
+          Option.map(Option.fromUndefinedOr(oldestFirst[cut]), ({ createdAt }) => createdAt),
+          () => range.from,
+        );
+        return [
+          {
+            range: { from: range.from, to: Option.some(boundary) },
+            rows: Array.reverse(oldestFirst.slice(NONE, cut)),
+          },
+          ...splitPieces({ from: boundary, to: range.to }, Array.reverse(oldestFirst.slice(cut))),
+        ];
+      },
+    }),
   );
-  return [
-    {
-      range: { from: range.from, to: Option.some(boundary) },
-      rows: Array.reverse(oldestFirst.slice(NONE, cut)),
-    },
-    ...splitPieces({ from: boundary, to: range.to }, Array.reverse(oldestFirst.slice(cut))),
-  ];
 };
 
 const closedEnd = (stamps: readonly number[]): Option.Option<number> =>
@@ -115,14 +126,17 @@ const uncoveredPiece = (
   sealed: readonly Segment[],
 ): Option.Option<PieceSpec> =>
   Option.flatMap(uncoveredCondition(sealed), (condition) => {
-    const stamps = db
+    const rows = db
       .select({ createdAt: guildMessage.createdAt })
       .from(guildMessage)
       .where(and(condition, isNotNull(guildMessage.tokens)))
       .orderBy(asc(guildMessage.createdAt))
       .limit(PIECE_TARGET + NEXT)
-      .all()
-      .map(({ createdAt }) => createdAt);
+      .all();
+    const stamps = pipe(
+      rows,
+      Array.map(({ createdAt }) => createdAt),
+    );
     const range: Range = { from: uncoveredFrom(sealed), to: closedEnd(stamps) };
     return Option.map(
       Option.liftPredicate(stamps, Array.isReadonlyArrayNonEmpty),
@@ -149,7 +163,12 @@ const overdueNames = (
       ),
     )
     .all();
-  return new Set(rows.map(({ segment }) => segment));
+  return new Set(
+    pipe(
+      rows,
+      Array.map(({ segment }) => segment),
+    ),
+  );
 };
 
 type RankedSegment = Readonly<{ segment: Segment; pending: number }>;
@@ -166,9 +185,11 @@ const stalestTarget = (
 ): Option.Option<Segment> => {
   const overdue = overdueNames(db, sealed, now);
   const ledger = searchLedger(db);
-  const ranked = sealed
-    .map((segment) => ({ segment, pending: ledger.count(staleCondition(segment)) }))
-    .filter(({ segment, pending }) => pending > NONE || overdue.has(segment.name));
+  const ranked = pipe(
+    sealed,
+    Array.map((segment) => ({ segment, pending: ledger.count(staleCondition(segment)) })),
+    Array.filter(({ segment, pending }) => pending > NONE || overdue.has(segment.name)),
+  );
   return Option.map(Array.head(Array.sort(ranked, byPendingDesc)), ({ segment }) => segment);
 };
 

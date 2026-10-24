@@ -1,5 +1,5 @@
 import { eq, inArray } from "drizzle-orm";
-import { DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import { db, message } from "#/shared/db/index.server";
@@ -19,11 +19,14 @@ type GuildMessages = Readonly<{ guildId: string; ids: readonly string[] }>;
 const findStored = ({ guildId, ids }: GuildMessages): Effect.Effect<readonly StoredMessage[]> =>
   Effect.promise(() => guildStore(guildId).stored(ids)).pipe(
     Effect.map((rows) =>
-      rows.map(({ id, editedAt, describedWith }) => ({
-        id,
-        editedAt: Option.fromNullOr(editedAt),
-        describedWith: Option.fromNullOr(describedWith),
-      })),
+      pipe(
+        rows,
+        Array.map(({ id, editedAt, describedWith }) => ({
+          id,
+          editedAt: Option.fromNullOr(editedAt),
+          describedWith: Option.fromNullOr(describedWith),
+        })),
+      ),
     ),
   );
 

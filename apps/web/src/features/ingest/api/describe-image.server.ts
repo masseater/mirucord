@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Data, Effect, Layer, Option, Schedule, String } from "effect";
+import { Effect, Layer, Option, Schedule, Schema, String } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
 import { fromUint8Array } from "js-base64";
 
@@ -23,10 +23,15 @@ const DESCRIBABLE_TYPES: ReadonlySet<string> = new Set(["image/jpeg", "image/png
 const PROMPT =
   "この画像を検索で見つけられるよう、日本語で1〜2文で説明してください。写っている物や料理の名前、読める文字があればその内容を具体的に書いてください。説明だけを答えてください。";
 
-class DescribeError extends Data.TaggedError("DescribeError")<{
-  readonly stage: "budget" | "fetch" | "model";
-  readonly reason: string;
-}> {}
+const taggedError = Schema.TaggedError;
+
+class DescribeError extends taggedError<DescribeError, { readonly brand: unique symbol }>()(
+  "DescribeError",
+  {
+    stage: Schema.Literals(["budget", "fetch", "model"]),
+    reason: Schema.String,
+  },
+) {}
 
 const reasonOf = (cause: unknown): string =>
   Option.liftPredicate(cause, (value): value is Error => value instanceof Error).pipe(
@@ -48,12 +53,12 @@ const fetchImage = ({
     Effect.flatMap((client) => client.get(url)),
     Effect.filterOrFail(
       ({ status }) => status === OK_STATUS,
-      ({ status }) => new DescribeError({ stage: "fetch", reason: `status ${status}` }),
+      ({ status }) => DescribeError.make({ stage: "fetch", reason: `status ${status}` }),
     ),
     Effect.flatMap((response) => response.arrayBuffer),
     Effect.map((buffer) => ({ data: fromUint8Array(new Uint8Array(buffer)), contentType })),
     Effect.catchTag(["HttpClientError"], (cause) =>
-      Effect.fail(new DescribeError({ stage: "fetch", reason: cause.reason.name })),
+      Effect.fail(DescribeError.make({ stage: "fetch", reason: cause.reason.name })),
     ),
   );
 
@@ -62,7 +67,7 @@ const RESERVED_NEURONS = gemmaNeurons({ input: RESERVED_INPUT_TOKENS, output: MA
 const reserveNeurons = spendNeurons("live", RESERVED_NEURONS).pipe(
   Effect.filterOrFail(
     (granted) => granted,
-    () => new DescribeError({ stage: "budget", reason: "daily neuron budget spent" }),
+    () => DescribeError.make({ stage: "budget", reason: "daily neuron budget spent" }),
   ),
 );
 
@@ -82,7 +87,7 @@ const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, De
         max_tokens: MAX_TOKENS,
         chat_template_kwargs: { enable_thinking: false },
       }),
-    catch: (cause) => new DescribeError({ stage: "model", reason: reasonOf(cause) }),
+    catch: (cause) => DescribeError.make({ stage: "model", reason: reasonOf(cause) }),
   }).pipe(
     Effect.tap((output: GemmaOutput) => settleGemma({ output, reserved: RESERVED_NEURONS })),
     Effect.map((output) =>

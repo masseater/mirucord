@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import type { ChannelProgress, Consent } from "#/features/mcp/model/ingest-status";
 import { channel, db, guild, ingestConsent, loadRolePermissions } from "#/shared/db/index.server";
@@ -49,11 +49,14 @@ const loadChannels = (guildId: string): Effect.Effect<readonly StoredChannel[]> 
       .where(and(eq(channel.guildId, guildId), eq(channel.botAccess, "readable"))),
   ).pipe(
     Effect.map((rows) =>
-      rows.map((row) => ({
-        ...row,
-        parentId: Option.fromNullOr(row.parentId),
-        newest: Option.fromNullOr(row.newest),
-      })),
+      pipe(
+        rows,
+        Array.map((row) => ({
+          ...row,
+          parentId: Option.fromNullOr(row.parentId),
+          newest: Option.fromNullOr(row.newest),
+        })),
+      ),
     ),
   );
 

@@ -1,6 +1,6 @@
 import type { GatewayJob } from "@repo/ingest-util-gateway-contract";
 import { Discord } from "dfx";
-import { Array, Option } from "effect";
+import { Array, Option, pipe, Record } from "effect";
 import { expect, it } from "vite-plus/test";
 
 import { mergeJobs, toGatewayJob } from "./gateway-job";
@@ -14,7 +14,7 @@ const MESSAGE = { id: "711", channel_id: "710", guild_id: "700" };
 const jobOf = (event: Discord.GatewayDispatchEvents, data: unknown): Option.Option<GatewayJob> =>
   toGatewayJob({
     op: Discord.GatewayOpcodes.Dispatch,
-    ...Object.fromEntries([
+    ...Record.fromEntries([
       ["t", event],
       ["d", data],
     ]),
@@ -34,7 +34,10 @@ const storedContents = (job: GatewayJob): readonly string[] => {
   if (job.kind !== "store") {
     return [];
   }
-  return job.messages.map(({ content }) => content);
+  return pipe(
+    job.messages,
+    Array.map(({ content }) => content),
+  );
 };
 
 it("carries a created or edited message with its body", () => {
@@ -43,17 +46,40 @@ it("carries a created or edited message with its body", () => {
     Discord.GatewayDispatchEvents.MessageUpdate,
   ]) {
     const jobs = Option.toArray(jobOf(event, { ...FULL_MESSAGE, extra: "ignored" }));
-    expect(jobs.map(({ kind }) => kind)).toStrictEqual(["store"]);
-    expect(jobs.map((job) => storedContents(job))).toStrictEqual([["hello"]]);
+    expect(
+      pipe(
+        jobs,
+        Array.map(({ kind }) => kind),
+      ),
+    ).toStrictEqual(["store"]);
+    expect(
+      pipe(
+        jobs,
+        Array.map((job) => storedContents(job)),
+      ),
+    ).toStrictEqual([["hello"]]);
   }
 });
 
 it("keeps the latest body of a message edited twice in a row", () => {
-  const edits = ["first", "second"].map((content) =>
-    jobOf(Discord.GatewayDispatchEvents.MessageUpdate, { ...FULL_MESSAGE, content }),
+  const edits = pipe(
+    ["first", "second"],
+    Array.map((content) =>
+      jobOf(Discord.GatewayDispatchEvents.MessageUpdate, { ...FULL_MESSAGE, content }),
+    ),
   );
-  const merged = mergeJobs(edits.flatMap((job) => Option.toArray(job)));
-  expect(merged.map((job) => storedContents(job))).toStrictEqual([["second"]]);
+  const merged = mergeJobs(
+    pipe(
+      edits,
+      Array.flatMap((job) => Option.toArray(job)),
+    ),
+  );
+  expect(
+    pipe(
+      merged,
+      Array.map((job) => storedContents(job)),
+    ),
+  ).toStrictEqual([["second"]]);
 });
 
 it("asks to refresh an edit that arrives without the whole message", () => {
@@ -147,7 +173,11 @@ it("merges events into one job per channel and keeps each message's latest event
 it("splits a large burst into jobs of at most a hundred messages", () => {
   const ids = Array.makeBy(BURST, (index) => String(FIRST_ID + index));
   const job = { kind: "refresh", guildId: "700", channelId: "710" } as const;
-  expect(mergeJobs(ids.map((id) => ({ ...job, messageIds: [id] })))).toStrictEqual([
+  const burst = pipe(
+    ids,
+    Array.map((id): GatewayJob => ({ ...job, messageIds: [id] })),
+  );
+  expect(mergeJobs(burst)).toStrictEqual([
     { ...job, messageIds: Array.take(ids, MESSAGES_PER_JOB) },
     { ...job, messageIds: Array.drop(ids, MESSAGES_PER_JOB) },
   ]);

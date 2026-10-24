@@ -1,4 +1,4 @@
-import { Clock, Effect, Option } from "effect";
+import { Array, Clock, Effect, Option, pipe } from "effect";
 
 import { NoteStore } from "./note-store.server";
 import { backfillPhrases } from "./phrase-backfill.server";
@@ -56,7 +56,12 @@ class GuildStore extends NoteStore {
   }
 
   public writePhrases(extracted: readonly ExtractedPhrases[]): void {
-    const erased = new Set(this.erasedAuthors().map(({ id }) => id));
+    const erased = new Set(
+      pipe(
+        this.erasedAuthors(),
+        Array.map(({ id }) => id),
+      ),
+    );
     for (const { message, hashes } of extracted) {
       if (this.markExtracted(message.id) && !erased.has(message.authorId)) {
         this.recordPhrases(message, hashes);

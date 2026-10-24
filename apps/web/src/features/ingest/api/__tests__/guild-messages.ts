@@ -1,4 +1,4 @@
-import { DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 
 import { guildStore, queryTokens, searchMessages } from "#/entities/guild-message/index.server";
 import type { IndexedMessage, StoredRow } from "#/entities/guild-message/index.server";
@@ -44,14 +44,26 @@ const storedIdsIn = ({ guildId, channelId }: GuildChannel): Effect.Effect<readon
 const sealedIn = ({ guildId, channelId }: GuildChannel): Effect.Effect<readonly string[]> =>
   Effect.promise(() =>
     guildStore(guildId).read(channelId, { before: NEWEST, limit: READ_LIMIT }),
-  ).pipe(Effect.map((rows) => rows.map(({ sealed }) => sealed)));
+  ).pipe(
+    Effect.map((rows) =>
+      pipe(
+        rows,
+        Array.map(({ sealed }) => sealed),
+      ),
+    ),
+  );
 
 const describedWithOf = ({
   guildId,
   id,
 }: Readonly<{ guildId: string; id: string }>): Effect.Effect<readonly (string | null)[]> =>
   Effect.promise(() => guildStore(guildId).stored([id])).pipe(
-    Effect.map((rows) => rows.map(({ describedWith }) => describedWith)),
+    Effect.map((rows) =>
+      pipe(
+        rows,
+        Array.map(({ describedWith }) => describedWith),
+      ),
+    ),
   );
 
 const candidateIds = ({
@@ -67,7 +79,12 @@ const candidateIds = ({
     Effect.flatMap((tokens) =>
       searchMessages({ guildId, tokens, channelIds: [channelId], offset: 0, limit: SEARCH_LIMIT }),
     ),
-    Effect.map(({ entries }) => entries.map(({ id }) => id)),
+    Effect.map(({ entries }) =>
+      pipe(
+        entries,
+        Array.map(({ id }) => id),
+      ),
+    ),
   );
 
 const consentedGuild = ({ guildId, channelId }: GuildChannel): Effect.Effect<void> =>

@@ -93,13 +93,14 @@ const clusteredThrough = (segment: Segment): Option.Option<number> =>
 
 const liveThrough = (db: DrizzleSqliteDODatabase): ReadonlyMap<string, number> =>
   new Map(
-    searchLedger(db)
-      .segments()
-      .flatMap((segment) =>
+    pipe(
+      searchLedger(db).segments(),
+      Array.flatMap((segment) =>
         Option.toArray(
           Option.map(clusteredThrough(segment), (through) => [segment.name, through] as const),
         ),
       ),
+    ),
   );
 
 const openCentroids =
@@ -108,7 +109,10 @@ const openCentroids =
     openBytes({ bytes: sealed, key: keys.key, context: centroidContext(keys, segment) }).pipe(
       Effect.flatMap(decodeBlock),
       Effect.map((block) =>
-        entriesOf(block).map(({ ordinal, vector }) => ({ ordinal, channelId: segment, vector })),
+        pipe(
+          entriesOf(block),
+          Array.map(({ ordinal, vector }) => ({ ordinal, channelId: segment, vector })),
+        ),
       ),
     );
 
@@ -116,11 +120,15 @@ const mergedEntries = ({ db, keys }: CentroidTarget): Effect.Effect<readonly Vec
   const live = liveThrough(db);
   const rows = db.select().from(vectorCentroid).all();
   const isLive = ({ segment, through }: CentroidRow): boolean => live.get(segment) === through;
-  for (const { segment } of rows.filter((row) => !isLive(row))) {
+  for (const { segment } of pipe(
+    rows,
+    Array.filter((row) => !isLive(row)),
+  )) {
     forgetCentroids(db, segment);
   }
   return pipe(
-    rows.filter((row) => isLive(row)),
+    rows,
+    Array.filter((row) => isLive(row)),
     Effect.forEach((row) => openCentroids(keys)(row)),
     Effect.map((lists) => Array.flatten(lists)),
   );

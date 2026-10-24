@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import type { Member } from "#/pages/home/ui/common/members";
@@ -27,9 +28,10 @@ const ForumPost = ({
 }>): ReactNode => (
   <li className="forum-post bg-dc-sidebar hover:bg-dc-hover relative grid gap-1.5 rounded-lg px-4 py-3">
     <p className="flex flex-wrap gap-1">
-      {tags.map((tag) => (
-        <ForumTag key={tag.label} emoji={tag.emoji} label={tag.label} />
-      ))}
+      {pipe(
+        tags,
+        Array.map((tag) => <ForumTag key={tag.label} emoji={tag.emoji} label={tag.label} />),
+      )}
     </p>
     <h3 className="text-dc-bright font-bold">{title}</h3>
     <p className="flex min-w-0 gap-1 text-sm">

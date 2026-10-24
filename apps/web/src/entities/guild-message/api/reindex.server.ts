@@ -3,9 +3,9 @@ import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Effect, Option } from "effect";
 
 import { SEQUENTIAL } from "#/entities/guild-message/lib/search-layout";
-import { indexTokens, searchableTexts } from "#/entities/guild-message/lib/search-tokens.server";
+import { sealedTokens } from "#/entities/guild-message/lib/search-tokens.server";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
-import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
+import { openGuildKeys } from "#/shared/crypto/index.server";
 
 import { searchLedger } from "./search-ledger.server";
 import { wrappedKeyOf } from "./wrapped-key.server";
@@ -36,10 +36,11 @@ const tokensOf = (
       Effect.forEach(
         rows,
         ({ id, channelId, sealed }) =>
-          openMessage(sealed, key, { guildId, channelId, messageId: id }).pipe(
-            Effect.flatMap((body) => indexTokens({ key: searchKey, texts: searchableTexts(body) })),
-            Effect.map((tokens) => ({ id, tokens })),
-          ),
+          sealedTokens({
+            sealed,
+            keys: { key, searchKey },
+            address: { guildId, channelId, messageId: id },
+          }).pipe(Effect.map((tokens) => ({ id, tokens }))),
         { concurrency: SEQUENTIAL },
       ),
     ),

@@ -1,5 +1,5 @@
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Effect, Option } from "effect";
+import { Array, Effect, Option, pipe, Record } from "effect";
 
 import { searchInvalid } from "#/entities/guild-message/model/search-segment.schema";
 
@@ -31,7 +31,7 @@ const ordinalsBySegment = (rows: readonly InvalidRow[]): SearchHead["invalid"] =
   for (const { segment, ordinal } of rows) {
     grouped.set(segment, [...(grouped.get(segment) ?? []), ordinal]);
   }
-  return Object.fromEntries(grouped);
+  return Record.fromEntries(grouped);
 };
 
 const archiveOf = (
@@ -41,23 +41,37 @@ const archiveOf = (
   Option.map(liveArchive(db), (archive) => ({
     name: archive.name,
     shards: archive.shards,
-    pieces: archive.pieces
-      .filter(({ name }) => isLive(name))
-      .map(({ name, offset }) => ({ name, offset })),
+    pieces: pipe(
+      archive.pieces,
+      Array.filter(({ name }) => isLive(name)),
+      Array.map(({ name, offset }) => ({ name, offset })),
+    ),
   }));
 
 const headOf = (db: DrizzleSqliteDODatabase): SearchHead => {
   const segments = searchLedger(db).segments();
-  const live = new Set(segments.map(({ name }) => name));
+  const live = new Set(
+    pipe(
+      segments,
+      Array.map(({ name }) => name),
+    ),
+  );
   const archive = archiveOf(db, (name) => live.has(name));
   const archived = new Set(
     Option.match(archive, {
       onNone: () => [],
-      onSome: ({ pieces }) => pieces.map(({ name }) => name),
+      onSome: ({ pieces }) =>
+        pipe(
+          pieces,
+          Array.map(({ name }) => name),
+        ),
     }),
   );
   return {
-    segments: segments.map((segment) => entryOf(segment, (name) => archived.has(name))),
+    segments: pipe(
+      segments,
+      Array.map((segment) => entryOf(segment, (name) => archived.has(name))),
+    ),
     channels: searchChannels(db).list(),
     invalid: ordinalsBySegment(db.select().from(searchInvalid).all()),
     ...Option.match(archive, { onNone: () => ({}), onSome: (found) => ({ archive: found }) }),

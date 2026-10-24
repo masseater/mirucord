@@ -1,9 +1,9 @@
 import { eq, inArray } from "drizzle-orm";
-import { Array, Effect, Option, pipe } from "effect";
+import { Array, Effect, Option, pipe, Record } from "effect";
 
-import { guildStore, indexTokens, searchableTexts } from "#/entities/guild-message/index.server";
+import { guildStore, sealedTokens } from "#/entities/guild-message/index.server";
 import type { IndexedMessage, StoredRow } from "#/entities/guild-message/index.server";
-import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
+import { openGuildKeys } from "#/shared/crypto/index.server";
 import { db, guild, message } from "#/shared/db/index.server";
 
 import { enqueueMigration } from "./enqueue.server";
@@ -32,20 +32,24 @@ const loadBatch: Effect.Effect<readonly LegacyRow[]> = Effect.promise(() =>
     .limit(MIGRATE_BATCH),
 ).pipe(
   Effect.map((rows) =>
-    rows.map(({ createdAt, editedAt, ...row }) => ({
-      ...row,
-      createdAt: createdAt.getTime(),
-      editedAt: Option.getOrNull(Option.map(Option.fromNullOr(editedAt), (date) => date.getTime())),
-    })),
+    pipe(
+      rows,
+      Array.map(({ createdAt, editedAt, ...row }) => ({
+        ...row,
+        createdAt: createdAt.getTime(),
+        editedAt: Option.getOrNull(
+          Option.map(Option.fromNullOr(editedAt), (date) => date.getTime()),
+        ),
+      })),
+    ),
   ),
 );
 
 const indexRow = (
-  { key, searchKey }: Readonly<{ key: CryptoKey; searchKey: CryptoKey }>,
+  keys: Readonly<{ key: CryptoKey; searchKey: CryptoKey }>,
   { guildId, id, channelId, authorId, sealed, createdAt, editedAt, describedWith }: LegacyRow,
 ): Effect.Effect<IndexedMessage> =>
-  openMessage(sealed, key, { guildId, channelId, messageId: id }).pipe(
-    Effect.flatMap((body) => indexTokens({ key: searchKey, texts: searchableTexts(body) })),
+  sealedTokens({ sealed, keys, address: { guildId, channelId, messageId: id } }).pipe(
     Effect.map((tokens) => ({
       row: { id, channelId, authorId, sealed, createdAt, editedAt, describedWith },
       tokens,
@@ -68,13 +72,16 @@ const adoptGuild = (rows: Array.NonEmptyReadonlyArray<LegacyRow>): Effect.Effect
 
 const migrateMessages: Effect.Effect<void> = loadBatch.pipe(
   Effect.tap((rows) =>
-    Effect.forEach(Object.values(Array.groupBy(rows, ({ guildId }) => guildId)), adoptGuild, {
+    Effect.forEach(Record.values(Array.groupBy(rows, ({ guildId }) => guildId)), adoptGuild, {
       discard: true,
     }),
   ),
   Effect.tap((rows) =>
     inIdChunks({
-      ids: rows.map(({ id }) => id),
+      ids: pipe(
+        rows,
+        Array.map(({ id }) => id),
+      ),
       run: (chunk) => db.delete(message).where(inArray(message.id, [...chunk])),
     }),
   ),

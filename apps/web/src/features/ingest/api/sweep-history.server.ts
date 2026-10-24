@@ -31,7 +31,12 @@ const removeDeleted = ({
   );
   const present = new Set(idsOf(latest));
   return channelMessagesSince({ ...ref, since }).pipe(
-    Effect.map((stored) => stored.filter((id) => !present.has(id))),
+    Effect.map((stored) =>
+      pipe(
+        stored,
+        Array.filter((id) => !present.has(id)),
+      ),
+    ),
     Effect.flatMap((gone) => deleteMessages({ guildId: ref.guildId, ids: gone })),
   );
 };

@@ -1,10 +1,9 @@
 import { DurableObject } from "cloudflare:workers";
-import { and, count, desc, eq, gte, inArray, lt, lte } from "drizzle-orm";
+import { and, count, desc, eq, inArray, lt } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/durable-sqlite";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { migrate } from "drizzle-orm/durable-sqlite/migrator";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import { erasedAuthor } from "#/entities/guild-message/model/erased-author.schema";
 import {
@@ -13,7 +12,8 @@ import {
   TRACKED_COLUMNS,
 } from "#/entities/guild-message/model/guild-message.schema";
 
-import { GUILD_MIGRATIONS } from "./guild-migrations.server";
+import { migrateGuild } from "./guild-migrations.server";
+import { messageQueries } from "./message-queries.server";
 import { nextVersion, searchHooks } from "./search-hooks.server";
 import type {
   ChannelCount,
@@ -46,12 +46,6 @@ const SEALED_COLUMNS = {
   editedAt: guildMessage.editedAt,
 };
 
-const boundsOf = ({ from, upTo }: CreatedRange): readonly SQL[] => {
-  const lower = Option.map(Option.fromNullOr(from), (time) => gte(guildMessage.createdAt, time));
-  const upper = Option.map(Option.fromNullOr(upTo), (time) => lte(guildMessage.createdAt, time));
-  return [...Option.toArray(lower), ...Option.toArray(upper)];
-};
-
 abstract class MessageStore extends DurableObject {
   protected readonly db = this.#open();
 
@@ -63,11 +57,15 @@ abstract class MessageStore extends DurableObject {
 
   #open(): DrizzleSqliteDODatabase {
     const db = drizzle(this.ctx.storage);
-    migrate(db, { migrations: GUILD_MIGRATIONS });
+    migrateGuild(db);
     return db;
   }
 
-  readonly #remigrate = Effect.sync(() => migrate(this.db, { migrations: GUILD_MIGRATIONS }));
+  readonly #remigrate = Effect.sync(() => {
+    migrateGuild(this.db);
+  });
+
+  readonly #queries = messageQueries(this.db);
 
   protected readonly search = searchHooks({
     db: this.db,
@@ -80,13 +78,7 @@ abstract class MessageStore extends DurableObject {
   });
 
   #tracked(ids: readonly string[]): readonly TrackedRow[] {
-    return Array.chunksOf(ids, BOUND_LIMIT).flatMap((chunk) =>
-      this.db
-        .select(TRACKED_COLUMNS)
-        .from(guildMessage)
-        .where(inArray(guildMessage.id, [...chunk]))
-        .all(),
-    );
+    return this.#queries.tracked(ids);
   }
 
   #upsert(row: Versioned, phrases: PhraseState, mode: WriteMode): readonly Seq[] {
@@ -126,12 +118,25 @@ abstract class MessageStore extends DurableObject {
     if (mode === "adopt") {
       return [];
     }
-    return this.#tracked(kept.map(({ row }) => row.id));
+    return this.#tracked(
+      pipe(
+        kept,
+        Array.map(({ row }) => row.id),
+      ),
+    );
   }
 
   #writeKept(messages: readonly IndexedMessage[], mode: WriteMode): Effect.Effect<void> {
-    const erased = new Set(this.erasedAuthors().map(({ id }) => id));
-    const kept = messages.filter(({ row }) => !erased.has(row.authorId));
+    const erased = new Set(
+      pipe(
+        this.erasedAuthors(),
+        Array.map(({ id }) => id),
+      ),
+    );
+    const kept = pipe(
+      messages,
+      Array.filter(({ row }) => !erased.has(row.authorId)),
+    );
     if (Array.isReadonlyArrayEmpty(kept)) {
       return Effect.void;
     }
@@ -152,40 +157,15 @@ abstract class MessageStore extends DurableObject {
   }
 
   public stored(ids: readonly string[]): readonly StoredState[] {
-    return Array.chunksOf(ids, BOUND_LIMIT).flatMap((chunk) =>
-      this.db
-        .select({
-          id: guildMessage.id,
-          editedAt: guildMessage.editedAt,
-          describedWith: guildMessage.describedWith,
-        })
-        .from(guildMessage)
-        .where(inArray(guildMessage.id, [...chunk]))
-        .all(),
-    );
+    return this.#queries.stored(ids);
   }
 
   public idsInChannel(channelId: string, ids: readonly string[]): readonly string[] {
-    const inChannel = eq(guildMessage.channelId, channelId);
-    return Array.chunksOf(ids, BOUND_LIMIT).flatMap((chunk) => {
-      const listed = inArray(guildMessage.id, [...chunk]);
-      return this.db
-        .select({ id: guildMessage.id })
-        .from(guildMessage)
-        .where(and(inChannel, listed))
-        .all()
-        .map(({ id }) => id);
-    });
+    return this.#queries.idsInChannel(channelId, ids);
   }
 
   public idsBetween(channelId: string, range: CreatedRange): readonly string[] {
-    const conditions = [eq(guildMessage.channelId, channelId), ...boundsOf(range)];
-    return this.db
-      .select({ id: guildMessage.id })
-      .from(guildMessage)
-      .where(and(...conditions))
-      .all()
-      .map(({ id }) => id);
+    return this.#queries.idsBetween(channelId, range);
   }
 
   #deleteWhere(conditions: readonly SQL[]): void {
@@ -203,8 +183,9 @@ abstract class MessageStore extends DurableObject {
 
   public remove(ids: readonly string[]): Promise<void> {
     this.forgetPhrases("messageId", ids);
-    const listed = Array.chunksOf(ids, BOUND_LIMIT).map((chunk) =>
-      inArray(guildMessage.id, [...chunk]),
+    const listed = pipe(
+      Array.chunksOf(ids, BOUND_LIMIT),
+      Array.map((chunk) => inArray(guildMessage.id, [...chunk])),
     );
     return this.#removeWhere(this.#tracked(ids), listed);
   }
@@ -244,11 +225,10 @@ abstract class MessageStore extends DurableObject {
   }
 
   public channels(): readonly string[] {
-    return this.db
-      .selectDistinct({ channelId: guildMessage.channelId })
-      .from(guildMessage)
-      .all()
-      .map(({ channelId }) => channelId);
+    return pipe(
+      this.db.selectDistinct({ channelId: guildMessage.channelId }).from(guildMessage).all(),
+      Array.map(({ channelId }) => channelId),
+    );
   }
 
   public count(): number {
@@ -260,14 +240,7 @@ abstract class MessageStore extends DurableObject {
   }
 
   public countByChannel(channelIds: readonly string[]): readonly ChannelCount[] {
-    return Array.chunksOf(channelIds, BOUND_LIMIT).flatMap((chunk) =>
-      this.db
-        .select({ channelId: guildMessage.channelId, messages: count() })
-        .from(guildMessage)
-        .where(inArray(guildMessage.channelId, [...chunk]))
-        .groupBy(guildMessage.channelId)
-        .all(),
-    );
+    return this.#queries.countByChannel(channelIds);
   }
 
   #createdAtOf(channelId: string, id: string): Option.Option<number> {

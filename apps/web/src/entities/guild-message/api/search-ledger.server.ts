@@ -1,7 +1,7 @@
 import { and, asc, count, gt, gte, inArray, isNotNull, lt, max, or } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Option } from "effect";
+import { Array, Option, pipe } from "effect";
 
 import { BOUND_LIMIT, guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { searchInvalid, searchSegment } from "#/entities/guild-message/model/search-segment.schema";
@@ -40,10 +40,16 @@ const segmentsOf = (db: DrizzleSqliteDODatabase): readonly Segment[] =>
   db.select().from(searchSegment).orderBy(asc(searchSegment.fromCreatedAt)).all();
 
 const sealedOf = (segments: readonly Segment[]): readonly Segment[] =>
-  segments.filter(({ kind }) => kind === "sealed");
+  pipe(
+    segments,
+    Array.filter(({ kind }) => kind === "sealed"),
+  );
 
 const recentOf = (segments: readonly Segment[]): Option.Option<Segment> =>
-  Option.fromUndefinedOr(segments.find(({ kind }) => kind === "recent"));
+  pipe(
+    segments,
+    Array.findFirst(({ kind }) => kind === "recent"),
+  );
 
 const coveredUpTo = (sealed: readonly Segment[]): Option.Option<Option.Option<number>> =>
   Option.map(Array.last(sealed), (segment) => rangeOf(segment).to);
@@ -64,7 +70,10 @@ const staleCondition = (segment: Segment): SQL =>
 const pendingCondition = (sealed: readonly Segment[]): SQL => {
   const indexed = isNotNull(guildMessage.tokens);
   const stale = [
-    ...sealed.map((segment) => staleCondition(segment)),
+    ...pipe(
+      sealed,
+      Array.map((segment) => staleCondition(segment)),
+    ),
     ...Option.toArray(uncoveredCondition(sealed)),
   ];
   return and(indexed, or(...stale)) ?? indexed;
@@ -96,7 +105,9 @@ const ordinalIn = (segment: Segment, id: string): Option.Option<Position> =>
   );
 
 const homeOf = (sealed: readonly Segment[], row: TrackedRow): Option.Option<Segment> =>
-  Option.fromUndefinedOr(sealed.find((segment) => covers(rangeOf(segment), row.createdAt))).pipe(
+  pipe(
+    sealed,
+    Array.findFirst((segment) => covers(rangeOf(segment), row.createdAt)),
     Option.filter((segment) => row.version <= segment.builtThrough),
   );
 
@@ -107,12 +118,15 @@ const positionsOf = (
   const segments = segmentsOf(db);
   const sealed = sealedOf(segments);
   const recent = recentOf(segments);
-  return rows.flatMap((row) =>
-    Option.toArray(
-      Option.match(homeOf(sealed, row), {
-        onSome: (segment) => ordinalIn(segment, row.id),
-        onNone: () => recent.pipe(Option.flatMap((segment) => ordinalIn(segment, row.id))),
-      }),
+  return pipe(
+    rows,
+    Array.flatMap((row) =>
+      Option.toArray(
+        Option.match(homeOf(sealed, row), {
+          onSome: (segment) => ordinalIn(segment, row.id),
+          onNone: () => recent.pipe(Option.flatMap((segment) => ordinalIn(segment, row.id))),
+        }),
+      ),
     ),
   );
 };
@@ -124,7 +138,12 @@ const invalidate = (
 ): boolean => {
   for (const chunk of Array.chunksOf(positions, BOUND_LIMIT)) {
     db.insert(searchInvalid)
-      .values(chunk.map(({ segment, ordinal }) => ({ segment, ordinal, since: now })))
+      .values(
+        pipe(
+          chunk,
+          Array.map(({ segment, ordinal }) => ({ segment, ordinal, since: now })),
+        ),
+      )
       .onConflictDoNothing()
       .run();
   }
@@ -132,7 +151,10 @@ const invalidate = (
 };
 
 const dropSegments = (db: DrizzleSqliteDODatabase, segments: readonly Segment[]): void => {
-  const names = segments.map(({ name }) => name);
+  const names = pipe(
+    segments,
+    Array.map(({ name }) => name),
+  );
   if (Array.isReadonlyArrayNonEmpty(names)) {
     db.delete(searchSegment)
       .where(inArray(searchSegment.name, [...names]))
@@ -144,7 +166,10 @@ const dropSegments = (db: DrizzleSqliteDODatabase, segments: readonly Segment[])
 };
 
 const segmentNames = (segments: readonly Segment[]): readonly string[] =>
-  segments.map(({ name }) => name);
+  pipe(
+    segments,
+    Array.map(({ name }) => name),
+  );
 
 const invalidSince = (
   db: DrizzleSqliteDODatabase,

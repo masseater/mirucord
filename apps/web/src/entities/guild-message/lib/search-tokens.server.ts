@@ -1,6 +1,7 @@
-import { Array, Effect, Number, Option, String } from "effect";
+import { Array, Effect, Number, Option, pipe, String } from "effect";
 
-import type { MessageBody } from "#/shared/crypto/index.server";
+import { openMessage } from "#/shared/crypto/index.server";
+import type { MessageAddress, MessageBody } from "#/shared/crypto/index.server";
 
 import { hmacWord } from "./hmac.server";
 
@@ -12,7 +13,7 @@ const charsOf = (text: string): readonly string[] => Array.fromIterable(text.toL
 
 const gramsOfSize = (chars: readonly string[], size: number): readonly string[] =>
   Array.makeBy(Number.max(chars.length - size + NEXT, NONE), (start) =>
-    chars.slice(start, start + size).join(""),
+    pipe(chars.slice(start, start + size), Array.join("")),
   );
 
 const tokensOf = (key: CryptoKey, grams: readonly string[]): Effect.Effect<readonly number[]> =>
@@ -28,10 +29,16 @@ const indexTokens = ({
 }: Readonly<{ key: CryptoKey; texts: readonly string[] }>): Effect.Effect<readonly number[]> =>
   tokensOf(
     key,
-    texts.flatMap((text) => {
-      const chars = charsOf(text);
-      return GRAM_SIZES.flatMap((size) => gramsOfSize(chars, size));
-    }),
+    pipe(
+      texts,
+      Array.flatMap((text) => {
+        const chars = charsOf(text);
+        return pipe(
+          GRAM_SIZES,
+          Array.flatMap((size) => gramsOfSize(chars, size)),
+        );
+      }),
+    ),
   );
 
 const queryTokens = ({
@@ -43,11 +50,17 @@ const queryTokens = ({
 };
 
 const embedTexts = (embeds: MessageBody["embeds"]): readonly string[] =>
-  embeds.flatMap(({ title, description, fields }) => [
-    ...Option.toArray(Option.fromUndefinedOr(title)),
-    ...Option.toArray(Option.fromUndefinedOr(description)),
-    ...fields.flatMap(({ name, value }) => [name, value]),
-  ]);
+  pipe(
+    embeds,
+    Array.flatMap(({ title, description, fields }) => [
+      ...Option.toArray(Option.fromUndefinedOr(title)),
+      ...Option.toArray(Option.fromUndefinedOr(description)),
+      ...pipe(
+        fields,
+        Array.flatMap(({ name, value }) => [name, value]),
+      ),
+    ]),
+  );
 
 const pollTexts = (poll: MessageBody["poll"]): readonly string[] =>
   Option.fromUndefinedOr(poll).pipe(
@@ -64,22 +77,41 @@ const searchableTexts = ({
   MessageBody,
   "content" | "attachments" | "embeds" | "stickers" | "poll"
 >): readonly string[] =>
-  [
-    content,
-    ...attachments.flatMap(({ description }) =>
-      Option.toArray(Option.fromUndefinedOr(description)),
-    ),
-    ...embedTexts(embeds),
-    ...stickers,
-    ...pollTexts(poll),
-  ].filter((text) => String.isNonEmpty(text));
+  pipe(
+    [
+      content,
+      ...pipe(
+        attachments,
+        Array.flatMap(({ description }) => Option.toArray(Option.fromUndefinedOr(description))),
+      ),
+      ...embedTexts(embeds),
+      ...stickers,
+      ...pollTexts(poll),
+    ],
+    Array.filter((text) => String.isNonEmpty(text)),
+  );
 
 const containsQuery = ({
   texts,
   query,
 }: Readonly<{ texts: readonly string[]; query: string }>): boolean => {
   const needle = query.toLowerCase();
-  return texts.some((text) => text.toLowerCase().includes(needle));
+  return pipe(
+    texts,
+    Array.some((text) => text.toLowerCase().includes(needle)),
+  );
 };
 
-export { containsQuery, indexTokens, queryTokens, searchableTexts };
+type SealedText = Readonly<{
+  sealed: string;
+  keys: Readonly<{ key: CryptoKey; searchKey: CryptoKey }>;
+  address: MessageAddress;
+}>;
+
+const sealedTokens = ({ sealed, keys, address }: SealedText): Effect.Effect<readonly number[]> =>
+  openMessage(sealed, keys.key, address).pipe(
+    Effect.flatMap((body) => indexTokens({ key: keys.searchKey, texts: searchableTexts(body) })),
+  );
+
+export { containsQuery, indexTokens, queryTokens, sealedTokens, searchableTexts };
+export type { SealedText };

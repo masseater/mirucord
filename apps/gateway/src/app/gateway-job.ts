@@ -3,7 +3,7 @@ import type { GatewayJob, GuildJob } from "@repo/ingest-util-gateway-contract";
 import { DiscordMessageSchema } from "@repo/shared-util-discord";
 import type { DiscordMessage } from "@repo/shared-util-discord";
 import { Discord } from "dfx";
-import { Array, Match, Option, Schema } from "effect";
+import { Array, Match, Option, pipe, Record, Schema } from "effect";
 
 type GatewayPayload = Readonly<{ op: Discord.GatewayOpcodes }>;
 
@@ -173,14 +173,20 @@ const messageChangesOf = (job: GatewayJob): readonly MessageChange[] => {
   }
   const place = { guildId: job.guildId, channelId: job.channelId };
   if (job.kind === "store") {
-    return job.messages.map((message) => ({
-      ...place,
-      messageId: message.id,
-      change: { kind: "store", message },
-    }));
+    return pipe(
+      job.messages,
+      Array.map((message) => ({
+        ...place,
+        messageId: message.id,
+        change: { kind: "store", message },
+      })),
+    );
   }
   const change: Change = { kind: job.kind };
-  return job.messageIds.map((messageId) => ({ ...place, messageId, change }));
+  return pipe(
+    job.messageIds,
+    Array.map((messageId) => ({ ...place, messageId, change })),
+  );
 };
 
 const syncedGuildsOf = (job: GatewayJob): readonly string[] => {
@@ -198,53 +204,84 @@ const membershipOf = (job: GatewayJob): readonly (readonly [string, Membership])
 };
 
 const storedMessagesOf = (events: readonly MessageChange[]): readonly DiscordMessage[] =>
-  events.flatMap(({ change }) => {
-    if (change.kind === "store") {
-      return [change.message];
-    }
-    return [];
-  });
+  pipe(
+    events,
+    Array.flatMap(({ change }) => {
+      if (change.kind === "store") {
+        return [change.message];
+      }
+      return [];
+    }),
+  );
 
 const jobsOfGroup = (events: Array.NonEmptyReadonlyArray<MessageChange>): readonly GatewayJob[] => {
   const { change, guildId, channelId } = Array.headNonEmpty(events);
   if (change.kind === "store") {
-    return Array.chunksOf(storedMessagesOf(events), MESSAGES_PER_JOB).flatMap((chunk) =>
-      Array.match(chunk, {
-        onEmpty: (): readonly GatewayJob[] => [],
-        onNonEmpty: (messages): readonly GatewayJob[] => [
-          { kind: "store", guildId, channelId, messages },
-        ],
-      }),
+    return pipe(
+      Array.chunksOf(storedMessagesOf(events), MESSAGES_PER_JOB),
+      Array.flatMap((chunk) =>
+        Array.match(chunk, {
+          onEmpty: (): readonly GatewayJob[] => [],
+          onNonEmpty: (messages): readonly GatewayJob[] => [
+            { kind: "store", guildId, channelId, messages },
+          ],
+        }),
+      ),
     );
   }
-  const messageIds = events.map(({ messageId }) => messageId);
-  return Array.chunksOf(messageIds, MESSAGES_PER_JOB).map((chunk): GatewayJob => ({
-    kind: change.kind,
-    guildId,
-    channelId,
-    messageIds: chunk,
-  }));
+  const messageIds = pipe(
+    events,
+    Array.map(({ messageId }) => messageId),
+  );
+  return pipe(
+    Array.chunksOf(messageIds, MESSAGES_PER_JOB),
+    Array.map((chunk): GatewayJob => ({
+      kind: change.kind,
+      guildId,
+      channelId,
+      messageIds: chunk,
+    })),
+  );
 };
 
 const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
   const latest = new Map(
-    jobs.flatMap((job) => messageChangesOf(job)).map((event) => [event.messageId, event]),
+    pipe(
+      jobs,
+      Array.flatMap((job) => messageChangesOf(job)),
+      Array.map((event) => [event.messageId, event]),
+    ),
   );
   const groups = Array.groupBy(
     [...latest.values()],
     ({ change, channelId }) => `${change.kind}:${channelId}`,
   );
-  const membership = new Map(jobs.flatMap((job) => membershipOf(job)));
-  const moves = [...membership].map(([guildId, kind]): GatewayJob => ({ kind, guildId }));
-  const syncs = [...new Set(jobs.flatMap((job) => syncedGuildsOf(job)))]
-    .filter((guildId) => !membership.has(guildId))
-    .map((guildId) => syncJobOf(guildId));
+  const membership = new Map(
+    pipe(
+      jobs,
+      Array.flatMap((job) => membershipOf(job)),
+    ),
+  );
+  const moves = pipe(
+    [...membership],
+    Array.map(([guildId, kind]): GatewayJob => ({ kind, guildId })),
+  );
+  const syncs = pipe(
+    jobs,
+    Array.flatMap((job) => syncedGuildsOf(job)),
+    Array.dedupe,
+    Array.filter((guildId) => !membership.has(guildId)),
+    Array.map((guildId) => syncJobOf(guildId)),
+  );
   const resyncs = Option.toArray(Array.findFirst(jobs, ({ kind }) => kind === "resync"));
   return [
     ...resyncs,
     ...moves,
     ...syncs,
-    ...Object.values(groups).flatMap((group) => jobsOfGroup(group)),
+    ...pipe(
+      Record.values(groups),
+      Array.flatMap((group) => jobsOfGroup(group)),
+    ),
   ];
 };
 

@@ -1,4 +1,4 @@
-import { DateTime, Effect, Option, pipe } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 import { fromUint8Array, toUint8Array } from "js-base64";
 
 import { guildStore } from "#/entities/guild-message/index.server";
@@ -88,40 +88,70 @@ const generateAll = Effect.fn("generatePhraseNotes")(function* generateAll(
     (sample) => annotatePhrase(sample.input).pipe(Effect.map((note) => ({ sample, note }))),
     { concurrency: CONCURRENCY },
   );
-  const settled = generated.flatMap(({ sample, note }) =>
-    Option.toArray(pipe(note, Option.filter(isSettled))).map((value) => ({ sample, note: value })),
+  const settled = pipe(
+    generated,
+    Array.flatMap(({ sample, note }) =>
+      pipe(
+        note,
+        Option.filter(isSettled),
+        Option.toArray,
+        Array.map((value) => ({ sample, note: value })),
+      ),
+    ),
   );
   const stored = yield* pipe(
     settled,
     Effect.forEach(({ sample, note }) => storedOf(request, sample, note)),
   );
-  const failed = generated
-    .filter(({ note }) => Option.isNone(note))
-    .map(({ sample }) => sample.input.phrase);
+  const failed = pipe(
+    generated,
+    Array.filter(({ note }) => Option.isNone(note)),
+    Array.map(({ sample }) => sample.input.phrase),
+  );
   yield* Effect.promise(() =>
     Promise.all([store.savePhraseNotes(stored, now), store.releasePhraseNotes(failed)]),
   );
-  return settled.map(({ sample, note }): readonly [string, Note] => [sample.input.phrase, note]);
+  return pipe(
+    settled,
+    Array.map(({ sample, note }): readonly [string, Note] => [sample.input.phrase, note]),
+  );
 });
 
 const phraseNotesOf = Effect.fn("phraseNotes")(function* phraseNotes(request: NotesRequest) {
   const store = guildStore(request.guildId);
-  const phrases = request.subjects.map(({ phrase }) => phrase);
+  const phrases = pipe(
+    request.subjects,
+    Array.map(({ phrase }) => phrase),
+  );
   const existing = yield* Effect.promise(() => store.phraseNotes(phrases));
   const opened = yield* pipe(
     existing,
     Effect.forEach((note) => openNote(request, note)),
   );
-  const known = new Set(existing.map(({ phrase }) => phrase));
+  const known = new Set(
+    pipe(
+      existing,
+      Array.map(({ phrase }) => phrase),
+    ),
+  );
   const now = DateTime.toEpochMillis(yield* DateTime.now);
   const claimed = new Set(
     yield* Effect.promise(() =>
-      store.claimPhraseNotes({ phrases: phrases.filter((phrase) => !known.has(phrase)), now }),
+      store.claimPhraseNotes({
+        phrases: pipe(
+          phrases,
+          Array.filter((phrase) => !known.has(phrase)),
+        ),
+        now,
+      }),
     ),
   );
   const generated = yield* generateAll(
     request,
-    request.subjects.filter(({ phrase }) => claimed.has(phrase)),
+    pipe(
+      request.subjects,
+      Array.filter(({ phrase }) => claimed.has(phrase)),
+    ),
     now,
   );
   return new Map<string, Note>([...opened, ...generated]);

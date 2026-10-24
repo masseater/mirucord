@@ -111,19 +111,41 @@ it.effect("lists what several members repeat in channels the user can read", () 
   Effect.gen(function* repeated() {
     const phrases = yield* listPhrases;
     expect(
-      phrases.map(({ kind, phrase, uses, people }) => ({ kind, phrase, uses, people })),
+      pipe(
+        phrases,
+        Array.map(({ kind, phrase, uses, people }) => ({ kind, phrase, uses, people })),
+      ),
     ).toContainEqual({ kind: "text", phrase: OPEN_PHRASE, uses: PEOPLE.length, people: 3 });
-    expect(phrases.map(({ phrase }) => phrase)).not.toContain(STAFF_PHRASE);
-    expect(phrases.map(({ phrase }) => phrase)).not.toContain(COMMON_PHRASE);
     expect(
-      phrases.filter(({ phrase }) => phrase === OPEN_PHRASE).map(({ note }) => note),
+      pipe(
+        phrases,
+        Array.map(({ phrase }) => phrase),
+      ),
+    ).not.toContain(STAFF_PHRASE);
+    expect(
+      pipe(
+        phrases,
+        Array.map(({ phrase }) => phrase),
+      ),
+    ).not.toContain(COMMON_PHRASE);
+    expect(
+      pipe(
+        phrases,
+        Array.filter(({ phrase }) => phrase === OPEN_PHRASE),
+        Array.map(({ note }) => note),
+      ),
     ).toStrictEqual([`${OPEN_PHRASE}${NOTE_SUFFIX}`]);
     expect(
-      phrases
-        .filter(({ phrase }) => phrase === OPEN_PHRASE)
-        .flatMap(({ examples }) =>
-          examples.flatMap((example) => Option.toArray(Array.last(example))),
+      pipe(
+        phrases,
+        Array.filter(({ phrase }) => phrase === OPEN_PHRASE),
+        Array.flatMap(({ examples }) =>
+          pipe(
+            examples,
+            Array.flatMap((example) => Option.toArray(Array.last(example))),
+          ),
         ),
+      ),
     ).toStrictEqual([OPEN_PHRASE, OPEN_PHRASE]);
   }),
 );
@@ -132,7 +154,12 @@ it.effect("writes each note once and reuses it on the next call", () =>
   Effect.gen(function* reused() {
     yield* listPhrases;
     yield* listPhrases;
-    expect(prompts.filter((prompt) => prompt.includes(`「${OPEN_PHRASE}」`))).toHaveLength(ONCE);
+    expect(
+      pipe(
+        prompts,
+        Array.filter((prompt) => prompt.includes(`「${OPEN_PHRASE}」`)),
+      ),
+    ).toHaveLength(ONCE);
   }),
 );
 
@@ -141,7 +168,12 @@ it.effect("counts messages stored before phrases were extracted once they are ba
     yield* listPhrases;
     yield* Effect.promise(() => runDurableObjectAlarm(guildStore(GUILD_A)));
     const phrases = yield* listPhrases;
-    expect(phrases.map(({ kind, phrase }) => ({ kind, phrase }))).toContainEqual({
+    expect(
+      pipe(
+        phrases,
+        Array.map(({ kind, phrase }) => ({ kind, phrase })),
+      ),
+    ).toContainEqual({
       kind: "emoji",
       phrase: ":aza_2:",
     });
@@ -153,6 +185,11 @@ it.effect("drops a phrase once an erased author's uses no longer reach the thres
     yield* listPhrases;
     yield* Effect.promise(() => guildStore(GUILD_A).eraseAuthor(ERASED_AUTHOR));
     const phrases = yield* listPhrases;
-    expect(phrases.map(({ phrase }) => phrase)).toStrictEqual([]);
+    expect(
+      pipe(
+        phrases,
+        Array.map(({ phrase }) => phrase),
+      ),
+    ).toStrictEqual([]);
   }),
 );

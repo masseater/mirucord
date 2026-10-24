@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Effect, Option, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema } from "effect";
 import { vi } from "vite-plus/test";
 
 import { ListServerPhrasesOutput } from "#/features/mcp/api/tool-output";
@@ -30,7 +30,7 @@ const mockPhraseModel = (answers: ModelAnswers): void => {
   vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => {
     const prompt = JSON.stringify(inputs);
     prompts.push(prompt);
-    const content = ["```json", answerFor(answers, prompt), "```"].join("\n");
+    const content = pipe(["```json", answerFor(answers, prompt), "```"], Array.join("\n"));
     return Promise.resolve({ choices: [{ message: { content } }] });
   });
 };

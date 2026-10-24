@@ -1,6 +1,6 @@
 import { and, count, desc, eq, gte, inArray, lt, max } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
-import { Array, Duration, Option } from "effect";
+import { Array, Duration, Option, Order, pipe } from "effect";
 
 import { phraseTotals } from "#/entities/guild-message/lib/phrase-totals";
 import { PHRASE_WINDOW_DAYS } from "#/entities/guild-message/lib/phrases.server";
@@ -32,7 +32,9 @@ const LEDGER_ID = 1;
 const NOTHING_WRITTEN = 0;
 const NEXT_GENERATION = 1;
 const NEVER = 0;
-const FIRST = 0;
+const byUsesDescending = Order.flip(
+  Order.mapInput(Order.Number, ({ uses }: Readonly<{ uses: number }>) => uses),
+);
 const MIN_USES = 5;
 const MIN_PEOPLE = 3;
 const PRESENT_USES = 2;
@@ -90,14 +92,17 @@ abstract class PhraseStore extends MessageStore {
       this.db
         .insert(phraseUse)
         .values(
-          hashes.map(({ phrase, common }) => ({
-            messageId: message.id,
-            phrase,
-            common,
-            channelId: message.channelId,
-            authorId: message.authorId,
-            createdAt: message.createdAt,
-          })),
+          pipe(
+            hashes,
+            Array.map(({ phrase, common }) => ({
+              messageId: message.id,
+              phrase,
+              common,
+              channelId: message.channelId,
+              authorId: message.authorId,
+              createdAt: message.createdAt,
+            })),
+          ),
         )
         .onConflictDoNothing()
         .run();
@@ -164,31 +169,38 @@ abstract class PhraseStore extends MessageStore {
   protected tallyPhrases(channelIds: readonly string[], now: number): PhraseTally {
     const ledger = this.ledgerOf();
     const channels = new Set(channelIds);
-    const totals = phraseTotals(
-      this.db
-        .select({
-          phrase: phraseUse.phrase,
-          common: phraseUse.common,
-          channelId: phraseUse.channelId,
-          authorId: phraseUse.authorId,
-          uses: count(),
-          lastUsedAt: max(phraseUse.createdAt),
-        })
-        .from(phraseUse)
-        .where(gte(phraseUse.createdAt, now - PHRASE_WINDOW_MS))
-        .groupBy(phraseUse.phrase, phraseUse.common, phraseUse.channelId, phraseUse.authorId)
-        .all()
-        .filter(({ channelId }) => channels.has(channelId)),
+    const rows = this.db
+      .select({
+        phrase: phraseUse.phrase,
+        common: phraseUse.common,
+        channelId: phraseUse.channelId,
+        authorId: phraseUse.authorId,
+        uses: count(),
+        lastUsedAt: max(phraseUse.createdAt),
+      })
+      .from(phraseUse)
+      .where(gte(phraseUse.createdAt, now - PHRASE_WINDOW_MS))
+      .groupBy(phraseUse.phrase, phraseUse.common, phraseUse.channelId, phraseUse.authorId)
+      .all();
+    const totals = pipe(
+      rows,
+      Array.filter(({ channelId }) => channels.has(channelId)),
+      phraseTotals,
     );
     return {
       written: ledger.written,
       generation: ledger.generation,
-      candidates: totals.filter(({ uses, people }) => uses >= MIN_USES && people >= MIN_PEOPLE),
-      presence: totals
-        .filter(({ uses }) => uses >= PRESENT_USES)
-        .toSorted((left, right) => right.uses - left.uses)
-        .slice(FIRST, PRESENCE_LIMIT)
-        .map(({ common }) => common),
+      candidates: pipe(
+        totals,
+        Array.filter(({ uses, people }) => uses >= MIN_USES && people >= MIN_PEOPLE),
+      ),
+      presence: pipe(
+        totals,
+        Array.filter(({ uses }) => uses >= PRESENT_USES),
+        (present) => Array.sort(present, byUsesDescending),
+        Array.take(PRESENCE_LIMIT),
+        Array.map(({ common }) => common),
+      ),
     };
   }
 
@@ -197,19 +209,25 @@ abstract class PhraseStore extends MessageStore {
     channelIds: readonly string[],
   ): readonly PhraseExample[] {
     const channels = new Set(channelIds);
-    return phrases.map((phrase) => ({
-      phrase,
-      messageIds: this.db
-        .select({ messageId: phraseUse.messageId, channelId: phraseUse.channelId })
-        .from(phraseUse)
-        .where(eq(phraseUse.phrase, phrase))
-        .orderBy(desc(phraseUse.createdAt))
-        .limit(EXAMPLE_SCAN)
-        .all()
-        .filter(({ channelId }) => channels.has(channelId))
-        .slice(FIRST, EXAMPLES_PER_PHRASE)
-        .map(({ messageId }) => messageId),
-    }));
+    return pipe(
+      phrases,
+      Array.map((phrase) => {
+        const uses = this.db
+          .select({ messageId: phraseUse.messageId, channelId: phraseUse.channelId })
+          .from(phraseUse)
+          .where(eq(phraseUse.phrase, phrase))
+          .orderBy(desc(phraseUse.createdAt))
+          .limit(EXAMPLE_SCAN)
+          .all();
+        const messageIds = pipe(
+          uses,
+          Array.filter(({ channelId }) => channels.has(channelId)),
+          Array.take(EXAMPLES_PER_PHRASE),
+          Array.map(({ messageId }) => messageId),
+        );
+        return { phrase, messageIds };
+      }),
+    );
   }
 
   protected saveStats(visibility: string, { generation, ...stats }: SavedStats): void {
@@ -239,16 +257,21 @@ abstract class PhraseStore extends MessageStore {
   }
 
   protected contextsOf(messageIds: readonly string[]): readonly PhraseContext[] {
-    return Array.chunksOf(messageIds, BOUND_LIMIT).flatMap((chunk) =>
-      this.db
-        .select(SEALED_COLUMNS)
-        .from(guildMessage)
-        .where(inArray(guildMessage.id, [...chunk]))
-        .all()
-        .map((message) => ({
-          messageId: message.id,
-          messages: [...this.previousOf(message), message],
-        })),
+    return pipe(
+      Array.chunksOf(messageIds, BOUND_LIMIT),
+      Array.flatMap((chunk) =>
+        pipe(
+          this.db
+            .select(SEALED_COLUMNS)
+            .from(guildMessage)
+            .where(inArray(guildMessage.id, [...chunk]))
+            .all(),
+          Array.map((message) => ({
+            messageId: message.id,
+            messages: [...this.previousOf(message), message],
+          })),
+        ),
+      ),
     );
   }
 

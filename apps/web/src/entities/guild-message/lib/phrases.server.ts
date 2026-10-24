@@ -1,4 +1,4 @@
-import { Array, Effect, Option, String } from "effect";
+import { Array, Effect, Option, pipe, String } from "effect";
 
 import type { MessageBody } from "#/shared/crypto/index.server";
 
@@ -46,16 +46,25 @@ const textPhrase = (content: string): Option.Option<Phrase> =>
   );
 
 const emojiPhrases = (content: string): readonly Phrase[] =>
-  Array.fromIterable(content.matchAll(CUSTOM_EMOJI)).flatMap(({ groups }) =>
-    Option.toArray(Option.fromUndefinedOr(groups)).map(({ name, id }) => ({
-      kind: "emoji",
-      key: `emoji:${id}`,
-      label: `:${name}:`,
-    })),
+  pipe(
+    Array.fromIterable(content.matchAll(CUSTOM_EMOJI)),
+    Array.flatMap(({ groups }) =>
+      pipe(
+        Option.toArray(Option.fromUndefinedOr(groups)),
+        Array.map(({ name, id }): Phrase => ({
+          kind: "emoji",
+          key: `emoji:${id}`,
+          label: `:${name}:`,
+        })),
+      ),
+    ),
   );
 
 const stickerPhrases = (stickers: readonly string[]): readonly Phrase[] =>
-  stickers.map((name) => ({ kind: "sticker", key: `sticker:${name}`, label: name }));
+  pipe(
+    stickers,
+    Array.map((name): Phrase => ({ kind: "sticker", key: `sticker:${name}`, label: name })),
+  );
 
 const phrasesOf = ({ content, stickers }: PhraseSource): readonly Phrase[] =>
   Array.dedupeWith(

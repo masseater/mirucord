@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { Embed } from "#/pages/home/ui/message/embed";
@@ -47,15 +48,18 @@ const SPECS = [
 const SpecList = (): ReactNode => (
   <Embed accent="border-lavender-deep">
     <dl className="grid gap-4 sm:grid-cols-2">
-      {SPECS.map((spec) => (
-        <SpecField
-          key={spec.label}
-          label={spec.label}
-          tags={spec.tags}
-          accent={spec.accent}
-          detail={spec.detail}
-        />
-      ))}
+      {pipe(
+        SPECS,
+        Array.map((spec) => (
+          <SpecField
+            key={spec.label}
+            label={spec.label}
+            tags={spec.tags}
+            accent={spec.accent}
+            detail={spec.detail}
+          />
+        )),
+      )}
     </dl>
   </Embed>
 );

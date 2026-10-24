@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import type { DataTag, UnusedSkipTokenOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
-import { Duration, Effect, Option, Schema } from "effect";
+import { Array, Duration, Effect, Option, pipe, Schema } from "effect";
 
 import type {
   ConsentResult,
@@ -42,7 +42,12 @@ const BUSY: ReadonlySet<GuildIngest> = new Set(["withdrawing", "waiting", "backf
 const pollWhileBusy = (dashboard: Option.Option<Dashboard>): number | false =>
   dashboard.pipe(
     Option.filter(
-      (loaded) => loaded.status === "ready" && loaded.guilds.some(({ ingest }) => BUSY.has(ingest)),
+      (loaded) =>
+        loaded.status === "ready" &&
+        pipe(
+          loaded.guilds,
+          Array.some(({ ingest }) => BUSY.has(ingest)),
+        ),
     ),
     Option.match({ onNone: () => false, onSome: () => Duration.toMillis(BUSY_POLL) }),
   );

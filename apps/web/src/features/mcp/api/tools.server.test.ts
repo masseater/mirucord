@@ -1,6 +1,6 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
-import { Array, Effect, Option, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema } from "effect";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
 import {
@@ -37,7 +37,12 @@ const readPastChannelCheck = (
     Effect.flatMap((scope) =>
       readMessages({ scope, channelId, before: Option.none(), limit: READ_LIMIT }),
     ),
-    Effect.map((views) => views.map(({ id }) => id)),
+    Effect.map((views) =>
+      pipe(
+        views,
+        Array.map(({ id }) => id),
+      ),
+    ),
     Effect.orDie,
   );
 
@@ -51,7 +56,12 @@ const notFullyIngestedOf = (
 ): Effect.Effect<readonly string[]> =>
   outcome.pipe(
     Effect.flatMap(({ structured }) => decodeSearchIngest(Option.getOrUndefined(structured))),
-    Effect.map(({ notFullyIngested }) => notFullyIngested.map(({ channelId }) => channelId)),
+    Effect.map(({ notFullyIngested }) =>
+      pipe(
+        notFullyIngested,
+        Array.map(({ channelId }) => channelId),
+      ),
+    ),
     Effect.orDie,
   );
 
@@ -64,7 +74,13 @@ const foundOf = (
 ): Effect.Effect<Readonly<{ total: number; ids: readonly string[] }>> =>
   outcome.pipe(
     Effect.flatMap(({ structured }) => decodeFound(Option.getOrUndefined(structured))),
-    Effect.map(({ total, messages }) => ({ total, ids: messages.map(({ id }) => id) })),
+    Effect.map(({ total, messages }) => ({
+      total,
+      ids: pipe(
+        messages,
+        Array.map(({ id }) => id),
+      ),
+    })),
     Effect.orDie,
   );
 
@@ -108,10 +124,13 @@ it.effect("does not report a category as a channel still being stored", () =>
 it.effect("refuses to search an unreadable channel, its threads or one from another server", () =>
   Effect.gen(function* searchRefused() {
     const outcomes = yield* Effect.forEach(
-      [A_STAFF, A_STAFF_THREAD, A_PRIVATE_THREAD, B_OPEN].map((channelId) => ({
-        name: "find_messages",
-        args: { serverId: GUILD_A, query: SAME_WORDS, channelId },
-      })),
+      pipe(
+        [A_STAFF, A_STAFF_THREAD, A_PRIVATE_THREAD, B_OPEN],
+        Array.map((channelId) => ({
+          name: "find_messages",
+          args: { serverId: GUILD_A, query: SAME_WORDS, channelId },
+        })),
+      ),
       callTool,
     );
     expect(outcomes).toStrictEqual(Array.replicate(REFUSED, outcomes.length));

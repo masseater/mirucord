@@ -1,4 +1,4 @@
-import { DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 
 import { isNoticeCandidate } from "#/features/ingest/model/channel-ingest";
 import type { ConsentScope } from "#/features/ingest/model/consent-scope";
@@ -32,13 +32,16 @@ type ConsentResult =
 type RevokeResult = Readonly<{ status: "withdrawing" }> | Readonly<{ status: "forbidden" }>;
 
 const NOTICE: OutgoingMessage = {
-  content: [
-    `はじめまして、${MASCOT_NAME}だよ！`,
-    `このサーバーの過去ログを読ませてもらうね。読むのは **${MASCOT_NAME}が見られるチャンネル** だけだよ。`,
-    "",
-    "アプリに登録する URL",
-    MCP_URL,
-  ].join("\n"),
+  content: pipe(
+    [
+      `はじめまして、${MASCOT_NAME}だよ！`,
+      `このサーバーの過去ログを読ませてもらうね。読むのは **${MASCOT_NAME}が見られるチャンネル** だけだよ。`,
+      "",
+      "アプリに登録する URL",
+      MCP_URL,
+    ],
+    Array.join("\n"),
+  ),
   links: [
     { label: "使い方", url: `${SITE_ORIGIN}/#start` },
     { label: "プライバシーポリシー", url: `${SITE_ORIGIN}${PRIVACY_PATH}` },
@@ -46,7 +49,10 @@ const NOTICE: OutgoingMessage = {
 };
 
 const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean =>
-  channels.some((channel) => isNoticeCandidate(channel) && channel.id === request.noticeChannelId);
+  pipe(
+    channels,
+    Array.some((channel) => isNoticeCandidate(channel) && channel.id === request.noticeChannelId),
+  );
 
 type NoticePost = "posted" | "noticeForbidden" | "noticeMissing" | "noticeFailed";
 

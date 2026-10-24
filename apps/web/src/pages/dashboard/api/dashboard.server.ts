@@ -1,5 +1,5 @@
 import { getRequest } from "@tanstack/react-start/server";
-import { Cause, Effect, Option } from "effect";
+import { Array, Cause, Effect, Option, pipe } from "effect";
 
 import {
   eraseOwnMessages,
@@ -90,9 +90,11 @@ const listReadable = (discordUserId: string): Effect.Effect<GuildListing> =>
   readableGuilds(discordUserId).pipe(
     Effect.map((guilds): GuildListing => ({
       status: "ready",
-      guilds: guilds
-        .filter(({ consent }) => consent === "consented")
-        .map(({ guildId, name, icon }) => ({ id: guildId, name, icon })),
+      guilds: pipe(
+        guilds,
+        Array.filter(({ consent }) => consent === "consented"),
+        Array.map(({ guildId, name, icon }) => ({ id: guildId, name, icon })),
+      ),
     })),
     Effect.catchTag("DiscordRequestError", () =>
       Effect.logWarning("Could not list readable servers").pipe(

@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { blockKey } from "#/pages/guide/model/guide-block";
@@ -26,14 +27,18 @@ const GuideDocument = ({
     <h1 className="text-dc-bright font-maru text-3xl font-black">{title}</h1>
     <MascotTip>{tip}</MascotTip>
     <p className="text-dc-text leading-loose">{lead}</p>
-    {sections.map((section) => (
-      <Panel key={section.heading}>
-        <h2 className="text-dc-bright font-maru text-xl font-black">{section.heading}</h2>
-        {section.blocks.map((block) => (
-          <GuideBlockView key={blockKey(block)} block={block} />
-        ))}
-      </Panel>
-    ))}
+    {pipe(
+      sections,
+      Array.map((section) => (
+        <Panel key={section.heading}>
+          <h2 className="text-dc-bright font-maru text-xl font-black">{section.heading}</h2>
+          {pipe(
+            section.blocks,
+            Array.map((block) => <GuideBlockView key={blockKey(block)} block={block} />),
+          )}
+        </Panel>
+      )),
+    )}
     <a href={REPOSITORY_URL} className="hover:text-dc-bright self-start font-bold underline">
       {SOURCE}
     </a>

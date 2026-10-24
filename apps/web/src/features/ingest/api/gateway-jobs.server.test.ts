@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { DiscordMessageSchema } from "@repo/shared-util-discord";
-import { DateTime, Effect, Option, Schema } from "effect";
+import { Array, DateTime, Effect, Option, pipe, Schema } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect } from "vite-plus/test";
 
@@ -49,20 +49,22 @@ const lookups: string[] = [];
 
 const seed = Effect.gen(function* seed() {
   const wrappedKey = yield* createGuildKey;
+  const channelRows = pipe(
+    [CHANNEL, OTHER_CHANNEL],
+    Array.map((id) => ({
+      id,
+      guildId: GUILD,
+      name: `channel ${id}`,
+      type: 0,
+      permissionOverwrites: [],
+    })),
+  );
   yield* Effect.promise(() =>
     db.batch([
       db
         .insert(guild)
         .values({ id: GUILD, name: "guild", ownerId: OWNER, wrappedKey, joinedAt: SEEDED_AT }),
-      db.insert(channel).values(
-        [CHANNEL, OTHER_CHANNEL].map((id) => ({
-          id,
-          guildId: GUILD,
-          name: `channel ${id}`,
-          type: 0,
-          permissionOverwrites: [],
-        })),
-      ),
+      db.insert(channel).values(channelRows),
       db.insert(ingestConsent).values({
         guildId: GUILD,
         grantedBy: OWNER,
@@ -71,7 +73,13 @@ const seed = Effect.gen(function* seed() {
       }),
     ]),
   );
-  yield* putMessages({ guildId: GUILD, messages: SEEDED.map((row) => storedMessage(row)) });
+  yield* putMessages({
+    guildId: GUILD,
+    messages: pipe(
+      SEEDED,
+      Array.map((row) => storedMessage(row)),
+    ),
+  });
 });
 
 const storedIds = Effect.forEach([CHANNEL, OTHER_CHANNEL], (channelId) =>

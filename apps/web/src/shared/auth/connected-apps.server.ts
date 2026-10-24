@@ -1,5 +1,5 @@
 import { and, eq, max } from "drizzle-orm";
-import { Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import { db } from "#/shared/db/client.server";
 
@@ -44,16 +44,21 @@ const listConnectedApps = (userId: string): Effect.Effect<readonly ConnectedApp[
       .where(eq(oauthConsent.userId, userId)),
   ).pipe(
     Effect.map((rows) =>
-      rows.map(({ clientId, name, connectedAt, consentUpdatedAt, refreshedAt }) => ({
-        clientId,
-        name: Option.getOrElse(Option.fromNullOr(name), () => clientId),
-        connectedAt: Option.getOrNull(
-          Option.map(Option.fromNullOr(connectedAt), (date) => date.getTime()),
-        ),
-        updatedAt: Option.getOrNull(
-          Option.map(Option.fromNullOr(refreshedAt ?? consentUpdatedAt), (date) => date.getTime()),
-        ),
-      })),
+      pipe(
+        rows,
+        Array.map(({ clientId, name, connectedAt, consentUpdatedAt, refreshedAt }) => ({
+          clientId,
+          name: Option.getOrElse(Option.fromNullOr(name), () => clientId),
+          connectedAt: Option.getOrNull(
+            Option.map(Option.fromNullOr(connectedAt), (date) => date.getTime()),
+          ),
+          updatedAt: Option.getOrNull(
+            Option.map(Option.fromNullOr(refreshedAt ?? consentUpdatedAt), (date) =>
+              date.getTime(),
+            ),
+          ),
+        })),
+      ),
     ),
   );
 };

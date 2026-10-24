@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Array, Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import { guildIngestOf } from "#/features/ingest/model/channel-ingest";
@@ -95,18 +95,19 @@ const guildSettings = (
             },
             { concurrency: "unbounded" },
           ).pipe(
-            Effect.map(({ consented, storedMessages }) =>
-              Option.some({
+            Effect.map(({ consented, storedMessages }) => {
+              const channelIngest = pipe(
+                consented.channels,
+                Array.map(({ ingest }) => ingest),
+              );
+              return Option.some({
                 ...consented,
-                ingest: guildIngestOf(
-                  consented.consent.status,
-                  consented.channels.map(({ ingest }) => ingest),
-                ),
+                ingest: guildIngestOf(consented.consent.status, channelIngest),
                 storedMessages,
                 id: membership.guildId,
                 name,
-              }),
-            ),
+              });
+            }),
           ),
       }),
     ),

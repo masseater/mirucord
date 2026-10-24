@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { Array, Number, Option, Order } from "effect";
+import { Array, Number, Option, Order, pipe } from "effect";
 
 import { searchArchive } from "#/entities/guild-message/model/search-segment.schema";
 import type { ArchivePiece } from "#/entities/guild-message/model/search-segment.schema";
@@ -33,18 +33,23 @@ const byFromDesc = Order.flip(
 );
 
 const fullPieces = (db: DrizzleSqliteDODatabase): readonly Segment[] =>
-  Array.sort(
-    sealedOf(searchLedger(db).segments()).filter(({ toCreatedAt }) => toCreatedAt !== null),
-    byFromDesc,
+  pipe(
+    searchLedger(db).segments(),
+    sealedOf,
+    Array.filter(({ toCreatedAt }) => toCreatedAt !== null),
+    (pieces) => Array.sort(pieces, byFromDesc),
   );
 
 const layoutOf = (pieces: readonly Segment[]): readonly ArchivePiece[] => {
   let offset = FIRST_SHARD;
-  return pieces.map(({ name, count, shards }) => {
-    const placed = { name, offset, count, shards };
-    offset += count;
-    return placed;
-  });
+  return pipe(
+    pieces,
+    Array.map(({ name, count, shards }) => {
+      const placed = { name, offset, count, shards };
+      offset += count;
+      return placed;
+    }),
+  );
 };
 
 const powerOfTwoAtLeast = (wanted: number): number => {
@@ -59,7 +64,11 @@ const archivedNames = (db: DrizzleSqliteDODatabase): ReadonlySet<string> =>
   new Set(
     Option.match(liveArchive(db), {
       onNone: () => [],
-      onSome: ({ pieces }) => pieces.map(({ name }) => name),
+      onSome: ({ pieces }) =>
+        pipe(
+          pieces,
+          Array.map(({ name }) => name),
+        ),
     }),
   );
 
@@ -67,7 +76,10 @@ const shouldStart = (db: DrizzleSqliteDODatabase, pieces: readonly Segment[]): b
   const archived = archivedNames(db);
   return (
     Option.isNone(buildingArchive(db)) &&
-    pieces.filter(({ name }) => !archived.has(name)).length >= ARCHIVE_AFTER
+    pipe(
+      pieces,
+      Array.filter(({ name }) => !archived.has(name)),
+    ).length >= ARCHIVE_AFTER
   );
 };
 
@@ -78,14 +90,27 @@ const startArchive = (db: DrizzleSqliteDODatabase, now: number): Option.Option<A
   }
   const layout = layoutOf(pieces);
   const old = liveArchive(db);
-  const wanted = Number.sumAll(layout.map(({ shards }) => shards));
+  const wanted = Number.sumAll(
+    pipe(
+      layout,
+      Array.map(({ shards }) => shards),
+    ),
+  );
   const row: Archive = {
     name: `archive-${now}`,
     status: "building",
     shards: powerOfTwoAtLeast(wanted),
-    count: Number.sumAll(layout.map(({ count }) => count)),
+    count: Number.sumAll(
+      pipe(
+        layout,
+        Array.map(({ count }) => count),
+      ),
+    ),
     pieces: layout,
-    sources: Option.toArray(old).map(({ name }) => name),
+    sources: pipe(
+      Option.toArray(old),
+      Array.map(({ name }) => name),
+    ),
     nextShard: FIRST_SHARD,
   };
   db.insert(searchArchive).values(row).run();

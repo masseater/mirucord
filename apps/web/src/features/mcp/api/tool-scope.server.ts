@@ -1,5 +1,5 @@
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { Effect, Option } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 
 import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
@@ -42,8 +42,9 @@ const withScope =
     Effect.runPromise(scoped(request, withinScope));
 
 const readableChannels = (scope: GuildScope): readonly StoredChannel[] =>
-  scope.guild.channels.filter(
-    ({ id, type }) => scope.visible.includes(id) && !CATEGORY_TYPES.has(type),
+  pipe(
+    scope.guild.channels,
+    Array.filter(({ id, type }) => scope.visible.includes(id) && !CATEGORY_TYPES.has(type)),
   );
 
 const withChannel =
@@ -52,7 +53,13 @@ const withChannel =
     withinChannels: (channelIds: readonly string[]) => Effect.Effect<CallToolResult>,
   ): Effect.Effect<CallToolResult> =>
     Option.match(channelId, {
-      onNone: () => withinChannels(readableChannels(scope).map(({ id }) => id)),
+      onNone: () =>
+        withinChannels(
+          pipe(
+            readableChannels(scope),
+            Array.map(({ id }) => id),
+          ),
+        ),
       onSome: (id) =>
         Option.match(
           Option.liftPredicate(id, (candidate) => scope.visible.includes(candidate)),
@@ -61,12 +68,14 @@ const withChannel =
             onSome: (visible) =>
               withinChannels([
                 visible,
-                ...scope.guild.channels
-                  .filter(
+                ...pipe(
+                  scope.guild.channels,
+                  Array.filter(
                     ({ id: threadId, parentId }) =>
                       Option.contains(parentId, visible) && scope.visible.includes(threadId),
-                  )
-                  .map(({ id: threadId }) => threadId),
+                  ),
+                  Array.map(({ id: threadId }) => threadId),
+                ),
               ]),
           },
         ),
@@ -80,7 +89,10 @@ const ingestOf = ({
   if (!FORUM_TYPES.has(stored.type)) {
     return ingestStatus({ consent, kind: "channel", progress: stored });
   }
-  const posts = channels.filter(({ parentId }) => Option.contains(parentId, stored.id));
+  const posts = pipe(
+    channels,
+    Array.filter(({ parentId }) => Option.contains(parentId, stored.id)),
+  );
   return ingestStatus({ consent, kind: "forum", posts });
 };
 
@@ -88,10 +100,14 @@ const ingestById = ({
   scope,
   channelId,
 }: Readonly<{ scope: GuildScope; channelId: string }>): IngestStatus =>
-  Option.match(Option.fromUndefinedOr(scope.guild.channels.find(({ id }) => id === channelId)), {
-    onNone: () => "waiting" as const,
-    onSome: (stored) => ingestOf({ scope, stored }),
-  });
+  pipe(
+    scope.guild.channels,
+    Array.findFirst(({ id }) => id === channelId),
+    Option.match({
+      onNone: () => "waiting" as const,
+      onSome: (stored) => ingestOf({ scope, stored }),
+    }),
+  );
 
 const notFullyIngested = ({
   scope,
@@ -100,9 +116,11 @@ const notFullyIngested = ({
   scope: GuildScope;
   channelIds: readonly string[];
 }>): readonly Readonly<{ channelId: string; ingest: IngestStatus }>[] =>
-  channelIds
-    .map((id) => ({ channelId: id, ingest: ingestById({ scope, channelId: id }) }))
-    .filter(({ ingest }) => !isReady(ingest));
+  pipe(
+    channelIds,
+    Array.map((id) => ({ channelId: id, ingest: ingestById({ scope, channelId: id }) })),
+    Array.filter(({ ingest }) => !isReady(ingest)),
+  );
 
 export {
   DISCORD_UNAVAILABLE,

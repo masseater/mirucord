@@ -1,4 +1,4 @@
-import { Effect, pipe } from "effect";
+import { Array, Effect, pipe } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import type { NoteSample, SealedMessage } from "#/entities/guild-message/index.server";
@@ -17,7 +17,10 @@ type SamplesRequest = Readonly<{
 }>;
 
 const idsOf = ({ before, use, after }: NoteSample): readonly string[] =>
-  [...before, use, ...after].map(({ id }) => id);
+  pipe(
+    [...before, use, ...after],
+    Array.map(({ id }) => id),
+  );
 
 const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
   guildId,
@@ -37,11 +40,19 @@ const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
     Effect.all({ before: openAll(before), use: open(use), after: openAll(after) });
   const found = yield* Effect.promise(() =>
     guildStore(guildId).phraseSamples({
-      phrases: claimed.map(({ phrase }) => phrase),
+      phrases: pipe(
+        claimed,
+        Array.map(({ phrase }) => phrase),
+      ),
       channelIds,
     }),
   );
-  const samplesOf = new Map(found.map(({ phrase, samples }) => [phrase, samples]));
+  const samplesOf = new Map(
+    pipe(
+      found,
+      Array.map(({ phrase, samples }) => [phrase, samples]),
+    ),
+  );
   return yield* pipe(
     claimed,
     Effect.forEach((subject) => {
@@ -51,7 +62,10 @@ const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
         Effect.forEach(openSample),
         Effect.map((opened): Prepared => ({
           input: { ...subject, samples: opened },
-          examples: samples.flatMap((sample) => idsOf(sample)),
+          examples: pipe(
+            samples,
+            Array.flatMap((sample) => idsOf(sample)),
+          ),
         })),
       );
     }),

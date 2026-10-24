@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { GuildIngest } from "#/features/ingest/index.server";
+import { tipFor } from "#/pages/dashboard/model/dashboard-tip";
 import { nextStepsOf } from "#/pages/dashboard/model/next-steps";
 import type { NextSteps, ReadyDashboard } from "#/pages/dashboard/model/next-steps";
 import { MascotTip } from "#/shared/ui/mascot-tip";
@@ -13,20 +13,7 @@ import { NextStepsPanel } from "./next-steps/next-steps-panel";
 import { ReadableGuildPanel } from "./readable-guild-panel";
 
 const TITLE = "管理画面";
-const WITHDRAWING_TIP = "削除中だよ！";
-const INGESTING_TIP = "思い出を集めてるよ";
 const URL_TITLE = "ほかのアプリに登録する URL";
-const INGESTING: ReadonlySet<GuildIngest> = new Set(["waiting", "backfilling"]);
-
-const tipFor = ({ name, guilds }: ReadyDashboard): string => {
-  if (guilds.some(({ ingest }) => ingest === "withdrawing")) {
-    return WITHDRAWING_TIP;
-  }
-  if (guilds.some(({ ingest }) => INGESTING.has(ingest))) {
-    return INGESTING_TIP;
-  }
-  return `${name}さん、おかえり！`;
-};
 
 const stepsOrUrl = (steps: NextSteps, inviteUrl: string): ReactNode => {
   if (steps.status === "pending") {

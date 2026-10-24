@@ -1,3 +1,4 @@
+import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { MEMBERS } from "#/pages/home/ui/common/members";
@@ -74,9 +75,10 @@ const FaqBody = (): ReactNode => (
       <hr className="border-dc-new grow" />
       <span className="bg-dc-new text-dc-bright rounded-sm px-1">{NEW}</span>
     </div>
-    {QUESTIONS.map((item) => (
-      <FaqPair key={item.reply.text} question={item} />
-    ))}
+    {pipe(
+      QUESTIONS,
+      Array.map((item) => <FaqPair key={item.reply.text} question={item} />),
+    )}
     <Closing />
   </>
 );

@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { eq } from "drizzle-orm";
-import { Array, DateTime, Effect, Option } from "effect";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, expect } from "vite-plus/test";
 
@@ -87,20 +87,22 @@ const bodyIn = (channelId: string, messageId: string): Effect.Effect<MessageBody
 
 const seedMessages = Effect.gen(function* seed() {
   const wrappedKey = yield* createGuildKey;
+  const channelRows = pipe(
+    [STORED_CHANNEL, UNDESCRIBED_CHANNEL, FORWARD_CHANNEL, RICH_CHANNEL],
+    Array.map((id) => ({
+      id,
+      guildId: GUILD,
+      name: `channel ${id}`,
+      type: 0,
+      permissionOverwrites: [],
+    })),
+  );
   yield* Effect.promise(() =>
     db.batch([
       db
         .insert(guild)
         .values({ id: GUILD, name: "guild", ownerId: OWNER, wrappedKey, joinedAt: SEEDED_AT }),
-      db.insert(channel).values(
-        [STORED_CHANNEL, UNDESCRIBED_CHANNEL, FORWARD_CHANNEL, RICH_CHANNEL].map((id) => ({
-          id,
-          guildId: GUILD,
-          name: `channel ${id}`,
-          type: 0,
-          permissionOverwrites: [],
-        })),
-      ),
+      db.insert(channel).values(channelRows),
       db.insert(ingestConsent).values({
         guildId: GUILD,
         grantedBy: OWNER,

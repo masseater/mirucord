@@ -1,4 +1,4 @@
-import { Match } from "effect";
+import { Array, Match, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import type { GuideBlock } from "#/pages/guide/model/guide-block";
@@ -10,11 +10,14 @@ import { InlineText } from "./inline-text";
 const ITEM = "text-dc-muted leading-loose";
 
 const Items = ({ items }: Readonly<{ items: readonly string[] }>): ReactNode =>
-  items.map((item) => (
-    <li key={item} className={ITEM}>
-      <InlineText text={item} />
-    </li>
-  ));
+  pipe(
+    items,
+    Array.map((item) => (
+      <li key={item} className={ITEM}>
+        <InlineText text={item} />
+      </li>
+    )),
+  );
 
 const GuideBlockView = ({ block }: Readonly<{ block: GuideBlock }>): ReactNode =>
   Match.value(block).pipe(

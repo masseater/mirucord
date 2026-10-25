@@ -1,5 +1,5 @@
 import { Discord, UI } from "dfx";
-import { Array, Effect, Option, pipe, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema, String as Str } from "effect";
 
 import { decodeBody, withDiscord } from "./client.server";
 import type { DiscordRequestError } from "./client.server";
@@ -25,7 +25,7 @@ const postWebhookMessage = ({
   content,
 }: Readonly<{ webhookUrl: string; content: string }>): Effect.Effect<void, DiscordRequestError> => {
   const [webhookId = "", token = ""] = Array.takeRight(
-    new URL(webhookUrl).pathname.split("/"),
+    pipe(new URL(webhookUrl).pathname, Str.split("/")),
     WEBHOOK_PATH_PARTS,
   );
   return withDiscord((rest) =>

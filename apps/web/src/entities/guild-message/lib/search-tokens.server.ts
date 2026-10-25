@@ -9,7 +9,7 @@ const SHORTEST_GRAM = 1;
 const LONGEST_GRAM = 3;
 const NEXT = 1;
 const NONE = 0;
-const charsOf = (text: string): readonly string[] => Array.fromIterable(text.toLowerCase());
+const charsOf = (text: string): readonly string[] => Array.fromIterable(String.toLowerCase(text));
 
 const gramsOfSize = (chars: readonly string[], size: number): readonly string[] =>
   Array.makeBy(Number.max(chars.length - size + NEXT, NONE), (start) =>
@@ -95,10 +95,10 @@ const containsQuery = ({
   texts,
   query,
 }: Readonly<{ texts: readonly string[]; query: string }>): boolean => {
-  const needle = query.toLowerCase();
+  const needle = String.toLowerCase(query);
   return pipe(
     texts,
-    Array.some((text) => text.toLowerCase().includes(needle)),
+    Array.some((text) => pipe(String.toLowerCase(text), String.includes(needle))),
   );
 };
 

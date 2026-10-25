@@ -1,4 +1,4 @@
-import { Array, Record, pipe } from "effect";
+import { Array, pipe, Record, String as Str } from "effect";
 
 import decisionPlugin from "./decision-rules.ts";
 
@@ -145,7 +145,7 @@ const requiredStackEntries = pipe(
 
 const requiredStackPaths: readonly Readonly<{ name: string; message: string }>[] = pipe(
   requiredStackEntries,
-  Array.filter(({ module }) => !module.includes("*")),
+  Array.filter(({ module }) => !pipe(module, Str.includes("*"))),
   Array.map(({ message, module }) => ({ name: module, message })),
 );
 
@@ -153,7 +153,7 @@ const requiredStackPatterns: readonly Readonly<{ group: readonly string[]; messa
   pipe(
     requiredStackEntries,
     Array.map(({ message, module }) => {
-      if (module.includes("*")) {
+      if (pipe(module, Str.includes("*"))) {
         return { group: [module, `${module}/**`], message };
       }
       return { group: [`${module}/**`], message };
@@ -215,7 +215,7 @@ const renamedRulesOf = ({
   asErrors(
     pipe(
       ruleNamesOf(rules),
-      Array.map((name) => name.replace(from, to)),
+      Array.map((name) => pipe(name, Str.replace(from, to))),
     ),
   );
 
@@ -228,7 +228,7 @@ const rulesMissingFrom = ({
   asErrors(
     pipe(
       ruleNamesOf(rules),
-      Array.filter((name) => !(name.replace(from, to) in taken)),
+      Array.filter((name) => !(pipe(name, Str.replace(from, to)) in taken)),
     ),
   );
 

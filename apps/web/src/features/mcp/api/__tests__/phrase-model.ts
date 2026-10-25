@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Array, Effect, Option, pipe, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema, String as Str } from "effect";
 import { vi } from "vite-plus/test";
 
 import { ListServerPhrasesOutput } from "#/features/mcp/api/tool-output";
@@ -20,7 +20,7 @@ const listPhrases = callTool({ name: "list_server_phrases", args: { serverId: GU
 );
 
 const answerFor = ({ common, note }: ModelAnswers, prompt: string): string => {
-  if (prompt.includes(`「${common}」`)) {
+  if (pipe(prompt, Str.includes(`「${common}」`))) {
     return JSON.stringify({ type: "common", note: "" });
   }
   return JSON.stringify({ type: "server", note });

@@ -64,15 +64,20 @@ const excerptOf = ({ content, stickers }: MessageBody): string =>
     ],
     Array.filter((text) => String.isNonEmpty(text)),
     Array.join(" "),
-  ).slice(FIRST, EXCERPT_LENGTH);
+    String.slice(FIRST, EXCERPT_LENGTH),
+  );
 
 const speakerOf =
   (names: readonly string[]) =>
   ({ authorName }: MessageBody): string =>
-    SPEAKERS.at(names.indexOf(authorName)) ?? OTHER_SPEAKER;
+    pipe(
+      SPEAKERS,
+      String.at(names.indexOf(authorName)),
+      Option.getOrElse(() => OTHER_SPEAKER),
+    );
 
 const lineOf = (speaker: string, body: MessageBody, mark: string): string =>
-  `${mark}${speaker}: ${excerptOf(body).replaceAll("\n", " ")}`;
+  `${mark}${speaker}: ${pipe(excerptOf(body), String.replaceAll("\n", " "))}`;
 
 const sampleText = ({ before, use, after }: OpenedSample, index: number): string => {
   const names = Array.dedupe(
@@ -143,11 +148,11 @@ const withFetchClient = <Value>(
   );
 
 const emojiUrl = (key: string): string =>
-  `https://cdn.discordapp.com/emojis/${key.slice(EMOJI_PREFIX.length)}.png?size=128`;
+  `https://cdn.discordapp.com/emojis/${pipe(key, String.slice(EMOJI_PREFIX.length))}.png?size=128`;
 
 const emojiImage = ({ key }: Phrase): Effect.Effect<Option.Option<Image>> =>
   Option.match(
-    Option.liftPredicate(key, (value) => value.startsWith(EMOJI_PREFIX)),
+    Option.liftPredicate(key, (value) => pipe(value, String.startsWith(EMOJI_PREFIX))),
     {
       onNone: () => Effect.succeedNone,
       onSome: (value) =>
@@ -208,10 +213,10 @@ const noteOf = (input: NoteInput, { type, note }: Answered): Note => {
     return { status: "common" };
   }
   const trimmed = String.trim(note);
-  const unlabelled = trimmed.replaceAll(input.label.label, "");
+  const unlabelled = pipe(trimmed, String.replaceAll(input.label.label, ""));
   const named = pipe(
     namesIn(input),
-    Array.some((name) => unlabelled.includes(name)),
+    Array.some((name) => pipe(unlabelled, String.includes(name))),
   );
   const shown = Option.liftPredicate(trimmed, (text) => String.isNonEmpty(text) && !named);
   return { status: "server", note: Option.getOrNull(shown) };

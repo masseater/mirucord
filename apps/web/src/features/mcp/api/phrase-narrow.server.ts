@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Effect, Option, String } from "effect";
+import { Effect, Option, pipe, String } from "effect";
 
 import {
   GEMMA_MODEL,
@@ -33,7 +33,7 @@ const rewrite = (hedged: Hedged): Effect.Effect<string> =>
     Effect.map((output) =>
       gemmaText(output).pipe(
         Option.map(String.trim),
-        Option.filter((text) => String.isNonEmpty(text) && !text.includes(HEDGE)),
+        Option.filter((text) => String.isNonEmpty(text) && !pipe(text, String.includes(HEDGE))),
         Option.getOrElse(() => hedged.note),
       ),
     ),
@@ -41,7 +41,7 @@ const rewrite = (hedged: Hedged): Effect.Effect<string> =>
   );
 
 const narrowNote = (hedged: Hedged): Effect.Effect<string> => {
-  if (!hedged.note.includes(HEDGE)) {
+  if (!pipe(hedged.note, String.includes(HEDGE))) {
     return Effect.succeed(hedged.note);
   }
   return spendNeurons("live", RESERVED_NEURONS).pipe(

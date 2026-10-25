@@ -4,14 +4,14 @@ import { App, Secret } from "alchemy/Fly";
 import { Secrets, Variables } from "alchemy/GitHub";
 import { Stage } from "alchemy/Stage";
 import { inMemoryState } from "alchemy/State";
-import { Effect, Exit, Layer, Match, Redacted } from "effect";
+import { Effect, Exit, Layer, Match, pipe, Redacted, String as Str } from "effect";
 import { expect, test } from "vite-plus/test";
 
 import { checkAppPrefix } from "./check-app-prefix";
 
 const APP = "my-app";
 const PREFIX = `${APP}-`;
-const ENV_PREFIX = `${APP.replaceAll("-", "_")}_`;
+const ENV_PREFIX = `${pipe(APP, Str.replaceAll("-", "_"))}_`;
 const requireAppPrefix = checkAppPrefix(APP);
 
 type Resource =

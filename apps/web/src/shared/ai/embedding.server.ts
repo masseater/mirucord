@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Array, Effect, Option, pipe, Schedule, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schedule, Schema, String as Str } from "effect";
 
 import { settleNeurons, spendNeurons } from "./budget.server";
 import type { Priority } from "./budget.server";
@@ -28,7 +28,7 @@ type Embedded =
   | Readonly<{ status: "embedded"; vectors: readonly Quantized[] }>
   | Readonly<{ status: "over-budget" }>;
 
-const clip = (text: string): string => text.slice(CLIP_START, MAX_CHARS);
+const clip = (text: string): string => pipe(text, Str.slice(CLIP_START, MAX_CHARS));
 
 const estimateNeurons = (texts: Array.NonEmptyReadonlyArray<string>): number =>
   (texts.length *

@@ -34,7 +34,7 @@
       "ref": "86505e44f87d801aa1864a3c4109e9a8ae5c409f",
       "sourceType": "github",
       "skillPath": "skills/cloudflare/SKILL.md",
-      "computedHash": "51522c6fbd95a2eaa9631a7651ba3ef434fcc92d9573c64eb28ef723290b6099"
+      "computedHash": "f08c8c1be96dfad7f9d5418b1345477dd2e55af58c8da01326c9a2616c7ed721"
     },
     "commit-and-git": {
       "source": "philtzjp/skills",
@@ -48,7 +48,7 @@
       "ref": "acbcf941cae90b101dfb83598e3322504eeda64f",
       "sourceType": "github",
       "skillPath": ".agents/skills/conventions/SKILL.md",
-      "computedHash": "c13fac7b91a4e1fc09331edee1a93199d42173fae73004d3ebd9ecff8f96f286"
+      "computedHash": "61d0938e6d32bb52b8b31e71c6183e47dd2543762a8ab4ca0c61abfc9dd75528"
     },
     "cursor-hook-authoring": {
       "source": "philtzjp/skills",
@@ -97,7 +97,7 @@
       "ref": "1466d85aa4f2a0fec91f71311e65bbfa91aa7dc5",
       "sourceType": "github",
       "skillPath": "elysia/SKILL.md",
-      "computedHash": "55268e69a2c766ed67e56a0db57544f60cc52dba0c7f024a974baf965e525e1b"
+      "computedHash": "e0bc0ecce6cecc34f14cf445c72f7df0cec278e64dfd4ea99f26c503e98624d6"
     },
     "email-and-password-best-practices": {
       "source": "better-auth/skills",
@@ -146,14 +146,14 @@
       "ref": "4810c8f1186a229ca57d2f278c0a94f0fc862fec",
       "sourceType": "github",
       "skillPath": "skills/how-to-use-react/SKILL.md",
-      "computedHash": "8248f2f3a259f7242be00713ed18d3f1d9ff6792b502c532c7cde47bc784666b"
+      "computedHash": "d0b10c40aa3245b3d8d363f19f4d4b29b9ce17880d3ad71d1715e71ef01ee790"
     },
     "integrate": {
       "source": "masseater/skills",
       "ref": "4810c8f1186a229ca57d2f278c0a94f0fc862fec",
       "sourceType": "github",
       "skillPath": "skills/integrate/SKILL.md",
-      "computedHash": "e3373d2c63b9e2a1dca5c7daa77a0a21013f13789dc98a5afaf20b07eb0b6338"
+      "computedHash": "09964308929f006e16387f9e685218477758273304d120625b419b13b6e0b6ee"
     },
     "issue-branch-pr-flow": {
       "source": "philtzjp/skills",
@@ -195,14 +195,14 @@
       "ref": "4810c8f1186a229ca57d2f278c0a94f0fc862fec",
       "sourceType": "github",
       "skillPath": "skills/measure-dont-guess/SKILL.md",
-      "computedHash": "8abc7237a86085a584d25e6afc77960bbafe867edcf6e8bdcd6b0357f95f8ee1"
+      "computedHash": "072fe6856a8d7930fcbd7dcd6695fa8505817124ecc017701874df4486bbd4e6"
     },
     "modern-web-guidance": {
       "source": "GoogleChrome/modern-web-guidance",
       "ref": "65e7edd67e77420eaf02c5df00fdc0521417d809",
       "sourceType": "github",
       "skillPath": "skills/modern-web-guidance/SKILL.md",
-      "computedHash": "813274e05233f139ad0bc5f67ce7c4c524b4c81c672f9ff7905957b3a09b46b4"
+      "computedHash": "48405ce3611ebdfd7958978117501d0b3d36ac91048cb3a43b36233e8e839d52"
     },
     "refresh-skills": {
       "source": "philtzjp/skills",
@@ -213,17 +213,17 @@
     },
     "shadcn": {
       "source": "shadcn-ui/ui",
-      "ref": "e55b60b1014cccfb9ac62f97e0d20b5b649f4a54",
+      "ref": "617134d5810bba521803b3ed787190bacbb80b35",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
-      "computedHash": "da388f632cd83783c02967446e21941c9ee8291ccb43ba74c23f7d4e9b7c298c"
+      "computedHash": "b864a958765563321f485a96f4d59c0bb6539f4286ab6d8b8b66895b7ebd302d"
     },
     "skill-authoring": {
       "source": "masseater/skills",
       "ref": "4810c8f1186a229ca57d2f278c0a94f0fc862fec",
       "sourceType": "github",
       "skillPath": "skills/skill-authoring/SKILL.md",
-      "computedHash": "6d89941deb855bdca0e42e675fb8a36d6b7adb487948edf45eaddcd01b230062"
+      "computedHash": "192e04dcd46414904923fe3d62e429ed42caa3cd86906713cc05f8a6c28fcee0"
     },
     "skill-escalation": {
       "source": "philtzjp/skills",
@@ -300,7 +300,7 @@
       "ref": "15244a1369c192d6b7e74963ee9709537fadf166",
       "sourceType": "github",
       "skillPath": "skills/yomiyasu/SKILL.md",
-      "computedHash": "2331db4c070bdc4edb78a783ccd5d93a85e0c818b330de081ab9b5014d2e3e45"
+      "computedHash": "f45a6586b47b539db151b18cab28687cc6541650b07e577976211a87919086c7"
     }
   }
 }

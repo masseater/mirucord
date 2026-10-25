@@ -2,7 +2,7 @@ import { Stack, isResourceOfType } from "alchemy";
 import { Rules } from "alchemy/Cloudflare";
 import { Secret } from "alchemy/Fly";
 import { Secret as GitHubSecret, Variable as GitHubVariable } from "alchemy/GitHub";
-import { Array as Arr, Effect, Match, Option, pipe, Record, Schema } from "effect";
+import { Array as Arr, Effect, Match, Option, pipe, Record, Schema, String as Str } from "effect";
 
 import { prefixesOf } from "./app-name";
 
@@ -27,7 +27,7 @@ const prefixOf = (prefixes: Prefixes, resource: unknown): Option.Option<string> 
 
 const describeUnprefixed = (prefixes: Prefixes, resource: NamedResource): readonly string[] =>
   Option.all([decodeNamed(resource.Props), prefixOf(prefixes, resource)]).pipe(
-    Option.filter(([props, prefix]) => !props.name.startsWith(prefix)),
+    Option.filter(([props, prefix]) => !pipe(props.name, Str.startsWith(prefix))),
     Option.map(([props]) => props),
     Option.map((props) => `${resource.FQN}: ${props.name}`),
     Option.toArray,
@@ -36,7 +36,7 @@ const describeUnprefixed = (prefixes: Prefixes, resource: NamedResource): readon
 const unprefixedStack = (prefixes: Prefixes, stackName: string): readonly string[] =>
   Arr.filter(
     [`Stack: ${stackName}`],
-    () => stackName !== prefixes.name && !stackName.startsWith(prefixes.prefix),
+    () => stackName !== prefixes.name && !pipe(stackName, Str.startsWith(prefixes.prefix)),
   );
 
 const offendersOf = (prefixes: Prefixes): Effect.Effect<readonly string[], never, Stack> =>

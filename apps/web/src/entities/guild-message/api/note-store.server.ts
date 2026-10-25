@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, gt, gte, inArray, lt, ne, or } from "drizzle-orm";
-import { Array, Duration, Option, pipe } from "effect";
+import { Array, Duration, Option, pipe, String as Str } from "effect";
 
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { phraseNote } from "#/entities/guild-message/model/phrase-note.schema";
@@ -49,7 +49,8 @@ const spreadOf = (uses: readonly Use[]): readonly Use[] => {
 
 const examplesOf = (examples: string): readonly string[] =>
   pipe(
-    examples.split(EXAMPLE_SEPARATOR),
+    examples,
+    Str.split(EXAMPLE_SEPARATOR),
     Array.filter((id) => id.length > NEVER),
   );
 

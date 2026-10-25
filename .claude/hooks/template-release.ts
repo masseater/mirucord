@@ -1,4 +1,4 @@
-import { Array as Arr, Effect, Option, Schema, String as Str } from "effect";
+import { Array as Arr, Effect, Option, pipe, Schema, String as Str } from "effect";
 
 import { getJson, projectDir, runHook, writeJson } from "./env.ts";
 import { HookPlatform } from "./platform.ts";
@@ -61,7 +61,7 @@ const instructions = (current: string, release: typeof Release.Type): string => 
 
 runHook(
   Effect.gen(function* templateRelease() {
-    if ((yield* projectDir).includes(WORKTREE_SEGMENT)) {
+    if (pipe(yield* projectDir, Str.includes(WORKTREE_SEGMENT))) {
       return;
     }
     const current = yield* currentVersion;

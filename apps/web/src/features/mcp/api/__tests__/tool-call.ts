@@ -1,5 +1,5 @@
 import { createMcpHandler } from "@modelcontextprotocol/server";
-import { Array, Effect, Option, pipe, Schema } from "effect";
+import { Array, Effect, Option, pipe, Schema, String as Str } from "effect";
 
 import { buildServer } from "#/features/mcp/api/tools.server";
 import { SITE_ORIGIN } from "#/shared/config";
@@ -49,9 +49,10 @@ const requestOf = (body: string): Request =>
 
 const sseData = (body: string): string =>
   pipe(
-    body.split("\n"),
-    Array.filter((line) => line.startsWith(SSE_DATA)),
-    Array.map((line) => line.slice(SSE_DATA.length)),
+    body,
+    Str.split("\n"),
+    Array.filter((line) => pipe(line, Str.startsWith(SSE_DATA))),
+    Array.map((line) => pipe(line, Str.slice(SSE_DATA.length))),
     Array.join(""),
   );
 

@@ -7,7 +7,7 @@ import type {
   EnvSegment,
   ShellLine,
 } from "@yarnpkg/parsers";
-import { Array as Arr, Effect, Match, Option, Schema, pipe } from "effect";
+import { Array as Arr, Effect, Match, Option, pipe, Schema, String as Str } from "effect";
 
 import { blockWhen, readHookInput, runHook } from "./env.ts";
 
@@ -61,7 +61,7 @@ const WRAPPERS = new Set([
   "!",
 ]);
 
-const basename = (word: string): string => word.replace(/^.*\//u, "");
+const basename = (word: string): string => pipe(word, Str.replace(/^.*\//u, ""));
 
 const isPnpm = (word: string): boolean => PNPM_BINARIES.has(basename(word));
 

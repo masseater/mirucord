@@ -28,7 +28,13 @@ type HashRequest = Readonly<{
 type LabelRequest = Readonly<{ searchKey: CryptoKey; source: PhraseSource; phrase: string }>;
 
 const normalize = (text: string): string =>
-  text.normalize("NFKC").toLowerCase().trim().replaceAll(WHITESPACE, " ");
+  pipe(
+    text,
+    String.normalize("NFKC"),
+    String.toLowerCase,
+    String.trim,
+    String.replaceAll(WHITESPACE, " "),
+  );
 
 const isShort = (text: string): boolean => Array.fromIterable(text).length <= LONGEST_PHRASE;
 
@@ -47,7 +53,9 @@ const textPhrase = (content: string): Option.Option<Phrase> =>
 
 const emojiPhrases = (content: string): readonly Phrase[] =>
   pipe(
-    Array.fromIterable(content.matchAll(CUSTOM_EMOJI)),
+    content,
+    String.matchAll(CUSTOM_EMOJI),
+    Array.fromIterable,
     Array.flatMap(({ groups }) =>
       pipe(
         Option.toArray(Option.fromUndefinedOr(groups)),

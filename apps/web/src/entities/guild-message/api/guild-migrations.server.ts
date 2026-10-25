@@ -1,6 +1,6 @@
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { migrate } from "drizzle-orm/durable-sqlite/migrator";
-import { Array, Record, pipe } from "effect";
+import { Array, pipe, Record, String as Str } from "effect";
 
 const MIGRATION_FILES: Readonly<Record<string, string>> = import.meta.glob(
   "/drizzle-guild/*/migration.sql",
@@ -12,7 +12,7 @@ const FOLDER_FROM_END = -2;
 const GUILD_MIGRATIONS: Readonly<Record<string, string>> = Record.fromEntries(
   pipe(
     Record.toEntries(MIGRATION_FILES),
-    Array.map(([path, query]) => [path.split("/").at(FOLDER_FROM_END) ?? path, query]),
+    Array.map(([path, query]) => [pipe(path, Str.split("/")).at(FOLDER_FROM_END) ?? path, query]),
   ),
 );
 

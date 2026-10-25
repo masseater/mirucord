@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { runDurableObjectAlarm } from "cloudflare:test";
-import { Array, DateTime, Effect, Option, pipe } from "effect";
+import { Array, DateTime, Effect, Option, pipe, String as Str } from "effect";
 import { afterAll, beforeAll, beforeEach, expect } from "vite-plus/test";
 
 import { guildStore, indexTokens, phraseHashes } from "#/entities/guild-message/index.server";
@@ -157,7 +157,7 @@ it.effect("writes each note once and reuses it on the next call", () =>
     expect(
       pipe(
         prompts,
-        Array.filter((prompt) => prompt.includes(`「${OPEN_PHRASE}」`)),
+        Array.filter((prompt) => pipe(prompt, Str.includes(`「${OPEN_PHRASE}」`))),
       ),
     ).toHaveLength(ONCE);
   }),

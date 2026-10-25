@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { Array, Effect, Option, pipe } from "effect";
+import { Array, Effect, Option, pipe, String as Str } from "effect";
 
 const RATE_LIMIT_PERIOD = 60;
 
@@ -35,7 +35,7 @@ const digestOf = (key: string): Effect.Effect<string> =>
     Effect.map((digest) =>
       pipe(
         Array.fromIterable(new Uint8Array(digest)),
-        Array.map((byte) => byte.toString(HEX_RADIX).padStart(HEX_WIDTH, "0")),
+        Array.map((byte) => pipe(byte.toString(HEX_RADIX), Str.padStart(HEX_WIDTH, "0"))),
         Array.join(""),
       ),
     ),

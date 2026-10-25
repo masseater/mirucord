@@ -1,5 +1,5 @@
 import { runDurableObjectAlarm } from "cloudflare:test";
-import { Array, DateTime, Effect, Option, pipe, Schema } from "effect";
+import { Array, DateTime, Effect, Option, pipe, Schema, String as Str } from "effect";
 
 import { guildStore, indexTokens } from "#/entities/guild-message/index.server";
 import type { IndexedMessage } from "#/entities/guild-message/index.server";
@@ -23,10 +23,10 @@ type SimilarSeed = Readonly<{ id: string; channelId: string; content: string }>;
 const embeddedTexts: string[] = [];
 
 const axisOf = (text: string): number => {
-  if (text.includes("ラーメン") || text.includes("麺")) {
+  if (pipe(text, Str.includes("ラーメン")) || pipe(text, Str.includes("麺"))) {
     return RAMEN_AXIS;
   }
-  if (text.includes("猫")) {
+  if (pipe(text, Str.includes("猫"))) {
     return CAT_AXIS;
   }
   return OTHER_AXIS;

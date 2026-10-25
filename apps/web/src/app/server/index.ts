@@ -1,4 +1,4 @@
-import { Effect, Option } from "effect";
+import { Effect, Option, pipe, String as Str } from "effect";
 
 import { ingestDeliveries } from "#/features/ingest/index.server";
 import { serveMcp } from "#/features/mcp/index.server";
@@ -36,10 +36,10 @@ const route = (request: Request): Response | Promise<Response> => {
   if (pathname === MCP_PATH) {
     return unlessRejected(mcpRejection(request), () => serveMcp(request));
   }
-  if (pathname.startsWith(AUTH_PREFIX)) {
+  if (pipe(pathname, Str.startsWith(AUTH_PREFIX))) {
     return unlessRejected(authRejection(request), () => api.handle(request));
   }
-  if (pathname.startsWith(API_PREFIX)) {
+  if (pipe(pathname, Str.startsWith(API_PREFIX))) {
     return api.handle(request);
   }
   return renderPage(request);

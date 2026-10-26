@@ -11,7 +11,7 @@ catalog:
   "@ast-grep/cli": 0.51.0
   "@cloudflare/workers-types": 5.20261021.1
   "@effect/platform-node": 4.0.5
-  "@eslint-react/eslint-plugin": 5.28.4
+  "@eslint-react/eslint-plugin": 5.28.6
   "@shadcn/lint": 0.2.3
   "@tanstack/eslint-plugin-query": 5.104.5
   "@tanstack/eslint-plugin-router": 1.162.0

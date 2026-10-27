@@ -72,7 +72,7 @@ catalogs:
     effect: 4.0.5
     elysia: 1.4.30
     fallow: 3.35.0
-    renovate: 44.178.3
+    renovate: 44.181.1
     steiger: 0.7.0
     tailwindcss: 4.3.3
     textlint: 15.8.0

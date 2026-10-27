@@ -58,7 +58,7 @@ catalog:
   ml-kmeans: ^7.0.1
 catalogs:
   stack:
-    "@distilled.cloud/cloudflare": 1.0.0-rc.16
+    "@distilled.cloud/cloudflare": 1.0.0-rc.15
     "@effect/atom-react": 4.0.5
     "@effect/tsgo": 0.56.0
     "@effect/vitest": 4.0.5

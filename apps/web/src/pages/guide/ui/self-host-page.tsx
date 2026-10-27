@@ -136,7 +136,7 @@ const SECTIONS: readonly GuideSection[] = [
       },
       {
         type: "text",
-        text: `\`OPENROUTER_API_KEY\` は検査の jev-lint が使います。\`apps/web/alchemy.ci.ts\` を手元からデプロイすると、デプロイに要る権限だけを持つ \`${SERVICE_NAME}-deploy\` という Cloudflare の API トークンを作り、上の値を GitHub に登録します。このときだけは、API トークンを作る権限のある Cloudflare の認証と \`GITHUB_TOKEN\` が要ります。`,
+        text: `\`OPENROUTER_API_KEY\` は検査の oxlint-plugin-decision が使います。\`apps/web/alchemy.ci.ts\` を手元からデプロイすると、デプロイに要る権限だけを持つ \`${SERVICE_NAME}-deploy\` という Cloudflare の API トークンを作り、上の値を GitHub に登録します。このときだけは、API トークンを作る権限のある Cloudflare の認証と \`GITHUB_TOKEN\` が要ります。`,
       },
       {
         type: "code",

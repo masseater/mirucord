@@ -346,8 +346,8 @@ catalogs:
       specifier: 3.35.0
       version: 3.35.0
     renovate:
-      specifier: 44.181.5
-      version: 44.181.5
+      specifier: 44.181.7
+      version: 44.181.7
     steiger:
       specifier: 0.8.0
       version: 0.8.0
@@ -471,7 +471,7 @@ importers:
         version: 3.35.0
       renovate:
         specifier: catalog:stack
-        version: 44.181.5(supports-color@7.2.0)(typanion@3.14.0)
+        version: 44.181.7(supports-color@7.2.0)(typanion@3.14.0)
       skills:
         specifier: 'catalog:'
         version: 1.7.4
@@ -763,12 +763,15 @@ packages:
       '@effect/platform-node': ^4.0.0
       effect: 4.0.5
       rolldown: 1.2.5
+      vite: ^7.0.0 || ^8.0.0
     peerDependenciesMeta:
       '@effect/platform-bun':
         optional: true
       '@effect/platform-node':
         optional: true
       rolldown:
+        optional: true
+      vite:
         optional: true
 
   '@alchemy.run/floci@2.0.0-beta.83':
@@ -3597,8 +3600,8 @@ packages:
     peerDependencies:
       '@redis/client': ^6.2.1
 
-  '@renovatebot/base-image@13.142.5':
-    resolution: {integrity: sha512-eycZcQhlQGVU7IYc36DRmWhEuYD9BrSYGEa9/LVChVmIEoaxYtR22BquG/dJvm6D/2+Q9y2EcMTdEQ31L3W2jQ==}
+  '@renovatebot/base-image@13.142.7':
+    resolution: {integrity: sha512-FKsit0mOVOK56oUfYvqx0l/QFjjM528n/XHMxcFR4Vaf/+zq90aaJIH2bxUdhiVKPNlQSDiY3iSziryB+/ncyQ==}
     engines: {node: '>=24.10.0'}
     peerDependencies:
       zod: ^4.6.6
@@ -4787,8 +4790,11 @@ packages:
     resolution: {integrity: sha512-xLL3lkDegJZw+MGoGaCCsFayDZthGgpAtr3Vziyfc4p7xH89K7KRPcRBBh/kEYm0Aqkt5DtTmkYpBtRV/FrHZg==}
     peerDependencies:
       msw: ^2.4.9 || ^3.0.0
+      vite: ^6.0.0 || ^7.0.0 || ^8.0.0
     peerDependenciesMeta:
       msw:
+        optional: true
+      vite:
         optional: true
 
   '@vitest/pretty-format@5.0.5':
@@ -5110,6 +5116,11 @@ packages:
 
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
+    peerDependencies:
+      ajv: ^8.0.0
+    peerDependenciesMeta:
+      ajv:
+        optional: true
 
   ajv-keywords@5.1.0:
     resolution: {integrity: sha512-YCS/JNFAUyr5vAuhk1DWm1CBxRHW9LbJ2ozWeemrIqpbsqKjHVxYPyi5GC0rjZIT5JxJ3virVTS8wk4i/Z+krw==}
@@ -5143,6 +5154,7 @@ packages:
       mysql2: ^3.24.2
       pg: ^8.22.0
       prisma: ^8.0.0-rc.15
+      vite: ^8.0.7
       ws: ^8.21.0
     peerDependenciesMeta:
       '@alchemy.run/frontend-frameworks':
@@ -5176,6 +5188,8 @@ packages:
       pg:
         optional: true
       prisma:
+        optional: true
+      vite:
         optional: true
       ws:
         optional: true
@@ -8472,8 +8486,8 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
-  renovate@44.181.5:
-    resolution: {integrity: sha512-a5eLBIgVlCixh2AjHJratdliiUXNzr95kA9oCtMokUko2RMNRbRQtLqbHYnHSYw3uIjY8lnkcHnGnE69EPRSVQ==}
+  renovate@44.181.7:
+    resolution: {integrity: sha512-hxcIFaLHjAxBl4Yjez3uJ62VPdqAt+8iPKhrtJlr5fcZ+xBGSbhfmkObK0qX59DOqOXxnOQqigf+cwQpXc2YUw==}
     engines: {node: ^24.11.0, pnpm: ^11.0.0}
     hasBin: true
 
@@ -12477,7 +12491,7 @@ snapshots:
     dependencies:
       '@redis/client': 6.2.1(@opentelemetry/api@1.9.1)
 
-  '@renovatebot/base-image@13.142.5(zod@4.6.7)':
+  '@renovatebot/base-image@13.142.7(zod@4.6.7)':
     dependencies:
       '@containerbase/base': 14.52.5(zod@4.6.7)
     optionalDependencies:
@@ -18196,7 +18210,7 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
-  renovate@44.181.5(supports-color@7.2.0)(typanion@3.14.0):
+  renovate@44.181.7(supports-color@7.2.0)(typanion@3.14.0):
     dependencies:
       '@aws-sdk/client-codecommit': 3.1139.0
       '@aws-sdk/client-ec2': 3.1139.0
@@ -18229,7 +18243,7 @@ snapshots:
       '@pnpm/parse-overrides': 1001.0.4
       '@qnighy/marshal': 0.1.3
       '@redis/client': 6.3.0(@opentelemetry/api@1.9.1)
-      '@renovatebot/base-image': 13.142.5(zod@4.6.7)
+      '@renovatebot/base-image': 13.142.7(zod@4.6.7)
       '@renovatebot/detect-tools': 4.0.23
       '@renovatebot/good-enough-parser': 2.0.1
       '@renovatebot/osv-offline': 3.0.12(supports-color@7.2.0)

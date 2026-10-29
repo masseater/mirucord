@@ -346,8 +346,8 @@ catalogs:
       specifier: 3.35.0
       version: 3.35.0
     renovate:
-      specifier: 44.181.7
-      version: 44.181.7
+      specifier: 44.186.2
+      version: 44.186.2
     steiger:
       specifier: 0.8.0
       version: 0.8.0
@@ -471,7 +471,7 @@ importers:
         version: 3.35.0
       renovate:
         specifier: catalog:stack
-        version: 44.181.7(supports-color@7.2.0)(typanion@3.14.0)
+        version: 44.186.2(supports-color@7.2.0)(typanion@3.14.0)
       skills:
         specifier: 'catalog:'
         version: 1.7.4
@@ -1435,8 +1435,8 @@ packages:
     resolution: {integrity: sha512-sGEA473TlCvhCGNoTBY9OXZVWdscIXdGt0dm8EpB+2MRfmt8LNh/X56P/T3nCtEB+eH5qGEa3odphSAoUxSfSQ==}
     engines: {node: '>=22.12.0'}
 
-  '@containerbase/base@14.52.5':
-    resolution: {integrity: sha512-uUlDa7d/dDv/NaFWN7gz8zgGjMIU+jAj1FCvKjcIvzlAmxgsPfzdaEv3R/zaw0JxgvL+VOv+IPMybK5qjzon8Q==}
+  '@containerbase/base@14.53.0':
+    resolution: {integrity: sha512-99cz5ArMKSeOdSZYesMADQvY6/81EA7COPU9rqr4+eBmL+fQOXf5UldqPtDYcW8yyf8xE3liVX6M1zxi0ka8cw==}
     engines: {node: '>=24.10.0'}
     peerDependencies:
       zod: ^4.6.6
@@ -3600,8 +3600,8 @@ packages:
     peerDependencies:
       '@redis/client': ^6.2.1
 
-  '@renovatebot/base-image@13.142.7':
-    resolution: {integrity: sha512-FKsit0mOVOK56oUfYvqx0l/QFjjM528n/XHMxcFR4Vaf/+zq90aaJIH2bxUdhiVKPNlQSDiY3iSziryB+/ncyQ==}
+  '@renovatebot/base-image@13.143.0':
+    resolution: {integrity: sha512-//BCpaCkCL50tusvVEyh97AisxOTj2SRDZoOHi6g4NGL9Lf7/DgaoEnjv1ZVtUSwSN5JjYnft2X792DSaUA1+g==}
     engines: {node: '>=24.10.0'}
     peerDependencies:
       zod: ^4.6.6
@@ -3629,8 +3629,8 @@ packages:
     resolution: {integrity: sha512-KmMz+X68YvrS6aN6TJWtDiH8aCIL2Igcvceh17STHxMUN3KxXsC24COoOXjMOl/Gb+okBwwduMm8PY/WY/0Cpg==}
     engines: {node: ^22.11.0 || >=24.10.0, pnpm: '>=10.0.0'}
 
-  '@renovatebot/pgp@2.0.3':
-    resolution: {integrity: sha512-6Q5Lik+akLCgyoRMpdTkGWMBbBzDgJU30WkhHWHY0gLNzrXM9Un5v15fTIUE1SsHWRoTuoP5AALRK/Y/KuGTJw==}
+  '@renovatebot/pgp@2.0.4':
+    resolution: {integrity: sha512-Hp8wjIruBAzc1qIAumCU3dN3AgX60r+Wop6FrFNwjpg8r2TIR9DXHZxv2SY7wIWel8wbEaM2jzb+hVQDfYUwUQ==}
     engines: {node: '>=24.10.0', pnpm: '>=10.0.0'}
 
   '@renovatebot/ruby-semver@5.0.0':
@@ -5738,8 +5738,8 @@ packages:
     resolution: {integrity: sha512-ixNtAJndqh173VQ4KodSdJEI6nuioBWI0V1ITNKhZZsO0pEMoDxz539T4FTTbSZ/xIOSuDnzxLVRqBVSvPNE2g==}
     engines: {node: '>=18.0'}
 
-  cronstrue@3.32.0:
-    resolution: {integrity: sha512-OHTec7+5nosN4UsitwgBDQ0bofGZF3H4pLqgqa93NR3nExNlhtVHcO2JY3jRognrFH8Bl9oAooT0hyCjSyOU+Q==}
+  cronstrue@3.33.0:
+    resolution: {integrity: sha512-vyatYcfUXxPZxv8/zwC+j9LZNfSdn1k5t3sCLFZrLw+HvU6H4pNhUulPKgtji9tLTTAUCJs45z2+rJrPsbPxlw==}
     hasBin: true
 
   cross-spawn@7.0.6:
@@ -6856,6 +6856,10 @@ packages:
 
   ignore@7.0.12:
     resolution: {integrity: sha512-/8UvqAPU9DGTI9k4mxtf49U37Isfwr8Uts96+SBHIkFxPJnHS0Ew4f00sM4Scd8V8EjM0jUNtVDdv1kPdt35lg==}
+    engines: {node: '>= 4'}
+
+  ignore@7.0.13:
+    resolution: {integrity: sha512-2E8Q6rh+1RRSq/YdaGsNfXsEZy9FVqv6BSSrkmZJP7BnaoPnRfKL+YaofPvP+5rzdk144qSm6i4+hvPgUcbV4Q==}
     engines: {node: '>= 4'}
 
   immer@10.2.0:
@@ -7991,8 +7995,8 @@ packages:
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
     hasBin: true
 
-  node-html-parser@9.0.4:
-    resolution: {integrity: sha512-reUSrZkF1rO7hEYe5mJwtbVcQ6mB5QrViCZH6Wv+iz3er/PA9Q50gol15dMLQRDfdli4VzqPMPR24HNRFgVKFw==}
+  node-html-parser@9.0.5:
+    resolution: {integrity: sha512-LpUc74Ax3L6AsxTEqoep0GDqCBbsPjtn74sYaiazxGXfwhe6iqD4E5sHTJFCU+wBxVMX+Dd7mvLim0QM1vsvpw==}
 
   node-localstorage@2.2.1:
     resolution: {integrity: sha512-vv8fJuOUCCvSPjDjBLlMqYMHob4aGjkmrkaE42/mZr0VT+ZAU10jRF8oTnX9+pgU9/vYJ8P7YT3Vd6ajkmzSCw==}
@@ -8486,8 +8490,8 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
-  renovate@44.181.7:
-    resolution: {integrity: sha512-hxcIFaLHjAxBl4Yjez3uJ62VPdqAt+8iPKhrtJlr5fcZ+xBGSbhfmkObK0qX59DOqOXxnOQqigf+cwQpXc2YUw==}
+  renovate@44.186.2:
+    resolution: {integrity: sha512-ydWqxe3283RGRsgHHNEc8v3leX9RFUa/GtO8VhyR/uF5QONTttBAa7k2ELDTedCH3tBz6pfgEgjlmQpM06Zydg==}
     engines: {node: ^24.11.0, pnpm: ^11.0.0}
     hasBin: true
 
@@ -10732,7 +10736,7 @@ snapshots:
       conventional-commits-parser: 7.1.2
       picocolors: 1.1.1
 
-  '@containerbase/base@14.52.5(zod@4.6.7)':
+  '@containerbase/base@14.53.0(zod@4.6.7)':
     dependencies:
       semver: 7.8.5
     optionalDependencies:
@@ -12491,9 +12495,9 @@ snapshots:
     dependencies:
       '@redis/client': 6.2.1(@opentelemetry/api@1.9.1)
 
-  '@renovatebot/base-image@13.142.7(zod@4.6.7)':
+  '@renovatebot/base-image@13.143.0(zod@4.6.7)':
     dependencies:
-      '@containerbase/base': 14.52.5(zod@4.6.7)
+      '@containerbase/base': 14.53.0(zod@4.6.7)
     optionalDependencies:
       zod: 4.6.7
 
@@ -12530,7 +12534,7 @@ snapshots:
 
   '@renovatebot/pep440@5.0.1': {}
 
-  '@renovatebot/pgp@2.0.3': {}
+  '@renovatebot/pgp@2.0.4': {}
 
   '@renovatebot/ruby-semver@5.0.0': {}
 
@@ -15064,7 +15068,7 @@ snapshots:
 
   croner@10.0.1: {}
 
-  cronstrue@3.32.0: {}
+  cronstrue@3.33.0: {}
 
   cross-spawn@7.0.6:
     dependencies:
@@ -16286,6 +16290,8 @@ snapshots:
   ignore@5.3.2: {}
 
   ignore@7.0.12: {}
+
+  ignore@7.0.13: {}
 
   immer@10.2.0: {}
 
@@ -17541,7 +17547,7 @@ snapshots:
       which: 7.0.0
     optional: true
 
-  node-html-parser@9.0.4:
+  node-html-parser@9.0.5:
     dependencies:
       css-select: 5.2.2
       entities: 8.1.0
@@ -18210,7 +18216,7 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
-  renovate@44.181.7(supports-color@7.2.0)(typanion@3.14.0):
+  renovate@44.186.2(supports-color@7.2.0)(typanion@3.14.0):
     dependencies:
       '@aws-sdk/client-codecommit': 3.1139.0
       '@aws-sdk/client-ec2': 3.1139.0
@@ -18243,12 +18249,12 @@ snapshots:
       '@pnpm/parse-overrides': 1001.0.4
       '@qnighy/marshal': 0.1.3
       '@redis/client': 6.3.0(@opentelemetry/api@1.9.1)
-      '@renovatebot/base-image': 13.142.7(zod@4.6.7)
+      '@renovatebot/base-image': 13.143.0(zod@4.6.7)
       '@renovatebot/detect-tools': 4.0.23
       '@renovatebot/good-enough-parser': 2.0.1
       '@renovatebot/osv-offline': 3.0.12(supports-color@7.2.0)
       '@renovatebot/pep440': 5.0.1
-      '@renovatebot/pgp': 2.0.3
+      '@renovatebot/pgp': 2.0.4
       '@renovatebot/ruby-semver': 5.0.0
       '@sindresorhus/is': 8.1.0
       '@yarnpkg/core': 4.9.1(typanion@3.14.0)
@@ -18266,7 +18272,7 @@ snapshots:
       commander: 15.0.0
       common-tags: 1.8.2
       croner: 10.0.1
-      cronstrue: 3.32.0
+      cronstrue: 3.33.0
       deepmerge: 4.3.1
       dequal: 2.0.3
       detect-indent: 7.0.2
@@ -18288,7 +18294,7 @@ snapshots:
       got: 16.1.0
       graph-data-structure: 4.5.0
       handlebars: 4.7.10
-      ignore: 7.0.12
+      ignore: 7.0.13
       ini: 6.0.0
       json-dup-key-validator: 1.0.3
       json-stringify-pretty-compact: 4.0.0
@@ -18303,7 +18309,7 @@ snapshots:
       moo: 0.5.3
       ms: 2.1.3
       neotraverse: 1.0.1
-      node-html-parser: 9.0.4
+      node-html-parser: 9.0.5
       p-all: 5.0.1
       p-map: 7.1.1
       p-queue: 9.3.5

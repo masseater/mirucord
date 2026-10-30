@@ -6,7 +6,6 @@ import {
   D1,
   Queues,
   R2,
-  Rum,
   SecretsStore,
   Website,
   Workers,
@@ -26,6 +25,7 @@ import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
 
 const PRODUCTION_STAGE = "prod";
+const CF_BEACON_TOKEN = "05cc8ac1b77246cf8c28e93350689c0b";
 const NOT_FOUND = 404;
 const DEFAULT_MAX_GUILDS = String(FREE_GUILD_LIMIT);
 const WORKER_ISSUES = "Mirucord.WorkerIssues";
@@ -224,7 +224,6 @@ const web = Effect.gen(function* web() {
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* masterKey;
   const { discord, release, operations } = yield* settings;
-  const { siteToken: CF_BEACON_TOKEN } = yield* Rum.Site("WebAnalytics", { host: SITE_HOST });
   const site = yield* Website.Vite("Web", {
     name: yield* mirucordName("web"),
     domain: SITE_HOST,

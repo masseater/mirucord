@@ -120,6 +120,7 @@ export default defineConfig({
               from: "lib",
               name: [
                 "Request",
+                "Response",
                 "CryptoKey",
                 "Int8Array",
                 "Float32Array",

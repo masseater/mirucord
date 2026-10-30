@@ -25,6 +25,7 @@ import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
 import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
 
 const PRODUCTION_STAGE = "prod";
+const CF_BEACON_TOKEN = "05cc8ac1b77246cf8c28e93350689c0b";
 const NOT_FOUND = 404;
 const DEFAULT_MAX_GUILDS = String(FREE_GUILD_LIMIT);
 const WORKER_ISSUES = "Mirucord.WorkerIssues";
@@ -233,6 +234,7 @@ const web = Effect.gen(function* web() {
       ...discord,
       ...operations,
       BETTER_AUTH_SECRET,
+      CF_BEACON_TOKEN,
       MASTER_KEY,
       DB,
       INGEST,

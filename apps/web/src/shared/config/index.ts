@@ -13,3 +13,4 @@ export {
 } from "./site";
 export { FREE_GUILD_LIMIT } from "./plan";
 export { ONBOARDING_STEPS, SAMPLE_PROMPT } from "./onboarding";
+export { webAnalyticsBeacon } from "./web-analytics";

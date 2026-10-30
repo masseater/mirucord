@@ -6,6 +6,7 @@ import { MCP_URL } from "#/shared/config";
 
 import { api } from "./api.server";
 import { authRejection, mcpRejection } from "./throttle.server";
+import { withWebAnalytics } from "./web-analytics.server";
 
 const MCP_PATH = new URL(MCP_URL).pathname;
 const API_PREFIX = "/api/";
@@ -28,6 +29,7 @@ const renderPage = (request: Request): Promise<Response> =>
       Effect.flatMap(({ default: pages }) =>
         Effect.promise(() => Promise.resolve(pages.fetch(request))),
       ),
+      Effect.map(withWebAnalytics),
     ),
   );
 

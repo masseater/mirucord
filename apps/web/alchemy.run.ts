@@ -6,6 +6,7 @@ import {
   D1,
   Queues,
   R2,
+  Rum,
   SecretsStore,
   Website,
   Workers,
@@ -223,6 +224,7 @@ const web = Effect.gen(function* web() {
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* masterKey;
   const { discord, release, operations } = yield* settings;
+  const { siteToken: CF_BEACON_TOKEN } = yield* Rum.Site("WebAnalytics", { host: SITE_HOST });
   const site = yield* Website.Vite("Web", {
     name: yield* mirucordName("web"),
     domain: SITE_HOST,
@@ -233,6 +235,7 @@ const web = Effect.gen(function* web() {
       ...discord,
       ...operations,
       BETTER_AUTH_SECRET,
+      CF_BEACON_TOKEN,
       MASTER_KEY,
       DB,
       INGEST,

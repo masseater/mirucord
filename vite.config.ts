@@ -120,6 +120,7 @@ export default defineConfig({
               from: "lib",
               name: [
                 "Request",
+                "Response",
                 "CryptoKey",
                 "Int8Array",
                 "Float32Array",
@@ -170,7 +171,7 @@ export default defineConfig({
             "WorkerIssues",
           ],
           capIsNewExceptionPattern:
-            "^(ApiToken|Config|Context|Data|Schema|AnalyticsEngine|D1|Queues|R2|Ruleset|Rules|SecretsStore|Vectorize|Website|Workers|Zone)\\.",
+            "^(ApiToken|Config|Context|Data|Schema|AnalyticsEngine|D1|Queues|R2|Rum|Ruleset|Rules|SecretsStore|Vectorize|Website|Workers|Zone)\\.",
         },
       ],
       "typescript/no-empty-interface": ["error", { allowSingleExtends: true }],

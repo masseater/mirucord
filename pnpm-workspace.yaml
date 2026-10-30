@@ -95,7 +95,7 @@ overrides:
   http-cache-semantics@<=4.2.0: ^4.3.0
   lodash@<=4.17.23: ^4.18.1
   markdown-it@>=15.0.0 <15.0.3: ^15.0.3
-  seroval@<=1.6.2: ^1.6.3
+  seroval@<1.6.11: ^1.6.11
   shell-quote@>=1.8.4 <1.11.0: ^1.11.0
   source-map-js@>=1.0.0 <1.2.2: ^1.2.2
   valibot@<=1.4.1: ^1.4.2
@@ -103,6 +103,7 @@ overrides:
   fast-uri@>=3.0.0 <3.1.9: ^3.1.9
   undici@>=7.0.0 <7.30.1: ^7.30.1
   undici@>=8.0.0 <8.12.2: ^8.12.2
+  qs@>=6.7.0 <=6.16.0: ^6.16.1
 peerDependencyRules:
   allowAny:
     - vite
@@ -124,6 +125,7 @@ patchedDependencies:
   "@tanstack/eslint-plugin-start@0.1.0": patches/@tanstack__eslint-plugin-start@0.1.0.patch
 auditConfig:
   ignoreGhsas:
+    - GHSA-gcqx-w48m-w2h4
     - GHSA-vfj7-8cjw-p6xm
     - GHSA-hp3w-g68c-fv3c
     - GHSA-mrhx-c7xc-m3w5

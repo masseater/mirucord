@@ -38,9 +38,9 @@ catalog:
   "@modelcontextprotocol/server": 2.4.0
   "@sapphire/bitfield": 1.2.4
   discord-api-types: 0.38.57
-  "@better-auth/mcp": 1.7.12
+  "@better-auth/mcp": 1.7.14
   jose: 6.2.13
-  "@better-auth/oauth-provider": 1.7.12
+  "@better-auth/oauth-provider": 1.7.14
   simple-icons: 16.35.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
@@ -66,7 +66,7 @@ catalogs:
     "@tanstack/react-query": 5.104.5
     "@tanstack/react-start": 1.169.4
     alchemy: 2.0.0-beta.83
-    better-auth: 1.7.12
+    better-auth: 1.7.14
     drizzle-kit: 1.0.0-rc.5-ab785fc
     drizzle-orm: 1.0.0-rc.5-ab785fc
     effect: 4.0.5

@@ -1,0 +1,3240 @@
+diff --git a/dist/oauth-Cl_x7fAS.d.mts b/dist/oauth-Cl_x7fAS.d.mts
+index 3c2ba5d..87d52bb 100644
+--- a/dist/oauth-Cl_x7fAS.d.mts
++++ b/dist/oauth-Cl_x7fAS.d.mts
+@@ -775,9 +775,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+             required: false;
+             schema: {
+               type: "string";
+-              format?: undefined;
+-              minimum?: undefined;
+-              items?: undefined;
+             };
+             description: string;
+           } | {
+@@ -786,9 +783,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+             required: true;
+             schema: {
+               type: "string";
+-              format?: undefined;
+-              minimum?: undefined;
+-              items?: undefined;
+             };
+             description: string;
+           } | {
+@@ -798,8 +792,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+             schema: {
+               type: "string";
+               format: string;
+-              minimum?: undefined;
+-              items?: undefined;
+             };
+             description: string;
+           } | {
+@@ -809,8 +801,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+             schema: {
+               type: "integer";
+               minimum: number;
+-              format?: undefined;
+-              items?: undefined;
+             };
+             description: string;
+           } | {
+@@ -822,8 +812,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+               items: {
+                 type: "string";
+               };
+-              format?: undefined;
+-              minimum?: undefined;
+             };
+             description: string;
+           })[];
+diff --git a/b/dist/oauth-Cl_x7fAS.d.mts.orig b/dist/oauth-Cl_x7fAS.d.mts.orig
+new file mode 100644
+index 0000000..3c2ba5d
+--- /dev/null
++++ b/dist/oauth-Cl_x7fAS.d.mts.orig
+@@ -0,0 +1,3182 @@
++import { B as Prompt, E as OAuthConsent, F as OAuthResource, H as Scope, O as OAuthExtensionGrantHandlerInput, R as OAuthTokenResponse, a as GrantType, j as OAuthOptions, k as OAuthMetadataExtensionInput, l as TokenEndpointAuthMethod, n as AuthServerMetadata, o as OAuthClient, u as TokenType, w as OAuthClientRegistrationResponse, y as OAuthClientAdministrativeResponse } from "./oauth-m0aNFIHP.mjs";
++import { t as ClientJwks } from "./client-jwks-1lTY2oVW.mjs";
++import "better-call";
++import * as z from "zod";
++import { DeviceAuthorizationGrant, DeviceAuthorizationPluginOptions } from "better-auth/plugins/device-authorization";
++import { AuthContext, GenericEndpointContext } from "@better-auth/core";
++//#region src/device-code.d.ts
++/**
++ * RFC 8628 device authorization grant type. A registered OAuth client polls the
++ * token endpoint with this `grant_type` to exchange an approved device code for
++ * a first-class OAuth token set.
++ */
++declare const DEVICE_CODE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code";
++/**
++ * Exchanges an approved RFC 8628 device code for an OAuth token set. Unlike the
++ * device-authorization plugin's `/device/token` (which mints a first-party
++ * session token), this issues a real OAuth token through the provider's shared
++ * issuance: scoped, audience-bound, introspectable, with optional refresh and ID
++ * tokens. The device-authorization plugin owns the record and runs the shared
++ * polling and atomic-consumption state machine for this handler.
++ */
++declare function exchangeOAuthDeviceCode(input: OAuthExtensionGrantHandlerInput): Promise<OAuthTokenResponse>;
++declare function buildOAuthDeviceGrant(): {
++  requestSchemaFields: {
++    client_secret: z.ZodOptional<z.ZodString>;
++    client_assertion: z.ZodOptional<z.ZodString>;
++    client_assertion_type: z.ZodOptional<z.ZodString>;
++    resource: z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodArray<z.ZodString>, z.ZodLiteral<"">]>>;
++  };
++  requestErrorCodes: readonly ["invalid_target"];
++  requestOpenAPIResponses: {
++    401: {
++      description: string;
++      headers: {
++        "WWW-Authenticate": {
++          description: string;
++          schema: {
++            type: string;
++            example: string;
++          };
++        };
++      };
++      content: {
++        "application/json": {
++          schema: {
++            type: string;
++            properties: {
++              error: {
++                type: string;
++                enum: string[];
++              };
++              error_description: {
++                type: string;
++              };
++            };
++            required: string[];
++          };
++        };
++      };
++    };
++  };
++  onRequestValidationError: (issues: readonly import("better-auth").StandardSchemaV1.Issue[]) => void;
++  deviceCodeSchemaFields: {
++    resources: {
++      type: "string[]";
++      required: false;
++    };
++    oauthClientId: {
++      type: "string";
++      required: false;
++    };
++  };
++  grants: {
++    "urn:ietf:params:oauth:grant-type:device_code": typeof exchangeOAuthDeviceCode;
++  };
++  metadata: (metadataInput: OAuthMetadataExtensionInput) => {
++    device_authorization_endpoint: string;
++  };
++  authorizeRequest: ({ ctx, request }: {
++    ctx: import("better-auth").GenericEndpointContext;
++    request: import("better-auth/plugins").DeviceAuthorizationRequest & {
++      client_secret?: string | undefined;
++      client_assertion?: string | undefined;
++      client_assertion_type?: string | undefined;
++      resource?: string | string[] | undefined;
++    };
++  }) => Promise<{
++    clientId: string;
++    deviceCodeFields: {
++      oauthClientId: string;
++      resources: string[] | null;
++    };
++  } | undefined>;
++  assertSessionRedemption: ({ deviceCode }: {
++    ctx: import("better-auth").GenericEndpointContext;
++    deviceCode: Record<string, unknown>;
++  }) => void;
++  getVerificationContext: (deviceCode: Record<string, unknown>) => {
++    resource: string | string[] | undefined;
++  } | undefined;
++  verificationOpenAPIProperties: {
++    resource: {
++      oneOf: ({
++        type: string;
++        items?: undefined;
++      } | {
++        type: string;
++        items: {
++          type: string;
++        };
++      })[];
++      description: string;
++    };
++  };
++};
++type OAuthDeviceGrant = ReturnType<typeof buildOAuthDeviceGrant>;
++/** Options for the OAuth Device Authorization integration. */
++type OAuthDeviceAuthorizationOptions = Omit<DeviceAuthorizationPluginOptions<OAuthDeviceGrant>, "grant">;
++/**
++ * Enables the {@link https://datatracker.ietf.org/doc/html/rfc8628 RFC 8628}
++ * device authorization grant for OAuth Provider. Device Authorization owns
++ * code creation and user approval; OAuth Provider owns client validation and
++ * token issuance.
++ *
++ * Pair this plugin with `oauthProvider()` or `mcp()`. First-party device login
++ * continues to use `deviceAuthorization()` and `/device/token` instead.
++ *
++ * @example
++ * ```ts
++ * const auth = betterAuth({
++ *   plugins: [
++ *     oauthProvider({ ... }),
++ *     oauthDeviceAuthorization(),
++ *   ],
++ * });
++ * ```
++ */
++declare function oauthDeviceAuthorization(options?: OAuthDeviceAuthorizationOptions): {
++  init(ctx: AuthContext): void;
++  id: "device-authorization";
++  version: string;
++  schema: {
++    deviceCode: {
++      fields: {
++        deviceCode: {
++          type: "string";
++          required: true;
++        };
++        userCode: {
++          type: "string";
++          required: true;
++        };
++        userId: {
++          type: "string";
++          required: false;
++        };
++        expiresAt: {
++          type: "date";
++          required: true;
++        };
++        status: {
++          type: "string";
++          required: true;
++        };
++        lastPolledAt: {
++          type: "date";
++          required: false;
++        };
++        pollingInterval: {
++          type: "number";
++          required: false;
++        };
++        clientId: {
++          type: "string";
++          required: false;
++        };
++        scope: {
++          type: "string";
++          required: false;
++        };
++      };
++      indexes: {
++        fields: [string];
++        unique: true;
++      }[];
++    };
++  };
++  endpoints: {
++    deviceCode: import("better-call").StrictEndpoint<"/device/code", {
++      method: "POST";
++      cloneRequest: true;
++      body: z.ZodObject<{
++        client_id: z.ZodString;
++        user_id: z.ZodOptional<z.ZodString>;
++        scope: z.ZodOptional<z.ZodString>;
++        client_secret: z.ZodOptional<z.ZodString>;
++        client_assertion: z.ZodOptional<z.ZodString>;
++        client_assertion_type: z.ZodOptional<z.ZodString>;
++        resource: z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodArray<z.ZodString>, z.ZodLiteral<"">]>>;
++      }, z.core.$strip> | z.ZodObject<{
++        user_id: z.ZodOptional<z.ZodString>;
++        scope: z.ZodOptional<z.ZodString>;
++        client_id: z.ZodOptional<z.ZodString>;
++        client_secret: z.ZodOptional<z.ZodString>;
++        client_assertion: z.ZodOptional<z.ZodString>;
++        client_assertion_type: z.ZodOptional<z.ZodString>;
++        resource: z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodArray<z.ZodString>, z.ZodLiteral<"">]>>;
++      }, z.core.$strip>;
++      error: z.ZodObject<{
++        error: z.ZodEnum<{
++          invalid_request: "invalid_request";
++          invalid_client: "invalid_client";
++          unauthorized_client: "unauthorized_client";
++          invalid_scope: "invalid_scope";
++          server_error: "server_error";
++          invalid_target: "invalid_target";
++        }>;
++        error_description: z.ZodString;
++      }, z.core.$strip>;
++      onValidationError: ({ issues, message }: {
++        message: string;
++        issues: readonly import("better-call").StandardSchemaV1.Issue[];
++      }) => never;
++      metadata: {
++        noStore: boolean;
++        allowedMediaTypes: string[];
++        openapi: {
++          description: string;
++          responses: {
++            200: {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      device_code: {
++                        type: string;
++                        description: string;
++                      };
++                      user_code: {
++                        type: string;
++                        description: string;
++                      };
++                      verification_uri: {
++                        type: string;
++                        format: string;
++                        description: string;
++                      };
++                      verification_uri_complete: {
++                        type: string;
++                        format: string;
++                        description: string;
++                      };
++                      expires_in: {
++                        type: string;
++                        description: string;
++                      };
++                      interval: {
++                        type: string;
++                        description: string;
++                      };
++                    };
++                  };
++                };
++              };
++            };
++            400: {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      error: {
++                        type: string;
++                        enum: ["invalid_request", "invalid_client", "unauthorized_client", "invalid_scope", "invalid_target"];
++                      };
++                      error_description: {
++                        type: string;
++                      };
++                    };
++                  };
++                };
++              };
++            };
++            500: {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      error: {
++                        type: string;
++                        enum: string[];
++                      };
++                      error_description: {
++                        type: string;
++                      };
++                    };
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, {
++      device_code: string;
++      user_code: string;
++      verification_uri: string;
++      verification_uri_complete: string;
++      expires_in: number;
++      interval: number;
++    }>;
++    deviceToken: import("better-call").StrictEndpoint<"/device/token", {
++      method: "POST";
++      body: z.ZodObject<{
++        grant_type: z.ZodLiteral<"urn:ietf:params:oauth:grant-type:device_code">;
++        device_code: z.ZodString;
++        client_id: z.ZodString;
++      }, z.core.$strip>;
++      error: z.ZodObject<{
++        error: z.ZodEnum<{
++          invalid_request: "invalid_request";
++          authorization_pending: "authorization_pending";
++          slow_down: "slow_down";
++          expired_token: "expired_token";
++          access_denied: "access_denied";
++          invalid_grant: "invalid_grant";
++        }>;
++        error_description: z.ZodString;
++      }, z.core.$strip>;
++      metadata: {
++        noStore: boolean;
++        openapi: {
++          description: string;
++          responses: {
++            200: {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      session: {
++                        $ref: string;
++                      };
++                      user: {
++                        $ref: string;
++                      };
++                    };
++                  };
++                };
++              };
++            };
++            400: {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      error: {
++                        type: string;
++                        enum: string[];
++                      };
++                      error_description: {
++                        type: string;
++                      };
++                    };
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, {
++      access_token: string;
++      token_type: string;
++      expires_in: number;
++      scope: string;
++    }>;
++    deviceVerify: import("better-call").StrictEndpoint<"/device", {
++      method: "GET";
++      query: z.ZodObject<{
++        user_code: z.ZodString;
++      }, z.core.$strip>;
++      error: z.ZodObject<{
++        error: z.ZodEnum<{
++          invalid_request: "invalid_request";
++        }>;
++        error_description: z.ZodString;
++      }, z.core.$strip>;
++      metadata: {
++        openapi: {
++          description: string;
++          responses: {
++            200: {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      user_code: {
++                        type: string;
++                        description: string;
++                      };
++                      status: {
++                        type: string;
++                        enum: string[];
++                        description: string;
++                      };
++                      client_id: {
++                        type: string;
++                        description: string;
++                      };
++                      scope: {
++                        type: string;
++                        description: string;
++                      };
++                    };
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, {
++      user_code: string;
++      status: string;
++      client_id?: string | undefined;
++      scope?: string | undefined;
++    } & Partial<{
++      resource: string | string[] | undefined;
++    }>>;
++    deviceApprove: import("better-call").StrictEndpoint<"/device/approve", {
++      method: "POST";
++      body: z.ZodObject<{
++        userCode: z.ZodString;
++      }, z.core.$strip>;
++      error: z.ZodObject<{
++        error: z.ZodEnum<{
++          invalid_request: "invalid_request";
++          expired_token: "expired_token";
++          access_denied: "access_denied";
++          device_code_already_processed: "device_code_already_processed";
++          unauthorized: "unauthorized";
++        }>;
++        error_description: z.ZodString;
++      }, z.core.$strip>;
++      requireHeaders: true;
++      metadata: {
++        openapi: {
++          description: string;
++          responses: {
++            200: {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      success: {
++                        type: string;
++                      };
++                    };
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, {
++      success: boolean;
++    }>;
++    deviceDeny: import("better-call").StrictEndpoint<"/device/deny", {
++      method: "POST";
++      body: z.ZodObject<{
++        userCode: z.ZodString;
++      }, z.core.$strip>;
++      error: z.ZodObject<{
++        error: z.ZodEnum<{
++          invalid_request: "invalid_request";
++          expired_token: "expired_token";
++          access_denied: "access_denied";
++          unauthorized: "unauthorized";
++        }>;
++        error_description: z.ZodString;
++      }, z.core.$strip>;
++      requireHeaders: true;
++      metadata: {
++        openapi: {
++          description: string;
++          responses: {
++            200: {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      success: {
++                        type: string;
++                      };
++                    };
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, {
++      success: boolean;
++    }>;
++  };
++  rateLimit: {
++    pathMatcher(path: string): path is "/device";
++    window: number;
++    max: number;
++  }[];
++  $ERROR_CODES: {
++    USER_NOT_FOUND: import("better-auth").RawError<"USER_NOT_FOUND">;
++    FAILED_TO_CREATE_SESSION: import("better-auth").RawError<"FAILED_TO_CREATE_SESSION">;
++    INVALID_DEVICE_CODE: import("better-auth").RawError<"INVALID_DEVICE_CODE">;
++    EXPIRED_DEVICE_CODE: import("better-auth").RawError<"EXPIRED_DEVICE_CODE">;
++    EXPIRED_USER_CODE: import("better-auth").RawError<"EXPIRED_USER_CODE">;
++    AUTHORIZATION_PENDING: import("better-auth").RawError<"AUTHORIZATION_PENDING">;
++    ACCESS_DENIED: import("better-auth").RawError<"ACCESS_DENIED">;
++    INVALID_USER_CODE: import("better-auth").RawError<"INVALID_USER_CODE">;
++    DEVICE_CODE_ALREADY_PROCESSED: import("better-auth").RawError<"DEVICE_CODE_ALREADY_PROCESSED">;
++    DEVICE_CODE_NOT_CLAIMED: import("better-auth").RawError<"DEVICE_CODE_NOT_CLAIMED">;
++    POLLING_TOO_FREQUENTLY: import("better-auth").RawError<"POLLING_TOO_FREQUENTLY">;
++    INVALID_DEVICE_CODE_STATUS: import("better-auth").RawError<"INVALID_DEVICE_CODE_STATUS">;
++    AUTHENTICATION_REQUIRED: import("better-auth").RawError<"AUTHENTICATION_REQUIRED">;
++  };
++  options: {
++    grant: DeviceAuthorizationGrant<Readonly<{
++      [k: string]: z.core.$ZodType<unknown, unknown, z.core.$ZodTypeInternals<unknown, unknown>>;
++    }>, Record<string, unknown>> | undefined;
++    expiresIn: import("better-auth/plugins").TimeString;
++    interval: import("better-auth/plugins").TimeString;
++    deviceCodeLength: number;
++    userCodeLength: number;
++    generateDeviceCode?: (() => string | Promise<string>) | undefined;
++    generateUserCode?: (() => string | Promise<string>) | undefined;
++    validateClient?: ((clientId: string) => boolean | Promise<boolean>) | undefined;
++    onDeviceAuthRequest?: ((clientId: string, scope: string | undefined) => void | Promise<void>) | undefined;
++    verificationUri?: string | undefined;
++    schema?: {
++      deviceCode?: {
++        modelName?: string | undefined;
++        fields?: {
++          deviceCode?: string | undefined;
++          userCode?: string | undefined;
++          userId?: string | undefined;
++          expiresAt?: string | undefined;
++          status?: string | undefined;
++          lastPolledAt?: string | undefined;
++          pollingInterval?: string | undefined;
++          clientId?: string | undefined;
++          scope?: string | undefined;
++        } | undefined;
++      } | undefined;
++    } | undefined;
++  };
++};
++//#endregion
++//#region src/oauth-endpoint.d.ts
++/**
++ * Canonical OAuth 2.0 / OpenID Connect error codes. The union is the single
++ * vocabulary for every error-emitting surface in this plugin: token, authorize,
++ * revoke, introspect, register, userinfo, logout, consent, and the redirect
++ * error channel. Entries are grouped by source RFC so the declaration doubles
++ * as a specification map.
++ *
++ * The trailing `(string & {})` keeps the type open for product-specific codes
++ * (e.g. `"invalid_verification"`, `"invalid_user"`) while preserving editor
++ * autocomplete for the listed standard codes. Prefer a standard code whenever
++ * one applies; fall back to a custom string only for states no RFC covers.
++ */
++type OAuthErrorCode = "invalid_request" | "invalid_client" | "invalid_grant" | "unauthorized_client" | "unsupported_grant_type" | "unsupported_response_type" | "invalid_scope" | "access_denied" | "server_error" | "temporarily_unavailable" | "invalid_token" | "unsupported_token_type" | "invalid_redirect_uri" | "invalid_client_metadata" | "invalid_software_statement" | "unapproved_software_statement" | "invalid_target" | "invalid_request_object" | "login_required" | "consent_required" | "interaction_required" | "account_selection_required" | "invalid_request_uri" | "request_not_supported" | "request_uri_not_supported" | "registration_not_supported" | (string & {});
++type OAuthFieldErrorCodeMap = {
++  missing?: OAuthErrorCode;
++  invalid?: OAuthErrorCode;
++};
++type OAuthFieldErrorCode = OAuthErrorCode | OAuthFieldErrorCodeMap;
++interface OAuthEndpointErrorResult {
++  error: OAuthErrorCode;
++  error_description: string;
++}
++interface OAuthEndpointRedirectContext<Ctx = unknown> {
++  error: OAuthErrorCode;
++  error_description: string;
++  ctx: Ctx;
++}
++type OAuthRedirectOnError<Ctx = unknown, Result = unknown> = (result: OAuthEndpointRedirectContext<Ctx>) => Result | Promise<Result>;
++//#endregion
++//#region src/authorize.d.ts
++type OAuthRedirectResult = {
++  redirect: true;
++  url: string;
++};
++/**
++ * Gets the issuer identifier
++ */
++declare function getIssuer(ctx: GenericEndpointContext, opts: OAuthOptions<Scope[]>): string;
++//#endregion
++//#region src/oauth.d.ts
++/**
++ * Default scopes advertised and accepted when a configuration sets none. Shared
++ * with the MCP preset so the resource metadata it serves matches what the
++ * authorization-server metadata advertises.
++ */
++declare const DEFAULT_OAUTH_SCOPES: readonly ["openid", "profile", "email", "offline_access"];
++type RPInitiatedLogoutFields = {
++  id_token_hint?: string;
++  client_id?: string;
++  post_logout_redirect_uri?: string;
++  state?: string;
++};
++type RPInitiatedLogoutClientInput = RPInitiatedLogoutFields | {
++  query: RPInitiatedLogoutFields;
++};
++declare module "@better-auth/core" {
++  interface BetterAuthPluginRegistry<AuthOptions, Options> {
++    "oauth-provider": {
++      creator: typeof oauthProvider;
++    };
++  }
++}
++declare const getOAuthProviderState: () => Promise<{
++  query?: string;
++  signedQueryIssuedAt?: Date;
++  postLoginClearedForSession?: string;
++} | null>;
++/**
++ * oAuth 2.1 provider plugin for Better Auth.
++ *
++ * @see https://better-auth.com/docs/plugins/oauth-provider
++ * @param options - The options for the oAuth Provider plugin.
++ * @returns A Better Auth plugin.
++ */
++declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
++  id: "oauth-provider";
++  version: string;
++  options: NoInfer<O>;
++  onRequest: (request: Request, ctx: import("better-auth").AuthContext) => Promise<{
++    response: Response;
++  } | {
++    request: Request;
++  } | void>;
++  init: (ctx: import("better-auth").AuthContext) => Promise<{
++    options: {
++      databaseHooks: {
++        session: {
++          delete: {
++            before(session: {
++              id: string;
++              createdAt: Date;
++              updatedAt: Date;
++              userId: string;
++              expiresAt: Date;
++              token: string;
++              ipAddress?: string | null | undefined;
++              userAgent?: string | null | undefined;
++            } & Record<string, unknown>, hookCtx: GenericEndpointContext | null): Promise<void>;
++            after(session: {
++              id: string;
++              createdAt: Date;
++              updatedAt: Date;
++              userId: string;
++              expiresAt: Date;
++              token: string;
++              ipAddress?: string | null | undefined;
++              userAgent?: string | null | undefined;
++            } & Record<string, unknown>, hookCtx: GenericEndpointContext | null): Promise<void>;
++          };
++        };
++      };
++    };
++  }>;
++  hooks: {
++    before: {
++      matcher(ctx: import("better-auth").HookEndpointContext): any;
++      handler: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<void>>;
++    }[];
++    after: {
++      matcher(ctx: import("better-auth").HookEndpointContext): boolean;
++      handler: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<OAuthRedirectResult | undefined>>;
++    }[];
++  };
++  endpoints: {
++    /**
++     * A server-only endpoint that helps provide the
++     * oAuth Server configuration at the well-known endpoint.
++     *
++     * Provided at /.well-known/oauth-authorization-server/[issuer-path]
++     * (root if no issuer-path).
++     */
++    getOAuthServerConfig: import("better-call").StrictEndpoint<"/.well-known/oauth-authorization-server", {
++      method: "GET";
++      metadata: {
++        SERVER_ONLY: true;
++      };
++    }, AuthServerMetadata>;
++    /**
++     * A server-only endpoint that helps provide the
++     * OpenId configuration at the well-known endpoint.
++     *
++     * Provided at [issuer-path]/.well-known/openid-configuration
++     * (root if no issuer-path).
++     */
++    getOpenIdConfig: import("better-call").StrictEndpoint<"/.well-known/openid-configuration", {
++      method: "GET";
++      metadata: {
++        SERVER_ONLY: true;
++      };
++    }, {
++      jwks_uri?: string | undefined;
++      userinfo_endpoint: string;
++      acr_values_supported?: string[] | undefined;
++      subject_types_supported: ("public" | "pairwise")[];
++      claims_supported: string[];
++      claims_parameter_supported?: boolean | undefined;
++      end_session_endpoint: string;
++      request_parameter_supported?: boolean | undefined;
++      request_uri_parameter_supported?: boolean | undefined;
++      prompt_values_supported: Prompt[];
++      issuer: string;
++      authorization_endpoint: string;
++      token_endpoint: string;
++      registration_endpoint?: string | undefined;
++      scopes_supported?: string[] | undefined;
++      response_types_supported: "code"[];
++      response_modes_supported: "query"[];
++      grant_types_supported: GrantType[];
++      token_endpoint_auth_methods_supported?: TokenEndpointAuthMethod[] | undefined;
++      token_endpoint_auth_signing_alg_values_supported?: import("better-auth").PrivateKeyJwtSigningAlgorithm[] | undefined;
++      service_documentation?: string | undefined;
++      ui_locales_supported?: string[] | undefined;
++      op_policy_uri?: string | undefined;
++      op_tos_uri?: string | undefined;
++      revocation_endpoint?: string | undefined;
++      revocation_endpoint_auth_methods_supported?: TokenEndpointAuthMethod[] | undefined;
++      revocation_endpoint_auth_signing_alg_values_supported?: import("better-auth").PrivateKeyJwtSigningAlgorithm[] | undefined;
++      introspection_endpoint?: string | undefined;
++      introspection_endpoint_auth_methods_supported?: TokenEndpointAuthMethod[] | undefined;
++      introspection_endpoint_auth_signing_alg_values_supported?: import("better-auth").PrivateKeyJwtSigningAlgorithm[] | undefined;
++      code_challenge_methods_supported: "S256"[];
++      authorization_response_iss_parameter_supported?: boolean | undefined;
++      client_id_metadata_document_supported?: boolean | undefined;
++      backchannel_logout_supported?: boolean | undefined;
++      backchannel_logout_session_supported?: boolean | undefined;
++      dpop_signing_alg_values_supported?: import("better-auth/plugins").JWSAlgorithms[] | undefined;
++      id_token_signing_alg_values_supported: import("better-auth/plugins").JWSAlgorithms[] | ["HS256"];
++    }>;
++    oauth2Authorize: import("better-call").StrictEndpoint<"/oauth2/authorize", {
++      method: ("GET" | "POST")[];
++      body: z.ZodObject<{}, z.core.$loose>;
++      redirectOnError: OAuthRedirectOnError<GenericEndpointContext, OAuthRedirectResult>;
++      metadata: {
++        allowedMediaTypes: string[];
++        openapi: {
++          description: string;
++          parameters: ({
++            name: string;
++            in: "query";
++            required: false;
++            schema: {
++              type: "string";
++              format?: undefined;
++              minimum?: undefined;
++              items?: undefined;
++            };
++            description: string;
++          } | {
++            name: string;
++            in: "query";
++            required: true;
++            schema: {
++              type: "string";
++              format?: undefined;
++              minimum?: undefined;
++              items?: undefined;
++            };
++            description: string;
++          } | {
++            name: string;
++            in: "query";
++            required: false;
++            schema: {
++              type: "string";
++              format: string;
++              minimum?: undefined;
++              items?: undefined;
++            };
++            description: string;
++          } | {
++            name: string;
++            in: "query";
++            required: false;
++            schema: {
++              type: "integer";
++              minimum: number;
++              format?: undefined;
++              items?: undefined;
++            };
++            description: string;
++          } | {
++            name: string;
++            in: "query";
++            required: false;
++            schema: {
++              type: "array";
++              items: {
++                type: "string";
++              };
++              format?: undefined;
++              minimum?: undefined;
++            };
++            description: string;
++          })[];
++          responses: {
++            "302": {
++              description: string;
++              headers: {
++                Location: {
++                  description: string;
++                  schema: {
++                    type: string;
++                    format: string;
++                  };
++                };
++              };
++            };
++            "400": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      error: {
++                        type: string;
++                      };
++                      error_description: {
++                        type: string;
++                      };
++                      state: {
++                        type: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, OAuthRedirectResult>;
++    oauth2Consent: import("better-call").StrictEndpoint<"/oauth2/consent", {
++      method: "POST";
++      body: z.ZodObject<{
++        accept: z.ZodBoolean;
++        scope: z.ZodOptional<z.ZodString>;
++        claims: z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodRecord<z.ZodString, z.ZodUnknown>]>>;
++        oauth_query: z.ZodOptional<z.ZodString>;
++      }, z.core.$strip>;
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      metadata: {
++        openapi: {
++          description: string;
++          responses: {
++            "200": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      redirect: {
++                        type: string;
++                        description: string;
++                        enum: boolean[];
++                      };
++                      url: {
++                        type: string;
++                        format: string;
++                        description: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, OAuthRedirectResult | {
++      redirect: boolean;
++      url: string;
++    }>;
++    oauth2Continue: import("better-call").StrictEndpoint<"/oauth2/continue", {
++      method: "POST";
++      body: z.ZodObject<{
++        selected: z.ZodOptional<z.ZodBoolean>;
++        created: z.ZodOptional<z.ZodBoolean>;
++        postLogin: z.ZodOptional<z.ZodBoolean>;
++        oauth_query: z.ZodOptional<z.ZodString>;
++      }, z.core.$strip>;
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      metadata: {
++        openapi: {
++          description: string;
++          responses: {
++            "200": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      redirect: {
++                        type: string;
++                        description: string;
++                        enum: boolean[];
++                      };
++                      url: {
++                        type: string;
++                        format: string;
++                        description: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, OAuthRedirectResult>;
++    oauth2Token: import("better-call").StrictEndpoint<"/oauth2/token", {
++      method: "POST";
++      cloneRequest: true;
++      body: z.ZodObject<{
++        grant_type: z.ZodString;
++        client_id: z.ZodOptional<z.ZodString>;
++        client_secret: z.ZodOptional<z.ZodString>;
++        client_assertion: z.ZodOptional<z.ZodString>;
++        client_assertion_type: z.ZodOptional<z.ZodString>;
++        code: z.ZodOptional<z.ZodString>;
++        code_verifier: z.ZodOptional<z.ZodString>;
++        redirect_uri: z.ZodOptional<z.ZodURL>;
++        refresh_token: z.ZodOptional<z.ZodString>;
++        resource: z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodArray<z.ZodString>]>>;
++        scope: z.ZodOptional<z.ZodString>;
++      }, z.core.$loose>;
++      errorCodesByField: {
++        grant_type: {
++          missing: "invalid_request";
++          invalid: "unsupported_grant_type";
++        };
++        resource: {
++          invalid: "invalid_target";
++        };
++      };
++      metadata: {
++        noStore: boolean;
++        allowedMediaTypes: string[];
++        openapi: {
++          description: string;
++          parameters: {
++            name: string;
++            in: "header";
++            required: false;
++            schema: {
++              type: "string";
++            };
++            description: string;
++          }[];
++          requestBody: {
++            required: boolean;
++            content: {
++              "application/json": {
++                schema: {
++                  type: "object";
++                  properties: {
++                    grant_type: {
++                      type: string;
++                      description: string;
++                    };
++                    client_id: {
++                      type: string;
++                      description: string;
++                    };
++                    client_secret: {
++                      type: string;
++                      description: string;
++                    };
++                    code: {
++                      type: string;
++                      description: string;
++                    };
++                    code_verifier: {
++                      type: string;
++                      description: string;
++                    };
++                    redirect_uri: {
++                      type: string;
++                      format: string;
++                      description: string;
++                    };
++                    refresh_token: {
++                      type: string;
++                      description: string;
++                    };
++                    resource: {
++                      oneOf: ({
++                        type: string;
++                        description: string;
++                        items?: undefined;
++                      } | {
++                        type: string;
++                        items: {
++                          type: string;
++                        };
++                        description: string;
++                      })[];
++                      description: string;
++                    };
++                    scope: {
++                      type: string;
++                      description: string;
++                    };
++                  };
++                  required: string[];
++                };
++              };
++            };
++          };
++          responses: {
++            "200": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      access_token: {
++                        type: string;
++                        description: string;
++                      };
++                      token_type: {
++                        type: string;
++                        description: string;
++                        enum: string[];
++                      };
++                      expires_in: {
++                        type: string;
++                        description: string;
++                      };
++                      refresh_token: {
++                        type: string;
++                        description: string;
++                      };
++                      scope: {
++                        type: string;
++                        description: string;
++                      };
++                      id_token: {
++                        type: string;
++                        description: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++            "400": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      error: {
++                        type: string;
++                      };
++                      error_description: {
++                        type: string;
++                      };
++                      error_uri: {
++                        type: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, {
++      expires_in: number;
++      access_token: string;
++      expires_at: number;
++      token_type: TokenType;
++      refresh_token: string | undefined;
++      scope: string;
++      id_token: string | undefined;
++    }>;
++    oauth2Introspect: import("better-call").StrictEndpoint<"/oauth2/introspect", {
++      method: "POST";
++      cloneRequest: true;
++      body: z.ZodObject<{
++        client_id: z.ZodOptional<z.ZodString>;
++        client_secret: z.ZodOptional<z.ZodString>;
++        client_assertion: z.ZodOptional<z.ZodString>;
++        client_assertion_type: z.ZodOptional<z.ZodString>;
++        token: z.ZodString;
++        token_type_hint: z.ZodOptional<z.ZodString>;
++      }, z.core.$strip>;
++      metadata: {
++        noStore: boolean;
++        allowedMediaTypes: string[];
++        openapi: {
++          description: string;
++          requestBody: {
++            required: boolean;
++            content: {
++              "application/json": {
++                schema: {
++                  type: "object";
++                  properties: {
++                    client_id: {
++                      type: string;
++                      description: string;
++                    };
++                    client_secret: {
++                      type: string;
++                      description: string;
++                    };
++                    token: {
++                      type: string;
++                      description: string;
++                    };
++                    token_type_hint: {
++                      type: string;
++                      description: string;
++                    };
++                  };
++                  required: string[];
++                };
++              };
++            };
++          };
++          responses: {
++            "200": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      active: {
++                        type: string;
++                        description: string;
++                      };
++                      scope: {
++                        type: string;
++                        description: string;
++                      };
++                      client_id: {
++                        type: string;
++                        description: string;
++                      };
++                      username: {
++                        type: string;
++                        description: string;
++                      };
++                      token_type: {
++                        type: string;
++                        description: string;
++                      };
++                      exp: {
++                        type: string;
++                        description: string;
++                      };
++                      iat: {
++                        type: string;
++                        description: string;
++                      };
++                      nbf: {
++                        type: string;
++                        description: string;
++                      };
++                      sub: {
++                        type: string;
++                        description: string;
++                      };
++                      aud: {
++                        type: string;
++                        description: string;
++                      };
++                      iss: {
++                        type: string;
++                        description: string;
++                      };
++                      jti: {
++                        type: string;
++                        description: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++            "400": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      error: {
++                        type: string;
++                      };
++                      error_description: {
++                        type: string;
++                      };
++                      error_uri: {
++                        type: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, import("jose").JWTPayload>;
++    oauth2Revoke: import("better-call").StrictEndpoint<"/oauth2/revoke", {
++      method: "POST";
++      cloneRequest: true;
++      body: z.ZodObject<{
++        client_id: z.ZodOptional<z.ZodString>;
++        client_secret: z.ZodOptional<z.ZodString>;
++        client_assertion: z.ZodOptional<z.ZodString>;
++        client_assertion_type: z.ZodOptional<z.ZodString>;
++        token: z.ZodString;
++        token_type_hint: z.ZodOptional<z.ZodString>;
++      }, z.core.$strip>;
++      metadata: {
++        allowedMediaTypes: string[];
++        openapi: {
++          description: string;
++          requestBody: {
++            required: boolean;
++            content: {
++              "application/json": {
++                schema: {
++                  type: "object";
++                  properties: {
++                    client_id: {
++                      type: string;
++                      description: string;
++                    };
++                    client_secret: {
++                      type: string;
++                      description: string;
++                    };
++                    token: {
++                      type: string;
++                      description: string;
++                    };
++                    token_type_hint: {
++                      type: string;
++                      description: string;
++                    };
++                  };
++                  required: string[];
++                };
++              };
++            };
++          };
++          responses: {
++            "200": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    description: string;
++                  };
++                };
++              };
++            };
++            "400": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      error: {
++                        type: string;
++                      };
++                      error_description: {
++                        type: string;
++                      };
++                      error_uri: {
++                        type: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, null | undefined>;
++    oauth2UserInfo: import("better-call").StrictEndpoint<"/oauth2/userinfo", {
++      method: ("GET" | "POST")[];
++      body: z.ZodOptional<z.ZodObject<{
++        access_token: z.ZodOptional<z.ZodString>;
++      }, z.core.$loose>>;
++      metadata: {
++        noStore: boolean;
++        allowedMediaTypes: string[];
++        openapi: {
++          description: string;
++          security: ({
++            bearerAuth: never[];
++            OAuth2?: undefined;
++          } | {
++            OAuth2: string[];
++            bearerAuth?: undefined;
++          })[];
++          parameters: {
++            name: string;
++            in: "header";
++            required: false;
++            schema: {
++              type: "string";
++            };
++            description: string;
++          }[];
++          responses: {
++            "200": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      sub: {
++                        type: string;
++                        description: string;
++                      };
++                      email: {
++                        type: string;
++                        format: string;
++                        nullable: boolean;
++                        description: string;
++                      };
++                      name: {
++                        type: string;
++                        nullable: boolean;
++                        description: string;
++                      };
++                      picture: {
++                        type: string;
++                        format: string;
++                        nullable: boolean;
++                        description: string;
++                      };
++                      given_name: {
++                        type: string;
++                        nullable: boolean;
++                        description: string;
++                      };
++                      family_name: {
++                        type: string;
++                        nullable: boolean;
++                        description: string;
++                      };
++                      email_verified: {
++                        type: string;
++                        nullable: boolean;
++                        description: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++            "401": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      error: {
++                        type: string;
++                      };
++                      error_description: {
++                        type: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++            "403": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      error: {
++                        type: string;
++                      };
++                      error_description: {
++                        type: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, {
++      sub: unknown;
++    }>;
++    oauth2EndSession: import("better-call").StrictEndpoint<"/oauth2/end-session", {
++      method: ("GET" | "POST")[];
++      body: z.ZodOptional<z.ZodObject<{
++        id_token_hint: z.ZodOptional<z.ZodString>;
++        client_id: z.ZodOptional<z.ZodString>;
++        post_logout_redirect_uri: z.ZodOptional<z.ZodURL>;
++        state: z.ZodOptional<z.ZodString>;
++      }, z.core.$strip>>;
++      query: z.ZodOptional<z.ZodObject<{
++        id_token_hint: z.ZodOptional<z.ZodString>;
++        client_id: z.ZodOptional<z.ZodString>;
++        post_logout_redirect_uri: z.ZodOptional<z.ZodURL>;
++        state: z.ZodOptional<z.ZodString>;
++      }, z.core.$strip>>;
++      metadata: {
++        noStore: boolean;
++        allowedMediaTypes: string[];
++        $Infer: {
++          body: RPInitiatedLogoutClientInput;
++          query: RPInitiatedLogoutFields;
++        };
++        openapi: {
++          description: string;
++          responses: {
++            "200": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      redirect_uri: {
++                        type: string;
++                        format: string;
++                        description: string;
++                      };
++                      message: {
++                        type: string;
++                        description: string;
++                      };
++                    };
++                  };
++                };
++                "text/html": {
++                  schema: {
++                    type: "string";
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, Response | OAuthRedirectResult | null>;
++    oauth2EndSessionConfirmation: import("better-call").StrictEndpoint<"/oauth2/end-session/confirm", {
++      method: "POST";
++      body: z.ZodObject<{
++        action: z.ZodLiteral<"confirm">;
++      }, z.core.$strip>;
++      metadata: {
++        noStore: boolean;
++        allowedMediaTypes: string[];
++        scope: "http";
++      };
++    }, Response | OAuthRedirectResult | null>;
++    registerOAuthClient: import("better-call").StrictEndpoint<"/oauth2/register", {
++      method: "POST";
++      body: z.ZodObject<{
++        redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++        scope: z.ZodOptional<z.ZodString>;
++        client_name: z.ZodOptional<z.ZodString>;
++        client_uri: z.ZodOptional<z.ZodString>;
++        logo_uri: z.ZodOptional<z.ZodString>;
++        contacts: z.ZodOptional<z.ZodArray<z.ZodString>>;
++        tos_uri: z.ZodOptional<z.ZodString>;
++        policy_uri: z.ZodOptional<z.ZodString>;
++        software_id: z.ZodOptional<z.ZodString>;
++        software_version: z.ZodOptional<z.ZodString>;
++        software_statement: z.ZodOptional<z.ZodString>;
++        post_logout_redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++        backchannel_logout_uri: z.ZodOptional<z.ZodURL>;
++        backchannel_logout_session_required: z.ZodOptional<z.ZodBoolean>;
++        token_endpoint_auth_method: z.ZodOptional<z.ZodString>;
++        jwks: z.ZodOptional<z.ZodObject<{
++          keys: z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
++        }, z.core.$strip>>;
++        jwks_uri: z.ZodOptional<z.ZodString>;
++        grant_types: z.ZodOptional<z.ZodArray<z.ZodString>>;
++        response_types: z.ZodOptional<z.ZodArray<z.ZodEnum<{
++          code: "code";
++        }>>>;
++        application_type: z.ZodOptional<z.ZodEnum<{
++          web: "web";
++          native: "native";
++        }>>;
++        subject_type: z.ZodOptional<z.ZodEnum<{
++          public: "public";
++          pairwise: "pairwise";
++        }>>;
++        dpop_bound_access_tokens: z.ZodOptional<z.ZodBoolean>;
++        resources: z.ZodOptional<z.ZodArray<z.ZodString>>;
++        skip_consent: z.ZodOptional<z.ZodNever>;
++      }, z.core.$strip>;
++      errorCodesByField: {
++        redirect_uris: "invalid_redirect_uri";
++        post_logout_redirect_uris: "invalid_redirect_uri";
++        software_statement: "invalid_software_statement";
++        resources: "invalid_target";
++      };
++      defaultError: "invalid_client_metadata";
++      metadata: {
++        noStore: boolean;
++        openapi: {
++          description: string;
++          responses: {
++            "201": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    /** @returns {OauthClient} */
++                    type: "object";
++                    properties: {
++                      client_id: {
++                        type: string;
++                        description: string;
++                      };
++                      client_secret: {
++                        type: string;
++                        description: string;
++                      };
++                      client_secret_expires_at: {
++                        type: string;
++                        description: string;
++                      };
++                      scope: {
++                        type: string;
++                        description: string;
++                      };
++                      user_id: {
++                        type: string;
++                        description: string;
++                      };
++                      client_id_issued_at: {
++                        type: string;
++                        description: string;
++                      };
++                      client_name: {
++                        type: string;
++                        description: string;
++                      };
++                      client_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      logo_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      contacts: {
++                        type: string;
++                        items: {
++                          type: string;
++                        };
++                        description: string;
++                      };
++                      tos_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      policy_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      software_id: {
++                        type: string;
++                        description: string;
++                      };
++                      software_version: {
++                        type: string;
++                        description: string;
++                      };
++                      software_statement: {
++                        type: string;
++                        description: string;
++                      };
++                      redirect_uris: {
++                        type: string;
++                        items: {
++                          type: string;
++                          format: string;
++                        };
++                        description: string;
++                      };
++                      post_logout_redirect_uris: {
++                        type: string;
++                        items: {
++                          type: string;
++                          format: string;
++                        };
++                        description: string;
++                      };
++                      backchannel_logout_uri: {
++                        type: string;
++                        format: string;
++                        description: string;
++                      };
++                      backchannel_logout_session_required: {
++                        type: string;
++                        description: string;
++                      };
++                      token_endpoint_auth_method: {
++                        type: string;
++                        description: string;
++                      };
++                      grant_types: {
++                        type: string;
++                        items: {
++                          type: string;
++                        };
++                        description: string;
++                      };
++                      response_types: {
++                        type: string;
++                        items: {
++                          type: string;
++                          enum: string[];
++                        };
++                        description: string;
++                      };
++                      application_type: {
++                        type: string;
++                        description: string;
++                        enum: string[];
++                      };
++                      resources: {
++                        type: string;
++                        items: {
++                          type: string;
++                          format: string;
++                        };
++                        description: string;
++                      };
++                      disabled: {
++                        type: string;
++                        description: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, OAuthClientRegistrationResponse>;
++    adminCreateOAuthClient: import("better-call").StrictEndpoint<"/admin/oauth2/create-client", {
++      method: "POST";
++      body: z.ZodObject<{
++        redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++        scope: z.ZodOptional<z.ZodString>;
++        client_name: z.ZodOptional<z.ZodString>;
++        client_uri: z.ZodOptional<z.ZodString>;
++        logo_uri: z.ZodOptional<z.ZodString>;
++        contacts: z.ZodOptional<z.ZodArray<z.ZodString>>;
++        tos_uri: z.ZodOptional<z.ZodString>;
++        policy_uri: z.ZodOptional<z.ZodString>;
++        software_id: z.ZodOptional<z.ZodString>;
++        software_version: z.ZodOptional<z.ZodString>;
++        software_statement: z.ZodOptional<z.ZodString>;
++        post_logout_redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++        backchannel_logout_uri: z.ZodOptional<z.ZodURL>;
++        backchannel_logout_session_required: z.ZodOptional<z.ZodBoolean>;
++        token_endpoint_auth_method: z.ZodOptional<z.ZodString>;
++        application_type: z.ZodOptional<z.ZodEnum<{
++          web: "web";
++          native: "native";
++        }>>;
++        jwks: z.ZodOptional<z.ZodObject<{
++          keys: z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
++        }, z.core.$strip>>;
++        jwks_uri: z.ZodOptional<z.ZodString>;
++        grant_types: z.ZodOptional<z.ZodArray<z.ZodString>>;
++        client_credentials_scopes: z.ZodOptional<z.ZodArray<z.ZodString>>;
++        resources: z.ZodOptional<z.ZodArray<z.ZodString>>;
++        response_types: z.ZodOptional<z.ZodArray<z.ZodEnum<{
++          code: "code";
++        }>>>;
++        client_secret_expires_at: z.ZodDefault<z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>>>;
++        skip_consent: z.ZodOptional<z.ZodBoolean>;
++        enable_end_session: z.ZodOptional<z.ZodBoolean>;
++        require_pkce: z.ZodOptional<z.ZodBoolean>;
++        dpop_bound_access_tokens: z.ZodOptional<z.ZodBoolean>;
++        subject_type: z.ZodOptional<z.ZodEnum<{
++          public: "public";
++          pairwise: "pairwise";
++        }>>;
++        metadata: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
++      }, z.core.$strip>;
++      metadata: {
++        noStore: boolean;
++        SERVER_ONLY: true;
++        openapi: {
++          description: string;
++          responses: {
++            "201": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      client_id: {
++                        type: string;
++                        description: string;
++                      };
++                      client_secret: {
++                        type: string;
++                        description: string;
++                      };
++                      client_secret_expires_at: {
++                        type: string;
++                        description: string;
++                      };
++                      scope: {
++                        type: string;
++                        description: string;
++                      };
++                      client_credentials_scopes: {
++                        type: string;
++                        items: {
++                          type: string;
++                        };
++                        description: string;
++                      };
++                      user_id: {
++                        type: string;
++                        description: string;
++                      };
++                      client_id_issued_at: {
++                        type: string;
++                        description: string;
++                      };
++                      client_name: {
++                        type: string;
++                        description: string;
++                      };
++                      client_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      logo_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      contacts: {
++                        type: string;
++                        items: {
++                          type: string;
++                        };
++                        description: string;
++                      };
++                      tos_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      policy_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      software_id: {
++                        type: string;
++                        description: string;
++                      };
++                      software_version: {
++                        type: string;
++                        description: string;
++                      };
++                      software_statement: {
++                        type: string;
++                        description: string;
++                      };
++                      redirect_uris: {
++                        type: string;
++                        items: {
++                          type: string;
++                          format: string;
++                        };
++                        description: string;
++                      };
++                      token_endpoint_auth_method: {
++                        type: string;
++                        description: string;
++                      };
++                      grant_types: {
++                        type: string;
++                        items: {
++                          type: string;
++                        };
++                        description: string;
++                      };
++                      response_types: {
++                        type: string;
++                        items: {
++                          type: string;
++                          enum: string[];
++                        };
++                        description: string;
++                      };
++                      application_type: {
++                        type: string;
++                        description: string;
++                        enum: string[];
++                      };
++                      resources: {
++                        type: string;
++                        items: {
++                          type: string;
++                          format: string;
++                        };
++                        description: string;
++                      };
++                      disabled: {
++                        type: string;
++                        description: string;
++                      };
++                      require_pkce: {
++                        type: string;
++                        description: string;
++                        default: boolean;
++                      };
++                      metadata: {
++                        type: string;
++                        additionalProperties: boolean;
++                        nullable: boolean;
++                        description: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, OAuthClientAdministrativeResponse>;
++    createOAuthClient: import("better-call").StrictEndpoint<"/oauth2/create-client", {
++      method: "POST";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      body: z.ZodObject<{
++        redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++        scope: z.ZodOptional<z.ZodString>;
++        client_name: z.ZodOptional<z.ZodString>;
++        client_uri: z.ZodOptional<z.ZodString>;
++        logo_uri: z.ZodOptional<z.ZodString>;
++        contacts: z.ZodOptional<z.ZodArray<z.ZodString>>;
++        tos_uri: z.ZodOptional<z.ZodString>;
++        policy_uri: z.ZodOptional<z.ZodString>;
++        software_id: z.ZodOptional<z.ZodString>;
++        software_version: z.ZodOptional<z.ZodString>;
++        software_statement: z.ZodOptional<z.ZodString>;
++        post_logout_redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++        backchannel_logout_uri: z.ZodOptional<z.ZodURL>;
++        backchannel_logout_session_required: z.ZodOptional<z.ZodBoolean>;
++        token_endpoint_auth_method: z.ZodOptional<z.ZodString>;
++        application_type: z.ZodOptional<z.ZodEnum<{
++          web: "web";
++          native: "native";
++        }>>;
++        jwks: z.ZodOptional<z.ZodObject<{
++          keys: z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
++        }, z.core.$strip>>;
++        jwks_uri: z.ZodOptional<z.ZodString>;
++        grant_types: z.ZodOptional<z.ZodArray<z.ZodString>>;
++        response_types: z.ZodOptional<z.ZodArray<z.ZodEnum<{
++          code: "code";
++        }>>>;
++        dpop_bound_access_tokens: z.ZodOptional<z.ZodBoolean>;
++      }, z.core.$strip>;
++      metadata: {
++        noStore: boolean;
++        openapi: {
++          description: string;
++          responses: {
++            "201": {
++              description: string;
++              content: {
++                "application/json": {
++                  schema: {
++                    type: "object";
++                    properties: {
++                      client_id: {
++                        type: string;
++                        description: string;
++                      };
++                      client_secret: {
++                        type: string;
++                        description: string;
++                      };
++                      client_secret_expires_at: {
++                        type: string;
++                        description: string;
++                      };
++                      scope: {
++                        type: string;
++                        description: string;
++                      };
++                      user_id: {
++                        type: string;
++                        description: string;
++                      };
++                      client_id_issued_at: {
++                        type: string;
++                        description: string;
++                      };
++                      client_name: {
++                        type: string;
++                        description: string;
++                      };
++                      client_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      logo_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      contacts: {
++                        type: string;
++                        items: {
++                          type: string;
++                        };
++                        description: string;
++                      };
++                      tos_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      policy_uri: {
++                        type: string;
++                        description: string;
++                      };
++                      software_id: {
++                        type: string;
++                        description: string;
++                      };
++                      software_version: {
++                        type: string;
++                        description: string;
++                      };
++                      software_statement: {
++                        type: string;
++                        description: string;
++                      };
++                      redirect_uris: {
++                        type: string;
++                        items: {
++                          type: string;
++                          format: string;
++                        };
++                        description: string;
++                      };
++                      token_endpoint_auth_method: {
++                        type: string;
++                        description: string;
++                      };
++                      grant_types: {
++                        type: string;
++                        items: {
++                          type: string;
++                        };
++                        description: string;
++                      };
++                      response_types: {
++                        type: string;
++                        items: {
++                          type: string;
++                          enum: string[];
++                        };
++                        description: string;
++                      };
++                      application_type: {
++                        type: string;
++                        description: string;
++                        enum: string[];
++                      };
++                      resources: {
++                        type: string;
++                        items: {
++                          type: string;
++                          format: string;
++                        };
++                        description: string;
++                      };
++                      disabled: {
++                        type: string;
++                        description: string;
++                      };
++                      metadata: {
++                        type: string;
++                        additionalProperties: boolean;
++                        nullable: boolean;
++                        description: string;
++                      };
++                    };
++                    required: string[];
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    }, OAuthClientRegistrationResponse>;
++    getOAuthClient: import("better-call").StrictEndpoint<"/oauth2/get-client", {
++      method: "GET";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      query: z.ZodObject<{
++        client_id: z.ZodString;
++      }, z.core.$strip>;
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthClient>;
++    getOAuthClientPublic: import("better-call").StrictEndpoint<"/oauth2/public-client", {
++      method: "GET";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      query: z.ZodObject<{
++        client_id: z.ZodString;
++      }, z.core.$strip>;
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthClient>;
++    getOAuthClientPublicPrelogin: import("better-call").StrictEndpoint<"/oauth2/public-client-prelogin", {
++      method: "POST";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<void>>[];
++      body: z.ZodObject<{
++        client_id: z.ZodString;
++        oauth_query: z.ZodOptional<z.ZodString>;
++      }, z.core.$strip>;
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthClient>;
++    getOAuthClients: import("better-call").StrictEndpoint<"/oauth2/get-clients", {
++      method: "GET";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthClient[] | null>;
++    adminUpdateOAuthClient: import("better-call").StrictEndpoint<"/admin/oauth2/update-client", {
++      method: "PATCH";
++      body: z.ZodObject<{
++        client_id: z.ZodString;
++        update: z.ZodObject<{
++          redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++          scope: z.ZodOptional<z.ZodString>;
++          client_name: z.ZodOptional<z.ZodString>;
++          client_uri: z.ZodOptional<z.ZodString>;
++          logo_uri: z.ZodOptional<z.ZodString>;
++          contacts: z.ZodOptional<z.ZodArray<z.ZodString>>;
++          tos_uri: z.ZodOptional<z.ZodString>;
++          policy_uri: z.ZodOptional<z.ZodString>;
++          software_id: z.ZodOptional<z.ZodString>;
++          software_version: z.ZodOptional<z.ZodString>;
++          software_statement: z.ZodOptional<z.ZodString>;
++          post_logout_redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++          backchannel_logout_uri: z.ZodOptional<z.ZodURL>;
++          backchannel_logout_session_required: z.ZodOptional<z.ZodBoolean>;
++          application_type: z.ZodOptional<z.ZodEnum<{
++            web: "web";
++            native: "native";
++          }>>;
++          grant_types: z.ZodOptional<z.ZodArray<z.ZodString>>;
++          client_credentials_scopes: z.ZodOptional<z.ZodArray<z.ZodString>>;
++          response_types: z.ZodOptional<z.ZodArray<z.ZodEnum<{
++            code: "code";
++          }>>>;
++          client_secret_expires_at: z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>>;
++          skip_consent: z.ZodOptional<z.ZodBoolean>;
++          enable_end_session: z.ZodOptional<z.ZodBoolean>;
++          disabled: z.ZodOptional<z.ZodBoolean>;
++          dpop_bound_access_tokens: z.ZodOptional<z.ZodBoolean>;
++          metadata: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
++        }, z.core.$strip>;
++      }, z.core.$strip>;
++      metadata: {
++        SERVER_ONLY: true;
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthClientAdministrativeResponse>;
++    updateOAuthClient: import("better-call").StrictEndpoint<"/oauth2/update-client", {
++      method: "POST";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      body: z.ZodObject<{
++        client_id: z.ZodString;
++        update: z.ZodObject<{
++          redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++          scope: z.ZodOptional<z.ZodString>;
++          client_name: z.ZodOptional<z.ZodString>;
++          client_uri: z.ZodOptional<z.ZodString>;
++          logo_uri: z.ZodOptional<z.ZodString>;
++          contacts: z.ZodOptional<z.ZodArray<z.ZodString>>;
++          tos_uri: z.ZodOptional<z.ZodString>;
++          policy_uri: z.ZodOptional<z.ZodString>;
++          software_id: z.ZodOptional<z.ZodString>;
++          software_version: z.ZodOptional<z.ZodString>;
++          software_statement: z.ZodOptional<z.ZodString>;
++          post_logout_redirect_uris: z.ZodOptional<z.ZodArray<z.ZodURL>>;
++          backchannel_logout_uri: z.ZodOptional<z.ZodURL>;
++          backchannel_logout_session_required: z.ZodOptional<z.ZodBoolean>;
++          application_type: z.ZodOptional<z.ZodEnum<{
++            web: "web";
++            native: "native";
++          }>>;
++          grant_types: z.ZodOptional<z.ZodArray<z.ZodString>>;
++          response_types: z.ZodOptional<z.ZodArray<z.ZodEnum<{
++            code: "code";
++          }>>>;
++        }, z.core.$strip>;
++      }, z.core.$strip>;
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthClientRegistrationResponse>;
++    rotateClientSecret: import("better-call").StrictEndpoint<"/oauth2/client/rotate-secret", {
++      method: "POST";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      body: z.ZodObject<{
++        client_id: z.ZodString;
++      }, z.core.$strip>;
++      metadata: {
++        noStore: boolean;
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthClient>;
++    rotateClientKeys: import("better-call").StrictEndpoint<"/oauth2/client/rotate-keys", {
++      method: "POST";
++      body: z.ZodObject<{
++        client_assertion: z.ZodString;
++        client_assertion_type: z.ZodString;
++        jwks: z.ZodObject<{
++          keys: z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
++        }, z.core.$strip>;
++      }, z.core.$strip>;
++      errorCodesByField: {
++        client_assertion: "invalid_client";
++        client_assertion_type: "invalid_client";
++        jwks: "invalid_client_metadata";
++      };
++      metadata: {
++        noStore: boolean;
++        openapi: {
++          description: string;
++        };
++      };
++    }, {
++      client_id: string;
++      jwks: ClientJwks;
++    }>;
++    deleteOAuthClient: import("better-call").StrictEndpoint<"/oauth2/delete-client", {
++      method: "POST";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      body: z.ZodObject<{
++        client_id: z.ZodString;
++      }, z.core.$strip>;
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, void>;
++    getOAuthConsent: import("better-call").StrictEndpoint<"/oauth2/get-consent", {
++      method: "GET";
++      query: z.ZodObject<{
++        id: z.ZodString;
++      }, z.core.$strip>;
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthConsent<Scope[]>>;
++    getOAuthConsents: import("better-call").StrictEndpoint<"/oauth2/get-consents", {
++      method: "GET";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthConsent<Scope[]>[]>;
++    updateOAuthConsent: import("better-call").StrictEndpoint<"/oauth2/update-consent", {
++      method: "POST";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      body: z.ZodObject<{
++        id: z.ZodString;
++        update: z.ZodObject<{
++          scopes: z.ZodArray<z.ZodString>;
++        }, z.core.$strip>;
++      }, z.core.$strip>;
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, OAuthConsent<Scope[]> | null>;
++    deleteOAuthConsent: import("better-call").StrictEndpoint<"/oauth2/delete-consent", {
++      method: "POST";
++      use: import("better-call").Middleware<import("better-call").MiddlewareOptions, (inputContext: import("better-call").MiddlewareInputContext<import("better-call").MiddlewareOptions>) => Promise<{
++        session: {
++          session: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            userId: string;
++            expiresAt: Date;
++            token: string;
++            ipAddress?: string | null | undefined;
++            userAgent?: string | null | undefined;
++          };
++          user: Record<string, any> & {
++            id: string;
++            createdAt: Date;
++            updatedAt: Date;
++            email: string;
++            emailVerified: boolean;
++            name: string;
++            image?: string | null | undefined;
++          };
++        };
++      }>>[];
++      body: z.ZodObject<{
++        id: z.ZodString;
++      }, z.core.$strip>;
++      metadata: {
++        openapi: {
++          description: string;
++        };
++      };
++    }, void>;
++    adminCreateOAuthResource: import("better-call").StrictEndpoint<"/admin/oauth2/resources", {
++      method: "POST";
++      body: z.ZodObject<{
++        identifier: z.ZodNonOptional<z.ZodOptional<z.ZodString>>;
++        name: z.ZodOptional<z.ZodString>;
++        accessTokenTtl: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
++        refreshTokenTtl: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
++        signingAlgorithm: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
++          RS256: "RS256";
++          PS256: "PS256";
++          ES256: "ES256";
++          ES512: "ES512";
++          EdDSA: "EdDSA";
++        }>>>;
++        signingKeyId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
++        allowedScopes: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodString>>>;
++        customClaims: z.ZodOptional<z.ZodNullable<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
++        dpopBoundAccessTokensRequired: z.ZodOptional<z.ZodBoolean>;
++        disabled: z.ZodOptional<z.ZodBoolean>;
++        metadata: z.ZodOptional<z.ZodNullable<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
++      }, z.core.$strip>;
++      metadata: {
++        SERVER_ONLY: true;
++      };
++    }, OAuthResource>;
++    adminListOAuthResources: import("better-call").StrictEndpoint<"/admin/oauth2/resources", {
++      method: "GET";
++      metadata: {
++        SERVER_ONLY: true;
++      };
++    }, OAuthResource[]>;
++    adminGetOAuthResource: import("better-call").StrictEndpoint<"/admin/oauth2/resources/:identifier", {
++      method: "GET";
++      metadata: {
++        SERVER_ONLY: true;
++      };
++    }, OAuthResource>;
++    adminUpdateOAuthResource: import("better-call").StrictEndpoint<"/admin/oauth2/resources/:identifier", {
++      method: "PATCH";
++      body: z.ZodObject<{
++        identifier: z.ZodOptional<z.ZodString>;
++        name: z.ZodOptional<z.ZodString>;
++        accessTokenTtl: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
++        refreshTokenTtl: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
++        signingAlgorithm: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
++          RS256: "RS256";
++          PS256: "PS256";
++          ES256: "ES256";
++          ES512: "ES512";
++          EdDSA: "EdDSA";
++        }>>>;
++        signingKeyId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
++        allowedScopes: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodString>>>;
++        customClaims: z.ZodOptional<z.ZodNullable<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
++        dpopBoundAccessTokensRequired: z.ZodOptional<z.ZodBoolean>;
++        disabled: z.ZodOptional<z.ZodBoolean>;
++        metadata: z.ZodOptional<z.ZodNullable<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
++      }, z.core.$strip>;
++      metadata: {
++        SERVER_ONLY: true;
++      };
++    }, OAuthResource>;
++    adminDeleteOAuthResource: import("better-call").StrictEndpoint<"/admin/oauth2/resources/:identifier", {
++      method: "DELETE";
++      metadata: {
++        SERVER_ONLY: true;
++      };
++    }, {
++      deleted: boolean;
++    }>;
++    adminLinkClientResource: import("better-call").StrictEndpoint<"/admin/oauth2/resources/:identifier/clients/:client_id", {
++      method: "POST";
++      metadata: {
++        SERVER_ONLY: true;
++      };
++    }, {
++      linked: boolean;
++    }>;
++    adminUnlinkClientResource: import("better-call").StrictEndpoint<"/admin/oauth2/resources/:identifier/clients/:client_id", {
++      method: "DELETE";
++      metadata: {
++        SERVER_ONLY: true;
++      };
++    }, {
++      unlinked: boolean;
++    }>;
++  };
++  schema: {
++    oauthClient: {
++      modelName: string;
++      fields: {
++        clientId: {
++          type: "string";
++          unique: true;
++          required: true;
++        };
++        clientSecret: {
++          type: "string";
++          required: false;
++        };
++        clientDiscoveryId: {
++          type: "string";
++          required: false;
++        };
++        disabled: {
++          type: "boolean";
++          defaultValue: false;
++          required: false;
++        };
++        skipConsent: {
++          type: "boolean";
++          required: false;
++        };
++        enableEndSession: {
++          type: "boolean";
++          required: false;
++        };
++        subjectType: {
++          type: "string";
++          required: false;
++        };
++        scopes: {
++          type: "string[]";
++          required: false;
++        };
++        clientCredentialsScopes: {
++          type: "string[]";
++          required: false;
++          defaultValue: never[];
++        };
++        userId: {
++          type: "string";
++          required: false;
++          references: {
++            model: string;
++            field: string;
++          };
++          index: true;
++        };
++        createdAt: {
++          type: "date";
++          required: false;
++        };
++        updatedAt: {
++          type: "date";
++          required: false;
++        };
++        name: {
++          type: "string";
++          required: false;
++        };
++        uri: {
++          type: "string";
++          required: false;
++        };
++        icon: {
++          type: "string";
++          required: false;
++        };
++        contacts: {
++          type: "string[]";
++          required: false;
++        };
++        tos: {
++          type: "string";
++          required: false;
++        };
++        policy: {
++          type: "string";
++          required: false;
++        };
++        softwareId: {
++          type: "string";
++          required: false;
++        };
++        softwareVersion: {
++          type: "string";
++          required: false;
++        };
++        softwareStatement: {
++          type: "string";
++          required: false;
++        };
++        redirectUris: {
++          type: "string[]";
++          required: true;
++        };
++        postLogoutRedirectUris: {
++          type: "string[]";
++          required: false;
++        };
++        backchannelLogoutUri: {
++          type: "string";
++          required: false;
++        };
++        backchannelLogoutSessionRequired: {
++          type: "boolean";
++          required: false;
++        };
++        tokenEndpointAuthMethod: {
++          type: "string";
++          required: false;
++        };
++        applicationType: {
++          type: "string";
++          required: false;
++        };
++        jwks: {
++          type: "string";
++          required: false;
++        };
++        jwksUri: {
++          type: "string";
++          required: false;
++        };
++        grantTypes: {
++          type: "string[]";
++          required: false;
++        };
++        responseTypes: {
++          type: "string[]";
++          required: false;
++        };
++        requirePKCE: {
++          type: "boolean";
++          required: false;
++        };
++        dpopBoundAccessTokens: {
++          type: "boolean";
++          required: false;
++          defaultValue: false;
++        };
++        referenceId: {
++          type: "string";
++          required: false;
++        };
++        metadata: {
++          type: "json";
++          required: false;
++        };
++      };
++    };
++    oauthResource: {
++      modelName: string;
++      fields: {
++        identifier: {
++          type: "string";
++          required: true;
++          unique: true;
++        };
++        name: {
++          type: "string";
++          required: true;
++        };
++        accessTokenTtl: {
++          type: "number";
++          required: false;
++        };
++        refreshTokenTtl: {
++          type: "number";
++          required: false;
++        };
++        signingAlgorithm: {
++          type: "string";
++          required: false;
++        };
++        signingKeyId: {
++          type: "string";
++          required: false;
++        };
++        allowedScopes: {
++          type: "string[]";
++          required: false;
++        };
++        customClaims: {
++          type: "json";
++          required: false;
++        };
++        dpopBoundAccessTokensRequired: {
++          type: "boolean";
++          required: false;
++          defaultValue: false;
++        };
++        disabled: {
++          type: "boolean";
++          required: false;
++          defaultValue: false;
++        };
++        createdAt: {
++          type: "date";
++          required: false;
++        };
++        updatedAt: {
++          type: "date";
++          required: false;
++        };
++        policyVersion: {
++          type: "number";
++          required: false;
++          defaultValue: number;
++        };
++        metadata: {
++          type: "json";
++          required: false;
++        };
++      };
++    };
++    oauthClientResource: {
++      modelName: string;
++      fields: {
++        clientId: {
++          type: "string";
++          required: true;
++          references: {
++            model: string;
++            field: string;
++            onDelete: "cascade";
++          };
++          index: true;
++        };
++        resourceId: {
++          type: "string";
++          required: true;
++          references: {
++            model: string;
++            field: string;
++            onDelete: "cascade";
++          };
++          index: true;
++        };
++        metadata: {
++          type: "json";
++          required: false;
++        };
++        createdAt: {
++          type: "date";
++          required: false;
++        };
++      };
++      indexes: {
++        fields: [string, string];
++        unique: true;
++      }[];
++    };
++    oauthRefreshToken: {
++      fields: {
++        token: {
++          type: "string";
++          required: true;
++          unique: true;
++        };
++        clientId: {
++          type: "string";
++          required: true;
++          references: {
++            model: string;
++            field: string;
++          };
++          index: true;
++        };
++        sessionId: {
++          type: "string";
++          required: false;
++          references: {
++            model: string;
++            field: string;
++            onDelete: "set null";
++          };
++          index: true;
++        };
++        userId: {
++          type: "string";
++          required: true;
++          references: {
++            model: string;
++            field: string;
++          };
++          index: true;
++        };
++        referenceId: {
++          type: "string";
++          required: false;
++        };
++        authorizationCodeId: {
++          type: "string";
++          required: false;
++          index: true;
++        };
++        resources: {
++          type: "string[]";
++          required: false;
++        };
++        requestedUserInfoClaims: {
++          type: "string[]";
++          required: false;
++        };
++        expiresAt: {
++          type: "date";
++        };
++        createdAt: {
++          type: "date";
++        };
++        revoked: {
++          type: "date";
++          required: false;
++        };
++        rotatedAt: {
++          type: "date";
++          required: false;
++        };
++        rotationReplayResponse: {
++          type: "string";
++          required: false;
++        };
++        rotationReplayExpiresAt: {
++          type: "date";
++          required: false;
++        };
++        authTime: {
++          type: "date";
++          required: false;
++        };
++        confirmation: {
++          type: "json";
++          required: false;
++        };
++        scopes: {
++          type: "string[]";
++          required: true;
++        };
++      };
++    };
++    oauthAccessToken: {
++      modelName: string;
++      fields: {
++        token: {
++          type: "string";
++          unique: true;
++        };
++        clientId: {
++          type: "string";
++          required: true;
++          references: {
++            model: string;
++            field: string;
++          };
++          index: true;
++        };
++        sessionId: {
++          type: "string";
++          required: false;
++          references: {
++            model: string;
++            field: string;
++            onDelete: "set null";
++          };
++          index: true;
++        };
++        userId: {
++          type: "string";
++          required: false;
++          references: {
++            model: string;
++            field: string;
++          };
++          index: true;
++        };
++        referenceId: {
++          type: "string";
++          required: false;
++        };
++        authorizationCodeId: {
++          type: "string";
++          required: false;
++          index: true;
++        };
++        resources: {
++          type: "string[]";
++          required: false;
++        };
++        requestedUserInfoClaims: {
++          type: "string[]";
++          required: false;
++        };
++        refreshId: {
++          type: "string";
++          required: false;
++          references: {
++            model: string;
++            field: string;
++          };
++          index: true;
++        };
++        expiresAt: {
++          type: "date";
++        };
++        createdAt: {
++          type: "date";
++        };
++        revoked: {
++          type: "date";
++          required: false;
++        };
++        confirmation: {
++          type: "json";
++          required: false;
++        };
++        scopes: {
++          type: "string[]";
++          required: true;
++        };
++      };
++    };
++    oauthConsent: {
++      modelName: string;
++      fields: {
++        clientId: {
++          type: "string";
++          required: true;
++          references: {
++            model: string;
++            field: string;
++          };
++          index: true;
++        };
++        userId: {
++          type: "string";
++          required: false;
++          references: {
++            model: string;
++            field: string;
++          };
++          index: true;
++        };
++        referenceId: {
++          type: "string";
++          required: false;
++        };
++        resources: {
++          type: "string[]";
++          required: false;
++        };
++        requestedUserInfoClaims: {
++          type: "string[]";
++          required: false;
++        };
++        scopes: {
++          type: "string[]";
++          required: true;
++        };
++        createdAt: {
++          type: "date";
++        };
++        updatedAt: {
++          type: "date";
++        };
++      };
++    };
++    oauthClientAssertion: {
++      modelName: string;
++      fields: {
++        expiresAt: {
++          type: "date";
++          required: true;
++        };
++      };
++    };
++  };
++  rateLimit: ({
++    pathMatcher: (path: string) => path is "/oauth2/token";
++    window: number;
++    max: number;
++  } | {
++    pathMatcher: (path: string) => path is "/oauth2/authorize";
++    window: number;
++    max: number;
++  } | {
++    pathMatcher: (path: string) => path is "/oauth2/introspect";
++    window: number;
++    max: number;
++  } | {
++    pathMatcher: (path: string) => path is "/oauth2/revoke";
++    window: number;
++    max: number;
++  } | {
++    pathMatcher: (path: string) => path is "/oauth2/register";
++    window: number;
++    max: number;
++  } | {
++    pathMatcher: (path: string) => path is "/oauth2/client/rotate-keys";
++    window: number;
++    max: number;
++  } | {
++    pathMatcher: (path: string) => path is "/oauth2/userinfo";
++    window: number;
++    max: number;
++  })[];
++};
++//#endregion
++export { OAuthEndpointErrorResult as a, OAuthFieldErrorCode as c, DEVICE_CODE_GRANT_TYPE as d, OAuthDeviceAuthorizationOptions as f, getIssuer as i, OAuthFieldErrorCodeMap as l, getOAuthProviderState as n, OAuthEndpointRedirectContext as o, oauthDeviceAuthorization as p, oauthProvider as r, OAuthErrorCode as s, DEFAULT_OAUTH_SCOPES as t, OAuthRedirectOnError as u };
+\ No newline at end of file

@@ -1,7 +1,7 @@
+import { AnalyticsEngine, Ruleset, Workers, Zone } from "@alchemy.run/cloudflare";
+import type { InferEnv } from "@alchemy.run/cloudflare";
 import { ENV_PREFIX, PREFIX } from "@repo/shared-util-app-name";
 import { adopt } from "alchemy/AdoptPolicy";
-import { AnalyticsEngine, Ruleset, Workers, Zone } from "alchemy/Cloudflare";
-import type { InferEnv } from "alchemy/Cloudflare";
 import { Array, Effect, pipe, Record } from "effect";
 
 import { SCANNER_PROBES } from "./scanner-probes.ts";

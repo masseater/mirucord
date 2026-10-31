@@ -9,6 +9,8 @@
     "test": "vp exec vp test run"
   },
   "dependencies": {
+    "@alchemy.run/cloudflare": "catalog:stack",
+    "@alchemy.run/fly": "catalog:stack",
     "@effect/platform-node": "catalog:",
     "@repo/ingest-util-gateway-contract": "workspace:*",
     "@repo/shared-util-app-name": "workspace:*",

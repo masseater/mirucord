@@ -1,7 +1,7 @@
+import { App, Service } from "@alchemy.run/fly";
 import { NodeSocket } from "@effect/platform-node";
 import { ENV_PREFIX, PREFIX } from "@repo/shared-util-app-name/app-name";
-import { App, Service } from "alchemy/Fly";
-import { ServerHost } from "alchemy/Server";
+import { ServerHost } from "alchemy/Runtime/Process";
 import { Discord, DiscordConfig } from "dfx";
 import { DiscordGateway, DiscordLive } from "dfx/gateway";
 import { Config, Effect, Filter, Layer, Redacted, Stream } from "effect";

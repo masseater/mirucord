@@ -1,7 +1,7 @@
+import { D1, Rules } from "@alchemy.run/cloudflare";
+import { App, Secret } from "@alchemy.run/fly";
+import { Secrets, Variables } from "@alchemy.run/github";
 import { Stack } from "alchemy";
-import { D1, Rules } from "alchemy/Cloudflare";
-import { App, Secret } from "alchemy/Fly";
-import { Secrets, Variables } from "alchemy/GitHub";
 import { Stage } from "alchemy/Stage";
 import { inMemoryState } from "alchemy/State";
 import { Effect, Exit, Layer, Match, pipe, Redacted, String as Str } from "effect";

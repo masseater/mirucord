@@ -170,8 +170,7 @@ export default defineConfig({
             "Variables",
             "WorkerIssues",
           ],
-          capIsNewExceptionPattern:
-            "^(ApiToken|Config|Context|Data|Schema|AnalyticsEngine|D1|Queues|R2|Ruleset|Rules|SecretsStore|Vectorize|Website|Workers|Zone)\\.",
+          capIsNewExceptionPattern: String.raw`^(ApiToken|Config|Context|Data|Schema|AnalyticsEngine|D1|Queues|R2|Ruleset|Rules|SecretsStore|Vectorize|Website|Workers|Zone)\.`,
         },
       ],
       "typescript/no-empty-interface": ["error", { allowSingleExtends: true }],
@@ -219,7 +218,7 @@ export default defineConfig({
     tasks: {
       "actions-lint": {
         command:
-          'uvx --from actionlint-py@1.7.12.25 actionlint && uvx zizmor@1.30.1 $(test -n "$CLAUDE_CODE_REMOTE" && echo --no-online-audits) .github && ast-grep scan --rule .github/rules/no-full-history-checkout.yml .github/workflows',
+          'uvx --from actionlint-py@1.7.12.25 actionlint && uvx zizmor@1.31.1 $(test -n "$CLAUDE_CODE_REMOTE" && echo --no-online-audits) .github && ast-grep scan --rule .github/rules/no-full-history-checkout.yml .github/workflows',
         cache: {
           env: ["CLAUDE_CODE_REMOTE"],
           untrackedEnv: [
@@ -263,7 +262,7 @@ export default defineConfig({
         ],
       },
       "test-all": "vp run -r test",
-      eslint: "NODE_OPTIONS=--max-old-space-size=4096 eslint --max-warnings 0 .",
+      eslint: "NODE_OPTIONS=--max-old-space-size=6144 eslint --max-warnings 0 .",
       syncpack: "syncpack lint",
       "steiger-all": "vp run -r steiger",
       "db-check-all": "vp run -r db:check",

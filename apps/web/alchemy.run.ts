@@ -1,5 +1,3 @@
-import { APP_NAME, PREFIX, requireAppPrefix } from "@repo/shared-util-app-name";
-import { Resource, Stack, Stage, makeRandom } from "alchemy";
 import {
   CloudflareEnvironment,
   Credentials,
@@ -11,8 +9,10 @@ import {
   Workers,
   providers,
   state,
-} from "alchemy/Cloudflare";
-import type { InferEnv } from "alchemy/Cloudflare";
+} from "@alchemy.run/cloudflare";
+import type { InferEnv } from "@alchemy.run/cloudflare";
+import { APP_NAME, PREFIX, requireAppPrefix } from "@repo/shared-util-app-name";
+import { Resource, Stack, Stage, makeRandom } from "alchemy";
 import { succeed as succeedProvider } from "alchemy/Provider";
 import { Boolean, Config, Effect, Layer, Match, Option, Redacted, Schema } from "effect";
 import type { Context } from "effect";

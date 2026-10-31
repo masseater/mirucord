@@ -1,8 +1,8 @@
+import { ApiToken, CloudflareEnvironment, Zone, providers, state } from "@alchemy.run/cloudflare";
+import { Secrets, Variables, providers as gitHubProviders } from "@alchemy.run/github";
 import { PREFIX, requireAppPrefix } from "@repo/shared-util-app-name";
 import { Stack } from "alchemy";
 import type { CompiledStack } from "alchemy";
-import { ApiToken, CloudflareEnvironment, Zone, providers, state } from "alchemy/Cloudflare";
-import { Secrets, Variables, providers as gitHubProviders } from "alchemy/GitHub";
 import { Config, Effect, Layer, Schema } from "effect";
 import type { ConfigError } from "effect/Config";
 

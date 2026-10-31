@@ -1,7 +1,7 @@
+import { Rules } from "@alchemy.run/cloudflare";
+import { Secret } from "@alchemy.run/fly";
+import { Secret as GitHubSecret, Variable as GitHubVariable } from "@alchemy.run/github";
 import { Stack, isResourceOfType } from "alchemy";
-import { Rules } from "alchemy/Cloudflare";
-import { Secret } from "alchemy/Fly";
-import { Secret as GitHubSecret, Variable as GitHubVariable } from "alchemy/GitHub";
 import { Array as Arr, Effect, Match, Option, pipe, Record, Schema, String as Str } from "effect";
 
 import { prefixesOf } from "./app-name";

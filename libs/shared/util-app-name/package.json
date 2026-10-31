@@ -11,6 +11,9 @@
     "test": "vp exec vp test run"
   },
   "dependencies": {
+    "@alchemy.run/cloudflare": "catalog:stack",
+    "@alchemy.run/fly": "catalog:stack",
+    "@alchemy.run/github": "catalog:stack",
     "alchemy": "catalog:stack",
     "effect": "catalog:stack"
   },

@@ -18,7 +18,7 @@ catalog:
   "@tanstack/eslint-plugin-start": 0.1.0
   "@typescript-eslint/parser": 8.72.1
   "@r_masseater/oxlint-plugin-decision": 0.0.4
-  "@types/node": 26.6.5
+  "@types/node": 26.6.6
   eslint: 10.13.0
   eslint-plugin-drizzle: 0.2.3
   eslint-plugin-react-hooks: 7.1.1

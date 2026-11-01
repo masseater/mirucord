@@ -60,4 +60,4 @@ const mcpRejection = (request: Request): Effect.Effect<Option.Option<Response>> 
 const authRejection = (request: Request): Effect.Effect<Option.Option<Response>> =>
   rejection(AUTH_RATE_LIMIT, `auth:${clientIp(request)}`);
 
-export { authRejection, MCP_RATE_LIMIT, mcpRejection, tokenOrIp };
+export { authRejection, mcpRejection };

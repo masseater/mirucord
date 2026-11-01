@@ -44,7 +44,7 @@ catalog:
   simple-icons: 16.35.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
-  "@cloudflare/vitest-plugin": 1.4.9
+  "@cloudflare/vitest-plugin": 1.4.10
   msw: 3.0.3
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
@@ -74,7 +74,7 @@ catalogs:
     drizzle-orm: 1.0.0-rc.5-ab785fc
     effect: 4.0.7
     elysia: 1.4.30
-    fallow: 3.35.0
+    fallow: 3.37.0
     renovate: 44.186.2
     steiger: 0.8.0
     tailwindcss: 4.3.3

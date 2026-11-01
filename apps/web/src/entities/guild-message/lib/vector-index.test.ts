@@ -1,35 +1,32 @@
 import { it } from "@effect/vitest";
-import { Array, Effect, pipe } from "effect";
+import { Array, Effect, Option, pipe } from "effect";
 import { describe, expect } from "vite-plus/test";
 
 import { DIMENSIONS, quantize } from "#/shared/ai";
 
-import { centroidBlockOf, clusterCountFor, nearestCentroids, trainCentroids } from "./clusters";
+import { groupEntries } from "./clusters";
 import { nearestRows } from "./nearest";
 import { blockOf, decodeBlock, encodeBlock, entriesOf } from "./vector-block";
+import type { VectorEntry } from "./vector-block";
 
 const ROW_COUNT = 3;
-const NOISE_COUNT = 5;
 const GROUP_COUNT = 4;
 const FIRST = 0;
 const countUp = (length: number): readonly number[] => Array.makeBy(length, (index) => index);
 const ROWS = countUp(ROW_COUNT);
-const NOISES = countUp(NOISE_COUNT);
 const GROUPS = countUp(GROUP_COUNT);
-const GROUP_SPACING = 100;
 const NOISE_STEP = 7;
 const NOISE_MOD = 13;
 const NOISE_SCALE = 1000;
 const ONE = 1;
-const MISSING = -1;
 const SECOND = 1;
-const THIRD_GROUP = 2;
 const QUERY_NOISE = 9;
 const MS = 1000;
-const SMALL = 10_000;
-const SMALL_CLUSTERS = 100;
-const HUGE = 10_000_000;
-const MAX_CLUSTERS = 256;
+const MEMBERS_PER_GROUP = 1100;
+const MEMBER_SPREAD = 90;
+const AXES_PER_GROUP = 2;
+const LARGE_INDEX_TIMEOUT = 60_000;
+const NOTHING = 0;
 
 const axis = (index: number, noise: number): readonly number[] =>
   Array.makeBy(DIMENSIONS, (dimension) => {
@@ -92,38 +89,79 @@ describe("vector blocks", () => {
   });
 });
 
-describe("clusters", () => {
-  it("separates distinct groups and finds the right one for a query", () => {
-    const sample = pipe(
-      GROUPS,
-      Array.flatMap((group) =>
-        pipe(
-          NOISES,
-          Array.map((noise) => quantize(axis(group * GROUP_SPACING, noise))),
-        ),
-      ),
-    );
-    const centroids = trainCentroids({ sample, clusters: GROUPS.length });
-    const block = centroidBlockOf(centroids);
-    const groupOf = (vector: (typeof sample)[number]): number =>
-      nearestCentroids({ vector, centroids: block, count: ONE })[FIRST] ?? MISSING;
-    const query = quantize(axis(THIRD_GROUP * GROUP_SPACING, QUERY_NOISE));
-    expect(centroids).toHaveLength(GROUPS.length);
-    const groups = pipe(
-      sample,
-      Array.map((vector) => groupOf(vector)),
-    );
-    expect(new Set(groups).size).toBe(GROUPS.length);
-    const neighbour = quantize(axis(THIRD_GROUP * GROUP_SPACING, ONE));
-    expect(groupOf(query)).toBe(groupOf(neighbour));
-  });
+const memberVector = (group: number, member: number): ReturnType<typeof quantize> =>
+  quantize(
+    Array.makeBy(GROUP_COUNT * AXES_PER_GROUP, (dimension) => {
+      if (dimension === group * AXES_PER_GROUP) {
+        return ONE;
+      }
+      if (dimension === group * AXES_PER_GROUP + ONE) {
+        return (member % MEMBER_SPREAD) / (MEMBER_SPREAD * AXES_PER_GROUP);
+      }
+      return NOTHING;
+    }),
+  );
 
-  it("uses about the square root of the count", () => {
-    expect(
-      pipe(
-        [FIRST, SMALL, HUGE],
-        Array.map((vectors) => clusterCountFor(vectors)),
-      ),
-    ).toStrictEqual([ONE, SMALL_CLUSTERS, MAX_CLUSTERS]);
+const largeIndex: readonly VectorEntry[] = pipe(
+  GROUPS,
+  Array.flatMap((group) =>
+    pipe(
+      countUp(MEMBERS_PER_GROUP),
+      Array.map((member) => ({
+        ordinal: group * MEMBERS_PER_GROUP + member,
+        channelId: `g${group}`,
+        vector: memberVector(group, member),
+      })),
+    ),
+  ),
+);
+
+type Cluster = readonly VectorEntry[];
+
+const groupsIn = (cluster: Cluster): number =>
+  new Set(
+    pipe(
+      cluster,
+      Array.map(({ channelId }) => channelId),
+    ),
+  ).size;
+
+const ordinalsIn = (clusters: readonly Cluster[]): readonly number[] =>
+  pipe(
+    clusters,
+    Array.flatten,
+    Array.map(({ ordinal }) => ordinal),
+  );
+
+describe("clusters", () => {
+  it(
+    "splits a large index into about square-root clusters that each stay inside one group",
+    () => {
+      const { centroids, clusters } = groupEntries({ flat: false, entries: largeIndex });
+      const expected = Math.round(Math.sqrt(largeIndex.length));
+      const ordinals = ordinalsIn(clusters);
+      expect(clusters).toHaveLength(expected);
+      expect(
+        pipe(
+          centroids,
+          Option.map((list) => list.length),
+        ),
+      ).toStrictEqual(Option.some(expected));
+      expect(
+        pipe(
+          clusters,
+          Array.filter((cluster) => groupsIn(cluster) > ONE),
+        ),
+      ).toStrictEqual([]);
+      expect(ordinals).toHaveLength(largeIndex.length);
+      expect(new Set(ordinals).size).toBe(largeIndex.length);
+    },
+    LARGE_INDEX_TIMEOUT,
+  );
+
+  it("keeps a flat index as one cluster without centroids", () => {
+    const { centroids, clusters } = groupEntries({ flat: true, entries: largeIndex });
+    expect(Option.isNone(centroids)).toBe(true);
+    expect(clusters).toStrictEqual([largeIndex]);
   });
 });

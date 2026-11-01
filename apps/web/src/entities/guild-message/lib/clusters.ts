@@ -110,5 +110,5 @@ const groupEntries = ({
   };
 };
 
-export { centroidBlockOf, clusterCountFor, groupEntries, nearestCentroids, trainCentroids };
+export { groupEntries };
 export type { Grouped };

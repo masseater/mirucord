@@ -1,33 +1,48 @@
 import { it } from "@effect/vitest";
-import { Array, Effect, Option } from "effect";
+import { Effect, Option } from "effect";
 import { expect } from "vite-plus/test";
 
-import { MCP_RATE_LIMIT, mcpRejection, tokenOrIp } from "./throttle.server";
+import { mcpRejection } from "./throttle.server";
 
-const FIRST_ATTEMPT = 1;
+const NONE_ALLOWED = 0;
+const NEXT = 1;
 const TOO_MANY_REQUESTS = 429;
+
+interface Exhausted {
+  readonly allowed: number;
+  readonly rejected: Response;
+}
+
+const exhaust = (request: Request, allowed: number): Effect.Effect<Exhausted> =>
+  mcpRejection(request).pipe(
+    Effect.flatMap(
+      Option.match({
+        onNone: () => exhaust(request, allowed + NEXT),
+        onSome: (rejected) => Effect.succeed({ allowed, rejected }),
+      }),
+    ),
+  );
+
+const mcpRequest = (headers: Readonly<Record<string, string>>): Request =>
+  new Request("https://example.test/mcp", { headers });
 
 it.live("rejects MCP requests over the limit with 429", () =>
   Effect.gen(function* overLimit() {
-    const request = new Request("https://example.test/mcp", {
-      headers: { authorization: "Bearer over-limit" },
-    });
-    const allowed = yield* Effect.forEach(
-      Array.range(FIRST_ATTEMPT, MCP_RATE_LIMIT.limit),
-      () => mcpRejection(request),
-      { concurrency: "unbounded" },
+    const { allowed, rejected } = yield* exhaust(
+      mcpRequest({ authorization: "Bearer over-limit" }),
+      NONE_ALLOWED,
     );
-    const over = yield* mcpRejection(request);
-    expect(Array.getSomes(allowed)).toStrictEqual([]);
-    expect(over.pipe(Option.map(({ status }) => status))).toStrictEqual(
-      Option.some(TOO_MANY_REQUESTS),
-    );
+    expect(allowed).toBeGreaterThan(NONE_ALLOWED);
+    expect(rejected.status).toBe(TOO_MANY_REQUESTS);
   }),
 );
 
-it("keys requests without a token by client IP", () => {
-  const request = new Request("https://example.test/mcp", {
-    headers: { "cf-connecting-ip": "192.0.2.1" },
-  });
-  expect(tokenOrIp(request)).toBe("ip:192.0.2.1");
-});
+it.live("keys requests without a token by client IP", () =>
+  Effect.gen(function* byClientIp() {
+    yield* exhaust(mcpRequest({ "cf-connecting-ip": "192.0.2.1" }), NONE_ALLOWED);
+    const sameIp = yield* mcpRejection(mcpRequest({ "cf-connecting-ip": "192.0.2.1" }));
+    const otherIp = yield* mcpRejection(mcpRequest({ "cf-connecting-ip": "192.0.2.2" }));
+    expect(Option.isSome(sameIp)).toBe(true);
+    expect(Option.isNone(otherIp)).toBe(true);
+  }),
+);

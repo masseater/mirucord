@@ -4,7 +4,7 @@ import { env } from "cloudflare:workers";
 import { Array, Effect, Option, pipe, Schema } from "effect";
 import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
-import { settleNeurons } from "#/shared/ai/index.server";
+import { spendNeurons } from "#/shared/ai/index.server";
 
 import { A_OPEN, A_STAFF, discordMembers, GUILD_A, seedScenario } from "./__tests__/scenario";
 import {
@@ -20,9 +20,17 @@ const RAMEN = "81";
 const CAT = "82";
 const STAFF_RAMEN = "83";
 const LATE = "84";
-const SPENT_TODAY = 9000;
+const ALLOWANCE_BITS = 48;
+const HIGHEST_BIT = 15;
+const BINARY = 2;
 const ONCE = 1;
 const NOTHING = 0;
+
+const spendWholeAllowance = Effect.forEach(
+  Array.makeBy(ALLOWANCE_BITS, (step) => BINARY ** (HIGHEST_BIT - step)),
+  (neurons) => spendNeurons("query", neurons),
+  { discard: true },
+);
 
 const decodeSimilar = Schema.decodeUnknownEffect(FindSimilarMessagesOutput);
 
@@ -85,7 +93,7 @@ it.live("reuses the vector of a query it has already embedded", () =>
 
 it.live("leaves embedding to the next day once the day's allowance is spent", () =>
   Effect.gen(function* overBudget() {
-    yield* settleNeurons(SPENT_TODAY);
+    yield* spendWholeAllowance;
     const refused = yield* callTool({
       name: "find_similar_messages",
       args: { serverId: GUILD_A, query: "まだ聞いていない質問" },

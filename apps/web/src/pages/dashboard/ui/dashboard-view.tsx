@@ -5,8 +5,7 @@ import { nextStepsOf } from "#/pages/dashboard/model/next-steps";
 import type { NextSteps, ReadyDashboard } from "#/pages/dashboard/model/next-steps";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 
-import { AccountPanel } from "./account-panel";
-import { ConnectedAppPanel } from "./connected-app-panel";
+import { AccountPanels } from "./account-panels";
 import { GuildList } from "./guild-list";
 import { McpUrlPanel } from "./mcp-url-panel";
 import { NextStepsPanel } from "./next-steps/next-steps-panel";
@@ -32,8 +31,7 @@ const DashboardView = ({ dashboard }: Readonly<{ dashboard: ReadyDashboard }>): 
       <h1 className="text-dc-bright font-maru text-3xl font-black">{TITLE}</h1>
       {stepsOrUrl(steps, dashboard.inviteUrl)}
       <ReadableGuildPanel listing={dashboard.readable} />
-      <ConnectedAppPanel apps={dashboard.apps} />
-      <AccountPanel name={dashboard.name} />
+      <AccountPanels apps={dashboard.apps} name={dashboard.name} />
       <hr className="border-dc-line border-t border-dashed" />
       <GuildList guilds={dashboard.guilds} inviteUrl={dashboard.inviteUrl} />
     </>

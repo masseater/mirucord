@@ -183,6 +183,20 @@ const ListAuditLogOutput = Schema.Struct({
   total: Schema.Int,
   entries: Schema.Array(AuditEntry),
 });
+const LinkedAccount = Schema.Struct({
+  type: Schema.String,
+  name: Schema.String,
+  verified: Schema.Boolean,
+  publishedAt: Schema.String,
+});
+const LinkedPerson = Schema.Struct({
+  userId: Schema.String,
+  accounts: Schema.Array(LinkedAccount),
+});
+const ListLinkedAccountsOutput = Schema.Struct({
+  ingest: Schema.Literals(["consented", "notConsented"]),
+  people: Schema.Array(LinkedPerson),
+});
 const ReadMessagesOutput = Schema.Struct({
   ingest: Schema.optionalKey(Ingest),
   notFullyIngested: Schema.optionalKey(Schema.Array(PendingChannel)),
@@ -194,6 +208,7 @@ export {
   ListAuditLogOutput,
   FindSimilarMessagesOutput,
   ListChannelsOutput,
+  ListLinkedAccountsOutput,
   ListMembersOutput,
   ListReactionsOutput,
   ListScheduledEventsOutput,

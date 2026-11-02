@@ -144,4 +144,4 @@ const listMembers =
       return membersOf({ scope, input }).pipe(Effect.map(structuredResult));
     });
 
-export { listMembers };
+export { listMembers, storedMembers };

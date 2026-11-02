@@ -2,6 +2,7 @@ import { Schema } from "effect";
 
 import {
   ListAuditLogInput,
+  ListLinkedAccountsInput,
   ListMembersInput,
   ListReactionsInput,
   ListScheduledEventsInput,
@@ -10,6 +11,7 @@ import {
 } from "#/features/mcp/api/tool-input";
 import {
   ListAuditLogOutput,
+  ListLinkedAccountsOutput,
   ListMembersOutput,
   ListReactionsOutput,
   ListScheduledEventsOutput,
@@ -86,8 +88,23 @@ const LIST_AUDIT_LOG_TOOL = {
   inputSchema: ListAuditLogInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
+const LIST_LINKED_ACCOUNTS_TOOL = {
+  title: "List linked accounts",
+  description: `List the accounts on other services (such as \`github\`, \`twitter\`, \`youtube\` or \`steam\` in \`type\`) that people linked to Discord and chose to show through ${SERVICE_NAME}. Pass the Discord user IDs in \`userIds\` (from a message's \`authorId\` or from \`list_members\`); only people who are in the server now are answered, and people who did not publish any account are left out of \`people\`. Each person picks which of the accounts they show to everyone on their Discord profile to publish, in ${SERVICE_NAME}'s dashboard, and the same list shows in every server. \`verified\` is Discord's check that they own the account, and \`publishedAt\` is when they last chose the list. Members are only stored after the server's admin allows ${SERVICE_NAME} to store data, so \`notConsented\` returns none.`,
+  ...TOOL_BASE,
+  outputSchema: ListLinkedAccountsOutput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+  inputSchema: ListLinkedAccountsInput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+};
+
 export {
   LIST_AUDIT_LOG_TOOL,
+  LIST_LINKED_ACCOUNTS_TOOL,
   LIST_MEMBERS_TOOL,
   LIST_REACTIONS_TOOL,
   LIST_SCHEDULED_EVENTS_TOOL,

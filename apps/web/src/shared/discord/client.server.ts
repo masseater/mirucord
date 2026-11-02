@@ -43,5 +43,5 @@ const decodeBody =
   (raw: Body["Encoded"]): Effect.Effect<Body["Type"], never, Body["DecodingServices"]> =>
     Effect.orDie(Schema.decodeEffect(schema)(raw));
 
-export { decodeBody, DiscordRequestError, withDiscord };
+export { decodeBody, DiscordRequestError, requestErrorOf, withDiscord };
 export type { DiscordFailure };

@@ -15,7 +15,8 @@ const discordUserIdOf = (userId: string): Effect.Effect<Option.Option<string>> =
     db
       .select({ accountId: account.accountId })
       .from(account)
-      .where(and(eq(account.userId, userId), eq(account.providerId, DISCORD_PROVIDER))),
+      .where(and(eq(account.userId, userId), eq(account.providerId, DISCORD_PROVIDER)))
+      .orderBy(account.createdAt),
   ).pipe(Effect.map((rows) => Option.map(Array.head(rows), ({ accountId }) => accountId)));
 
 const signedInUser = (request: Request): Effect.Effect<Option.Option<SignedInUser>> =>

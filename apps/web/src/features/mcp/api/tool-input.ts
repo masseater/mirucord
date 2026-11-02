@@ -93,6 +93,11 @@ const ListAuditLogInput = Schema.Struct({
   offset: Offset,
 });
 
+const ListLinkedAccountsInput = Schema.Struct({
+  serverId: Schema.String,
+  userIds: Ids,
+});
+
 const memberLimitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_MEMBER_LIMIT);
 
@@ -127,6 +132,7 @@ export {
   limitOf,
   ListAuditLogInput,
   ListChannelsInput,
+  ListLinkedAccountsInput,
   ListMembersInput,
   ListReactionsInput,
   ListScheduledEventsInput,

@@ -111,6 +111,37 @@ const ReactionsJobSchema = Schema.Struct({
   changes: Schema.NonEmptyArray(ReactionChangeSchema),
 });
 
+const ScheduledEventTarget = { eventId: Schema.String, at: Schema.Finite };
+
+const ScheduledEventChangeSchema = Schema.Union([
+  Schema.Struct({
+    kind: Schema.Literal("schedule"),
+    ...ScheduledEventTarget,
+    name: Schema.String,
+    description: Schema.NullOr(Schema.String),
+    channelId: Schema.NullOr(Schema.String),
+    creatorId: Schema.NullOr(Schema.String),
+    location: Schema.NullOr(Schema.String),
+    entityType: Schema.Int,
+    status: Schema.Int,
+    startsAt: Schema.Finite,
+    endsAt: Schema.NullOr(Schema.Finite),
+    recurring: Schema.Boolean,
+  }),
+  Schema.Struct({ kind: Schema.Literal("unschedule"), ...ScheduledEventTarget }),
+  Schema.Struct({
+    kind: Schema.Literals(["interest", "uninterest"]),
+    ...ScheduledEventTarget,
+    userId: Schema.String,
+  }),
+]);
+
+const ScheduledEventsJobSchema = Schema.Struct({
+  kind: Schema.Literal("scheduledEvents"),
+  guildId: Schema.String,
+  changes: Schema.NonEmptyArray(ScheduledEventChangeSchema),
+});
+
 const ResyncJobSchema = Schema.Struct({ kind: Schema.Literal("resync") });
 
 const GatewayJobSchema = Schema.Union([
@@ -125,6 +156,7 @@ const GatewayJobSchema = Schema.Union([
   VoiceJobSchema,
   VoiceSnapshotJobSchema,
   ReactionsJobSchema,
+  ScheduledEventsJobSchema,
   ResyncJobSchema,
 ]);
 
@@ -150,6 +182,10 @@ type ReactionsJob = typeof ReactionsJobSchema.Type;
 
 type ReactionChange = typeof ReactionChangeSchema.Type;
 
+type ScheduledEventsJob = typeof ScheduledEventsJobSchema.Type;
+
+type ScheduledEventChange = typeof ScheduledEventChangeSchema.Type;
+
 export { GatewayJobSchema };
 export type {
   DepartJob,
@@ -159,6 +195,8 @@ export type {
   ReactionChange,
   ReactionsJob,
   RefreshJob,
+  ScheduledEventChange,
+  ScheduledEventsJob,
   StoreJob,
   VoiceChange,
   VoiceJob,

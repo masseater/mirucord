@@ -9,6 +9,7 @@ import type { ListReactionsOutput } from "#/features/mcp/api/tool-output";
 import { liveReactionsOf } from "#/shared/discord/index.server";
 import type { DiscordRequestError, LiveReactions } from "#/shared/discord/index.server";
 
+import { keptUserIdsOf } from "./kept-users.server";
 import type { GuildScope } from "./scope.server";
 import { DISCORD_UNAVAILABLE, errorResult, structuredResult, withScope } from "./tool-scope.server";
 
@@ -82,7 +83,7 @@ const withoutErased =
       Array.flatMap(({ userIds }) => userIds),
       Array.dedupe,
     );
-    return Effect.promise(() => guildStore(guildId).keptUserIds(everyone)).pipe(
+    return keptUserIdsOf(guildId)(everyone).pipe(
       Effect.map((kept) => ({
         authorId: live.authorId,
         reactions: pipe(

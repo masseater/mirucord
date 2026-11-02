@@ -69,6 +69,11 @@ const ListReactionsInput = Schema.Struct({
   authorIds: Schema.optionalKey(Ids),
 });
 
+const ListScheduledEventsInput = Schema.Struct({
+  ...SpanFilter,
+  eventId: Schema.optionalKey(Schema.String),
+});
+
 const memberLimitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_MEMBER_LIMIT);
 
@@ -104,6 +109,7 @@ export {
   ListChannelsInput,
   ListMembersInput,
   ListReactionsInput,
+  ListScheduledEventsInput,
   ListVoiceSessionsInput,
   memberLimitOf,
   ReadMessagesInput,

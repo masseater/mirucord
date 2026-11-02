@@ -133,6 +133,28 @@ const ListReactionsOutput = Schema.Struct({
   votes: Schema.Array(Vote),
   live: Schema.NullOr(LiveMessage),
 });
+const ScheduledEvent = Schema.Struct({
+  eventId: Schema.String,
+  name: Schema.String,
+  description: Schema.NullOr(Schema.String),
+  channelId: Schema.NullOr(Schema.String),
+  channelName: Schema.NullOr(Schema.String),
+  creatorId: Schema.NullOr(Schema.String),
+  location: Schema.NullOr(Schema.String),
+  kind: Schema.String,
+  status: Schema.String,
+  startsAt: Schema.String,
+  endsAt: Schema.NullOr(Schema.String),
+  recurring: Schema.Boolean,
+  removedAt: Schema.NullOr(Schema.String),
+  interestedUserIds: Schema.Array(Schema.String),
+});
+const ListScheduledEventsOutput = Schema.Struct({
+  ingest: Schema.Literals(["consented", "notConsented"]),
+  total: Schema.Int,
+  events: Schema.Array(ScheduledEvent),
+  liveInterestedUserIds: Schema.NullOr(Schema.Array(Schema.String)),
+});
 const ReadMessagesOutput = Schema.Struct({
   ingest: Schema.optionalKey(Ingest),
   notFullyIngested: Schema.optionalKey(Schema.Array(PendingChannel)),
@@ -145,6 +167,7 @@ export {
   ListChannelsOutput,
   ListMembersOutput,
   ListReactionsOutput,
+  ListScheduledEventsOutput,
   ListServerPhrasesOutput,
   ListServersOutput,
   ListVoiceSessionsOutput,

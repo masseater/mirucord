@@ -1,4 +1,4 @@
-import type { ReactionChange } from "@repo/ingest-util-gateway-contract";
+import type { ReactionChange, ScheduledEventChange } from "@repo/ingest-util-gateway-contract";
 import { Array, pipe } from "effect";
 
 import { memberLedger } from "./member-ledger.server";
@@ -6,6 +6,8 @@ import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
 import { NoteStore } from "./note-store.server";
 import { reactionLedger } from "./reaction-ledger.server";
 import type { ReactionLookup, ReactionPage } from "./reaction-types";
+import { scheduledEventLedger } from "./scheduled-event-ledger.server";
+import type { ScheduledEventLookup, ScheduledEventPage } from "./scheduled-event-ledger.server";
 import { voiceLedger } from "./voice-ledger.server";
 import type { VoiceChangeWrite, VoiceLookup, VoicePage, VoiceSnapshotWrite } from "./voice-types";
 
@@ -15,6 +17,8 @@ abstract class RelationStore extends NoteStore {
   readonly #voice = voiceLedger(this.db);
 
   readonly #reactions = reactionLedger(this.db);
+
+  readonly #events = scheduledEventLedger(this.db);
 
   protected erasedIds(): readonly string[] {
     return pipe(
@@ -55,6 +59,14 @@ abstract class RelationStore extends NoteStore {
     return this.#reactions.read(lookup, this.erasedIds());
   }
 
+  public saveScheduledEvents(changes: readonly ScheduledEventChange[]): void {
+    this.#events.change(changes, this.erasedIds());
+  }
+
+  public readScheduledEvents(lookup: ScheduledEventLookup): ScheduledEventPage {
+    return this.#events.read(lookup, this.erasedIds());
+  }
+
   public keptUserIds(userIds: readonly string[]): readonly string[] {
     return Array.difference(userIds, this.erasedIds());
   }
@@ -73,6 +85,7 @@ abstract class RelationStore extends NoteStore {
     this.#members.forget(authorId);
     this.#voice.forget(authorId);
     this.#reactions.forget(authorId);
+    this.#events.forget(authorId);
     return super.eraseAuthor(authorId);
   }
 }

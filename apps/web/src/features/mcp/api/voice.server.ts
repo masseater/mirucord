@@ -1,13 +1,13 @@
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { Array, DateTime, Effect, Option, pipe } from "effect";
+import { Array, DateTime, Effect, Option, pipe, Record } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import type { StoredVoiceSession } from "#/entities/guild-message/index.server";
 import type { ListVoiceSessionsInput } from "#/features/mcp/api/tool-input";
-import { spanLookupOf } from "#/features/mcp/api/tool-input";
 import type { ListVoiceSessionsOutput } from "#/features/mcp/api/tool-output";
 
 import type { GuildScope } from "./scope.server";
+import { spanScopeOf } from "./span-scope.server";
 import { structuredResult, withScope } from "./tool-scope.server";
 
 type SessionView = (typeof ListVoiceSessionsOutput.Type)["sessions"][number];
@@ -19,24 +19,9 @@ const momentOf = ({ at, precision }: StoredVoiceSession["joined"]): SessionView[
   precision,
 });
 
-const channelsOf = ({ scope, input }: VoiceRequest): readonly string[] =>
-  Option.match(Option.fromUndefinedOr(input.channelIds), {
-    onNone: () => scope.visible,
-    onSome: (wanted) => Array.intersection(scope.visible, wanted),
-  });
-
 const sessionsOf = (request: VoiceRequest): Effect.Effect<typeof ListVoiceSessionsOutput.Type> => {
-  const { scope, input } = request;
-  const names = new Map(
-    pipe(
-      scope.guild.channels,
-      Array.map(({ id, name }) => [id, name] as const),
-    ),
-  );
-  const lookup = {
-    ...spanLookupOf(input),
-    channelIds: channelsOf(request),
-  };
+  const { scope } = request;
+  const { names, lookup } = spanScopeOf(request);
   return Effect.promise(() => guildStore(scope.guild.guildId).readVoiceSessions(lookup)).pipe(
     Effect.map(({ total, sessions }) => ({
       ingest: "consented" as const,
@@ -46,7 +31,10 @@ const sessionsOf = (request: VoiceRequest): Effect.Effect<typeof ListVoiceSessio
         Array.map((session): SessionView => ({
           userId: session.userId,
           channelId: session.channelId,
-          channelName: names.get(session.channelId) ?? session.channelId,
+          channelName: Option.getOrElse(
+            Record.get(names, session.channelId),
+            () => session.channelId,
+          ),
           joined: momentOf(session.joined),
           left: Option.getOrNull(Option.map(Option.fromNullOr(session.left), momentOf)),
         })),

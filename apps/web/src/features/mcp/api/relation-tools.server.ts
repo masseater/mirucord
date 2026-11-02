@@ -4,17 +4,20 @@ import { Schema } from "effect";
 import {
   ListMembersInput,
   ListReactionsInput,
+  ListScheduledEventsInput,
   ListVoiceSessionsInput,
 } from "#/features/mcp/api/tool-input";
 import {
   ListMembersOutput,
   ListReactionsOutput,
+  ListScheduledEventsOutput,
   ListVoiceSessionsOutput,
 } from "#/features/mcp/api/tool-output";
 import { SERVICE_NAME } from "#/shared/config";
 
 import { listMembers } from "./members.server";
 import { listReactions } from "./reactions.server";
+import { listScheduledEvents } from "./scheduled-events.server";
 import { newServer, TOOL_BASE } from "./tool-base";
 import { listVoiceSessions } from "./voice.server";
 
@@ -48,6 +51,20 @@ const LIST_REACTIONS_TOOL = {
   inputSchema: ListReactionsInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
+const LIST_SCHEDULED_EVENTS_TOOL = {
+  title: "List scheduled events",
+  description: `List the server's scheduled events (the Events tab), soonest start first, with who created each and who marked themselves interested. \`kind\` is \`stage_instance\`, \`voice\` or \`external\` (then \`location\` says where); \`status\` is \`scheduled\`, \`active\`, \`completed\` or \`canceled\`. \`removedAt\` is when the event was deleted or ended in Discord, which keeps it here as history. Events in channels you cannot see are left out. Pass \`userIds\` to keep events those people created or are interested in, \`channelIds\`, and \`since\`/\`until\` (ISO 8601) to keep events that overlap that span. \`interestedUserIds\` only holds what ${SERVICE_NAME} saw after the server's admin allowed it to store data; pass \`eventId\` to also get \`liveInterestedUserIds\`, the first 100 people Discord lists as interested now. \`notConsented\` returns none. Look up names with \`list_members\`.`,
+  ...TOOL_BASE,
+  outputSchema: ListScheduledEventsOutput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+  inputSchema: ListScheduledEventsInput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+};
+
 const serverWithRelationTools = (discordUserId: string): McpServer => {
   const server = newServer();
   server.registerTool("list_members", LIST_MEMBERS_TOOL, listMembers(discordUserId));
@@ -57,6 +74,11 @@ const serverWithRelationTools = (discordUserId: string): McpServer => {
     listVoiceSessions(discordUserId),
   );
   server.registerTool("list_reactions", LIST_REACTIONS_TOOL, listReactions(discordUserId));
+  server.registerTool(
+    "list_scheduled_events",
+    LIST_SCHEDULED_EVENTS_TOOL,
+    listScheduledEvents(discordUserId),
+  );
   return server;
 };
 

@@ -1,9 +1,9 @@
 import type { GatewayJob, ReactionChange, ReactionsJob } from "@repo/ingest-util-gateway-contract";
 import { DiscordEmojiSchema as Emoji, emojiKeyOf } from "@repo/shared-util-discord";
 import { Discord } from "dfx";
-import { Array, Match, Option, pipe, Record, Schema } from "effect";
+import { Array, Match, Option, Schema } from "effect";
 
-const CHANGES_PER_JOB = 100;
+import { mergeByGuild } from "./guild-batch";
 
 const Target = {
   guild_id: Schema.optional(Schema.String),
@@ -137,26 +137,9 @@ const reactionJobKeyOf = (job: ReactionsJob): string => {
 
 const isReactionsJob = (job: GatewayJob): job is ReactionsJob => job.kind === "reactions";
 
-const jobsOfGuild = (
-  guildId: string,
-  guildJobs: readonly ReactionsJob[],
-): readonly GatewayJob[] => {
-  const changes = pipe(
-    guildJobs,
-    Array.flatMap((job) => job.changes),
-  );
-  return pipe(
-    Array.chunksOf(changes, CHANGES_PER_JOB),
-    Array.map((chunk): GatewayJob => ({ kind: "reactions", guildId, changes: chunk })),
-  );
-};
-
-const mergeReactionJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
-  const byGuild = Array.groupBy(pipe(jobs, Array.filter(isReactionsJob)), ({ guildId }) => guildId);
-  return pipe(
-    Record.toEntries(byGuild),
-    Array.flatMap(([guildId, guildJobs]) => jobsOfGuild(guildId, guildJobs)),
-  );
-};
+const mergeReactionJobs = mergeByGuild({
+  isBatch: isReactionsJob,
+  rebuild: (guildId, changes): GatewayJob => ({ kind: "reactions", guildId, changes }),
+});
 
 export { mergeReactionJobs, reactionJobKeyOf, reactionJobOf };

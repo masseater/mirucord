@@ -8,6 +8,7 @@ import { BOUND_LIMIT } from "#/entities/guild-message/model/guild-message.schema
 import { pollVote, reaction } from "#/entities/guild-message/model/reaction.schema";
 
 import type { ReactionLookup, ReactionPage, StoredReaction, StoredVote } from "./reaction-types";
+import { unlessErased } from "./unless-erased";
 
 type ReactionLedger = Readonly<{
   change: (changes: readonly ReactionChange[], erased: readonly string[]) => void;
@@ -210,13 +211,9 @@ const readOf = (
 };
 
 const reactionLedger = (db: DrizzleSqliteDODatabase): ReactionLedger => ({
-  change: (changes, erased) => {
-    for (const change of changes) {
-      if (!("userId" in change) || !erased.includes(change.userId)) {
-        changeOf(db, change);
-      }
-    }
-  },
+  change: unlessErased((change: ReactionChange) => {
+    changeOf(db, change);
+  }),
   read: (lookup, erased) => readOf(db, lookup, erased),
   forget: (userId) => {
     db.delete(reaction).where(eq(reaction.userId, userId)).run();

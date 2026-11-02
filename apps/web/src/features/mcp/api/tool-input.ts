@@ -69,20 +69,6 @@ const ListReactionsInput = Schema.Struct({
   authorIds: Schema.optionalKey(Ids),
 });
 
-const ListScheduledEventsInput = Schema.Struct({
-  ...SpanFilter,
-  eventId: Schema.optionalKey(Schema.String),
-});
-
-const ListThreadMembersInput = Schema.Struct({
-  serverId: Schema.String,
-  threadId: Schema.optionalKey(Schema.String),
-  userIds: Schema.optionalKey(Ids),
-  includeLeft: Schema.optionalKey(Schema.Boolean),
-  limit: Schema.optionalKey(MemberLimit),
-  offset: Offset,
-});
-
 const ListLinkedAccountsInput = Schema.Struct({
   serverId: Schema.String,
   userIds: Ids,
@@ -124,8 +110,6 @@ export {
   ListLinkedAccountsInput,
   ListMembersInput,
   ListReactionsInput,
-  ListScheduledEventsInput,
-  ListThreadMembersInput,
   ListVoiceSessionsInput,
   memberLimitOf,
   ReadMessagesInput,

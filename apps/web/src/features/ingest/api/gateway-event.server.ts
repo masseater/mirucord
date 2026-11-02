@@ -14,8 +14,6 @@ import { resyncGuilds } from "./resync.server";
 import {
   storeGatewayReactions,
   storeGatewayVoice,
-  storeScheduledEvents,
-  storeThreadMembers,
   storeVoiceSnapshot,
 } from "./store-activity.server";
 import { departGatewayMembers, storeGatewayMembers } from "./store-members.server";
@@ -42,8 +40,6 @@ const runJob: (job: GatewayJob) => Effect.Effect<void, IngestError> = Match.type
     voice: storeGatewayVoice,
     voiceSnapshot: storeVoiceSnapshot,
     reactions: storeGatewayReactions,
-    scheduledEvents: storeScheduledEvents,
-    threadMembers: storeThreadMembers,
   }),
 );
 

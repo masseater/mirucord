@@ -20,7 +20,6 @@ const INTENTS =
   Discord.GatewayIntentBits.Guilds +
   Discord.GatewayIntentBits.GuildMembers +
   Discord.GatewayIntentBits.GuildVoiceStates +
-  Discord.GatewayIntentBits.GuildScheduledEvents +
   Discord.GatewayIntentBits.GuildMessages +
   Discord.GatewayIntentBits.GuildMessageReactions +
   Discord.GatewayIntentBits.GuildMessagePolls +

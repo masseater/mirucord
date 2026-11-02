@@ -22,37 +22,6 @@ const siteZone = Effect.gen(function* siteZone() {
   return { accountId, zoneId };
 });
 
-const deployToken = Effect.gen(function* deployToken() {
-  const { accountId, zoneId } = yield* siteZone;
-  const token = yield* ApiToken.AccountApiToken("DeployToken", {
-    name: `${PREFIX}deploy`,
-    accountId,
-    policies: [
-      {
-        effect: "allow",
-        permissionGroups: [
-          "Workers Scripts Write",
-          "Secrets Store Write",
-          "D1 Write",
-          "Vectorize Write",
-          "Queues Write",
-          "Workers R2 Storage Write",
-          "Workers Observability Write",
-          "Workers AI Read",
-          "Account Settings Read",
-        ],
-        resources: { [`com.cloudflare.api.account.${accountId}`]: "*" },
-      },
-      {
-        effect: "allow",
-        permissionGroups: ["Workers Routes Write", "DNS Write", "Zone Read"],
-        resources: { [`com.cloudflare.api.account.zone.${zoneId}`]: "*" },
-      },
-    ],
-  });
-  return { accountId, token };
-});
-
 const observerToken = Effect.gen(function* observerToken() {
   const { accountId, zoneId } = yield* siteZone;
   return yield* ApiToken.AccountApiToken("ObserverToken", {
@@ -87,13 +56,10 @@ const ci: Effect.Effect<CompiledStack, ConfigError> & Readonly<{ stackName: stri
   `${PREFIX}ci`,
   { providers: Layer.mergeAll(providers(), gitHubProviders()), state: state() },
   Effect.gen(function* stack() {
-    const { accountId, token } = yield* deployToken;
     const observer = yield* observerToken;
     yield* Secrets({
       ...repo,
       secrets: {
-        CLOUDFLARE_API_TOKEN: token.value,
-        CLOUDFLARE_ACCOUNT_ID: accountId,
         DISCORD_CLIENT_SECRET: Config.schema(NonEmptySecret, "DISCORD_CLIENT_SECRET"),
         DISCORD_BOT_TOKEN: Config.schema(NonEmptySecret, "DISCORD_BOT_TOKEN"),
         OPENROUTER_API_KEY: Config.schema(NonEmptySecret, "OPENROUTER_API_KEY"),
@@ -107,7 +73,7 @@ const ci: Effect.Effect<CompiledStack, ConfigError> & Readonly<{ stackName: stri
       },
     });
     yield* requireAppPrefix;
-    return { tokenId: token.tokenId, observerTokenId: observer.tokenId };
+    return { observerTokenId: observer.tokenId };
   }),
 );
 

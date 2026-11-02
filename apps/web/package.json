@@ -31,7 +31,7 @@
     "@repo/shared-util-app-name": "workspace:*",
     "@repo/shared-util-discord": "workspace:*",
     "@sapphire/bitfield": "catalog:",
-    "@tanstack/react-devtools": "0.10.13",
+    "@tanstack/react-devtools": "0.10.14",
     "@tanstack/react-query": "catalog:stack",
     "@tanstack/react-query-devtools": "catalog:",
     "@tanstack/react-router": "1.170.46",

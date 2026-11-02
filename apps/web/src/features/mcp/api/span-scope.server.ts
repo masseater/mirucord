@@ -34,5 +34,5 @@ const spanScopeOf = ({ scope, input }: SpanRequest): SpanScope => ({
   },
 });
 
-export { channelNamesOf, spanScopeOf };
+export { spanScopeOf };
 export type { SpanRequest, SpanScope };

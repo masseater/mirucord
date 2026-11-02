@@ -19,7 +19,6 @@ const Permissions = new BitField(PermissionFlagsBits);
 const READ_HISTORY = Permissions.union("ViewChannel", "ReadMessageHistory");
 const SEND = Permissions.union("ViewChannel", "SendMessages");
 const MANAGE = Permissions.union("Administrator", "ManageGuild");
-const AUDIT = Permissions.union("Administrator", "ViewAuditLog");
 
 const applyOverwrite = (permissions: bigint, allow: bigint, deny: bigint): bigint =>
   Permissions.union(Permissions.difference(permissions, deny), allow);
@@ -108,8 +107,5 @@ const canSendMessages: {
 const isGuildManager = (reader: ReaderContext): boolean =>
   reader.userId === reader.ownerId || Permissions.any(basePermissions(reader), MANAGE);
 
-const canViewAuditLog = (reader: ReaderContext): boolean =>
-  reader.userId === reader.ownerId || Permissions.any(basePermissions(reader), AUDIT);
-
-export { canReadHistory, canSendMessages, canViewAuditLog, isGuildManager };
+export { canReadHistory, canSendMessages, isGuildManager };
 export type { Overwrite, ReaderContext };

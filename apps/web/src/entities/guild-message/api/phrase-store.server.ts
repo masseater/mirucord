@@ -5,11 +5,11 @@ import { Array, Duration, Option, Order, pipe } from "effect";
 import { phraseTotals } from "#/entities/guild-message/lib/phrase-totals";
 import { PHRASE_WINDOW_DAYS } from "#/entities/guild-message/lib/phrases.server";
 import type { PhraseHash } from "#/entities/guild-message/lib/phrases.server";
-import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
+import { guildMessage, SEALED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
 import { phraseLedger, phraseStats } from "#/entities/guild-message/model/phrase-stats.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
-import { MessageStore, SEALED_COLUMNS } from "./message-store.server";
+import { MessageStore } from "./message-store.server";
 import type {
   PhraseContext,
   PhraseExample,

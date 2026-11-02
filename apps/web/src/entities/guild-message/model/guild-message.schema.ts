@@ -34,6 +34,7 @@ const guildMessage = sqliteTable(
     vectorAt: integer(),
   },
   (table) => [
+    index("message_author_created_idx").on(table.authorId, table.createdAt),
     index("message_channel_created_idx").on(table.channelId, table.createdAt),
     index("message_phrases_created_idx").on(table.phrases, table.createdAt),
     index("message_created_idx").on(table.createdAt),
@@ -51,6 +52,14 @@ const TRACKED_COLUMNS = {
   version: guildMessage.version,
 };
 
+const SEALED_COLUMNS = {
+  id: guildMessage.id,
+  channelId: guildMessage.channelId,
+  sealed: guildMessage.sealed,
+  createdAt: guildMessage.createdAt,
+  editedAt: guildMessage.editedAt,
+};
+
 const vectorCentroid = sqliteTable("vector_centroid", {
   segment: text().primaryKey(),
   through: integer().notNull(),
@@ -62,4 +71,11 @@ const vectorCentroidFile = sqliteTable("vector_centroid_file", {
   stamp: integer().notNull(),
 });
 
-export { BOUND_LIMIT, guildMessage, TRACKED_COLUMNS, vectorCentroid, vectorCentroidFile };
+export {
+  BOUND_LIMIT,
+  guildMessage,
+  SEALED_COLUMNS,
+  TRACKED_COLUMNS,
+  vectorCentroid,
+  vectorCentroidFile,
+};

@@ -1,0 +1,1 @@
+CREATE INDEX `message_author_created_idx` ON `message` (`authorId`,`createdAt`);

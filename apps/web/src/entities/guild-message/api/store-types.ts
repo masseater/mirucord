@@ -51,6 +51,17 @@ type SealedMessage = Readonly<{
 
 type ChannelCount = Readonly<{ channelId: string; messages: number }>;
 
+type ChannelOldest = Readonly<{ channelId: string; oldest: number }>;
+
+type AuthoredMessage = Readonly<{ id: string; authorId: string }>;
+
+type AuthorPage = Readonly<{
+  authorId: string;
+  channelIds: readonly string[];
+  before: string | null;
+  limit: number;
+}>;
+
 type CreatedRange = Readonly<{ from: number | null; upTo: number | null }>;
 
 type ReadPage = Readonly<{ before: string | null; limit: number }>;
@@ -105,7 +116,10 @@ type UnphrasedMessage = SealedMessage & Readonly<{ authorId: string }>;
 type ExtractedPhrases = Readonly<{ message: UnphrasedMessage; hashes: readonly PhraseHash[] }>;
 
 export type {
+  AuthoredMessage,
+  AuthorPage,
   ChannelCount,
+  ChannelOldest,
   CreatedRange,
   ExtractedHashes,
   ExtractedPhrases,

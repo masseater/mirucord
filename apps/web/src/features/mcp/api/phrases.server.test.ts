@@ -44,7 +44,14 @@ const seedMessages = ({ prefix, channelId, content, phrases }: Seed): Effect.Eff
   Effect.gen(function* seed() {
     const keys = yield* guildKeys(GUILD_A);
     const now = DateTime.toEpochMillis(yield* DateTime.now);
-    const body = { authorName: "someone", content, attachments: [], embeds: [], stickers: [] };
+    const body = {
+      authorName: "someone",
+      mentions: [],
+      content,
+      attachments: [],
+      embeds: [],
+      stickers: [],
+    };
     const hashes = yield* phraseHashes({ ...keys, source: body });
     const messages = yield* pipe(
       PEOPLE,

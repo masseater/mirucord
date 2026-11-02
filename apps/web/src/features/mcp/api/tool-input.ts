@@ -1,7 +1,11 @@
-import { Schema } from "effect";
+import { Option, Schema } from "effect";
 
 const FIRST_OFFSET = 0;
 const MAX_LIMIT = 50;
+const DEFAULT_LIMIT = 20;
+
+const limitOf = (limit: number | undefined): number =>
+  Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_LIMIT);
 
 const Offset = Schema.optionalKey(Schema.Int.check(Schema.isGreaterThanOrEqualTo(FIRST_OFFSET)));
 const Limit = Schema.optionalKey(
@@ -24,7 +28,8 @@ const FindSimilarMessagesInput = Schema.Struct({
 });
 const ReadMessagesInput = Schema.Struct({
   serverId: Schema.String,
-  channelId: Schema.String,
+  channelId: Schema.optionalKey(Schema.String),
+  authorId: Schema.optionalKey(Schema.String),
   before: Schema.optionalKey(Schema.String),
   limit: Limit,
 });
@@ -33,6 +38,7 @@ export {
   FindMessagesInput,
   FindSimilarMessagesInput,
   FIRST_OFFSET,
+  limitOf,
   ListChannelsInput,
   ReadMessagesInput,
 };

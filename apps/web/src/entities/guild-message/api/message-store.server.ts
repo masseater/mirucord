@@ -9,6 +9,7 @@ import { erasedAuthor } from "#/entities/guild-message/model/erased-author.schem
 import {
   BOUND_LIMIT,
   guildMessage,
+  SEALED_COLUMNS,
   TRACKED_COLUMNS,
 } from "#/entities/guild-message/model/guild-message.schema";
 
@@ -16,7 +17,10 @@ import { migrateGuild } from "./guild-migrations.server";
 import { messageQueries } from "./message-queries.server";
 import { nextVersion, searchHooks } from "./search-hooks.server";
 import type {
+  AuthoredMessage,
+  AuthorPage,
   ChannelCount,
+  ChannelOldest,
   CreatedRange,
   ExtractedHashes,
   IndexedMessage,
@@ -37,14 +41,6 @@ const NEXT_WRITE = 1;
 type Seq = Readonly<{ seq: number }>;
 
 type Versioned = StoredRow & Readonly<{ tokens: readonly number[]; version: number }>;
-
-const SEALED_COLUMNS = {
-  id: guildMessage.id,
-  channelId: guildMessage.channelId,
-  sealed: guildMessage.sealed,
-  createdAt: guildMessage.createdAt,
-  editedAt: guildMessage.editedAt,
-};
 
 abstract class MessageStore extends DurableObject {
   protected readonly db = this.#open();
@@ -243,6 +239,18 @@ abstract class MessageStore extends DurableObject {
     return this.#queries.countByChannel(channelIds);
   }
 
+  public oldestByChannel(channelIds: readonly string[]): readonly ChannelOldest[] {
+    return this.#queries.oldestByChannel(channelIds);
+  }
+
+  public authors(ids: readonly string[]): readonly AuthoredMessage[] {
+    return this.#queries.authors(ids);
+  }
+
+  public readByAuthor(page: AuthorPage): readonly SealedMessage[] {
+    return this.#queries.byAuthor(page);
+  }
+
   #createdAtOf(channelId: string, id: string): Option.Option<number> {
     const target = and(eq(guildMessage.id, id), eq(guildMessage.channelId, channelId));
     const found = this.db
@@ -269,4 +277,4 @@ abstract class MessageStore extends DurableObject {
   }
 }
 
-export { MessageStore, SEALED_COLUMNS };
+export { MessageStore };

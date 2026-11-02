@@ -127,7 +127,7 @@
           ],
         },
         {
-          "extends": "NoteStore",
+          "extends": "RelationStore",
           "members": [
             "phraseNotes",
             "claimPhraseNotes",

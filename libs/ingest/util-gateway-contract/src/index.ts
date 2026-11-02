@@ -5,6 +5,8 @@ export type {
   ForgetJob,
   GatewayJob,
   MembersJob,
+  ReactionChange,
+  ReactionsJob,
   RefreshJob,
   StoreJob,
   VoiceChange,

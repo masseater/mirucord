@@ -70,6 +70,47 @@ const VoiceSnapshotJobSchema = Schema.Struct({
   present: Schema.Array(Schema.Struct({ userId: Schema.String, channelId: Schema.String })),
 });
 
+const ReactionTarget = {
+  channelId: Schema.String,
+  messageId: Schema.String,
+  at: Schema.Finite,
+};
+
+const ReactionChangeSchema = Schema.Union([
+  Schema.Struct({
+    kind: Schema.Literal("add"),
+    ...ReactionTarget,
+    userId: Schema.String,
+    messageAuthorId: Schema.NullOr(Schema.String),
+    emoji: Schema.String,
+    burst: Schema.Boolean,
+  }),
+  Schema.Struct({
+    kind: Schema.Literal("remove"),
+    ...ReactionTarget,
+    userId: Schema.String,
+    emoji: Schema.String,
+    burst: Schema.Boolean,
+  }),
+  Schema.Struct({
+    kind: Schema.Literal("clear"),
+    ...ReactionTarget,
+    emoji: Schema.NullOr(Schema.String),
+  }),
+  Schema.Struct({
+    kind: Schema.Literals(["vote", "unvote"]),
+    ...ReactionTarget,
+    userId: Schema.String,
+    answerId: Schema.Int,
+  }),
+]);
+
+const ReactionsJobSchema = Schema.Struct({
+  kind: Schema.Literal("reactions"),
+  guildId: Schema.String,
+  changes: Schema.NonEmptyArray(ReactionChangeSchema),
+});
+
 const ResyncJobSchema = Schema.Struct({ kind: Schema.Literal("resync") });
 
 const GatewayJobSchema = Schema.Union([
@@ -83,6 +124,7 @@ const GatewayJobSchema = Schema.Union([
   DepartJobSchema,
   VoiceJobSchema,
   VoiceSnapshotJobSchema,
+  ReactionsJobSchema,
   ResyncJobSchema,
 ]);
 
@@ -104,12 +146,18 @@ type VoiceSnapshotJob = typeof VoiceSnapshotJobSchema.Type;
 
 type VoiceChange = typeof VoiceChangeSchema.Type;
 
+type ReactionsJob = typeof ReactionsJobSchema.Type;
+
+type ReactionChange = typeof ReactionChangeSchema.Type;
+
 export { GatewayJobSchema };
 export type {
   DepartJob,
   ForgetJob,
   GatewayJob,
   MembersJob,
+  ReactionChange,
+  ReactionsJob,
   RefreshJob,
   StoreJob,
   VoiceChange,

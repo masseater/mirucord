@@ -6,7 +6,7 @@ type MemberJob = Extract<GatewayJob, Readonly<{ kind: "members" | "depart" }>>;
 
 type GuildWideJob = Extract<
   GatewayJob,
-  Readonly<{ kind: "members" | "depart" | "voice" | "voiceSnapshot" }>
+  Readonly<{ kind: "members" | "depart" | "voice" | "voiceSnapshot" | "reactions" }>
 >;
 
 const isGuildJob = (job: GatewayJob): job is GuildJob =>
@@ -21,7 +21,7 @@ const isVoiceJob = (job: GatewayJob): job is VoiceJobs =>
   job.kind === "voice" || job.kind === "voiceSnapshot";
 
 const isGuildWideJob = (job: GatewayJob): job is GuildWideJob =>
-  isMemberJob(job) || isVoiceJob(job);
+  isMemberJob(job) || isVoiceJob(job) || job.kind === "reactions";
 
 const subjectOf = (job: GatewayJob): Readonly<Record<string, string>> => {
   if (job.kind === "resync") {

@@ -11,8 +11,12 @@ import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway
 import { forgetGuild } from "./guild-membership.server";
 import type { IngestError } from "./message-page.server";
 import { resyncGuilds } from "./resync.server";
+import {
+  storeGatewayReactions,
+  storeGatewayVoice,
+  storeVoiceSnapshot,
+} from "./store-activity.server";
 import { departGatewayMembers, storeGatewayMembers } from "./store-members.server";
-import { storeGatewayVoice, storeVoiceSnapshot } from "./store-voice.server";
 import { syncJoinedGuild, syncKnownGuild } from "./sync-guilds.server";
 
 const PROCESSED = 200;
@@ -35,6 +39,7 @@ const runJob: (job: GatewayJob) => Effect.Effect<void, IngestError> = Match.type
     depart: departGatewayMembers,
     voice: storeGatewayVoice,
     voiceSnapshot: storeVoiceSnapshot,
+    reactions: storeGatewayReactions,
   }),
 );
 

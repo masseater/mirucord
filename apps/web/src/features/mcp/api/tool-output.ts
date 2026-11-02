@@ -94,6 +94,45 @@ const ListVoiceSessionsOutput = Schema.Struct({
   total: Schema.Int,
   sessions: Schema.Array(VoiceSession),
 });
+const Reaction = Schema.Struct({
+  messageId: Schema.String,
+  channelId: Schema.String,
+  userId: Schema.String,
+  messageAuthorId: Schema.NullOr(Schema.String),
+  emoji: Schema.String,
+  burst: Schema.Boolean,
+  reactedAt: Schema.String,
+});
+const Vote = Schema.Struct({
+  messageId: Schema.String,
+  channelId: Schema.String,
+  userId: Schema.String,
+  answerId: Schema.Int,
+  votedAt: Schema.String,
+});
+const LiveReaction = Schema.Struct({
+  emoji: Schema.String,
+  burst: Schema.Boolean,
+  userIds: Schema.Array(Schema.String),
+});
+const LiveAnswer = Schema.Struct({
+  answerId: Schema.Int,
+  text: Schema.NullOr(Schema.String),
+  userIds: Schema.Array(Schema.String),
+});
+const LiveMessage = Schema.Struct({
+  authorId: Schema.String,
+  reactions: Schema.Array(LiveReaction),
+  votes: Schema.Array(LiveAnswer),
+});
+const ListReactionsOutput = Schema.Struct({
+  ingest: Schema.Literals(["consented", "notConsented"]),
+  reactionTotal: Schema.Int,
+  reactions: Schema.Array(Reaction),
+  voteTotal: Schema.Int,
+  votes: Schema.Array(Vote),
+  live: Schema.NullOr(LiveMessage),
+});
 const ReadMessagesOutput = Schema.Struct({
   ingest: Schema.optionalKey(Ingest),
   notFullyIngested: Schema.optionalKey(Schema.Array(PendingChannel)),
@@ -105,6 +144,7 @@ export {
   FindSimilarMessagesOutput,
   ListChannelsOutput,
   ListMembersOutput,
+  ListReactionsOutput,
   ListServerPhrasesOutput,
   ListServersOutput,
   ListVoiceSessionsOutput,

@@ -21,6 +21,8 @@ const INTENTS =
   Discord.GatewayIntentBits.GuildMembers +
   Discord.GatewayIntentBits.GuildVoiceStates +
   Discord.GatewayIntentBits.GuildMessages +
+  Discord.GatewayIntentBits.GuildMessageReactions +
+  Discord.GatewayIntentBits.GuildMessagePolls +
   Discord.GatewayIntentBits.MessageContent;
 
 type GatewayJobs = ReturnType<typeof mergeJobs>;

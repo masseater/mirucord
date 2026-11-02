@@ -34,4 +34,4 @@ const subjectOf = (job: GatewayJob): Readonly<Record<string, string>> => {
 };
 
 export { isGuildJob, isGuildWideJob, isMemberJob, isVoiceJob, subjectOf };
-export type { GuildJob, MemberJob };
+export type { GuildJob, GuildWideJob, MemberJob, VoiceJobs };

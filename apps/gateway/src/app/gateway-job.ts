@@ -130,9 +130,6 @@ const jobOfDispatch = Match.type<Discord.GatewayDispatchPayload>().pipe(
   Match.orElse((): Option.Option<GatewayJob> => Option.none()),
 );
 
-const toGatewayJob = (payload: GatewayPayload): Option.Option<GatewayJob> =>
-  Option.liftPredicate(payload, isDispatch).pipe(Option.flatMap(jobOfDispatch));
-
 type Received = Readonly<{ payload: GatewayPayload; now: number }>;
 
 const toGatewayJobs = ({ payload, now }: Received): readonly GatewayJob[] =>
@@ -293,5 +290,5 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
   ];
 };
 
-export { jobKeyOf, mergeJobs, toGatewayJob, toGatewayJobs };
+export { jobKeyOf, mergeJobs, toGatewayJobs };
 export type { GatewayPayload, Received };

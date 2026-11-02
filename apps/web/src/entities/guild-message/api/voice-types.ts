@@ -30,6 +30,7 @@ type VoicePage = Readonly<{ total: number; sessions: readonly StoredVoiceSession
 export type {
   StoredVoiceSession,
   VoiceMoment,
+  VoicePrecision,
   VoiceChangeWrite,
   VoiceLookup,
   VoicePage,

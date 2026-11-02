@@ -3,7 +3,8 @@ import { Discord } from "dfx";
 import { Array, Option, pipe, Record } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { mergeJobs, toGatewayJob } from "./gateway-job";
+import { mergeJobs, toGatewayJobs } from "./gateway-job";
+import type { Received } from "./gateway-job";
 
 const BURST = 150;
 const FIRST_ID = 1000;
@@ -11,8 +12,13 @@ const MESSAGES_PER_JOB = 100;
 
 const MESSAGE = { id: "711", channel_id: "710", guild_id: "700" };
 
+const RECEIVED_AT = 0;
+
+const firstJobOf = (payload: Received["payload"]): Option.Option<GatewayJob> =>
+  Array.head(toGatewayJobs({ payload, now: RECEIVED_AT }));
+
 const jobOf = (event: Discord.GatewayDispatchEvents, data: unknown): Option.Option<GatewayJob> =>
-  toGatewayJob({
+  firstJobOf({
     op: Discord.GatewayOpcodes.Dispatch,
     ...Record.fromEntries([
       ["t", event],
@@ -108,7 +114,7 @@ it("ignores direct messages and other events", () => {
     jobOf(Discord.GatewayDispatchEvents.MessageCreate, { id: "1", channel_id: "2" }),
   ).toStrictEqual(Option.none());
   expect(jobOf(Discord.GatewayDispatchEvents.TypingStart, MESSAGE)).toStrictEqual(Option.none());
-  expect(toGatewayJob({ op: Discord.GatewayOpcodes.HeartbeatAck })).toStrictEqual(Option.none());
+  expect(firstJobOf({ op: Discord.GatewayOpcodes.HeartbeatAck })).toStrictEqual(Option.none());
 });
 
 it("asks to welcome a server the bot has joined", () => {

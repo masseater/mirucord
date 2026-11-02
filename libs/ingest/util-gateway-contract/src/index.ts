@@ -13,4 +13,4 @@ export type {
 } from "./gateway-job-schema";
 export { signGatewayEvent, verifyGatewayEvent } from "./gateway-signature";
 export { isGuildJob, isGuildWideJob, isMemberJob, isVoiceJob, subjectOf } from "./subject";
-export type { GuildJob, MemberJob } from "./subject";
+export type { GuildJob, GuildWideJob, MemberJob, VoiceJobs } from "./subject";

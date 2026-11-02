@@ -30,4 +30,4 @@ export type { OutgoingMessage } from "./outreach.server";
 export { botInviteUrl } from "./invite.server";
 export { liveReactionsOf } from "./reactions.server";
 export type { LiveReactions } from "./reactions.server";
-export { liveInterestedOf } from "./scheduled-events.server";
+export { liveInterestedOf, liveThreadMembersOf } from "./live-users.server";

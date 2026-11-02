@@ -11,6 +11,8 @@ export type {
   ScheduledEventChange,
   ScheduledEventsJob,
   StoreJob,
+  ThreadMemberChange,
+  ThreadMembersJob,
   VoiceChange,
   VoiceJob,
   VoiceSnapshotJob,

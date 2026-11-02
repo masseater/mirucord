@@ -5,12 +5,10 @@ import type { DiscordMessage } from "@repo/shared-util-discord";
 import { Discord } from "dfx";
 import { Array, Match, Option, pipe, Record, Schema } from "effect";
 
+import { ACTIVITY_JOBS, mergeActivityJobs } from "./activity-job";
 import { guildUpdateJob, joinJob, leaveJob, resyncJob, syncJob, syncJobOf } from "./guild-job";
 import { guildWideKeyOf } from "./guild-wide-key";
 import { departJob, membersJob, mergeMemberJobs } from "./member-job";
-import { mergeReactionJobs, reactionJobOf } from "./reaction-job";
-import { mergeScheduledEventJobs, scheduledEventJobOf } from "./scheduled-event-job";
-import { mergeVoiceJobs, voiceJobOf } from "./voice-job";
 
 type GatewayPayload = Readonly<{ op: Discord.GatewayOpcodes }>;
 
@@ -140,9 +138,10 @@ const toGatewayJobs = ({ payload, now }: Received): readonly GatewayJob[] =>
     onNone: () => [],
     onSome: (dispatch) => [
       ...Option.toArray(jobOfDispatch(dispatch)),
-      ...Option.toArray(voiceJobOf(dispatch)(now)),
-      ...Option.toArray(reactionJobOf(dispatch)(now)),
-      ...Option.toArray(scheduledEventJobOf(dispatch)(now)),
+      ...pipe(
+        ACTIVITY_JOBS,
+        Array.flatMap((jobOf) => Option.toArray(jobOf(dispatch)(now))),
+      ),
     ],
   });
 
@@ -277,9 +276,7 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
     ...moves,
     ...syncs,
     ...mergeMemberJobs(jobs),
-    ...mergeVoiceJobs(jobs),
-    ...mergeReactionJobs(jobs),
-    ...mergeScheduledEventJobs(jobs),
+    ...mergeActivityJobs(jobs),
     ...pipe(
       Record.values(groups),
       Array.flatMap((group) => jobsOfGroup(group)),

@@ -241,3 +241,4 @@ const reactionLedger = (db: DrizzleSqliteDODatabase): ReactionLedger => ({
 
 export { reactionLedger };
 export type { ReactionLedger };
+export type { ReactionLookup, ReactionPage } from "./reaction-types";

@@ -4,11 +4,11 @@ import { ENV_PREFIX, PREFIX } from "@repo/shared-util-app-name/app-name";
 import { ServerHost } from "alchemy/Runtime/Process";
 import { Discord, DiscordConfig } from "dfx";
 import { DiscordGateway, DiscordLive } from "dfx/gateway";
-import { Config, Effect, Filter, Layer, Redacted, Stream } from "effect";
+import { Clock, Config, Effect, Layer, Redacted, Stream } from "effect";
 import { FetchHttpClient } from "effect/http";
 
 import { makeDeliver } from "./deliver";
-import { mergeJobs, toGatewayJob } from "./gateway-job";
+import { mergeJobs, toGatewayJobs } from "./gateway-job";
 
 const GatewayApp = App("MirucordGatewayApp", { name: `${PREFIX}gateway-app` });
 
@@ -19,6 +19,7 @@ const FLUSH_INTERVAL = "5 seconds";
 const INTENTS =
   Discord.GatewayIntentBits.Guilds +
   Discord.GatewayIntentBits.GuildMembers +
+  Discord.GatewayIntentBits.GuildVoiceStates +
   Discord.GatewayIntentBits.GuildMessages +
   Discord.GatewayIntentBits.MessageContent;
 
@@ -48,7 +49,10 @@ const relayDispatch = (botToken: string): Effect.Effect<void, never, DiscordGate
     const deliver = yield* makeDeliver(botToken);
     const gateway = yield* DiscordGateway;
     yield* gateway.dispatch.pipe(
-      Stream.filterMap(Filter.fromPredicateOption(toGatewayJob)),
+      Stream.mapEffect((payload) =>
+        Clock.currentTimeMillis.pipe(Effect.map((now) => toGatewayJobs({ payload, now }))),
+      ),
+      Stream.flattenIterable,
       Stream.groupedWithin(FLUSH_EVENTS, FLUSH_INTERVAL),
       Stream.mapEffect(mergeBatch),
       Stream.flattenIterable,

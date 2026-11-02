@@ -7,7 +7,10 @@ export type {
   MembersJob,
   RefreshJob,
   StoreJob,
+  VoiceChange,
+  VoiceJob,
+  VoiceSnapshotJob,
 } from "./gateway-job-schema";
 export { signGatewayEvent, verifyGatewayEvent } from "./gateway-signature";
-export { isGuildJob, isMemberJob, subjectOf } from "./subject";
+export { isGuildJob, isGuildWideJob, isMemberJob, isVoiceJob, subjectOf } from "./subject";
 export type { GuildJob, MemberJob } from "./subject";

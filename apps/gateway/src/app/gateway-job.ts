@@ -1,4 +1,4 @@
-import { isGuildJob, isMemberJob } from "@repo/ingest-util-gateway-contract";
+import { isGuildJob, isGuildWideJob, isMemberJob } from "@repo/ingest-util-gateway-contract";
 import type { GatewayJob, GuildJob } from "@repo/ingest-util-gateway-contract";
 import { DiscordMessageSchema } from "@repo/shared-util-discord";
 import type { DiscordMessage } from "@repo/shared-util-discord";
@@ -7,6 +7,7 @@ import { Array, Match, Option, pipe, Record, Schema } from "effect";
 
 import { guildUpdateJob, joinJob, leaveJob, resyncJob, syncJob, syncJobOf } from "./guild-job";
 import { departJob, memberJobKeyOf, membersJob, mergeMemberJobs } from "./member-job";
+import { mergeVoiceJobs, voiceJobKeyOf, voiceJobOf } from "./voice-job";
 
 type GatewayPayload = Readonly<{ op: Discord.GatewayOpcodes }>;
 
@@ -132,7 +133,28 @@ const jobOfDispatch = Match.type<Discord.GatewayDispatchPayload>().pipe(
 const toGatewayJob = (payload: GatewayPayload): Option.Option<GatewayJob> =>
   Option.liftPredicate(payload, isDispatch).pipe(Option.flatMap(jobOfDispatch));
 
+type Received = Readonly<{ payload: GatewayPayload; now: number }>;
+
+const toGatewayJobs = ({ payload, now }: Received): readonly GatewayJob[] =>
+  Option.match(Option.liftPredicate(payload, isDispatch), {
+    onNone: () => [],
+    onSome: (dispatch) => [
+      ...Option.toArray(jobOfDispatch(dispatch)),
+      ...Option.toArray(voiceJobOf(dispatch)(now)),
+    ],
+  });
+
 type Membership = Extract<GuildJob["kind"], "join" | "leave">;
+
+const guildWideKeyOf = (job: GatewayJob & Readonly<{ guildId: string }>): string => {
+  if (isMemberJob(job)) {
+    return memberJobKeyOf(job);
+  }
+  if (job.kind === "voice" || job.kind === "voiceSnapshot") {
+    return voiceJobKeyOf(job);
+  }
+  return job.guildId;
+};
 
 const jobKeyOf = (job: GatewayJob): string => {
   if (job.kind === "resync") {
@@ -144,8 +166,8 @@ const jobKeyOf = (job: GatewayJob): string => {
   if (job.kind === "store") {
     return Array.headNonEmpty(job.messages).id;
   }
-  if (isMemberJob(job)) {
-    return memberJobKeyOf(job);
+  if (isGuildWideJob(job)) {
+    return guildWideKeyOf(job);
   }
   return Array.headNonEmpty(job.messageIds);
 };
@@ -153,7 +175,7 @@ const jobKeyOf = (job: GatewayJob): string => {
 type MessageChange = Place & Readonly<{ messageId: string; change: Change }>;
 
 const messageChangesOf = (job: GatewayJob): readonly MessageChange[] => {
-  if (job.kind === "resync" || isGuildJob(job) || isMemberJob(job)) {
+  if (job.kind === "resync" || isGuildJob(job) || isGuildWideJob(job)) {
     return [];
   }
   const place = { guildId: job.guildId, channelId: job.channelId };
@@ -263,6 +285,7 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
     ...moves,
     ...syncs,
     ...mergeMemberJobs(jobs),
+    ...mergeVoiceJobs(jobs),
     ...pipe(
       Record.values(groups),
       Array.flatMap((group) => jobsOfGroup(group)),
@@ -270,5 +293,5 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
   ];
 };
 
-export { jobKeyOf, mergeJobs, toGatewayJob };
-export type { GatewayPayload };
+export { jobKeyOf, mergeJobs, toGatewayJob, toGatewayJobs };
+export type { GatewayPayload, Received };

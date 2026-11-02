@@ -4,21 +4,34 @@ type GuildJob = Extract<GatewayJob, Readonly<{ kind: "join" | "sync" | "leave" }
 
 type MemberJob = Extract<GatewayJob, Readonly<{ kind: "members" | "depart" }>>;
 
+type GuildWideJob = Extract<
+  GatewayJob,
+  Readonly<{ kind: "members" | "depart" | "voice" | "voiceSnapshot" }>
+>;
+
 const isGuildJob = (job: GatewayJob): job is GuildJob =>
   job.kind === "join" || job.kind === "sync" || job.kind === "leave";
 
 const isMemberJob = (job: GatewayJob): job is MemberJob =>
   job.kind === "members" || job.kind === "depart";
 
+type VoiceJobs = Extract<GatewayJob, Readonly<{ kind: "voice" | "voiceSnapshot" }>>;
+
+const isVoiceJob = (job: GatewayJob): job is VoiceJobs =>
+  job.kind === "voice" || job.kind === "voiceSnapshot";
+
+const isGuildWideJob = (job: GatewayJob): job is GuildWideJob =>
+  isMemberJob(job) || isVoiceJob(job);
+
 const subjectOf = (job: GatewayJob): Readonly<Record<string, string>> => {
   if (job.kind === "resync") {
     return { kind: job.kind };
   }
-  if (isGuildJob(job) || isMemberJob(job)) {
+  if (isGuildJob(job) || isGuildWideJob(job)) {
     return { kind: job.kind, guildId: job.guildId };
   }
   return { kind: job.kind, channelId: job.channelId };
 };
 
-export { isGuildJob, isMemberJob, subjectOf };
+export { isGuildJob, isGuildWideJob, isMemberJob, isVoiceJob, subjectOf };
 export type { GuildJob, MemberJob };

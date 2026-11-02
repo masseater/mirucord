@@ -1,9 +1,7 @@
-import { Array, Clock, Effect, Option, pipe } from "effect";
+import { Clock, Effect, Option } from "effect";
 
-import { memberLedger } from "./member-ledger.server";
-import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
-import { NoteStore } from "./note-store.server";
 import { backfillPhrases } from "./phrase-backfill.server";
+import { RelationStore } from "./relation-store.server";
 import type {
   ExtractedPhrases,
   NoteClaim,
@@ -20,51 +18,8 @@ import type {
 } from "./store-types";
 import { vectorLedger } from "./vector-ledger.server";
 import type { Coverage } from "./vector-ledger.server";
-import { voiceLedger } from "./voice-ledger.server";
-import type { VoiceChangeWrite, VoiceLookup, VoicePage, VoiceSnapshotWrite } from "./voice-types";
 
-class GuildStore extends NoteStore {
-  readonly #members = memberLedger(this.db);
-
-  readonly #voice = voiceLedger(this.db);
-
-  #erasedIds(): readonly string[] {
-    return pipe(
-      this.erasedAuthors(),
-      Array.map(({ id }) => id),
-    );
-  }
-
-  public saveMembers(request: MemberWrite): void {
-    this.#members.write(request, this.#erasedIds());
-  }
-
-  public departMembers(userIds: readonly string[], now: number): void {
-    this.#members.depart(userIds, now);
-  }
-
-  public readMembers(lookup: MemberLookup): readonly StoredMember[] {
-    return this.#members.read(lookup, this.#erasedIds());
-  }
-
-  public saveVoiceChanges(changes: readonly VoiceChangeWrite[]): void {
-    this.#voice.change(changes, this.#erasedIds());
-  }
-
-  public saveVoiceSnapshot(snapshot: VoiceSnapshotWrite): void {
-    this.#voice.snapshot(snapshot, this.#erasedIds());
-  }
-
-  public readVoiceSessions(lookup: VoiceLookup): VoicePage {
-    return this.#voice.read(lookup, this.#erasedIds());
-  }
-
-  public override eraseAuthor(authorId: string): Promise<void> {
-    this.#members.forget(authorId);
-    this.#voice.forget(authorId);
-    return super.eraseAuthor(authorId);
-  }
-
+class GuildStore extends RelationStore {
   public phraseStats({
     guildId,
     visibility,
@@ -101,7 +56,7 @@ class GuildStore extends NoteStore {
   }
 
   public writePhrases(extracted: readonly ExtractedPhrases[]): void {
-    const erased = new Set(this.#erasedIds());
+    const erased = new Set(this.erasedIds());
     for (const { message, hashes } of extracted) {
       if (this.markExtracted(message.id) && !erased.has(message.authorId)) {
         this.recordPhrases(message, hashes);

@@ -4,7 +4,7 @@ import { Array, DateTime, Effect, Option, pipe } from "effect";
 import { guildStore } from "#/entities/guild-message/index.server";
 import type { StoredVoiceSession } from "#/entities/guild-message/index.server";
 import type { ListVoiceSessionsInput } from "#/features/mcp/api/tool-input";
-import { FIRST_OFFSET, memberLimitOf } from "#/features/mcp/api/tool-input";
+import { spanLookupOf } from "#/features/mcp/api/tool-input";
 import type { ListVoiceSessionsOutput } from "#/features/mcp/api/tool-output";
 
 import type { GuildScope } from "./scope.server";
@@ -18,9 +18,6 @@ const momentOf = ({ at, precision }: StoredVoiceSession["joined"]): SessionView[
   at: DateTime.formatIso(DateTime.makeUnsafe(at)),
   precision,
 });
-
-const millisOf = (at: DateTime.Utc | undefined): number | null =>
-  Option.getOrNull(Option.map(Option.fromUndefinedOr(at), DateTime.toEpochMillis));
 
 const channelsOf = ({ scope, input }: VoiceRequest): readonly string[] =>
   Option.match(Option.fromUndefinedOr(input.channelIds), {
@@ -37,12 +34,8 @@ const sessionsOf = (request: VoiceRequest): Effect.Effect<typeof ListVoiceSessio
     ),
   );
   const lookup = {
+    ...spanLookupOf(input),
     channelIds: channelsOf(request),
-    userIds: Option.getOrNull(Option.fromUndefinedOr(input.userIds)),
-    since: millisOf(input.since),
-    until: millisOf(input.until),
-    limit: memberLimitOf(input.limit),
-    offset: Option.getOrElse(Option.fromUndefinedOr(input.offset), () => FIRST_OFFSET),
   };
   return Effect.promise(() => guildStore(scope.guild.guildId).readVoiceSessions(lookup)).pipe(
     Effect.map(({ total, sessions }) => ({

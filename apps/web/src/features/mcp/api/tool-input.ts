@@ -1,4 +1,4 @@
-import { Option, Schema } from "effect";
+import { DateTime, Option, Schema } from "effect";
 
 const FIRST_OFFSET = 0;
 const MAX_LIMIT = 50;
@@ -49,7 +49,7 @@ const ListMembersInput = Schema.Struct({
   offset: Offset,
 });
 
-const ListVoiceSessionsInput = Schema.Struct({
+const SpanFilter = {
   serverId: Schema.String,
   userIds: Schema.optionalKey(Ids),
   channelIds: Schema.optionalKey(Ids),
@@ -57,10 +57,44 @@ const ListVoiceSessionsInput = Schema.Struct({
   until: Schema.optionalKey(Schema.DateTimeUtcFromString),
   limit: Schema.optionalKey(MemberLimit),
   offset: Offset,
+};
+
+const ListVoiceSessionsInput = Schema.Struct(SpanFilter);
+
+const MessageRef = Schema.Struct({ channelId: Schema.String, messageId: Schema.String });
+
+const ListReactionsInput = Schema.Struct({
+  ...SpanFilter,
+  message: Schema.optionalKey(MessageRef),
+  authorIds: Schema.optionalKey(Ids),
 });
 
 const memberLimitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_MEMBER_LIMIT);
+
+type SpanInput = Pick<
+  typeof ListVoiceSessionsInput.Type,
+  "userIds" | "since" | "until" | "limit" | "offset"
+>;
+
+type SpanLookup = Readonly<{
+  userIds: readonly string[] | null;
+  since: number | null;
+  until: number | null;
+  limit: number;
+  offset: number;
+}>;
+
+const millisOf = (at: DateTime.Utc | undefined): number | null =>
+  Option.getOrNull(Option.map(Option.fromUndefinedOr(at), DateTime.toEpochMillis));
+
+const spanLookupOf = (input: SpanInput): SpanLookup => ({
+  userIds: Option.getOrNull(Option.fromUndefinedOr(input.userIds)),
+  since: millisOf(input.since),
+  until: millisOf(input.until),
+  limit: memberLimitOf(input.limit),
+  offset: Option.getOrElse(Option.fromUndefinedOr(input.offset), () => FIRST_OFFSET),
+});
 
 export {
   FindMessagesInput,
@@ -69,7 +103,10 @@ export {
   limitOf,
   ListChannelsInput,
   ListMembersInput,
+  ListReactionsInput,
   ListVoiceSessionsInput,
   memberLimitOf,
   ReadMessagesInput,
+  spanLookupOf,
 };
+export type { SpanInput, SpanLookup };

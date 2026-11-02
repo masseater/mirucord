@@ -5,7 +5,7 @@ import { RelationStore } from "./relation-store.server";
 abstract class InviteStore extends RelationStore {
   readonly #invites = inviteLedger(this.db);
 
-  public recordInviteJoins(write: InviteJoinWrite): void {
+  public saveInviteCounts(write: InviteJoinWrite): void {
     this.#invites.record(write, this.erasedIds());
   }
 

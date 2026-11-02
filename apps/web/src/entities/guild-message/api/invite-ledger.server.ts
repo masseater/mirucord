@@ -180,4 +180,11 @@ const inviteLedger = (db: DrizzleSqliteDODatabase): InviteLedger => ({
 });
 
 export { inviteLedger };
-export type { InviteJoinLookup, InviteJoinPage, InviteJoinWrite, InviteLedger, StoredInviteJoin };
+export type {
+  InviteJoinLookup,
+  InviteJoinPage,
+  InviteJoinWrite,
+  InviteLedger,
+  Joiner,
+  StoredInviteJoin,
+};

@@ -38,7 +38,7 @@ const saveCounts =
   ({ guildId, joiners }: InviteJoinRequest, fetchedAt: number) =>
   (invites: readonly GuildInviteCount[]): Effect.Effect<void> =>
     Effect.promise(() =>
-      guildStore(guildId).recordInviteJoins({ fetchedAt, invites, joiners }),
+      guildStore(guildId).saveInviteCounts({ fetchedAt, invites, joiners }),
     ).pipe(
       Effect.andThen(logStored({ guildId, joiners: joiners.length, invites: invites.length })),
     );
@@ -67,3 +67,4 @@ const recordInviteJoins = (request: InviteJoinRequest): Effect.Effect<void> =>
   );
 
 export { joinersOf, recordInviteJoins };
+export type { InviteJoinRequest, Joiner };

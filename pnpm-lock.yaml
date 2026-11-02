@@ -209,9 +209,6 @@ catalogs:
     '@sapphire/bitfield':
       specifier: 1.2.4
       version: 1.2.4
-    '@sapphire/snowflake':
-      specifier: 3.5.5
-      version: 3.5.5
     '@shadcn/lint':
       specifier: 0.2.3
       version: 0.2.3
@@ -531,9 +528,6 @@ importers:
       '@repo/shared-util-discord':
         specifier: workspace:*
         version: link:../../libs/shared/util-discord
-      '@sapphire/snowflake':
-        specifier: 'catalog:'
-        version: 3.5.5
       alchemy:
         specifier: catalog:stack
         version: 2.0.0-beta.84(@effect/platform-node@4.0.7(effect@4.0.7)(redis@6.2.1(@opentelemetry/api@1.9.1)))(@effect/vitest@4.0.7(effect@4.0.7)(vitest@5.0.5))(@types/node@26.6.6)(@types/react@19.3.0)(effect@4.0.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@5.9.3)(ws@8.22.0)
@@ -3716,10 +3710,6 @@ packages:
 
   '@sapphire/bitfield@1.2.4':
     resolution: {integrity: sha512-x0Zvb5jbn8A9fOdWksvxPuXdHGzk6v0Z5ogcYKKg06Az/Ih2WupKZ88CIX1/pZWk6vBWqH5LAU0lOVtEaw7D/A==}
-    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
-
-  '@sapphire/snowflake@3.5.5':
-    resolution: {integrity: sha512-xzvBr1Q1c4lCe7i6sRnrofxeO1QTP/LKQ6A6qy0iB4x5yfiSfARMEQEghojzTNALDTcv8En04qYNIco9/K9eZQ==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
   '@sec-ant/readable-stream@0.4.1':
@@ -12548,8 +12538,6 @@ snapshots:
   '@rolldown/pluginutils@1.0.1': {}
 
   '@sapphire/bitfield@1.2.4': {}
-
-  '@sapphire/snowflake@3.5.5': {}
 
   '@sec-ant/readable-stream@0.4.1': {}
 

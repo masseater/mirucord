@@ -7,15 +7,7 @@ type MemberJob = Extract<GatewayJob, Readonly<{ kind: "members" | "depart" }>>;
 type GuildWideJob = Extract<
   GatewayJob,
   Readonly<{
-    kind:
-      | "members"
-      | "depart"
-      | "voice"
-      | "voiceSnapshot"
-      | "reactions"
-      | "scheduledEvents"
-      | "threadMembers"
-      | "auditLog";
+    kind: "members" | "depart" | "voice" | "voiceSnapshot" | "reactions";
   }>
 >;
 
@@ -36,9 +28,6 @@ const GUILD_WIDE_KINDS: ReadonlySet<GatewayJob["kind"]> = new Set([
   "voice",
   "voiceSnapshot",
   "reactions",
-  "scheduledEvents",
-  "threadMembers",
-  "auditLog",
 ]);
 
 const isGuildWideJob = (job: GatewayJob): job is GuildWideJob => GUILD_WIDE_KINDS.has(job.kind);

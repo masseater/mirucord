@@ -1,5 +1,5 @@
 import type { DepartJob, MembersJob } from "@repo/ingest-util-gateway-contract";
-import { Array, Clock, DateTime, Effect, Option, pipe } from "effect";
+import { Clock, DateTime, Effect, Option, pipe } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import type { MemberWrite } from "#/entities/guild-message/index.server";
@@ -8,7 +8,6 @@ import { listGuildMembers } from "#/shared/discord/index.server";
 import type { DiscordGuildMember, DiscordRequestError } from "#/shared/discord/index.server";
 
 import { whenConsented } from "./consented.server";
-import { joinersOf, recordInviteJoins } from "./invite-joins.server";
 
 type StoredMemberRow = MemberWrite["members"][number];
 
@@ -59,23 +58,12 @@ const syncMembers = (guildId: string): Effect.Effect<void, DiscordRequestError> 
   whenConsented(guildId)((wrappedKey) =>
     listGuildMembers(guildId).pipe(
       Effect.flatMap((members) => saveWith({ guildId, members, coverage: "complete" }, wrappedKey)),
-      Effect.andThen(recordInviteJoins({ guildId, joiners: [] })),
     ),
   ).pipe(Effect.withSpan("syncMembers", { attributes: { guildId } }));
 
 const storeGatewayMembers = ({ guildId, members }: MembersJob): Effect.Effect<void> =>
   whenConsented(guildId)((wrappedKey) =>
-    saveWith({ guildId, members, coverage: "partial" }, wrappedKey).pipe(
-      Effect.andThen(Clock.currentTimeMillis),
-      Effect.map((now) => joinersOf(now)(members)),
-      Effect.flatMap((joiners) =>
-        Effect.when(
-          recordInviteJoins({ guildId, joiners }),
-          Effect.succeed(Array.isReadonlyArrayNonEmpty(joiners)),
-        ),
-      ),
-      Effect.asVoid,
-    ),
+    saveWith({ guildId, members, coverage: "partial" }, wrappedKey),
   );
 
 const departGatewayMembers = ({ guildId, userIds }: DepartJob): Effect.Effect<void> =>

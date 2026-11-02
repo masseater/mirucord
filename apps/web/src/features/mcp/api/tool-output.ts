@@ -133,72 +133,6 @@ const ListReactionsOutput = Schema.Struct({
   votes: Schema.Array(Vote),
   live: Schema.NullOr(LiveMessage),
 });
-const ScheduledEvent = Schema.Struct({
-  eventId: Schema.String,
-  name: Schema.String,
-  description: Schema.NullOr(Schema.String),
-  channelId: Schema.NullOr(Schema.String),
-  channelName: Schema.NullOr(Schema.String),
-  creatorId: Schema.NullOr(Schema.String),
-  location: Schema.NullOr(Schema.String),
-  kind: Schema.String,
-  status: Schema.String,
-  startsAt: Schema.String,
-  endsAt: Schema.NullOr(Schema.String),
-  recurring: Schema.Boolean,
-  removedAt: Schema.NullOr(Schema.String),
-  interestedUserIds: Schema.Array(Schema.String),
-});
-const ListScheduledEventsOutput = Schema.Struct({
-  ingest: Schema.Literals(["consented", "notConsented"]),
-  total: Schema.Int,
-  events: Schema.Array(ScheduledEvent),
-  liveInterestedUserIds: Schema.NullOr(Schema.Array(Schema.String)),
-});
-const ThreadMember = Schema.Struct({
-  threadId: Schema.String,
-  threadName: Schema.NullOr(Schema.String),
-  userId: Schema.String,
-  joinedAt: Schema.String,
-  leftAt: Schema.NullOr(Schema.String),
-});
-const ListThreadMembersOutput = Schema.Struct({
-  ingest: Schema.Literals(["consented", "notConsented"]),
-  total: Schema.Int,
-  members: Schema.Array(ThreadMember),
-  liveUserIds: Schema.NullOr(Schema.Array(Schema.String)),
-});
-const AuditEntry = Schema.Struct({
-  entryId: Schema.String,
-  action: Schema.String,
-  userId: Schema.NullOr(Schema.String),
-  targetId: Schema.NullOr(Schema.String),
-  at: Schema.String,
-  reason: Schema.NullOr(Schema.String),
-  changes: Schema.Unknown,
-  options: Schema.Unknown,
-});
-const ListAuditLogOutput = Schema.Struct({
-  ingest: Schema.Literals(["consented", "notConsented"]),
-  total: Schema.Int,
-  entries: Schema.Array(AuditEntry),
-});
-const InviteCandidate = Schema.Struct({
-  code: Schema.String,
-  inviterId: Schema.NullOr(Schema.String),
-  channelId: Schema.NullOr(Schema.String),
-});
-const InviteJoin = Schema.Struct({
-  userId: Schema.String,
-  joinedAt: Schema.String,
-  precision: Schema.Literals(["exact", "ambiguous", "unknown"]),
-  invites: Schema.Array(InviteCandidate),
-});
-const ListMemberInvitesOutput = Schema.Struct({
-  ingest: Schema.Literals(["consented", "notConsented"]),
-  total: Schema.Int,
-  joins: Schema.Array(InviteJoin),
-});
 const LinkedAccount = Schema.Struct({
   type: Schema.String,
   name: Schema.String,
@@ -221,17 +155,13 @@ const ReadMessagesOutput = Schema.Struct({
 
 export {
   FindMessagesOutput,
-  ListAuditLogOutput,
   FindSimilarMessagesOutput,
   ListChannelsOutput,
   ListLinkedAccountsOutput,
-  ListMemberInvitesOutput,
   ListMembersOutput,
   ListReactionsOutput,
-  ListScheduledEventsOutput,
   ListServerPhrasesOutput,
   ListServersOutput,
-  ListThreadMembersOutput,
   ListVoiceSessionsOutput,
   ReadMessagesOutput,
 };

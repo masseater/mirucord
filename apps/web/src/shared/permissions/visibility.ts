@@ -97,5 +97,5 @@ const postableChannelIds: {
   (snapshot: GuildSnapshot, member: Option.Option<Member>): ReadonlySet<string>;
 } = Function.dual(DATA_FIRST_ARITY, postableChannelIdsDataFirst);
 
-export { isThread, postableChannelIds, visibleChannelIds };
+export { postableChannelIds, visibleChannelIds };
 export type { GuildChannel, GuildSnapshot, Member };

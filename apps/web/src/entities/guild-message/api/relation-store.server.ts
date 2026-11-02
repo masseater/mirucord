@@ -5,6 +5,8 @@ import type {
 } from "@repo/ingest-util-gateway-contract";
 import { Array, pipe } from "effect";
 
+import { auditLogLedger } from "./audit-log-ledger.server";
+import type { AuditLookup, AuditPage, StoredAuditEntry } from "./audit-log-ledger.server";
 import { memberLedger } from "./member-ledger.server";
 import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
 import { NoteStore } from "./note-store.server";
@@ -15,7 +17,12 @@ import type { ScheduledEventLookup, ScheduledEventPage } from "./scheduled-event
 import { threadMemberLedger } from "./thread-member-ledger.server";
 import type { ThreadMemberLookup, ThreadMemberPage } from "./thread-member-ledger.server";
 import { voiceLedger } from "./voice-ledger.server";
-import type { VoiceChangeWrite, VoiceLookup, VoicePage, VoiceSnapshotWrite } from "./voice-types";
+import type {
+  VoiceChangeWrite,
+  VoiceLookup,
+  VoicePage,
+  VoiceSnapshotWrite,
+} from "./voice-ledger.server";
 
 abstract class RelationStore extends NoteStore {
   readonly #members = memberLedger(this.db);
@@ -27,6 +34,8 @@ abstract class RelationStore extends NoteStore {
   readonly #events = scheduledEventLedger(this.db);
 
   readonly #threads = threadMemberLedger(this.db);
+
+  readonly #audit = auditLogLedger(this.db);
 
   protected erasedIds(): readonly string[] {
     return pipe(
@@ -83,6 +92,14 @@ abstract class RelationStore extends NoteStore {
     return this.#threads.read(lookup, this.erasedIds());
   }
 
+  public saveAuditEntries(entries: readonly StoredAuditEntry[]): void {
+    this.#audit.write(entries, this.erasedIds());
+  }
+
+  public readAuditEntries(lookup: AuditLookup): AuditPage {
+    return this.#audit.read(lookup, this.erasedIds());
+  }
+
   public keptUserIds(userIds: readonly string[]): readonly string[] {
     return Array.difference(userIds, this.erasedIds());
   }
@@ -104,6 +121,7 @@ abstract class RelationStore extends NoteStore {
     this.#reactions.forget(authorId);
     this.#events.forget(authorId);
     this.#threads.forget(authorId);
+    this.#audit.forget(authorId);
     return super.eraseAuthor(authorId);
   }
 }

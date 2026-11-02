@@ -12,6 +12,7 @@ import { forgetGuild } from "./guild-membership.server";
 import type { IngestError } from "./message-page.server";
 import { resyncGuilds } from "./resync.server";
 import {
+  storeAuditLog,
   storeGatewayReactions,
   storeGatewayVoice,
   storeScheduledEvents,
@@ -44,6 +45,7 @@ const runJob: (job: GatewayJob) => Effect.Effect<void, IngestError> = Match.type
     reactions: storeGatewayReactions,
     scheduledEvents: storeScheduledEvents,
     threadMembers: storeThreadMembers,
+    auditLog: storeAuditLog,
   }),
 );
 

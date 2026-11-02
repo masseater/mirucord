@@ -15,6 +15,7 @@
     "@repo/ingest-util-gateway-contract": "workspace:*",
     "@repo/shared-util-app-name": "workspace:*",
     "@repo/shared-util-discord": "workspace:*",
+    "@sapphire/snowflake": "catalog:",
     "alchemy": "catalog:stack",
     "dfx": "catalog:",
     "discord-api-types": "catalog:",

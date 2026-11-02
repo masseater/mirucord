@@ -15,7 +15,11 @@ export {
   PAGE_SIZE,
 } from "./discord.server";
 export type { DiscordChannel, DiscordGuild, MessagePage } from "./discord.server";
-export type { DiscordMessage } from "@repo/shared-util-discord";
+export type {
+  DiscordMember as DiscordGuildMember,
+  DiscordMessage,
+} from "@repo/shared-util-discord";
+export { listGuildMembers } from "./members.server";
 export {
   findBotAdder,
   postChannelMessage,

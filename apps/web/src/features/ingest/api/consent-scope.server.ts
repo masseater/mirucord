@@ -8,7 +8,7 @@ import type { ConsentScope } from "#/features/ingest/model/consent-scope";
 import { channel, db, ingestConsent } from "#/shared/db/index.server";
 
 import { accessOf } from "./bot-access.server";
-import { enqueue } from "./enqueue.server";
+import { enqueue, enqueueMembers } from "./enqueue.server";
 import { forgetChannelMessages } from "./message-rows.server";
 import type { ChannelRef } from "./message-rows.server";
 
@@ -126,7 +126,10 @@ const refreshIngestOf = (refresh: IngestRefresh): Effect.Effect<void> =>
 const refreshIngest = (guildId: string): Effect.Effect<void> =>
   refreshIngestOf({ guildId, reach: "all" });
 
+const refreshConsented = (guildId: string): Effect.Effect<void> =>
+  refreshIngest(guildId).pipe(Effect.andThen(enqueueMembers(guildId)));
+
 const refreshPendingIngest = (guildId: string): Effect.Effect<void> =>
   refreshIngestOf({ guildId, reach: "pending" });
 
-export { loadScope, purgeChannel, refreshIngest, refreshPendingIngest };
+export { loadScope, purgeChannel, refreshConsented, refreshIngest, refreshPendingIngest };

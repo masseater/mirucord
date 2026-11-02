@@ -11,6 +11,7 @@ import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway
 import { forgetGuild } from "./guild-membership.server";
 import type { IngestError } from "./message-page.server";
 import { resyncGuilds } from "./resync.server";
+import { departGatewayMembers, storeGatewayMembers } from "./store-members.server";
 import { syncJoinedGuild, syncKnownGuild } from "./sync-guilds.server";
 
 const PROCESSED = 200;
@@ -29,6 +30,8 @@ const runJob: (job: GatewayJob) => Effect.Effect<void, IngestError> = Match.type
     store: storeGatewayMessages,
     refresh: refreshMessages,
     forget: forgetMessages,
+    members: storeGatewayMembers,
+    depart: departGatewayMembers,
   }),
 );
 

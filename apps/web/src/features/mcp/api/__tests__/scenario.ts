@@ -285,6 +285,7 @@ export {
   GUILD_C,
   GUILD_D,
   D_OPEN,
+  MEMBER_ROLE,
   guildKeys,
   OWNER,
   SAME_WORDS,

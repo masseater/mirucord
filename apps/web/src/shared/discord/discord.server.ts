@@ -25,7 +25,9 @@ const Guild = Schema.Struct({
   icon: Schema.optional(Schema.NullOr(Schema.String)),
   owner_id: Schema.String,
   system_channel_id: Schema.optional(Schema.NullOr(Schema.String)),
-  roles: Schema.Array(Schema.Struct({ id: Schema.String, permissions: Schema.String })),
+  roles: Schema.Array(
+    Schema.Struct({ id: Schema.String, name: Schema.String, permissions: Schema.String }),
+  ),
 });
 
 const PartialGuild = Schema.Struct({ id: Schema.String });

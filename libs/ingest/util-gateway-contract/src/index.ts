@@ -1,6 +1,13 @@
 export { GATEWAY_PATH } from "./gateway-path";
 export { GatewayJobSchema } from "./gateway-job-schema";
-export type { ForgetJob, GatewayJob, RefreshJob, StoreJob } from "./gateway-job-schema";
+export type {
+  DepartJob,
+  ForgetJob,
+  GatewayJob,
+  MembersJob,
+  RefreshJob,
+  StoreJob,
+} from "./gateway-job-schema";
 export { signGatewayEvent, verifyGatewayEvent } from "./gateway-signature";
-export { isGuildJob, subjectOf } from "./subject";
-export type { GuildJob } from "./subject";
+export { isGuildJob, isMemberJob, subjectOf } from "./subject";
+export type { GuildJob, MemberJob } from "./subject";

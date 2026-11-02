@@ -7,7 +7,7 @@ import { db, ingestConsent } from "#/shared/db/index.server";
 import { FORBIDDEN, NOT_FOUND, postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError, OutgoingMessage } from "#/shared/discord/index.server";
 
-import { refreshIngest } from "./consent-scope.server";
+import { refreshConsented } from "./consent-scope.server";
 import { loadConsentedChannels } from "./guild-settings.server";
 import type { SettingsChannel } from "./guild-settings.server";
 import { whenManaged } from "./managed-guild.server";
@@ -120,7 +120,7 @@ const applyConsent = (
         return Effect.succeed<ConsentResult>({ status: posted });
       }
       return saveConsent(request).pipe(
-        Effect.andThen(refreshIngest(request.guildId)),
+        Effect.andThen(refreshConsented(request.guildId)),
         Effect.as<ConsentResult>({ status: "saved" }),
       );
     }),

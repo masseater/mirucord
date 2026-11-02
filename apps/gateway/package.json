@@ -17,6 +17,7 @@
     "@repo/shared-util-discord": "workspace:*",
     "alchemy": "catalog:stack",
     "dfx": "catalog:",
+    "discord-api-types": "catalog:",
     "effect": "catalog:stack"
   },
   "devDependencies": {

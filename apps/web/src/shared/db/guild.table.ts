@@ -19,6 +19,7 @@ const role = sqliteTable(
     guildId: text()
       .notNull()
       .references(() => guild.id, { onDelete: "cascade" }),
+    name: text().notNull().default(""),
     permissions: text().notNull(),
   },
   (table) => [index("role_guild_id_idx").on(table.guildId)],

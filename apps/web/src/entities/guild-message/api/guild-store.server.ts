@@ -1,5 +1,7 @@
 import { Array, Clock, Effect, Option, pipe } from "effect";
 
+import { memberLedger } from "./member-ledger.server";
+import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
 import { NoteStore } from "./note-store.server";
 import { backfillPhrases } from "./phrase-backfill.server";
 import type {
@@ -20,6 +22,32 @@ import { vectorLedger } from "./vector-ledger.server";
 import type { Coverage } from "./vector-ledger.server";
 
 class GuildStore extends NoteStore {
+  readonly #members = memberLedger(this.db);
+
+  #erasedIds(): readonly string[] {
+    return pipe(
+      this.erasedAuthors(),
+      Array.map(({ id }) => id),
+    );
+  }
+
+  public saveMembers(request: MemberWrite): void {
+    this.#members.write(request, this.#erasedIds());
+  }
+
+  public departMembers(userIds: readonly string[], now: number): void {
+    this.#members.depart(userIds, now);
+  }
+
+  public readMembers(lookup: MemberLookup): readonly StoredMember[] {
+    return this.#members.read(lookup, this.#erasedIds());
+  }
+
+  public override eraseAuthor(authorId: string): Promise<void> {
+    this.#members.forget(authorId);
+    return super.eraseAuthor(authorId);
+  }
+
   public phraseStats({
     guildId,
     visibility,
@@ -56,12 +84,7 @@ class GuildStore extends NoteStore {
   }
 
   public writePhrases(extracted: readonly ExtractedPhrases[]): void {
-    const erased = new Set(
-      pipe(
-        this.erasedAuthors(),
-        Array.map(({ id }) => id),
-      ),
-    );
+    const erased = new Set(this.#erasedIds());
     for (const { message, hashes } of extracted) {
       if (this.markExtracted(message.id) && !erased.has(message.authorId)) {
         this.recordPhrases(message, hashes);

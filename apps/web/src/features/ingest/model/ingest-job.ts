@@ -20,10 +20,16 @@ const CatchUpJobSchema = Schema.Struct({
   guildId: Schema.String,
 });
 
+const MembersJobSchema = Schema.Struct({
+  kind: Schema.Literal("members"),
+  guildId: Schema.String,
+});
+
 const QueueJobSchema = Schema.Union([
   WithdrawJobSchema,
   MigrateJobSchema,
   CatchUpJobSchema,
+  MembersJobSchema,
   IngestJobSchema,
 ]);
 

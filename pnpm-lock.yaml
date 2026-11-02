@@ -549,6 +549,9 @@ importers:
       dfx:
         specifier: 'catalog:'
         version: 1.1.1(effect@4.0.7)
+      discord-api-types:
+        specifier: 'catalog:'
+        version: 0.38.57
       effect:
         specifier: 4.0.7
         version: 4.0.7

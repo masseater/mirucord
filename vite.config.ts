@@ -161,6 +161,7 @@ export default defineConfig({
         {
           capIsNewExceptions: [
             "App",
+            "AppIntents",
             "CloudflareApiLive",
             "Resource",
             "Stack",

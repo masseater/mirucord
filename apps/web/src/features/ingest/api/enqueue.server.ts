@@ -31,8 +31,11 @@ const enqueueCatchUps = (guildIds: readonly string[]): Effect.Effect<void> =>
 const enqueueWithdrawal = (guildId: string): Effect.Effect<void> =>
   Effect.promise(() => env.INGEST.send({ kind: "withdraw", guildId }));
 
+const enqueueMembers = (guildId: string): Effect.Effect<void> =>
+  Effect.promise(() => env.INGEST.send({ kind: "members", guildId }));
+
 const enqueueMigration: Effect.Effect<void> = Effect.promise(() =>
   env.INGEST.send({ kind: "migrate" }),
 );
 
-export { enqueue, enqueueCatchUps, enqueueMigration, enqueueWithdrawal };
+export { enqueue, enqueueCatchUps, enqueueMembers, enqueueMigration, enqueueWithdrawal };

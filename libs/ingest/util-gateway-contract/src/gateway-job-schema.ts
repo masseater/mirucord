@@ -1,4 +1,4 @@
-import { DiscordMessageSchema } from "@repo/shared-util-discord";
+import { DiscordMemberSchema, DiscordMessageSchema } from "@repo/shared-util-discord";
 import { Schema } from "effect";
 
 const MessageIdsSchema = Schema.NonEmptyArray(Schema.String);
@@ -39,6 +39,18 @@ const LeaveJobSchema = Schema.Struct({
   guildId: Schema.String,
 });
 
+const MembersJobSchema = Schema.Struct({
+  kind: Schema.Literal("members"),
+  guildId: Schema.String,
+  members: Schema.NonEmptyArray(DiscordMemberSchema),
+});
+
+const DepartJobSchema = Schema.Struct({
+  kind: Schema.Literal("depart"),
+  guildId: Schema.String,
+  userIds: Schema.NonEmptyArray(Schema.String),
+});
+
 const ResyncJobSchema = Schema.Struct({ kind: Schema.Literal("resync") });
 
 const GatewayJobSchema = Schema.Union([
@@ -48,6 +60,8 @@ const GatewayJobSchema = Schema.Union([
   JoinJobSchema,
   SyncJobSchema,
   LeaveJobSchema,
+  MembersJobSchema,
+  DepartJobSchema,
   ResyncJobSchema,
 ]);
 
@@ -59,5 +73,9 @@ type ForgetJob = typeof ForgetJobSchema.Type;
 
 type StoreJob = typeof StoreJobSchema.Type;
 
+type MembersJob = typeof MembersJobSchema.Type;
+
+type DepartJob = typeof DepartJobSchema.Type;
+
 export { GatewayJobSchema };
-export type { ForgetJob, GatewayJob, RefreshJob, StoreJob };
+export type { DepartJob, ForgetJob, GatewayJob, MembersJob, RefreshJob, StoreJob };

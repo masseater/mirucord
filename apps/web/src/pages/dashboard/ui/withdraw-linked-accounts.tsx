@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
-import { withdrawLinkedAccounts } from "#/pages/dashboard/api/linked-accounts";
+import { withdrawPublishedAccounts } from "#/pages/dashboard/api/linked-accounts";
 import { useInvalidateLinkedAccounts } from "#/pages/dashboard/model/use-linked-account-form";
 import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
@@ -13,7 +13,7 @@ const FAILED = "やめられませんでした";
 const WithdrawLinkedAccounts = (): ReactNode => {
   const refresh = useInvalidateLinkedAccounts();
   const { mutate, status } = useMutation({
-    mutationFn: withdrawLinkedAccounts,
+    mutationFn: withdrawPublishedAccounts,
     onSuccess: refresh,
   });
   const withdraw = useCallback(() => {

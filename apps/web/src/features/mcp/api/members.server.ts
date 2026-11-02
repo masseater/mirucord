@@ -145,3 +145,4 @@ const listMembers =
     });
 
 export { listMembers, storedMembers };
+export type { MemberRequest };

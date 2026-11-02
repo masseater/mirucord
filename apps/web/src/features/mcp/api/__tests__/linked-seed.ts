@@ -1,6 +1,6 @@
+import { env } from "cloudflare:workers";
 import { Array, Effect, pipe } from "effect";
 
-import { user } from "#/shared/auth/index.server";
 import { db, linkedAccount } from "#/shared/db/index.server";
 
 type SeedLink = Readonly<{
@@ -11,6 +11,11 @@ type SeedLink = Readonly<{
   publishedAt: number;
 }>;
 
+const INSERT_USER =
+  "INSERT INTO user (id, name, email, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
+
+const SEEDED_AT = 1;
+
 const accountUserOf = (discordUserId: string): string => `user-${discordUserId}`;
 
 const seedLinkedAccounts = (links: readonly SeedLink[]): Effect.Effect<void> => {
@@ -18,7 +23,9 @@ const seedLinkedAccounts = (links: readonly SeedLink[]): Effect.Effect<void> => 
     links,
     Array.map(({ discordUserId }) => accountUserOf(discordUserId)),
     Array.dedupe,
-    Array.map((id) => ({ id, name: id, email: `${id}@users.discord.invalid` })),
+    Array.map((id) =>
+      env.DB.prepare(INSERT_USER).bind(id, id, `${id}@users.discord.invalid`, SEEDED_AT, SEEDED_AT),
+    ),
   );
   const rows = pipe(
     links,
@@ -31,7 +38,7 @@ const seedLinkedAccounts = (links: readonly SeedLink[]): Effect.Effect<void> => 
       publishedAt,
     })),
   );
-  return Effect.promise(() => db.insert(user).values(owners)).pipe(
+  return Effect.promise(() => env.DB.batch(owners)).pipe(
     Effect.andThen(Effect.promise(() => db.insert(linkedAccount).values(rows))),
     Effect.asVoid,
   );

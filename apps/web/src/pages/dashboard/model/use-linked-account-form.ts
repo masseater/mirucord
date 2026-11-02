@@ -11,9 +11,9 @@ import type {
   PublishResult,
 } from "#/pages/dashboard/api/linked-account-store.server";
 import {
-  discardLinkedAccountsDraft,
+  discardChoosing,
   linkedAccountsQuery,
-  publishLinkedAccounts,
+  publishChosenAccounts,
 } from "#/pages/dashboard/api/linked-accounts";
 import type { DoneResult } from "#/pages/dashboard/api/linked-accounts.server";
 
@@ -63,10 +63,10 @@ const useLinkedMutations = (
 ): LinkedMutations => {
   const refresh = useRefreshLinkedAccounts(reset);
   const publishing = useMutation({
-    mutationFn: () => publishLinkedAccounts(connections),
+    mutationFn: () => publishChosenAccounts(connections),
     onSuccess: refresh,
   });
-  const discarding = useMutation({ mutationFn: discardLinkedAccountsDraft, onSuccess: refresh });
+  const discarding = useMutation({ mutationFn: discardChoosing, onSuccess: refresh });
   const { mutate: publishMutate } = publishing;
   const { mutate: discardMutate } = discarding;
   const publish = useCallback(() => {

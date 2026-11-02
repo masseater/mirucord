@@ -4,12 +4,13 @@ import type { ReactNode } from "react";
 import type { LinkedChoice } from "#/pages/dashboard/api/linked-account-store.server";
 import { connectionKeyOf } from "#/pages/dashboard/model/linked-account-draft";
 import { useLinkedAccountForm } from "#/pages/dashboard/model/use-linked-account-form";
+import { SERVICE_NAME } from "#/shared/config";
 import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
 
 import { LinkedAccountChoiceRow } from "./linked-account-choice-row";
 
-const PICK = "mirucord で見せるものを選んでください";
+const PICK = `${SERVICE_NAME} で見せるものを選んでください`;
 const NONE = "Discord のプロフィールで全員に公開している連携アカウントがありません";
 const PUBLISH = "選んだものを公開する";
 const CANCEL = "選ばずにやめる";

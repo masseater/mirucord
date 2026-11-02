@@ -4,7 +4,6 @@ import { eq } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
-import { account } from "#/shared/auth/index.server";
 import { db, linkedAccount } from "#/shared/db/index.server";
 
 import {
@@ -13,6 +12,7 @@ import {
   OWNER,
   revoked,
   seedConnectionsAccount,
+  storedToken,
 } from "./__tests__/connections-account";
 import {
   loadLinkedAccounts,
@@ -33,13 +33,6 @@ beforeAll(() => {
 afterAll(() => {
   network.disable();
 });
-
-const storedToken = Effect.promise(() =>
-  db
-    .select({ accessToken: account.accessToken, scope: account.scope })
-    .from(account)
-    .where(eq(account.userId, OWNER.userId)),
-);
 
 const publishedRows = Effect.promise(() =>
   db

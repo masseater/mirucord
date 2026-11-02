@@ -5,4 +5,3 @@ export { discordUserIdOf, signedInUser } from "./discord-user.server";
 export type { SignedInUser } from "./discord-user.server";
 export { connectionsTokenOf, forgetConnectionsToken } from "./connections-token.server";
 export type { TokenOwner } from "./connections-token.server";
-export { account, user } from "./generated/auth.table";

@@ -38,17 +38,12 @@ const linkedAccountsQuery = queryOptions({
   queryFn: () => getLinkedAccounts(),
 });
 
-const publishLinkedAccounts = (
+const publishChosenAccounts = (
   selected: typeof PublishInput.Type.selected,
 ): Promise<PublishResult | SignedOut> => postPublish({ data: { selected } });
 
-const discardLinkedAccountsDraft = (): Promise<DoneResult> => postDiscardDraft();
+const discardChoosing = (): Promise<DoneResult> => postDiscardDraft();
 
-const withdrawLinkedAccounts = (): Promise<DoneResult> => postWithdraw();
+const withdrawPublishedAccounts = (): Promise<DoneResult> => postWithdraw();
 
-export {
-  discardLinkedAccountsDraft,
-  linkedAccountsQuery,
-  publishLinkedAccounts,
-  withdrawLinkedAccounts,
-};
+export { discardChoosing, linkedAccountsQuery, publishChosenAccounts, withdrawPublishedAccounts };

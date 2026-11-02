@@ -20,9 +20,13 @@ import type {
 } from "./store-types";
 import { vectorLedger } from "./vector-ledger.server";
 import type { Coverage } from "./vector-ledger.server";
+import { voiceLedger } from "./voice-ledger.server";
+import type { VoiceChangeWrite, VoiceLookup, VoicePage, VoiceSnapshotWrite } from "./voice-types";
 
 class GuildStore extends NoteStore {
   readonly #members = memberLedger(this.db);
+
+  readonly #voice = voiceLedger(this.db);
 
   #erasedIds(): readonly string[] {
     return pipe(
@@ -43,8 +47,21 @@ class GuildStore extends NoteStore {
     return this.#members.read(lookup, this.#erasedIds());
   }
 
+  public saveVoiceChanges(changes: readonly VoiceChangeWrite[]): void {
+    this.#voice.change(changes, this.#erasedIds());
+  }
+
+  public saveVoiceSnapshot(snapshot: VoiceSnapshotWrite): void {
+    this.#voice.snapshot(snapshot, this.#erasedIds());
+  }
+
+  public readVoiceSessions(lookup: VoiceLookup): VoicePage {
+    return this.#voice.read(lookup, this.#erasedIds());
+  }
+
   public override eraseAuthor(authorId: string): Promise<void> {
     this.#members.forget(authorId);
+    this.#voice.forget(authorId);
     return super.eraseAuthor(authorId);
   }
 

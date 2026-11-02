@@ -21,9 +21,8 @@
 
 ## 文字に出ない関係を返す
 
-Discord で見える事実だけを返し、人同士の関係の解釈は使う側に任せる（Developer Policy 16）。プレゼンスは取らない。メッセージとメンバーは取り込み済みで、残りは次の順に入れる。
+Discord で見える事実だけを返し、人同士の関係の解釈は使う側に任せる（Developer Policy 16）。プレゼンスは取らない。メッセージ、メンバー、通話の入退室は取り込み済みで、残りは次の順に入れる。
 
-- 通話の入退室: `GuildVoiceStates` を足し、gateway で参加・退出・移動だけに絞って保存する。再接続のときは `GUILD_CREATE` の `voice_states` と突き合わせる。
 - リアクションと投票: `GuildMessageReactions` と `GuildMessagePolls` を足す。過去の分は REST で取る。
 - サーバーのイベントと「興味あり」の人、スレッドの参加者。
 - 監査ログと招待: Bot の権限に `VIEW_AUDIT_LOG` と `MANAGE_GUILD` を足し、既存のサーバーには再招待を頼む。監査ログは 45 日で消えるので取り込み続ける。

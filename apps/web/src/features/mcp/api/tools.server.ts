@@ -6,6 +6,7 @@ import {
   FindSimilarMessagesInput,
   ListChannelsInput,
   ListMembersInput,
+  ListVoiceSessionsInput,
   ReadMessagesInput,
 } from "#/features/mcp/api/tool-input";
 import {
@@ -15,6 +16,7 @@ import {
   ListMembersOutput,
   ListServerPhrasesOutput,
   ListServersOutput,
+  ListVoiceSessionsOutput,
   ReadMessagesOutput,
 } from "#/features/mcp/api/tool-output";
 import { SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
@@ -29,6 +31,7 @@ import {
   PHRASES_HINT,
   PHRASES_TOOL_NAME,
 } from "./server-tools.server";
+import { listVoiceSessions } from "./voice.server";
 
 const ICONS = [
   { src: `${SITE_ORIGIN}/apple-touch-icon.png`, mimeType: "image/png", sizes: ["180x180"] },
@@ -106,6 +109,20 @@ const LIST_MEMBERS_TOOL = {
   inputSchema: ListMembersInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
+const LIST_VOICE_SESSIONS_TOOL = {
+  title: "List voice sessions",
+  description: `List who was in which voice or stage channel and when, newest join first, for the channels you can see. Each session is one person's stay in one channel; moving to another channel ends it and starts a new one. \`left\` is null while they are still there. \`precision\` is \`exact\` when ${SERVICE_NAME} saw the join or leave as it happened, and \`noLaterThan\` when it only learned of it after reconnecting to Discord, so the real time is at or before \`at\`. Pass \`userIds\` or \`channelIds\` to narrow, and \`since\`/\`until\` (ISO 8601) to keep sessions that overlap that span. Look up names with \`list_members\`. Two people's sessions in the same channel overlapping means they were in the call together. Sessions are only recorded after the server's admin allows ${SERVICE_NAME} to store data, so \`notConsented\` returns none, and nothing from before 2026-11 exists.`,
+  ...TOOL_BASE,
+  outputSchema: ListVoiceSessionsOutput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+  inputSchema: ListVoiceSessionsInput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+};
+
 const buildServer = (discordUserId: string): McpServer => {
   const server = new McpServer(SERVER_INFO, SERVER_OPTIONS);
   server.registerTool("list_servers", LIST_SERVERS_TOOL, () => listServers(discordUserId));
@@ -115,6 +132,11 @@ const buildServer = (discordUserId: string): McpServer => {
   server.registerTool("find_similar_messages", FIND_SIMILAR_MESSAGES_TOOL, findLike(discordUserId));
   server.registerTool("read_messages", READ_MESSAGES_TOOL, readTool(discordUserId));
   server.registerTool("list_members", LIST_MEMBERS_TOOL, listMembers(discordUserId));
+  server.registerTool(
+    "list_voice_sessions",
+    LIST_VOICE_SESSIONS_TOOL,
+    listVoiceSessions(discordUserId),
+  );
   return server;
 };
 

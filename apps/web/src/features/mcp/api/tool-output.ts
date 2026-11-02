@@ -78,6 +78,22 @@ const ListMembersOutput = Schema.Struct({
   total: Schema.Int,
   members: Schema.Array(Member),
 });
+const VoiceMoment = Schema.Struct({
+  at: Schema.String,
+  precision: Schema.Literals(["exact", "noLaterThan"]),
+});
+const VoiceSession = Schema.Struct({
+  userId: Schema.String,
+  channelId: Schema.String,
+  channelName: Schema.String,
+  joined: VoiceMoment,
+  left: Schema.NullOr(VoiceMoment),
+});
+const ListVoiceSessionsOutput = Schema.Struct({
+  ingest: Schema.Literals(["consented", "notConsented"]),
+  total: Schema.Int,
+  sessions: Schema.Array(VoiceSession),
+});
 const ReadMessagesOutput = Schema.Struct({
   ingest: Schema.optionalKey(Ingest),
   notFullyIngested: Schema.optionalKey(Schema.Array(PendingChannel)),
@@ -91,5 +107,6 @@ export {
   ListMembersOutput,
   ListServerPhrasesOutput,
   ListServersOutput,
+  ListVoiceSessionsOutput,
   ReadMessagesOutput,
 };

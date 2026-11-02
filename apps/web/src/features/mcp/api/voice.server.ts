@@ -1,0 +1,81 @@
+import type { CallToolResult } from "@modelcontextprotocol/server";
+import { Array, DateTime, Effect, Option, pipe } from "effect";
+
+import { guildStore } from "#/entities/guild-message/index.server";
+import type { StoredVoiceSession } from "#/entities/guild-message/index.server";
+import type { ListVoiceSessionsInput } from "#/features/mcp/api/tool-input";
+import { FIRST_OFFSET, memberLimitOf } from "#/features/mcp/api/tool-input";
+import type { ListVoiceSessionsOutput } from "#/features/mcp/api/tool-output";
+
+import type { GuildScope } from "./scope.server";
+import { structuredResult, withScope } from "./tool-scope.server";
+
+type SessionView = (typeof ListVoiceSessionsOutput.Type)["sessions"][number];
+
+type VoiceRequest = Readonly<{ scope: GuildScope; input: typeof ListVoiceSessionsInput.Type }>;
+
+const momentOf = ({ at, precision }: StoredVoiceSession["joined"]): SessionView["joined"] => ({
+  at: DateTime.formatIso(DateTime.makeUnsafe(at)),
+  precision,
+});
+
+const millisOf = (at: DateTime.Utc | undefined): number | null =>
+  Option.getOrNull(Option.map(Option.fromUndefinedOr(at), DateTime.toEpochMillis));
+
+const channelsOf = ({ scope, input }: VoiceRequest): readonly string[] =>
+  Option.match(Option.fromUndefinedOr(input.channelIds), {
+    onNone: () => scope.visible,
+    onSome: (wanted) => Array.intersection(scope.visible, wanted),
+  });
+
+const sessionsOf = (request: VoiceRequest): Effect.Effect<typeof ListVoiceSessionsOutput.Type> => {
+  const { scope, input } = request;
+  const names = new Map(
+    pipe(
+      scope.guild.channels,
+      Array.map(({ id, name }) => [id, name] as const),
+    ),
+  );
+  const lookup = {
+    channelIds: channelsOf(request),
+    userIds: Option.getOrNull(Option.fromUndefinedOr(input.userIds)),
+    since: millisOf(input.since),
+    until: millisOf(input.until),
+    limit: memberLimitOf(input.limit),
+    offset: Option.getOrElse(Option.fromUndefinedOr(input.offset), () => FIRST_OFFSET),
+  };
+  return Effect.promise(() => guildStore(scope.guild.guildId).readVoiceSessions(lookup)).pipe(
+    Effect.map(({ total, sessions }) => ({
+      ingest: "consented" as const,
+      total,
+      sessions: pipe(
+        sessions,
+        Array.map((session): SessionView => ({
+          userId: session.userId,
+          channelId: session.channelId,
+          channelName: names.get(session.channelId) ?? session.channelId,
+          joined: momentOf(session.joined),
+          left: Option.getOrNull(Option.map(Option.fromNullOr(session.left), momentOf)),
+        })),
+      ),
+    })),
+  );
+};
+
+const listVoiceSessions =
+  (discordUserId: string) =>
+  (input: typeof ListVoiceSessionsInput.Type): Promise<CallToolResult> =>
+    withScope({ guildId: input.serverId, discordUserId })((scope) => {
+      if (scope.guild.consent !== "consented") {
+        return Effect.succeed(
+          structuredResult({
+            ingest: "notConsented",
+            total: 0,
+            sessions: [],
+          } satisfies typeof ListVoiceSessionsOutput.Type),
+        );
+      }
+      return sessionsOf({ scope, input }).pipe(Effect.map(structuredResult));
+    });
+
+export { listVoiceSessions };

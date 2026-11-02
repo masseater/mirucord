@@ -51,6 +51,25 @@ const DepartJobSchema = Schema.Struct({
   userIds: Schema.NonEmptyArray(Schema.String),
 });
 
+const VoiceChangeSchema = Schema.Struct({
+  userId: Schema.String,
+  channelId: Schema.NullOr(Schema.String),
+  at: Schema.Finite,
+});
+
+const VoiceJobSchema = Schema.Struct({
+  kind: Schema.Literal("voice"),
+  guildId: Schema.String,
+  changes: Schema.NonEmptyArray(VoiceChangeSchema),
+});
+
+const VoiceSnapshotJobSchema = Schema.Struct({
+  kind: Schema.Literal("voiceSnapshot"),
+  guildId: Schema.String,
+  at: Schema.Finite,
+  present: Schema.Array(Schema.Struct({ userId: Schema.String, channelId: Schema.String })),
+});
+
 const ResyncJobSchema = Schema.Struct({ kind: Schema.Literal("resync") });
 
 const GatewayJobSchema = Schema.Union([
@@ -62,6 +81,8 @@ const GatewayJobSchema = Schema.Union([
   LeaveJobSchema,
   MembersJobSchema,
   DepartJobSchema,
+  VoiceJobSchema,
+  VoiceSnapshotJobSchema,
   ResyncJobSchema,
 ]);
 
@@ -77,5 +98,21 @@ type MembersJob = typeof MembersJobSchema.Type;
 
 type DepartJob = typeof DepartJobSchema.Type;
 
+type VoiceJob = typeof VoiceJobSchema.Type;
+
+type VoiceSnapshotJob = typeof VoiceSnapshotJobSchema.Type;
+
+type VoiceChange = typeof VoiceChangeSchema.Type;
+
 export { GatewayJobSchema };
-export type { DepartJob, ForgetJob, GatewayJob, MembersJob, RefreshJob, StoreJob };
+export type {
+  DepartJob,
+  ForgetJob,
+  GatewayJob,
+  MembersJob,
+  RefreshJob,
+  StoreJob,
+  VoiceChange,
+  VoiceJob,
+  VoiceSnapshotJob,
+};

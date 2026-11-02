@@ -214,3 +214,35 @@ it("syncs each changed server once and not right after it joined", () => {
     { kind: "sync", guildId: "700" },
   ]);
 });
+
+const MEMBER = {
+  guild_id: "700",
+  user: { id: "901", username: "someone" },
+  nick: "だれか",
+  roles: ["750"],
+  joined_at: "2026-09-01T00:00:00Z",
+};
+
+it("carries a member who joined or changed with their profile", () => {
+  for (const event of [
+    Discord.GatewayDispatchEvents.GuildMemberAdd,
+    Discord.GatewayDispatchEvents.GuildMemberUpdate,
+  ]) {
+    expect(jobOf(event, MEMBER)).toMatchObject(
+      Option.some({ kind: "members", guildId: "700", members: [{ nick: "だれか" }] }),
+    );
+  }
+});
+
+it("keeps only the latest change of each member in a batch", () => {
+  const joined = Option.toArray(jobOf(Discord.GatewayDispatchEvents.GuildMemberAdd, MEMBER));
+  const left = Option.toArray(
+    jobOf(Discord.GatewayDispatchEvents.GuildMemberRemove, {
+      guild_id: MEMBER.guild_id,
+      user: MEMBER.user,
+    }),
+  );
+  expect(mergeJobs([...joined, ...left])).toStrictEqual([
+    { kind: "depart", guildId: "700", userIds: ["901"] },
+  ]);
+});

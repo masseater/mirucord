@@ -22,7 +22,7 @@ const Listing = Schema.Struct({
   messages: Schema.optionalKey(Ids),
 });
 const ReadIngest = Schema.Struct({ ingest: Schema.String });
-const ToolArguments = Schema.Record(Schema.String, Schema.String);
+const ToolArguments = Schema.Record(Schema.String, Schema.Unknown);
 const ToolParams = Schema.Struct({ name: Schema.String, arguments: ToolArguments });
 const ToolCall = Schema.fromJsonString(
   Schema.Struct({
@@ -61,7 +61,7 @@ const callTool = ({
   args,
 }: Readonly<{
   name: string;
-  args: Readonly<Record<string, string>>;
+  args: Readonly<Record<string, unknown>>;
 }>): Effect.Effect<ToolOutcome> =>
   Effect.gen(function* call() {
     const body = yield* encodeToolCall({

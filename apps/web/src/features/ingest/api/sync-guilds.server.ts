@@ -72,8 +72,8 @@ const replaceRoles = (discordGuild: DiscordGuild): Effect.Effect<void> =>
         db.delete(role).where(eq(role.guildId, discordGuild.id)),
         ...pipe(
           discordGuild.roles,
-          Array.map(({ id, permissions }) =>
-            db.insert(role).values({ id, guildId: discordGuild.id, permissions }),
+          Array.map(({ id, name, permissions }) =>
+            db.insert(role).values({ id, guildId: discordGuild.id, name, permissions }),
           ),
         ),
       ]),

@@ -3,6 +3,9 @@ import { Option, Schema } from "effect";
 const FIRST_OFFSET = 0;
 const MAX_LIMIT = 50;
 const DEFAULT_LIMIT = 20;
+const MAX_MEMBER_LIMIT = 200;
+const DEFAULT_MEMBER_LIMIT = 100;
+const MAX_MEMBER_IDS = 100;
 
 const limitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_LIMIT);
@@ -34,11 +37,28 @@ const ReadMessagesInput = Schema.Struct({
   limit: Limit,
 });
 
+const UserIds = Schema.Array(Schema.String).check(Schema.isMaxLength(MAX_MEMBER_IDS));
+const MemberLimit = Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: MAX_MEMBER_LIMIT }));
+
+const ListMembersInput = Schema.Struct({
+  serverId: Schema.String,
+  userIds: Schema.optionalKey(UserIds),
+  query: Schema.optionalKey(Schema.NonEmptyString),
+  includeLeft: Schema.optionalKey(Schema.Boolean),
+  limit: Schema.optionalKey(MemberLimit),
+  offset: Offset,
+});
+
+const memberLimitOf = (limit: number | undefined): number =>
+  Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_MEMBER_LIMIT);
+
 export {
   FindMessagesInput,
   FindSimilarMessagesInput,
   FIRST_OFFSET,
   limitOf,
   ListChannelsInput,
+  ListMembersInput,
+  memberLimitOf,
   ReadMessagesInput,
 };

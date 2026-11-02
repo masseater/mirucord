@@ -63,6 +63,21 @@ const ListServerPhrasesOutput = Schema.Struct({
   days: Schema.Int,
   phrases: Schema.Array(ServerPhrase),
 });
+const Member = Schema.Struct({
+  id: Schema.String,
+  username: Schema.String,
+  globalName: Schema.NullOr(Schema.String),
+  nick: Schema.NullOr(Schema.String),
+  roles: Schema.Array(Schema.Struct({ id: Schema.String, name: Schema.String })),
+  bot: Schema.Boolean,
+  joinedAt: Schema.NullOr(Schema.String),
+  leftAt: Schema.NullOr(Schema.String),
+});
+const ListMembersOutput = Schema.Struct({
+  ingest: Schema.Literals(["consented", "notConsented"]),
+  total: Schema.Int,
+  members: Schema.Array(Member),
+});
 const ReadMessagesOutput = Schema.Struct({
   ingest: Schema.optionalKey(Ingest),
   notFullyIngested: Schema.optionalKey(Schema.Array(PendingChannel)),
@@ -73,6 +88,7 @@ export {
   FindMessagesOutput,
   FindSimilarMessagesOutput,
   ListChannelsOutput,
+  ListMembersOutput,
   ListServerPhrasesOutput,
   ListServersOutput,
   ReadMessagesOutput,

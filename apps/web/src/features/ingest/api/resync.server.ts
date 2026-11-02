@@ -8,6 +8,7 @@ import { reconcileMembership } from "./guild-membership.server";
 import { whenIngestEnabled } from "./ingest-flag.server";
 import { startMigration } from "./migrate-messages.server";
 import { rewrapWhileRotating } from "./rewrap-keys.server";
+import { syncMembers } from "./store-members.server";
 import { syncOneGuild } from "./sync-guilds.server";
 
 const resyncGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled(
@@ -23,6 +24,9 @@ const resyncGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled
 );
 
 const catchUpGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
-  syncOneGuild(guildId).pipe(Effect.andThen(refreshIngest(guildId)));
+  syncOneGuild(guildId).pipe(
+    Effect.andThen(syncMembers(guildId)),
+    Effect.andThen(refreshIngest(guildId)),
+  );
 
 export { catchUpGuild, resyncGuilds };

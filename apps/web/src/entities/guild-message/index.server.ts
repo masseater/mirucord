@@ -8,6 +8,7 @@ const guildStore = (guildId: string): DurableObjectStub<GuildStore> =>
 export { guildStore };
 export { GuildStore } from "./api/guild-store.server";
 export { searchMessages } from "./api/search-messages.server";
+export type { MemberWrite, StoredMember } from "./api/member-types";
 export type {
   IndexedMessage,
   PhraseCandidate,

@@ -7,6 +7,7 @@ import { alertOperators } from "./alert-operators.server";
 import { ingestChannel } from "./ingest-channel.server";
 import { migrateMessages } from "./migrate-messages.server";
 import { catchUpGuild } from "./resync.server";
+import { syncMembers } from "./store-members.server";
 import { abandonWithdrawal, withdrawGuild } from "./withdraw-guild.server";
 import type { GuildDataRemainsError } from "./withdraw-guild.server";
 
@@ -30,6 +31,9 @@ const runJob = (job: QueueJob): Effect.Effect<void, JobError> => {
   }
   if (job.kind === "catchUp") {
     return catchUpGuild(job.guildId);
+  }
+  if (job.kind === "members") {
+    return syncMembers(job.guildId);
   }
   return withdrawGuild(job.guildId);
 };

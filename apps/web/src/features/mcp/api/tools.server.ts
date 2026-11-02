@@ -5,18 +5,21 @@ import {
   FindMessagesInput,
   FindSimilarMessagesInput,
   ListChannelsInput,
+  ListMembersInput,
   ReadMessagesInput,
 } from "#/features/mcp/api/tool-input";
 import {
   FindMessagesOutput,
   FindSimilarMessagesOutput,
   ListChannelsOutput,
+  ListMembersOutput,
   ListServerPhrasesOutput,
   ListServersOutput,
   ReadMessagesOutput,
 } from "#/features/mcp/api/tool-output";
 import { SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
 
+import { listMembers } from "./members.server";
 import { find, findLike, readTool } from "./message-tools.server";
 import { PHRASES_DESCRIPTION } from "./phrases.server";
 import {
@@ -95,6 +98,14 @@ const READ_MESSAGES_TOOL = {
   inputSchema: ReadMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
+const LIST_MEMBERS_TOOL = {
+  title: "List members",
+  description: `List a server's members as Discord shows them: user name, global display name, server nickname, roles, whether the account is a bot, when they joined and, for people who left, when ${SERVICE_NAME} saw them leave. Members come oldest join first. Pass \`userIds\` to look people up by ID (from a message's \`authorId\` or \`mentions\`); people who left are included then unless \`includeLeft\` is false. \`query\` matches any of the three names, ignoring letter case. \`total\` counts all matches; advance \`offset\` by \`limit\` to page. People who left before ${SERVICE_NAME} first stored the member list are not included. Members are only stored once the server's admin allows ${SERVICE_NAME} to store data, so \`notConsented\` returns none.`,
+  ...TOOL_BASE,
+  outputSchema: ListMembersOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+  inputSchema: ListMembersInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+};
+
 const buildServer = (discordUserId: string): McpServer => {
   const server = new McpServer(SERVER_INFO, SERVER_OPTIONS);
   server.registerTool("list_servers", LIST_SERVERS_TOOL, () => listServers(discordUserId));
@@ -103,6 +114,7 @@ const buildServer = (discordUserId: string): McpServer => {
   server.registerTool("find_messages", FIND_MESSAGES_TOOL, find(discordUserId));
   server.registerTool("find_similar_messages", FIND_SIMILAR_MESSAGES_TOOL, findLike(discordUserId));
   server.registerTool("read_messages", READ_MESSAGES_TOOL, readTool(discordUserId));
+  server.registerTool("list_members", LIST_MEMBERS_TOOL, listMembers(discordUserId));
   return server;
 };
 

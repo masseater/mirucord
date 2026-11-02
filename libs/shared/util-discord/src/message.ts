@@ -80,5 +80,5 @@ const Message = Schema.Struct({
 
 type DiscordMessage = typeof Message.Type;
 
-export { Message };
+export { Author, Message };
 export type { DiscordMessage };

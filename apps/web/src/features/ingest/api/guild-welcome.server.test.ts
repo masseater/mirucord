@@ -100,7 +100,7 @@ const discordWith = ({ guildId, auditLog, dm }: Scenario): Sent[] => {
         name: "game night",
         owner_id: OWNER,
         system_channel_id: SYSTEM_CHANNEL,
-        roles: [{ id: guildId, permissions: "66560" }],
+        roles: [{ id: guildId, name: "@everyone", permissions: "66560" }],
       }),
     ),
     ...outgoing((message) => {

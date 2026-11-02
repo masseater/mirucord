@@ -1,12 +1,21 @@
 import { Discord } from "dfx";
-import { DateTime, Option, Record } from "effect";
+import { DateTime, Option, pipe, Record, String as Str } from "effect";
 
 import type { StoredScheduledEvent } from "#/entities/guild-message/index.server";
 import type { ListScheduledEventsOutput } from "#/features/mcp/api/tool-output";
 
-import { labelOf } from "./constant-label";
-
 type EventView = (typeof ListScheduledEventsOutput.Type)["events"][number];
+
+const UNKNOWN = "unknown";
+
+const labelOf =
+  (names: Readonly<Record<string, number>>) =>
+  (value: number): string =>
+    pipe(
+      Record.findFirst(names, (known) => known === value),
+      Option.map(([name]) => Str.toLowerCase(name)),
+      Option.getOrElse(() => UNKNOWN),
+    );
 
 const kindOf = labelOf(Discord.GuildScheduledEventEntityTypes);
 

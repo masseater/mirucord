@@ -155,21 +155,6 @@ const ThreadMembersJobSchema = Schema.Struct({
   changes: Schema.NonEmptyArray(ThreadMemberChangeSchema),
 });
 
-const AuditLogEntrySchema = Schema.Struct({
-  entryId: Schema.String,
-  actionType: Schema.Int,
-  userId: Schema.NullOr(Schema.String),
-  targetId: Schema.NullOr(Schema.String),
-  at: Schema.Finite,
-  detail: Schema.String,
-});
-
-const AuditLogJobSchema = Schema.Struct({
-  kind: Schema.Literal("auditLog"),
-  guildId: Schema.String,
-  changes: Schema.NonEmptyArray(AuditLogEntrySchema),
-});
-
 const ResyncJobSchema = Schema.Struct({ kind: Schema.Literal("resync") });
 
 const GatewayJobSchema = Schema.Union([
@@ -186,7 +171,6 @@ const GatewayJobSchema = Schema.Union([
   ReactionsJobSchema,
   ScheduledEventsJobSchema,
   ThreadMembersJobSchema,
-  AuditLogJobSchema,
   ResyncJobSchema,
 ]);
 
@@ -220,14 +204,8 @@ type ThreadMembersJob = typeof ThreadMembersJobSchema.Type;
 
 type ThreadMemberChange = typeof ThreadMemberChangeSchema.Type;
 
-type AuditLogJob = typeof AuditLogJobSchema.Type;
-
-type AuditLogEntry = typeof AuditLogEntrySchema.Type;
-
 export { GatewayJobSchema };
 export type {
-  AuditLogEntry,
-  AuditLogJob,
   DepartJob,
   ForgetJob,
   GatewayJob,

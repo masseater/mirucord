@@ -168,21 +168,6 @@ const ListThreadMembersOutput = Schema.Struct({
   members: Schema.Array(ThreadMember),
   liveUserIds: Schema.NullOr(Schema.Array(Schema.String)),
 });
-const AuditEntry = Schema.Struct({
-  entryId: Schema.String,
-  action: Schema.String,
-  userId: Schema.NullOr(Schema.String),
-  targetId: Schema.NullOr(Schema.String),
-  at: Schema.String,
-  reason: Schema.NullOr(Schema.String),
-  changes: Schema.Unknown,
-  options: Schema.Unknown,
-});
-const ListAuditLogOutput = Schema.Struct({
-  ingest: Schema.Literals(["consented", "notConsented"]),
-  total: Schema.Int,
-  entries: Schema.Array(AuditEntry),
-});
 const LinkedAccount = Schema.Struct({
   type: Schema.String,
   name: Schema.String,
@@ -205,7 +190,6 @@ const ReadMessagesOutput = Schema.Struct({
 
 export {
   FindMessagesOutput,
-  ListAuditLogOutput,
   FindSimilarMessagesOutput,
   ListChannelsOutput,
   ListLinkedAccountsOutput,

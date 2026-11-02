@@ -1,7 +1,6 @@
 import { Schema } from "effect";
 
 import {
-  ListAuditLogInput,
   ListLinkedAccountsInput,
   ListMembersInput,
   ListReactionsInput,
@@ -10,7 +9,6 @@ import {
   ListVoiceSessionsInput,
 } from "#/features/mcp/api/tool-input";
 import {
-  ListAuditLogOutput,
   ListLinkedAccountsOutput,
   ListMembersOutput,
   ListReactionsOutput,
@@ -80,14 +78,6 @@ const LIST_THREAD_MEMBERS_TOOL = {
   ),
 };
 
-const LIST_AUDIT_LOG_TOOL = {
-  title: "List audit log",
-  description: `List the server's audit log, newest first: who (\`userId\`) did what (\`action\`, such as \`member_role_update\`, \`member_kick\`, \`member_ban_add\`, \`invite_create\` or \`channel_create\`) to whom or what (\`targetId\`), with the reason and the changed fields as Discord gives them. Only people who have the View Audit Log permission in the server can read it. Pass \`userIds\` to keep entries those people did or that were done to them, \`actions\` to keep those kinds, and \`since\`/\`until\` (ISO 8601). \`total\` counts all matches; advance \`offset\` by \`limit\` to page. Entries are only recorded after the server's admin allows ${SERVICE_NAME} to store data, so \`notConsented\` returns none and nothing from before 2026-11 is stored; Discord itself keeps entries for 45 days and ${SERVICE_NAME} keeps them after that. Look up names with \`list_members\`.`,
-  ...TOOL_BASE,
-  outputSchema: ListAuditLogOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
-  inputSchema: ListAuditLogInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
-};
-
 const LIST_LINKED_ACCOUNTS_TOOL = {
   title: "List linked accounts",
   description: `List the accounts on other services (such as \`github\`, \`twitter\`, \`youtube\` or \`steam\` in \`type\`) that people linked to Discord and chose to show through ${SERVICE_NAME}. Pass the Discord user IDs in \`userIds\` (from a message's \`authorId\` or from \`list_members\`); only people who are in the server now are answered, and people who did not publish any account are left out of \`people\`. Each person picks which of the accounts they show to everyone on their Discord profile to publish, in ${SERVICE_NAME}'s dashboard, and the same list shows in every server. \`verified\` is Discord's check that they own the account, and \`publishedAt\` is when they last chose the list. Members are only stored after the server's admin allows ${SERVICE_NAME} to store data, so \`notConsented\` returns none.`,
@@ -103,7 +93,6 @@ const LIST_LINKED_ACCOUNTS_TOOL = {
 };
 
 export {
-  LIST_AUDIT_LOG_TOOL,
   LIST_LINKED_ACCOUNTS_TOOL,
   LIST_MEMBERS_TOOL,
   LIST_REACTIONS_TOOL,

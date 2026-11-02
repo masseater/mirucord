@@ -14,8 +14,7 @@ type GuildWideJob = Extract<
       | "voiceSnapshot"
       | "reactions"
       | "scheduledEvents"
-      | "threadMembers"
-      | "auditLog";
+      | "threadMembers";
   }>
 >;
 
@@ -38,7 +37,6 @@ const GUILD_WIDE_KINDS: ReadonlySet<GatewayJob["kind"]> = new Set([
   "reactions",
   "scheduledEvents",
   "threadMembers",
-  "auditLog",
 ]);
 
 const isGuildWideJob = (job: GatewayJob): job is GuildWideJob => GUILD_WIDE_KINDS.has(job.kind);

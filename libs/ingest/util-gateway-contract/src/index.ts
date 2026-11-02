@@ -1,8 +1,6 @@
 export { GATEWAY_PATH } from "./gateway-path";
 export { GatewayJobSchema } from "./gateway-job-schema";
 export type {
-  AuditLogEntry,
-  AuditLogJob,
   DepartJob,
   ForgetJob,
   GatewayJob,

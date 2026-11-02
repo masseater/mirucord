@@ -83,16 +83,6 @@ const ListThreadMembersInput = Schema.Struct({
   offset: Offset,
 });
 
-const ListAuditLogInput = Schema.Struct({
-  serverId: Schema.String,
-  userIds: Schema.optionalKey(Ids),
-  actions: Schema.optionalKey(Ids),
-  since: Schema.optionalKey(Schema.DateTimeUtcFromString),
-  until: Schema.optionalKey(Schema.DateTimeUtcFromString),
-  limit: Schema.optionalKey(MemberLimit),
-  offset: Offset,
-});
-
 const ListLinkedAccountsInput = Schema.Struct({
   serverId: Schema.String,
   userIds: Ids,
@@ -130,7 +120,6 @@ export {
   FindSimilarMessagesInput,
   FIRST_OFFSET,
   limitOf,
-  ListAuditLogInput,
   ListChannelsInput,
   ListLinkedAccountsInput,
   ListMembersInput,

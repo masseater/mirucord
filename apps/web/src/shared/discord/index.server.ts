@@ -33,3 +33,5 @@ export type { LiveReactions } from "./reactions.server";
 export { liveInterestedOf, liveThreadMembersOf } from "./live-users.server";
 export { listPublicConnections, revokeUserToken } from "./user-connections.server";
 export type { PublicConnection } from "./user-connections.server";
+export { listGuildInviteCounts } from "./guild-invites.server";
+export type { GuildInviteCount } from "./guild-invites.server";

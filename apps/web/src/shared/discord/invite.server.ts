@@ -5,7 +5,8 @@ const BOT_PERMISSIONS =
   PermissionFlagsBits.ViewChannel +
   PermissionFlagsBits.ReadMessageHistory +
   PermissionFlagsBits.SendMessages +
-  PermissionFlagsBits.ViewAuditLog;
+  PermissionFlagsBits.ViewAuditLog +
+  PermissionFlagsBits.ManageGuild;
 
 const botInviteUrl = (): string => {
   const url = new URL(OAuth2Routes.authorizationURL);

@@ -3,6 +3,7 @@ import { Schema } from "effect";
 import {
   ListAuditLogInput,
   ListLinkedAccountsInput,
+  ListMemberInvitesInput,
   ListMembersInput,
   ListReactionsInput,
   ListScheduledEventsInput,
@@ -12,6 +13,7 @@ import {
 import {
   ListAuditLogOutput,
   ListLinkedAccountsOutput,
+  ListMemberInvitesOutput,
   ListMembersOutput,
   ListReactionsOutput,
   ListScheduledEventsOutput,
@@ -88,6 +90,20 @@ const LIST_AUDIT_LOG_TOOL = {
   inputSchema: ListAuditLogInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
+const LIST_MEMBER_INVITES_TOOL = {
+  title: "List member invites",
+  description: `List which invite link people joined the server through, newest join first: the invite \`code\`, who made it (\`inviterId\`) and the channel it points to. Discord does not say which invite someone used, so ${SERVICE_NAME} compares each invite's use count before and after the join. \`precision\` is \`exact\` when one person joined and one invite's count went up, \`ambiguous\` when several people joined at once or several counts went up (\`invites\` then lists every invite that could have been used, including one-time invites that ran out), and \`unknown\` when no count changed, such as joining through a vanity URL, Server Discovery or a bot, or when ${SERVICE_NAME} had no earlier count to compare. Only people who have the Manage Server permission in the server can read it, and joins are only recorded when ${SERVICE_NAME}'s bot has that permission too. Pass \`userIds\` and \`since\`/\`until\` (ISO 8601) on the join time. \`total\` counts all matches; advance \`offset\` by \`limit\` to page. Joins are only recorded after the server's admin allows ${SERVICE_NAME} to store data, so \`notConsented\` returns none and nothing from before 2026-11 is stored. Look up names with \`list_members\`.`,
+  ...TOOL_BASE,
+  outputSchema: ListMemberInvitesOutput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+  inputSchema: ListMemberInvitesInput.pipe(
+    Schema.toStandardSchemaV1,
+    Schema.toStandardJSONSchemaV1,
+  ),
+};
+
 const LIST_LINKED_ACCOUNTS_TOOL = {
   title: "List linked accounts",
   description: `List the accounts on other services (such as \`github\`, \`twitter\`, \`youtube\` or \`steam\` in \`type\`) that people linked to Discord and chose to show through ${SERVICE_NAME}. Pass the Discord user IDs in \`userIds\` (from a message's \`authorId\` or from \`list_members\`); only people who are in the server now are answered, and people who did not publish any account are left out of \`people\`. Each person picks which of the accounts they show to everyone on their Discord profile to publish, in ${SERVICE_NAME}'s dashboard, and the same list shows in every server. \`verified\` is Discord's check that they own the account, and \`publishedAt\` is when they last chose the list. Members are only stored after the server's admin allows ${SERVICE_NAME} to store data, so \`notConsented\` returns none.`,
@@ -105,6 +121,7 @@ const LIST_LINKED_ACCOUNTS_TOOL = {
 export {
   LIST_AUDIT_LOG_TOOL,
   LIST_LINKED_ACCOUNTS_TOOL,
+  LIST_MEMBER_INVITES_TOOL,
   LIST_MEMBERS_TOOL,
   LIST_REACTIONS_TOOL,
   LIST_SCHEDULED_EVENTS_TOOL,

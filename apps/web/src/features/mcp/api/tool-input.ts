@@ -74,6 +74,15 @@ const ListScheduledEventsInput = Schema.Struct({
   eventId: Schema.optionalKey(Schema.String),
 });
 
+const ListThreadMembersInput = Schema.Struct({
+  serverId: Schema.String,
+  threadId: Schema.optionalKey(Schema.String),
+  userIds: Schema.optionalKey(Ids),
+  includeLeft: Schema.optionalKey(Schema.Boolean),
+  limit: Schema.optionalKey(MemberLimit),
+  offset: Offset,
+});
+
 const memberLimitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_MEMBER_LIMIT);
 
@@ -110,6 +119,7 @@ export {
   ListMembersInput,
   ListReactionsInput,
   ListScheduledEventsInput,
+  ListThreadMembersInput,
   ListVoiceSessionsInput,
   memberLimitOf,
   ReadMessagesInput,

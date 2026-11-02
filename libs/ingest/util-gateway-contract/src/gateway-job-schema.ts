@@ -142,6 +142,19 @@ const ScheduledEventsJobSchema = Schema.Struct({
   changes: Schema.NonEmptyArray(ScheduledEventChangeSchema),
 });
 
+const ThreadMemberChangeSchema = Schema.Struct({
+  kind: Schema.Literals(["join", "leave"]),
+  threadId: Schema.String,
+  userId: Schema.String,
+  at: Schema.Finite,
+});
+
+const ThreadMembersJobSchema = Schema.Struct({
+  kind: Schema.Literal("threadMembers"),
+  guildId: Schema.String,
+  changes: Schema.NonEmptyArray(ThreadMemberChangeSchema),
+});
+
 const ResyncJobSchema = Schema.Struct({ kind: Schema.Literal("resync") });
 
 const GatewayJobSchema = Schema.Union([
@@ -157,6 +170,7 @@ const GatewayJobSchema = Schema.Union([
   VoiceSnapshotJobSchema,
   ReactionsJobSchema,
   ScheduledEventsJobSchema,
+  ThreadMembersJobSchema,
   ResyncJobSchema,
 ]);
 
@@ -186,6 +200,10 @@ type ScheduledEventsJob = typeof ScheduledEventsJobSchema.Type;
 
 type ScheduledEventChange = typeof ScheduledEventChangeSchema.Type;
 
+type ThreadMembersJob = typeof ThreadMembersJobSchema.Type;
+
+type ThreadMemberChange = typeof ThreadMemberChangeSchema.Type;
+
 export { GatewayJobSchema };
 export type {
   DepartJob,
@@ -198,6 +216,8 @@ export type {
   ScheduledEventChange,
   ScheduledEventsJob,
   StoreJob,
+  ThreadMemberChange,
+  ThreadMembersJob,
   VoiceChange,
   VoiceJob,
   VoiceSnapshotJob,

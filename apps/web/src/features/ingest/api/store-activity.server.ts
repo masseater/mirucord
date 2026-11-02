@@ -1,6 +1,7 @@
 import type {
   ReactionsJob,
   ScheduledEventsJob,
+  ThreadMembersJob,
   VoiceJob,
   VoiceSnapshotJob,
 } from "@repo/ingest-util-gateway-contract";
@@ -52,4 +53,21 @@ const storeScheduledEvents = ({ guildId, changes }: ScheduledEventsJob): Effect.
   );
 };
 
-export { storeGatewayReactions, storeGatewayVoice, storeScheduledEvents, storeVoiceSnapshot };
+const storeThreadMembers = ({ guildId, changes }: ThreadMembersJob): Effect.Effect<void> => {
+  const logged = Effect.logInfo("Thread members stored").pipe(
+    Effect.annotateLogs({ guildId, changes: changes.length }),
+  );
+  return whenConsented(guildId)(() =>
+    Effect.promise(() => guildStore(guildId).saveThreadMembers(changes)).pipe(
+      Effect.andThen(logged),
+    ),
+  );
+};
+
+export {
+  storeGatewayReactions,
+  storeGatewayVoice,
+  storeScheduledEvents,
+  storeThreadMembers,
+  storeVoiceSnapshot,
+};

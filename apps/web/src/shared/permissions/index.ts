@@ -1,4 +1,4 @@
 export { isGuildManager } from "./permissions";
 export type { Overwrite } from "./permissions";
-export { postableChannelIds, visibleChannelIds } from "./visibility";
+export { isThread, postableChannelIds, visibleChannelIds } from "./visibility";
 export type { GuildChannel, GuildSnapshot } from "./visibility";

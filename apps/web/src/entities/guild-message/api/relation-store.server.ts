@@ -1,13 +1,19 @@
-import type { ReactionChange, ScheduledEventChange } from "@repo/ingest-util-gateway-contract";
+import type {
+  ReactionChange,
+  ScheduledEventChange,
+  ThreadMemberChange,
+} from "@repo/ingest-util-gateway-contract";
 import { Array, pipe } from "effect";
 
 import { memberLedger } from "./member-ledger.server";
 import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
 import { NoteStore } from "./note-store.server";
 import { reactionLedger } from "./reaction-ledger.server";
-import type { ReactionLookup, ReactionPage } from "./reaction-types";
+import type { ReactionLookup, ReactionPage } from "./reaction-ledger.server";
 import { scheduledEventLedger } from "./scheduled-event-ledger.server";
 import type { ScheduledEventLookup, ScheduledEventPage } from "./scheduled-event-ledger.server";
+import { threadMemberLedger } from "./thread-member-ledger.server";
+import type { ThreadMemberLookup, ThreadMemberPage } from "./thread-member-ledger.server";
 import { voiceLedger } from "./voice-ledger.server";
 import type { VoiceChangeWrite, VoiceLookup, VoicePage, VoiceSnapshotWrite } from "./voice-types";
 
@@ -19,6 +25,8 @@ abstract class RelationStore extends NoteStore {
   readonly #reactions = reactionLedger(this.db);
 
   readonly #events = scheduledEventLedger(this.db);
+
+  readonly #threads = threadMemberLedger(this.db);
 
   protected erasedIds(): readonly string[] {
     return pipe(
@@ -67,6 +75,14 @@ abstract class RelationStore extends NoteStore {
     return this.#events.read(lookup, this.erasedIds());
   }
 
+  public saveThreadMembers(changes: readonly ThreadMemberChange[]): void {
+    this.#threads.change(changes, this.erasedIds());
+  }
+
+  public readThreadMembers(lookup: ThreadMemberLookup): ThreadMemberPage {
+    return this.#threads.read(lookup, this.erasedIds());
+  }
+
   public keptUserIds(userIds: readonly string[]): readonly string[] {
     return Array.difference(userIds, this.erasedIds());
   }
@@ -78,6 +94,7 @@ abstract class RelationStore extends NoteStore {
 
   public override removeChannel(channelId: string): Promise<void> {
     this.#reactions.forgetChannel(channelId);
+    this.#threads.forgetThread(channelId);
     return super.removeChannel(channelId);
   }
 
@@ -86,6 +103,7 @@ abstract class RelationStore extends NoteStore {
     this.#voice.forget(authorId);
     this.#reactions.forget(authorId);
     this.#events.forget(authorId);
+    this.#threads.forget(authorId);
     return super.eraseAuthor(authorId);
   }
 }

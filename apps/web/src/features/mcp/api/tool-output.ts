@@ -155,6 +155,19 @@ const ListScheduledEventsOutput = Schema.Struct({
   events: Schema.Array(ScheduledEvent),
   liveInterestedUserIds: Schema.NullOr(Schema.Array(Schema.String)),
 });
+const ThreadMember = Schema.Struct({
+  threadId: Schema.String,
+  threadName: Schema.NullOr(Schema.String),
+  userId: Schema.String,
+  joinedAt: Schema.String,
+  leftAt: Schema.NullOr(Schema.String),
+});
+const ListThreadMembersOutput = Schema.Struct({
+  ingest: Schema.Literals(["consented", "notConsented"]),
+  total: Schema.Int,
+  members: Schema.Array(ThreadMember),
+  liveUserIds: Schema.NullOr(Schema.Array(Schema.String)),
+});
 const ReadMessagesOutput = Schema.Struct({
   ingest: Schema.optionalKey(Ingest),
   notFullyIngested: Schema.optionalKey(Schema.Array(PendingChannel)),
@@ -170,6 +183,7 @@ export {
   ListScheduledEventsOutput,
   ListServerPhrasesOutput,
   ListServersOutput,
+  ListThreadMembersOutput,
   ListVoiceSessionsOutput,
   ReadMessagesOutput,
 };

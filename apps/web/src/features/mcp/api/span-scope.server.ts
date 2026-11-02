@@ -15,13 +15,16 @@ type SpanScope = Readonly<{
   lookup: SpanLookup & Readonly<{ channelIds: readonly string[] }>;
 }>;
 
-const spanScopeOf = ({ scope, input }: SpanRequest): SpanScope => ({
-  names: Record.fromEntries(
+const channelNamesOf = (scope: GuildScope): Record.ReadonlyRecord<string, string> =>
+  Record.fromEntries(
     pipe(
       scope.guild.channels,
       Array.map(({ id, name }) => [id, name] as const),
     ),
-  ),
+  );
+
+const spanScopeOf = ({ scope, input }: SpanRequest): SpanScope => ({
+  names: channelNamesOf(scope),
   lookup: {
     ...spanLookupOf(input),
     channelIds: Option.match(Option.fromUndefinedOr(input.channelIds), {
@@ -31,5 +34,5 @@ const spanScopeOf = ({ scope, input }: SpanRequest): SpanScope => ({
   },
 });
 
-export { spanScopeOf };
+export { channelNamesOf, spanScopeOf };
 export type { SpanRequest, SpanScope };

@@ -165,6 +165,7 @@ export {
   loadGuildPage,
   purgeFor,
   revokeFor,
+  withSignedInAccount,
 };
 export type {
   ChannelTarget,

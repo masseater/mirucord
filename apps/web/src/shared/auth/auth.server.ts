@@ -38,29 +38,37 @@ type AuthBindings = Readonly<
   Pick<typeof env, "BETTER_AUTH_SECRET" | "DISCORD_CLIENT_ID" | "DISCORD_CLIENT_SECRET">
 >;
 
+const AUTH_SCHEMA = {
+  account,
+  authRelations,
+  jwks,
+  oauthAccessToken,
+  oauthClient,
+  oauthClientAssertion,
+  oauthClientResource,
+  oauthConsent,
+  oauthRefreshToken,
+  oauthResource,
+  session,
+  user,
+  verification,
+};
+
+const ACCOUNT_OPTIONS = { accountLinking: { trustedProviders: ["discord"] } } satisfies Pick<
+  BetterAuthOptions,
+  "account"
+>["account"];
+
 const authFor = Function.memoize((bindings: AuthBindings): Auth<AuthOptions> =>
   betterAuth<AuthOptions>({
     baseURL: SITE_ORIGIN,
     database: drizzleAdapter(db, {
       provider: "sqlite",
-      schema: {
-        account,
-        authRelations,
-        jwks,
-        oauthAccessToken,
-        oauthClient,
-        oauthClientAssertion,
-        oauthClientResource,
-        oauthConsent,
-        oauthRefreshToken,
-        oauthResource,
-        session,
-        user,
-        verification,
-      },
+      schema: AUTH_SCHEMA,
     }),
     disabledPaths: ["/token"],
     user: { deleteUser: { enabled: true } },
+    account: ACCOUNT_OPTIONS,
     socialProviders: {
       discord: {
         clientId: bindings.DISCORD_CLIENT_ID,

@@ -29,6 +29,9 @@ export default defineConfig({
               secretsStoreSecrets: { MASTER_KEY: { store_id: "test", secret_name: "master-key" } },
               bindings: {
                 DISCORD_BOT_TOKEN: `${btoa("900")}.test.token`,
+                DISCORD_CLIENT_ID: "test-client",
+                DISCORD_CLIENT_SECRET: "test-client-secret",
+                BETTER_AUTH_SECRET: "test-better-auth-secret-at-least-32-chars",
                 TEST_MIGRATIONS: migrations,
               },
             },

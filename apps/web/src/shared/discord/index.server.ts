@@ -31,3 +31,5 @@ export { botInviteUrl } from "./invite.server";
 export { liveReactionsOf } from "./reactions.server";
 export type { LiveReactions } from "./reactions.server";
 export { liveInterestedOf, liveThreadMembersOf } from "./live-users.server";
+export { listPublicConnections, revokeUserToken } from "./user-connections.server";
+export type { PublicConnection } from "./user-connections.server";

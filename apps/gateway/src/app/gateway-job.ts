@@ -1,14 +1,16 @@
-import { isGuildJob, isGuildWideJob, isMemberJob } from "@repo/ingest-util-gateway-contract";
-import type { GatewayJob, GuildJob, GuildWideJob } from "@repo/ingest-util-gateway-contract";
+import { isGuildJob, isGuildWideJob } from "@repo/ingest-util-gateway-contract";
+import type { GatewayJob, GuildJob } from "@repo/ingest-util-gateway-contract";
 import { DiscordMessageSchema } from "@repo/shared-util-discord";
 import type { DiscordMessage } from "@repo/shared-util-discord";
 import { Discord } from "dfx";
 import { Array, Match, Option, pipe, Record, Schema } from "effect";
 
 import { guildUpdateJob, joinJob, leaveJob, resyncJob, syncJob, syncJobOf } from "./guild-job";
-import { departJob, memberJobKeyOf, membersJob, mergeMemberJobs } from "./member-job";
-import { mergeReactionJobs, reactionJobKeyOf, reactionJobOf } from "./reaction-job";
-import { mergeVoiceJobs, voiceJobKeyOf, voiceJobOf } from "./voice-job";
+import { guildWideKeyOf } from "./guild-wide-key";
+import { departJob, membersJob, mergeMemberJobs } from "./member-job";
+import { mergeReactionJobs, reactionJobOf } from "./reaction-job";
+import { mergeScheduledEventJobs, scheduledEventJobOf } from "./scheduled-event-job";
+import { mergeVoiceJobs, voiceJobOf } from "./voice-job";
 
 type GatewayPayload = Readonly<{ op: Discord.GatewayOpcodes }>;
 
@@ -140,20 +142,11 @@ const toGatewayJobs = ({ payload, now }: Received): readonly GatewayJob[] =>
       ...Option.toArray(jobOfDispatch(dispatch)),
       ...Option.toArray(voiceJobOf(dispatch)(now)),
       ...Option.toArray(reactionJobOf(dispatch)(now)),
+      ...Option.toArray(scheduledEventJobOf(dispatch)(now)),
     ],
   });
 
 type Membership = Extract<GuildJob["kind"], "join" | "leave">;
-
-const guildWideKeyOf = (job: GuildWideJob): string => {
-  if (isMemberJob(job)) {
-    return memberJobKeyOf(job);
-  }
-  if (job.kind === "voice" || job.kind === "voiceSnapshot") {
-    return voiceJobKeyOf(job);
-  }
-  return reactionJobKeyOf(job);
-};
 
 const jobKeyOf = (job: GatewayJob): string => {
   if (job.kind === "resync") {
@@ -286,6 +279,7 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
     ...mergeMemberJobs(jobs),
     ...mergeVoiceJobs(jobs),
     ...mergeReactionJobs(jobs),
+    ...mergeScheduledEventJobs(jobs),
     ...pipe(
       Record.values(groups),
       Array.flatMap((group) => jobsOfGroup(group)),

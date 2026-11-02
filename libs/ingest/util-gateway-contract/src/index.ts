@@ -8,6 +8,8 @@ export type {
   ReactionChange,
   ReactionsJob,
   RefreshJob,
+  ScheduledEventChange,
+  ScheduledEventsJob,
   StoreJob,
   VoiceChange,
   VoiceJob,

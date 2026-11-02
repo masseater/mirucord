@@ -11,6 +11,7 @@ export { searchMessages } from "./api/search-messages.server";
 export type { MemberWrite, StoredMember } from "./api/member-types";
 export type { StoredVoiceSession } from "./api/voice-types";
 export type { StoredReaction, StoredVote } from "./api/reaction-types";
+export type { StoredScheduledEvent } from "./api/scheduled-event-types";
 export type {
   IndexedMessage,
   PhraseCandidate,

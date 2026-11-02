@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
-import { account } from "#/shared/auth/generated/auth.table";
+import { account } from "#/shared/auth/index.server";
 import { db, linkedAccount } from "#/shared/db/index.server";
 
 import {
@@ -18,7 +18,7 @@ import {
   loadLinkedAccounts,
   publishLinkedAccounts,
   withdrawLinkedAccounts,
-} from "./linked-accounts.server";
+} from "./linked-account-store.server";
 
 const NO_TOKEN = Option.getOrNull(Option.none<string>());
 

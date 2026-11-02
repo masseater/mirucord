@@ -1,7 +1,7 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import type { LinkedChoice } from "#/features/linked-accounts/index.server";
+import type { LinkedChoice } from "#/pages/dashboard/api/linked-account-store.server";
 import { connectionKeyOf } from "#/pages/dashboard/model/linked-account-draft";
 import { useLinkedAccountForm } from "#/pages/dashboard/model/use-linked-account-form";
 import { IconLine } from "#/shared/ui/icon-line";

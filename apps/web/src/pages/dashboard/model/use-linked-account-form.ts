@@ -4,12 +4,12 @@ import type { UseMutationResult } from "@tanstack/react-query";
 import { Atom } from "effect/reactivity";
 import { useCallback } from "react";
 
+import type { SignedOut } from "#/pages/dashboard/api/dashboard.server";
 import type {
   ConnectionKey,
   LinkedChoice,
   PublishResult,
-} from "#/features/linked-accounts/index.server";
-import type { SignedOut } from "#/pages/dashboard/api/dashboard.server";
+} from "#/pages/dashboard/api/linked-account-store.server";
 import {
   discardLinkedAccountsDraft,
   linkedAccountsQuery,

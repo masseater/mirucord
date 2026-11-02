@@ -1,6 +1,6 @@
 import { Array, Effect, pipe } from "effect";
 
-import { user } from "#/shared/auth/generated/auth.table";
+import { user } from "#/shared/auth/index.server";
 import { db, linkedAccount } from "#/shared/db/index.server";
 
 type SeedLink = Readonly<{

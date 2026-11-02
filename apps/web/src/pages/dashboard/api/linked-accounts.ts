@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { Effect, Schema } from "effect";
 
-import type { PublishResult } from "#/features/linked-accounts/index.server";
+import type { PublishResult } from "#/pages/dashboard/api/linked-account-store.server";
 
 import type { SignedOut } from "./dashboard.server";
 import {

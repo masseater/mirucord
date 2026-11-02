@@ -1,7 +1,7 @@
 import { Array, Match } from "effect";
 import type { ReactNode } from "react";
 
-import type { LinkedAccounts } from "#/features/linked-accounts/index.server";
+import type { LinkedAccounts } from "#/pages/dashboard/api/linked-account-store.server";
 import type { PublicConnection } from "#/shared/discord/index.server";
 
 import { LinkConnectionsButton } from "./link-connections-button";

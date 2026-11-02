@@ -1,7 +1,7 @@
 import { DateTime, Effect } from "effect";
 import { http, HttpResponse } from "msw";
 
-import { account, user } from "#/shared/auth/generated/auth.table";
+import { account, user } from "#/shared/auth/index.server";
 import { db } from "#/shared/db/index.server";
 
 const OWNER = { userId: "linked-user", discordUserId: "701" };

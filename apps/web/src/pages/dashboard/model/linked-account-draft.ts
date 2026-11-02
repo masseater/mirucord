@@ -1,6 +1,9 @@
 import { Array, pipe } from "effect";
 
-import type { ConnectionKey, LinkedChoice } from "#/features/linked-accounts/index.server";
+import type {
+  ConnectionKey,
+  LinkedChoice,
+} from "#/pages/dashboard/api/linked-account-store.server";
 
 type LinkedDraft =
   | Readonly<{ status: "untouched" }>

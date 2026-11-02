@@ -5,12 +5,12 @@ import {
   loadLinkedAccounts,
   publishLinkedAccounts,
   withdrawLinkedAccounts,
-} from "#/features/linked-accounts/index.server";
+} from "#/pages/dashboard/api/linked-account-store.server";
 import type {
   ConnectionKey,
   LinkedAccounts,
   PublishResult,
-} from "#/features/linked-accounts/index.server";
+} from "#/pages/dashboard/api/linked-account-store.server";
 
 import { withSignedInAccount } from "./dashboard.server";
 import type { SignedOut } from "./dashboard.server";

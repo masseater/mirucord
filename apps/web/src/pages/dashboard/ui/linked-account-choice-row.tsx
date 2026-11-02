@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import type { ReactNode } from "react";
 
-import type { LinkedChoice } from "#/features/linked-accounts/index.server";
+import type { LinkedChoice } from "#/pages/dashboard/api/linked-account-store.server";
 
 import { LinkedAccountLine } from "./linked-account-line";
 

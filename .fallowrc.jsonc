@@ -127,7 +127,7 @@
           ],
         },
         {
-          "extends": "InviteStore",
+          "extends": "RelationStore",
           "members": [
             "phraseNotes",
             "claimPhraseNotes",

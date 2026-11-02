@@ -1,7 +1,7 @@
 import { Clock, Effect, Option } from "effect";
 
-import { InviteStore } from "./invite-store.server";
 import { backfillPhrases } from "./phrase-backfill.server";
+import { RelationStore } from "./relation-store.server";
 import type {
   ExtractedPhrases,
   NoteClaim,
@@ -19,7 +19,7 @@ import type {
 import { vectorLedger } from "./vector-ledger.server";
 import type { Coverage } from "./vector-ledger.server";
 
-class GuildStore extends InviteStore {
+class GuildStore extends RelationStore {
   public phraseStats({
     guildId,
     visibility,

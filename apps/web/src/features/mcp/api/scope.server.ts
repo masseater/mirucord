@@ -5,7 +5,7 @@ import type { ChannelProgress, Consent } from "#/features/mcp/model/ingest-statu
 import { channel, db, guild, ingestConsent, loadRolePermissions } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
-import { canViewAuditLog, isGuildManager, visibleChannelIds } from "#/shared/permissions";
+import { canViewAuditLog, visibleChannelIds } from "#/shared/permissions";
 import type { GuildChannel, GuildSnapshot } from "#/shared/permissions";
 
 const MEMBER_CONCURRENCY = 4;
@@ -32,7 +32,6 @@ type GuildScope = Readonly<{
   guild: StoredGuild;
   visible: readonly string[];
   seesAuditLog: boolean;
-  managesGuild: boolean;
 }>;
 
 const loadChannels = (guildId: string): Effect.Effect<readonly StoredChannel[]> =>
@@ -109,23 +108,19 @@ const scopeOf = (
 ): Effect.Effect<Option.Option<GuildScope>, DiscordRequestError> =>
   findMember(stored.guildId, discordUserId).pipe(
     Effect.map(
-      Option.map(({ roles }) => {
-        const reader = {
+      Option.map(({ roles }) => ({
+        guild: stored,
+        visible: [
+          ...visibleChannelIds(stored, Option.some({ userId: discordUserId, roleIds: roles })),
+        ],
+        seesAuditLog: canViewAuditLog({
           guildId: stored.guildId,
           ownerId: stored.ownerId,
           userId: discordUserId,
           memberRoleIds: roles,
           rolePermissions: stored.rolePermissions,
-        };
-        return {
-          guild: stored,
-          visible: [
-            ...visibleChannelIds(stored, Option.some({ userId: discordUserId, roleIds: roles })),
-          ],
-          seesAuditLog: canViewAuditLog(reader),
-          managesGuild: isGuildManager(reader),
-        };
-      }),
+        }),
+      })),
     ),
   );
 

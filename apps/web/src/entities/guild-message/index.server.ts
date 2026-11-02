@@ -14,7 +14,6 @@ export type { StoredReaction, StoredVote } from "./api/reaction-types";
 export type { StoredScheduledEvent } from "./api/scheduled-event-types";
 export type { StoredThreadMember } from "./api/thread-member-ledger.server";
 export type { StoredAuditEntry } from "./api/audit-log-ledger.server";
-export type { StoredInviteJoin } from "./api/invite-ledger.server";
 export type {
   IndexedMessage,
   PhraseCandidate,

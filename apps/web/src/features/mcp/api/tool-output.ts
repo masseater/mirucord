@@ -183,22 +183,6 @@ const ListAuditLogOutput = Schema.Struct({
   total: Schema.Int,
   entries: Schema.Array(AuditEntry),
 });
-const InviteCandidate = Schema.Struct({
-  code: Schema.String,
-  inviterId: Schema.NullOr(Schema.String),
-  channelId: Schema.NullOr(Schema.String),
-});
-const InviteJoin = Schema.Struct({
-  userId: Schema.String,
-  joinedAt: Schema.String,
-  precision: Schema.Literals(["exact", "ambiguous", "unknown"]),
-  invites: Schema.Array(InviteCandidate),
-});
-const ListMemberInvitesOutput = Schema.Struct({
-  ingest: Schema.Literals(["consented", "notConsented"]),
-  total: Schema.Int,
-  joins: Schema.Array(InviteJoin),
-});
 const LinkedAccount = Schema.Struct({
   type: Schema.String,
   name: Schema.String,
@@ -225,7 +209,6 @@ export {
   FindSimilarMessagesOutput,
   ListChannelsOutput,
   ListLinkedAccountsOutput,
-  ListMemberInvitesOutput,
   ListMembersOutput,
   ListReactionsOutput,
   ListScheduledEventsOutput,

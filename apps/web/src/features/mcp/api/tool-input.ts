@@ -93,15 +93,6 @@ const ListAuditLogInput = Schema.Struct({
   offset: Offset,
 });
 
-const ListMemberInvitesInput = Schema.Struct({
-  serverId: Schema.String,
-  userIds: Schema.optionalKey(Ids),
-  since: Schema.optionalKey(Schema.DateTimeUtcFromString),
-  until: Schema.optionalKey(Schema.DateTimeUtcFromString),
-  limit: Schema.optionalKey(MemberLimit),
-  offset: Offset,
-});
-
 const ListLinkedAccountsInput = Schema.Struct({
   serverId: Schema.String,
   userIds: Ids,
@@ -142,7 +133,6 @@ export {
   ListAuditLogInput,
   ListChannelsInput,
   ListLinkedAccountsInput,
-  ListMemberInvitesInput,
   ListMembersInput,
   ListReactionsInput,
   ListScheduledEventsInput,

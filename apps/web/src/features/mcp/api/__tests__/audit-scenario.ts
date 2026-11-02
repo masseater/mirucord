@@ -57,5 +57,11 @@ const grantAuditLog = (): Promise<unknown> =>
     .set({ permissions: PermissionFlagsBits.ViewAuditLog.toString() })
     .where(eq(role.id, MEMBER_ROLE));
 
-export { grantAuditLog, seedAuditScenario };
+const grantManageGuild = (): Promise<unknown> =>
+  db
+    .update(role)
+    .set({ permissions: PermissionFlagsBits.ManageGuild.toString() })
+    .where(eq(role.id, MEMBER_ROLE));
+
+export { grantAuditLog, grantManageGuild, seedAuditScenario };
 export type { SeededAuditEntry };

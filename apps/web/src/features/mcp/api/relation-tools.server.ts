@@ -1,11 +1,10 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
-import { listAuditLog } from "./audit-log.server";
 import { listLinkedAccounts } from "./linked-accounts.server";
+import { serverWithManagerTools } from "./manager-tools.server";
 import { listMembers } from "./members.server";
 import { listReactions } from "./reactions.server";
 import {
-  LIST_AUDIT_LOG_TOOL,
   LIST_LINKED_ACCOUNTS_TOOL,
   LIST_MEMBERS_TOOL,
   LIST_REACTIONS_TOOL,
@@ -15,11 +14,10 @@ import {
 } from "./relation-tool-defs";
 import { listScheduledEvents } from "./scheduled-events.server";
 import { listThreadMembers } from "./thread-members.server";
-import { newServer } from "./tool-base";
 import { listVoiceSessions } from "./voice.server";
 
 const serverWithRelationTools = (discordUserId: string): McpServer => {
-  const server = newServer();
+  const server = serverWithManagerTools(discordUserId);
   server.registerTool("list_members", LIST_MEMBERS_TOOL, listMembers(discordUserId));
   server.registerTool(
     "list_voice_sessions",
@@ -37,7 +35,6 @@ const serverWithRelationTools = (discordUserId: string): McpServer => {
     LIST_THREAD_MEMBERS_TOOL,
     listThreadMembers(discordUserId),
   );
-  server.registerTool("list_audit_log", LIST_AUDIT_LOG_TOOL, listAuditLog(discordUserId));
   server.registerTool(
     "list_linked_accounts",
     LIST_LINKED_ACCOUNTS_TOOL,

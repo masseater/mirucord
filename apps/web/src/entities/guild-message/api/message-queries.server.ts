@@ -1,4 +1,4 @@
-import { and, count, eq, gte, inArray, lte } from "drizzle-orm";
+import { and, count, eq, gte, inArray, lte, min } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Option, pipe } from "effect";
@@ -9,7 +9,17 @@ import {
   TRACKED_COLUMNS,
 } from "#/entities/guild-message/model/guild-message.schema";
 
-import type { ChannelCount, CreatedRange, StoredState, TrackedRow } from "./store-types";
+import { authorQueries } from "./author-queries.server";
+import type {
+  AuthoredMessage,
+  AuthorPage,
+  ChannelCount,
+  ChannelOldest,
+  CreatedRange,
+  SealedMessage,
+  StoredState,
+  TrackedRow,
+} from "./store-types";
 
 const boundsOf = ({ from, upTo }: CreatedRange): readonly SQL[] => {
   const lower = Option.map(Option.fromNullOr(from), (time) => gte(guildMessage.createdAt, time));
@@ -104,12 +114,51 @@ const countsByChannel = (
     ),
   );
 
+const oldestByChannel = (
+  db: DrizzleSqliteDODatabase,
+  channelIds: readonly string[],
+): readonly ChannelOldest[] =>
+  pipe(
+    Array.chunksOf(channelIds, BOUND_LIMIT),
+    Array.flatMap((chunk) =>
+      db
+        .select({ channelId: guildMessage.channelId, oldest: min(guildMessage.createdAt) })
+        .from(guildMessage)
+        .where(inArray(guildMessage.channelId, [...chunk]))
+        .groupBy(guildMessage.channelId)
+        .all(),
+    ),
+    Array.flatMap(({ channelId, oldest }) =>
+      Option.toArray(
+        Option.map(Option.fromNullOr(oldest), (createdAt) => ({ channelId, oldest: createdAt })),
+      ),
+    ),
+  );
+
+const authorsOf = (
+  db: DrizzleSqliteDODatabase,
+  ids: readonly string[],
+): readonly AuthoredMessage[] =>
+  pipe(
+    Array.chunksOf(ids, BOUND_LIMIT),
+    Array.flatMap((chunk) =>
+      db
+        .select({ id: guildMessage.id, authorId: guildMessage.authorId })
+        .from(guildMessage)
+        .where(inArray(guildMessage.id, [...chunk]))
+        .all(),
+    ),
+  );
+
 type MessageQueries = Readonly<{
   tracked: (ids: readonly string[]) => readonly TrackedRow[];
   stored: (ids: readonly string[]) => readonly StoredState[];
   idsInChannel: (channelId: string, ids: readonly string[]) => readonly string[];
   idsBetween: (channelId: string, range: CreatedRange) => readonly string[];
   countByChannel: (channelIds: readonly string[]) => readonly ChannelCount[];
+  oldestByChannel: (channelIds: readonly string[]) => readonly ChannelOldest[];
+  authors: (ids: readonly string[]) => readonly AuthoredMessage[];
+  byAuthor: (page: AuthorPage) => readonly SealedMessage[];
 }>;
 
 const messageQueries = (db: DrizzleSqliteDODatabase): MessageQueries => ({
@@ -118,6 +167,9 @@ const messageQueries = (db: DrizzleSqliteDODatabase): MessageQueries => ({
   idsInChannel: (channelId, ids) => idsInChannelOf(db, channelId, ids),
   idsBetween: (channelId, range) => idsBetweenOf(db, channelId, range),
   countByChannel: (channelIds) => countsByChannel(db, channelIds),
+  oldestByChannel: (channelIds) => oldestByChannel(db, channelIds),
+  authors: (ids) => authorsOf(db, ids),
+  byAuthor: authorQueries(db),
 });
 
 export { messageQueries };

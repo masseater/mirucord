@@ -144,7 +144,14 @@ const sealedRows = (
     ({ id, channelId }) =>
       Effect.all({
         sealed: sealMessage(
-          { authorName: "someone", content: SAME_WORDS, attachments: [], embeds: [], stickers: [] },
+          {
+            authorName: "someone",
+            mentions: [],
+            content: SAME_WORDS,
+            attachments: [],
+            embeds: [],
+            stickers: [],
+          },
           key,
           {
             guildId: seed.id,
@@ -279,7 +286,9 @@ export {
   GUILD_D,
   D_OPEN,
   guildKeys,
+  OWNER,
   SAME_WORDS,
+  SEEDED,
   seedScenario,
   USER,
 };

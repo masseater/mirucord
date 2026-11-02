@@ -1,11 +1,10 @@
 import { and, asc, desc, eq, gt, gte, inArray, lt, ne, or } from "drizzle-orm";
 import { Array, Duration, Option, pipe, String as Str } from "effect";
 
-import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
+import { guildMessage, SEALED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
 import { phraseNote } from "#/entities/guild-message/model/phrase-note.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
-import { SEALED_COLUMNS } from "./message-store.server";
 import { PhraseStore } from "./phrase-store.server";
 import type {
   NoteClaim,

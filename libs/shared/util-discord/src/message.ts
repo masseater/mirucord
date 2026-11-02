@@ -42,6 +42,16 @@ const Author = Schema.Struct({
   bot: Schema.optional(Schema.Boolean),
 });
 
+const noMentions = Effect.succeed<readonly never[]>([]);
+
+const Mentions = Schema.Array(Author).pipe(Schema.withDecodingDefaultKey(noMentions));
+
+const MessageReference = Schema.Struct({
+  type: Schema.optional(Schema.Finite),
+  message_id: Schema.optional(Schema.String),
+  channel_id: Schema.optional(Schema.String),
+});
+
 const MessageSnapshot = Schema.Struct({
   message: Schema.Struct({
     content: MessageText,
@@ -58,6 +68,8 @@ const Message = Schema.Struct({
   timestamp: Schema.DateTimeUtcFromString,
   edited_timestamp: Schema.NullOr(Schema.DateTimeUtcFromString),
   author: Author,
+  mentions: Mentions,
+  message_reference: Schema.optional(MessageReference),
   webhook_id: Schema.optional(Schema.String),
   attachments: Schema.Array(Attachment),
   message_snapshots: Schema.optional(Schema.Array(MessageSnapshot)),

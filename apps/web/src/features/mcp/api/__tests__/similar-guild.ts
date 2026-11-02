@@ -69,7 +69,14 @@ const indexedOf = ({ id, channelId, content }: SimilarSeed): Effect.Effect<Index
   Effect.gen(function* seed() {
     const keys = yield* guildKeys(GUILD_A);
     const now = DateTime.toEpochMillis(yield* DateTime.now);
-    const body = { authorName: "someone", content, attachments: [], embeds: [], stickers: [] };
+    const body = {
+      authorName: "someone",
+      mentions: [],
+      content,
+      attachments: [],
+      embeds: [],
+      stickers: [],
+    };
     return {
       row: {
         id,

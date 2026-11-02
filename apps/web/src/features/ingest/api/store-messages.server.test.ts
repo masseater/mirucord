@@ -25,6 +25,11 @@ const FORWARD = "751";
 const FORWARDED_TEXT = "麺のことを綿と呼んでいる";
 const RICH_CHANNEL = "760";
 const RICH = "761";
+const REPLY_CHANNEL = "770";
+const REPLY = "771";
+const REPLIED = "769";
+const REPLY_MESSAGE = 19;
+const MENTIONED = "902";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 
 const discordMessage = (id: string): unknown => ({
@@ -64,6 +69,18 @@ const richMessage = (id: string): unknown => ({
   },
 });
 
+const replyMessage = (id: string): unknown => ({
+  id,
+  type: REPLY_MESSAGE,
+  content: `<@${MENTIONED}> 明日の通話どう？`,
+  timestamp: "2026-10-01T00:00:00Z",
+  edited_timestamp: Option.getOrNull(Option.none()),
+  author: { id: OWNER, username: "someone" },
+  mentions: [{ id: MENTIONED, username: "friend", global_name: "ともだち" }],
+  message_reference: { type: 0, message_id: REPLIED, channel_id: REPLY_CHANNEL },
+  attachments: [],
+});
+
 const network = setupNetwork();
 
 const answerWith = (id: string, message = discordMessage): void => {
@@ -88,7 +105,7 @@ const bodyIn = (channelId: string, messageId: string): Effect.Effect<MessageBody
 const seedMessages = Effect.gen(function* seed() {
   const wrappedKey = yield* createGuildKey;
   const channelRows = pipe(
-    [STORED_CHANNEL, UNDESCRIBED_CHANNEL, FORWARD_CHANNEL, RICH_CHANNEL],
+    [STORED_CHANNEL, UNDESCRIBED_CHANNEL, FORWARD_CHANNEL, RICH_CHANNEL, REPLY_CHANNEL],
     Array.map((id) => ({
       id,
       guildId: GUILD,
@@ -169,6 +186,18 @@ it.effect("stores embeds, sticker names and the poll of a message", () =>
       embeds: [{ title: "埋め込みの題", fields: [{ name: "項目", value: "値" }] }],
       stickers: ["おじぎ"],
       poll: { question: "どれにする", answers: ["ラーメン"] },
+    });
+  }),
+);
+
+it.effect("stores the users a message mentions and the message it replies to", () =>
+  Effect.gen(function* replyPage() {
+    answerWith(REPLY, replyMessage);
+    yield* ingestChannel({ guildId: GUILD, channelId: REPLY_CHANNEL });
+    const { mentions, replyTo } = yield* bodyIn(REPLY_CHANNEL, REPLY);
+    expect({ mentions, replyTo }).toStrictEqual({
+      mentions: [{ id: MENTIONED, name: "ともだち" }],
+      replyTo: REPLIED,
     });
   }),
 );

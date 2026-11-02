@@ -92,7 +92,7 @@ const bodyOf = ({
 }: Readonly<{
   incoming: DiscordMessage;
   attachments: MessageBody["attachments"];
-}>): Omit<MessageBody, "authorName"> => ({
+}>): Omit<MessageBody, "authorName" | "mentions" | "replyTo"> => ({
   content: contentOf(incoming),
   attachments,
   embeds: embedsOf(incoming),

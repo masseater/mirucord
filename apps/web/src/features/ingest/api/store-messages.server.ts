@@ -62,8 +62,31 @@ const phrasesOf = (
     (hashes) => ({ status: "extracted", hashes }),
   );
 
-const authorNameOf = ({ author }: DiscordMessage): string =>
-  Option.getOrElse(Option.fromNullishOr(author.global_name), () => author.username);
+type DiscordUser = DiscordMessage["author"];
+
+const nameOf = (user: DiscordUser): string =>
+  Option.getOrElse(Option.fromNullishOr(user.global_name), () => user.username);
+
+const mentionsOf = ({ mentions }: DiscordMessage): MessageBody["mentions"] =>
+  pipe(
+    mentions,
+    Array.map((user) => ({ id: user.id, name: nameOf(user) })),
+  );
+
+const replyToOf = ({ type, message_reference }: DiscordMessage): string | undefined =>
+  Option.fromUndefinedOr(message_reference).pipe(
+    Option.filter(() => type === Discord.MessageType.REPLY),
+    Option.flatMap(({ message_id }) => Option.fromUndefinedOr(message_id)),
+    Option.getOrUndefined,
+  );
+
+const authorOf = (
+  incoming: DiscordMessage,
+): Pick<MessageBody, "authorName" | "mentions" | "replyTo"> => ({
+  authorName: nameOf(incoming.author),
+  mentions: mentionsOf(incoming),
+  replyTo: replyToOf(incoming),
+});
 
 type StoredAttachment = MessageBody["attachments"][number];
 
@@ -157,7 +180,7 @@ const toIndexed = (
   { incoming, attachments, describedWith }: DescribedMessage,
 ): Effect.Effect<IndexedMessage> => {
   const { key, searchKey, job } = target;
-  const body = { authorName: authorNameOf(incoming), ...bodyOf({ incoming, attachments }) };
+  const body = { ...authorOf(incoming), ...bodyOf({ incoming, attachments }) };
   return Effect.all({
     sealed: sealMessage(body, key, { ...job, messageId: incoming.id }),
     tokens: indexTokens({ key: searchKey, texts: searchableTexts(body) }),

@@ -48,8 +48,14 @@ const StoredEmbeds = Schema.Array(MessageEmbed).pipe(Schema.withDecodingDefaultK
 
 const Stickers = Schema.Array(Schema.String).pipe(Schema.withDecodingDefaultKey(nothingYet));
 
+const Mention = Schema.Struct({ id: Schema.String, name: Schema.String });
+
+const Mentions = Schema.Array(Mention).pipe(Schema.withDecodingDefaultKey(nothingYet));
+
 const MessageBodySchema = Schema.Struct({
   authorName: Schema.String,
+  mentions: Mentions,
+  replyTo: Schema.optional(Schema.String),
   content: Schema.String,
   attachments: Schema.Array(MessageAttachment),
   embeds: StoredEmbeds,

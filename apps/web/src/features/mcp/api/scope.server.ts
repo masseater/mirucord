@@ -5,7 +5,7 @@ import type { ChannelProgress, Consent } from "#/features/mcp/model/ingest-statu
 import { channel, db, guild, ingestConsent, loadRolePermissions } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
-import { visibleChannelIds } from "#/shared/permissions";
+import { canViewAuditLog, visibleChannelIds } from "#/shared/permissions";
 import type { GuildChannel, GuildSnapshot } from "#/shared/permissions";
 
 const MEMBER_CONCURRENCY = 4;
@@ -31,6 +31,7 @@ type ReadableGuild = Readonly<{
 type GuildScope = Readonly<{
   guild: StoredGuild;
   visible: readonly string[];
+  seesAuditLog: boolean;
 }>;
 
 const loadChannels = (guildId: string): Effect.Effect<readonly StoredChannel[]> =>
@@ -112,6 +113,13 @@ const scopeOf = (
         visible: [
           ...visibleChannelIds(stored, Option.some({ userId: discordUserId, roleIds: roles })),
         ],
+        seesAuditLog: canViewAuditLog({
+          guildId: stored.guildId,
+          ownerId: stored.ownerId,
+          userId: discordUserId,
+          memberRoleIds: roles,
+          rolePermissions: stored.rolePermissions,
+        }),
       })),
     ),
   );

@@ -19,6 +19,7 @@ const FLUSH_INTERVAL = "5 seconds";
 const INTENTS =
   Discord.GatewayIntentBits.Guilds +
   Discord.GatewayIntentBits.GuildMembers +
+  Discord.GatewayIntentBits.GuildModeration +
   Discord.GatewayIntentBits.GuildVoiceStates +
   Discord.GatewayIntentBits.GuildScheduledEvents +
   Discord.GatewayIntentBits.GuildMessages +

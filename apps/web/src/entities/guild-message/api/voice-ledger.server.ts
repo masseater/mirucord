@@ -192,3 +192,4 @@ const voiceLedger = (db: DrizzleSqliteDODatabase): VoiceLedger => ({
 
 export { voiceLedger };
 export type { VoiceLedger };
+export type { VoiceChangeWrite, VoiceLookup, VoicePage, VoiceSnapshotWrite } from "./voice-types";

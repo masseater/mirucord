@@ -83,6 +83,16 @@ const ListThreadMembersInput = Schema.Struct({
   offset: Offset,
 });
 
+const ListAuditLogInput = Schema.Struct({
+  serverId: Schema.String,
+  userIds: Schema.optionalKey(Ids),
+  actions: Schema.optionalKey(Ids),
+  since: Schema.optionalKey(Schema.DateTimeUtcFromString),
+  until: Schema.optionalKey(Schema.DateTimeUtcFromString),
+  limit: Schema.optionalKey(MemberLimit),
+  offset: Offset,
+});
+
 const memberLimitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_MEMBER_LIMIT);
 
@@ -115,6 +125,7 @@ export {
   FindSimilarMessagesInput,
   FIRST_OFFSET,
   limitOf,
+  ListAuditLogInput,
   ListChannelsInput,
   ListMembersInput,
   ListReactionsInput,

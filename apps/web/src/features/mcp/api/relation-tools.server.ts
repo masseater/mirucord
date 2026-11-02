@@ -1,8 +1,10 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
+import { listAuditLog } from "./audit-log.server";
 import { listMembers } from "./members.server";
 import { listReactions } from "./reactions.server";
 import {
+  LIST_AUDIT_LOG_TOOL,
   LIST_MEMBERS_TOOL,
   LIST_REACTIONS_TOOL,
   LIST_SCHEDULED_EVENTS_TOOL,
@@ -33,6 +35,7 @@ const serverWithRelationTools = (discordUserId: string): McpServer => {
     LIST_THREAD_MEMBERS_TOOL,
     listThreadMembers(discordUserId),
   );
+  server.registerTool("list_audit_log", LIST_AUDIT_LOG_TOOL, listAuditLog(discordUserId));
   return server;
 };
 

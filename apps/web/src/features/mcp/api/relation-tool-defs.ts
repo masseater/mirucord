@@ -1,6 +1,7 @@
 import { Schema } from "effect";
 
 import {
+  ListAuditLogInput,
   ListMembersInput,
   ListReactionsInput,
   ListScheduledEventsInput,
@@ -8,6 +9,7 @@ import {
   ListVoiceSessionsInput,
 } from "#/features/mcp/api/tool-input";
 import {
+  ListAuditLogOutput,
   ListMembersOutput,
   ListReactionsOutput,
   ListScheduledEventsOutput,
@@ -76,7 +78,16 @@ const LIST_THREAD_MEMBERS_TOOL = {
   ),
 };
 
+const LIST_AUDIT_LOG_TOOL = {
+  title: "List audit log",
+  description: `List the server's audit log, newest first: who (\`userId\`) did what (\`action\`, such as \`member_role_update\`, \`member_kick\`, \`member_ban_add\`, \`invite_create\` or \`channel_create\`) to whom or what (\`targetId\`), with the reason and the changed fields as Discord gives them. Only people who have the View Audit Log permission in the server can read it. Pass \`userIds\` to keep entries those people did or that were done to them, \`actions\` to keep those kinds, and \`since\`/\`until\` (ISO 8601). \`total\` counts all matches; advance \`offset\` by \`limit\` to page. Entries are only recorded after the server's admin allows ${SERVICE_NAME} to store data, so \`notConsented\` returns none and nothing from before 2026-11 is stored; Discord itself keeps entries for 45 days and ${SERVICE_NAME} keeps them after that. Look up names with \`list_members\`.`,
+  ...TOOL_BASE,
+  outputSchema: ListAuditLogOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+  inputSchema: ListAuditLogInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
+};
+
 export {
+  LIST_AUDIT_LOG_TOOL,
   LIST_MEMBERS_TOOL,
   LIST_REACTIONS_TOOL,
   LIST_SCHEDULED_EVENTS_TOOL,

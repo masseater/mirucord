@@ -108,8 +108,9 @@ packageExtensions:
       "@steiger/toolkit": 0.2.3
 patchedDependencies:
   "@better-auth/oauth-provider@1.7.15": patches/@better-auth__oauth-provider@1.7.15.patch
-auditConfig:
-  ignoreGhsas:
+audit:
+  ignorePrune: true
+  ignore:
     - GHSA-gcqx-w48m-w2h4
 minimumReleaseAgeExclude:
   - "@r_masseater/oxlint-typed-rules@0.0.1"

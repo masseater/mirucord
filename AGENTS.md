@@ -56,7 +56,7 @@ release. Add a tool name to select part of the graph. For example, run
 
 ## コマンド
 
-- `vp run verify` はルートの `vite.config.ts` のタスクで、`vp check` に加えてテスト・ESLint・textlint と yomiyasu・steiger・drizzle の差分検査・fallow・gitleaks・audit などを流す。pre-push フックは verify を動かす。`vp check` は oxlint-plugin-decision の判定に `OPENROUTER_API_KEY` を使う。
+- `vp run verify` はルートの `vite.config.ts` のタスクで、`vp check` に加えてテスト・textlint と yomiyasu・steiger・drizzle の差分検査・fallow・gitleaks・audit などを流す。pre-push フックは verify を動かす。`vp check` は oxlint-plugin-decision の判定に `OPENROUTER_API_KEY` を使う。
 - 1 つのテストだけを流すときは、そのワークスペースで `vp exec vp test run <ファイル>` を実行する。`apps/web` のテストは `@cloudflare/vitest-plugin` の上で D1・R2・Queue・Durable Object をそろえて動く。
 
 ## 環境変数

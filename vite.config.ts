@@ -18,6 +18,7 @@ import {
   presetRulesOf,
   renamedRulesOf,
   restrictedImports,
+  restrictedSyntaxOverrides,
   ruleNamesOf,
   rulesMissingFrom,
 } from "./lint.config.ts";
@@ -76,6 +77,7 @@ export default defineConfig({
       { name: "vite-plus", specifier: "vite-plus/oxlint-plugin" },
       { name: "tanstack-query", specifier: "@tanstack/eslint-plugin-query" },
       { name: "tanstack-router", specifier: "@tanstack/eslint-plugin-router" },
+      { name: "tanstack-start", specifier: "@r_masseater/oxlint-typed-rules/tanstack-start" },
       { name: "drizzle", specifier: "eslint-plugin-drizzle" },
       { name: "react-hooks-js", specifier: "eslint-plugin-react-hooks" },
       { name: "@eslint-react", specifier: "@eslint-react/eslint-plugin" },
@@ -83,10 +85,13 @@ export default defineConfig({
       { name: "no-comments", specifier: "eslint-plugin-no-comments" },
       { name: "baseline-js", specifier: "eslint-plugin-baseline-js" },
       { name: "@html-eslint/react", specifier: "@html-eslint/eslint-plugin-react" },
+      { name: "eslint-js", specifier: "oxlint-plugin-eslint" },
       { name: decisionPluginName, specifier: "./decision-rules.ts" },
     ],
     rules: {
       "vite-plus/prefer-vite-plus-imports": "error",
+      "tanstack-start/no-async-client-component": "error",
+      "tanstack-start/no-client-code-in-server-component": "error",
       "no-comments/disallowComments": ["error", { allow: ["oxlint-disable", "eslint-disable"] }],
       ...allRulesOf({ prefix: "tanstack-query", rules: tanstackQuery.rules }),
       ...allRulesOf({ prefix: "tanstack-router", rules: tanstackRouter.rules }),
@@ -180,6 +185,7 @@ export default defineConfig({
       "react/only-export-components": ["error", { allowExportNames: ["Route"] }],
     },
     overrides: [
+      ...restrictedSyntaxOverrides,
       {
         files: [
           "**/*.config.ts",
@@ -250,7 +256,6 @@ export default defineConfig({
         },
         dependsOn: [
           "test-all",
-          "eslint",
           "syncpack",
           "markdown-lint",
           "renovate",
@@ -263,7 +268,6 @@ export default defineConfig({
         ],
       },
       "test-all": "vp run -r test",
-      eslint: "NODE_OPTIONS=--max-old-space-size=6144 eslint --max-warnings 0 .",
       syncpack: "syncpack lint",
       "steiger-all": "vp run -r steiger",
       "db-check-all": "vp run -r db:check",

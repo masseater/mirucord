@@ -254,6 +254,7 @@ const decisionRulesOff = pipe(
   Record.map(() => "off" as const),
 );
 
+export { restrictedSyntaxOverrides } from "./restricted-syntax.config.ts";
 export {
   allRulesOf,
   asErrors,

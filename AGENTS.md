@@ -67,7 +67,7 @@ release. Add a tool name to select part of the graph. For example, run
 
 - Workers Paid プランを前提にする。
 - Paid に含まれる D1・Queues・Workers AI・Durable Objects などの無料枠は使ってよい。Free プランの上限は持ち出さない。
-- ゾーンの WAF カスタムルールと Logpush のジョブは、masseater.dev ゾーンの持ち主の masseater/masseater.dev だけが持つ。ほかのリポは `OWNED_ZONE` を入れない。
+- ゾーンの WAF カスタムルールと Logpush のジョブは、masseater.dev ゾーンの持ち主の masseater/masseater.dev だけが持つ。ほかのリポは持たない。
 - Worker にはすべて `logpush: true` を付ける。
 - Bot Fight Mode は使わない。
 

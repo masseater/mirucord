@@ -135,11 +135,6 @@ export default defineConfig({
                 "Uint32Array",
               ],
             },
-            {
-              from: "package",
-              package: "@cloudflare/workers-types",
-              name: "AnalyticsEngineDataset",
-            },
             { from: "package", package: "@tanstack/query-core", name: "QueryClient" },
             { from: "package", package: "drizzle-orm", name: ["DrizzleSqliteDODatabase", "SQL"] },
             {

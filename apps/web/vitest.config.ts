@@ -42,6 +42,7 @@ export default defineConfig({
   ],
   test: {
     setupFiles: ["./test/setup.ts"],
+    fsModuleCache: false,
     deps: { optimizer: { ssr: { enabled: true, include: ["discord-api-types/v10"] } } },
   },
 });

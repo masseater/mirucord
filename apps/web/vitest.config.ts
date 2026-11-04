@@ -9,6 +9,16 @@ const readMigrations = Effect.promise(() =>
 export default defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [
+    {
+      name: "without-dependency-sourcemaps",
+      transform: {
+        filter: { id: /\/node_modules\//u },
+        handler: (code): { code: string; map: { mappings: "" } } => ({
+          code,
+          map: { mappings: "" },
+        }),
+      },
+    },
     cloudflareTest(() =>
       Effect.runPromise(
         readMigrations.pipe(

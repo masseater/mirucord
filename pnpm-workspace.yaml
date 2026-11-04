@@ -86,6 +86,9 @@ overrides:
   "@effect/sql-d1": 4.1.2
   "@effect/sql-sqlite-do": 4.1.2
   "@effect/vitest": "catalog:stack"
+  "@r_masseater/oxlint-plugin-decision>effect": 4.0.7
+  "@r_masseater/oxlint-plugin-decision>@effect/platform-node": 4.0.7
+  "@effect/platform-node@4.0.7>@effect/platform-node-shared": 4.0.7
   vite@*: "catalog:"
   eslint-plugin-react-hooks>zod-validation-error: ^5.0.0
   glob@>=9.0.0 <=14.0.1: ^14.0.2

@@ -4,6 +4,7 @@ import { Effect, Option } from "effect";
 
 import { discordUserIdOf, getAuth } from "#/shared/auth/index.server";
 import { MCP_URL } from "#/shared/config";
+import { runTraced } from "#/shared/observability/index.server";
 
 import { buildServer } from "./tools.server";
 
@@ -28,7 +29,7 @@ const serveMcp = (request: Request): Promise<Response> =>
   requireMcpAuth(
     getAuth(),
     (authorized, claims) =>
-      Effect.runPromise(
+      runTraced(
         linkedDiscordUser(Option.fromNullishOr(claims.sub)).pipe(
           Effect.flatMap((discordUserId) => respond(authorized, discordUserId)),
         ),

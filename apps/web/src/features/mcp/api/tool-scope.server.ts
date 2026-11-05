@@ -4,6 +4,7 @@ import { Array, Effect, Option, pipe } from "effect";
 import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
 import { CATEGORY_TYPES, FORUM_TYPES } from "#/shared/discord";
+import { runTraced } from "#/shared/observability/index.server";
 
 import { resolveScope } from "./scope.server";
 import type { GuildScope, StoredChannel } from "./scope.server";
@@ -39,7 +40,7 @@ const scoped = (request: ToolRequest, withinScope: WithinScope): Effect.Effect<C
 const withScope =
   (request: Readonly<{ guildId: string; discordUserId: string }>) =>
   (withinScope: (scope: GuildScope) => Effect.Effect<CallToolResult>): Promise<CallToolResult> =>
-    Effect.runPromise(scoped(request, withinScope));
+    runTraced(scoped(request, withinScope));
 
 const readableChannels = (scope: GuildScope): readonly StoredChannel[] =>
   pipe(

@@ -2,6 +2,7 @@ import { env, waitUntil } from "cloudflare:workers";
 import { Context, Effect, Option, Semaphore } from "effect";
 
 import { SITE_ORIGIN } from "#/shared/config";
+import { runTraced } from "#/shared/observability/index.server";
 
 const CACHE_CONTROL = "public, max-age=86400, immutable";
 const CACHE_NAME = "search-files";
@@ -60,7 +61,7 @@ const remember = (
     Effect.flatMap(({ writes }) =>
       Effect.sync(() => {
         const writing = writes.withPermits(ONE)(putInCache(key, bytes));
-        waitUntil(Effect.runPromise(writing));
+        waitUntil(writing.pipe(runTraced));
       }),
     ),
   );
@@ -98,7 +99,7 @@ const matchOnce = (
         const pending = cache.match(cacheUrl(key));
         signal.addEventListener("abort", () => {
           const settled = lateBody(() => pending).pipe(Effect.ensuring(reads.release(ONE)));
-          waitUntil(Effect.runPromise(settled));
+          waitUntil(settled.pipe(runTraced));
         });
         return pending;
       }).pipe(Effect.timeoutOption(MATCH_TIMEOUT));

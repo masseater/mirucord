@@ -1,4 +1,3 @@
-import { DurableObject } from "cloudflare:workers";
 import { and, count, desc, eq, inArray, lt } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/durable-sqlite";
@@ -12,6 +11,7 @@ import {
   SEALED_COLUMNS,
   TRACKED_COLUMNS,
 } from "#/entities/guild-message/model/guild-message.schema";
+import { TracedDurableObject } from "#/shared/observability/index.server";
 
 import { migrateGuild } from "./guild-migrations.server";
 import { messageQueries } from "./message-queries.server";
@@ -42,7 +42,7 @@ type Seq = Readonly<{ seq: number }>;
 
 type Versioned = StoredRow & Readonly<{ tokens: readonly number[]; version: number }>;
 
-abstract class MessageStore extends DurableObject {
+abstract class MessageStore extends TracedDurableObject {
   protected readonly db = this.#open();
 
   protected abstract recordPhrases(message: UnphrasedMessage, hashes: ExtractedHashes): void;
@@ -145,11 +145,11 @@ abstract class MessageStore extends DurableObject {
   }
 
   public write(messages: readonly IndexedMessage[], mode: WriteMode): Promise<void> {
-    return Effect.runPromise(Effect.suspend(() => this.#writeKept(messages, mode)));
+    return this.traced(Effect.suspend(() => this.#writeKept(messages, mode)));
   }
 
   public publish(): Promise<void> {
-    return Effect.runPromise(this.search.publish("now"));
+    return this.traced(this.search.publish("now"));
   }
 
   public stored(ids: readonly string[]): readonly StoredState[] {
@@ -174,7 +174,7 @@ abstract class MessageStore extends DurableObject {
     const deleted = Effect.sync(() => {
       this.#deleteWhere(conditions);
     });
-    return Effect.runPromise(this.search.forget(rows).pipe(Effect.andThen(deleted)));
+    return this.traced(this.search.forget(rows).pipe(Effect.andThen(deleted)));
   }
 
   public remove(ids: readonly string[]): Promise<void> {
@@ -213,7 +213,7 @@ abstract class MessageStore extends DurableObject {
       }
     });
     const wiped = Effect.promise(() => this.ctx.storage.deleteAll());
-    return Effect.runPromise(
+    return this.traced(
       this.search
         .clearFiles()
         .pipe(Effect.andThen(wiped), Effect.andThen(this.#remigrate), Effect.andThen(restore)),

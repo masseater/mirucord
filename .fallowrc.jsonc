@@ -107,7 +107,7 @@
       "enablers": ["alchemy"],
       "usedClassMembers": [
         {
-          "extends": "DurableObject",
+          "extends": "TracedDurableObject",
           "members": [
             "write",
             "stored",

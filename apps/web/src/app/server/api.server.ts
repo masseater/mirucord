@@ -6,6 +6,7 @@ import { CloudflareAdapter } from "elysia/adapter/cloudflare-worker";
 
 import { receiveGatewayEvent } from "#/features/ingest/index.server";
 import { getAuth } from "#/shared/auth/index.server";
+import { runTraced } from "#/shared/observability/index.server";
 
 export const api = new Elysia({ adapter: CloudflareAdapter, aot: false })
   .get("/api/health", () => ({
@@ -17,7 +18,7 @@ export const api = new Elysia({ adapter: CloudflareAdapter, aot: false })
   .post(
     GATEWAY_PATH,
     ({ body, request }) =>
-      receiveGatewayEvent({ body, headers: Record.fromEntries(request.headers) }),
+      runTraced(receiveGatewayEvent({ body, headers: Record.fromEntries(request.headers) })),
     { parse: "text", body: t.String() },
   )
   .mount((request) => getAuth().handler(request));

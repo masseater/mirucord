@@ -1,12 +1,13 @@
-import { DurableObject } from "cloudflare:workers";
 import { Clock, Effect } from "effect";
+
+import { TracedDurableObject } from "#/shared/observability/index.server";
 
 const ONE_HIT = 1;
 const NEVER = 0;
 const NO_HITS = 0;
 const MS_PER_SECOND = 1000;
 
-class RequestCounter extends DurableObject {
+class RequestCounter extends TracedDurableObject {
   #windowStart = NEVER;
   #hits = NO_HITS;
 
@@ -20,7 +21,7 @@ class RequestCounter extends DurableObject {
   }
 
   public hit(limit: number, periodSeconds: number): Promise<boolean> {
-    return Effect.runPromise(
+    return this.traced(
       Clock.currentTimeMillis.pipe(Effect.map((now) => this.#count(now, periodSeconds) <= limit)),
     );
   }

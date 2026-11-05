@@ -3,6 +3,7 @@ import { Effect, Option, pipe, String as Str } from "effect";
 import { ingestDeliveries } from "#/features/ingest/index.server";
 import { serveMcp } from "#/features/mcp/index.server";
 import { MCP_URL } from "#/shared/config";
+import { runTraced } from "#/shared/observability/index.server";
 
 import { api } from "./api.server";
 import { authRejection, mcpRejection } from "./throttle.server";
@@ -20,11 +21,11 @@ const unlessRejected = (
     onSome: Effect.succeed<Response>,
     onNone: () => Effect.promise(() => Promise.resolve(next())),
   });
-  return Effect.runPromise(rejection.pipe(Effect.flatMap(respond)));
+  return runTraced(rejection.pipe(Effect.flatMap(respond)));
 };
 
 const renderPage = (request: Request): Promise<Response> =>
-  Effect.runPromise(
+  runTraced(
     Effect.promise(() => import("@tanstack/react-start/server-entry")).pipe(
       Effect.flatMap(({ default: pages }) =>
         Effect.promise(() => Promise.resolve(pages.fetch(request))),
@@ -48,7 +49,7 @@ const route = (request: Request): Response | Promise<Response> => {
 };
 
 const unindexed = (request: Request): Promise<Response> =>
-  Effect.runPromise(
+  runTraced(
     Effect.promise(() => Promise.resolve(route(request))).pipe(
       Effect.map((indexed) => {
         const response = new Response(indexed.body, indexed);
@@ -60,7 +61,7 @@ const unindexed = (request: Request): Promise<Response> =>
 
 const worker: ExportedHandler = {
   fetch: unindexed,
-  queue: (batch): Promise<void> => Effect.runPromise(ingestDeliveries(batch.messages)),
+  queue: (batch): Promise<void> => runTraced(ingestDeliveries(batch.messages)),
 };
 
 export { GuildStore } from "#/entities/guild-message/index.server";

@@ -61,7 +61,10 @@ const processEvent = (body: string): Effect.Effect<Response> =>
 const receiveGatewayEvent = ({
   body,
   headers,
-}: Readonly<{ body: string; headers: Readonly<Record<string, string>> }>): Promise<Response> => {
+}: Readonly<{
+  body: string;
+  headers: Readonly<Record<string, string>>;
+}>): Effect.Effect<Response> => {
   if (
     !verifyGatewayEvent({
       botToken: env.DISCORD_BOT_TOKEN,
@@ -69,9 +72,9 @@ const receiveGatewayEvent = ({
       headers,
     })
   ) {
-    return Promise.resolve(new Response("Invalid gateway signature", { status: UNAUTHORIZED }));
+    return Effect.succeed(new Response("Invalid gateway signature", { status: UNAUTHORIZED }));
   }
-  return Effect.runPromise(processEvent(body));
+  return processEvent(body);
 };
 
 export { receiveGatewayEvent };

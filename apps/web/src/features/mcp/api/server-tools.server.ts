@@ -8,6 +8,7 @@ import type {
   ListServerPhrasesOutput,
   ListServersOutput,
 } from "#/features/mcp/api/tool-output";
+import { runTraced } from "#/shared/observability/index.server";
 
 import { serverPhrases } from "./phrases.server";
 import { readableGuilds } from "./scope.server";
@@ -25,7 +26,7 @@ const PHRASES_TOOL_NAME = "list_server_phrases";
 const PHRASES_HINT = `Before reading messages, call \`${PHRASES_TOOL_NAME}\` once for this server: it lists the phrases, custom emoji and stickers its members keep repeating, so you can read them as the server's own in-jokes and greetings instead of working out each one.`;
 
 const listServers = (discordUserId: string): Promise<CallToolResult> =>
-  Effect.runPromise(
+  runTraced(
     readableGuilds(discordUserId).pipe(
       Effect.map((guilds) =>
         structuredResult({

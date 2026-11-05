@@ -165,7 +165,6 @@ const emojiImage = ({ key }: Phrase): Effect.Effect<Option.Option<Image>> =>
           ),
           Effect.orElseSucceed(() => Option.none<Image>()),
           withFetchClient,
-          Effect.withSpan("fetchEmojiImage"),
         ),
     },
   );

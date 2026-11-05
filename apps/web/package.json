@@ -20,6 +20,7 @@
     "destroy": "alchemy destroy"
   },
   "dependencies": {
+    "@alchemy.run/cloudflare": "catalog:stack",
     "@better-auth/drizzle-adapter": "1.7.15",
     "@better-auth/mcp": "catalog:",
     "@better-auth/oauth-provider": "catalog:",
@@ -60,7 +61,6 @@
     "usehooks-ts": "catalog:"
   },
   "devDependencies": {
-    "@alchemy.run/cloudflare": "catalog:stack",
     "@alchemy.run/github": "catalog:stack",
     "@cloudflare/vitest-plugin": "catalog:",
     "@cloudflare/workers-types": "catalog:",

@@ -39,7 +39,7 @@ const signedRequest = (
   }));
 
 const statusOf = (event: GatewayEvent): Effect.Effect<number> =>
-  Effect.promise(() => receiveGatewayEvent(event)).pipe(Effect.map(({ status }) => status));
+  receiveGatewayEvent(event).pipe(Effect.map(({ status }) => status));
 
 beforeEach(() => {
   vi.spyOn(env.INGEST, "send").mockResolvedValue({

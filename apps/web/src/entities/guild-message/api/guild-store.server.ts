@@ -91,7 +91,7 @@ class GuildStore extends RelationStore {
   }
 
   public refreshVectors(): Promise<void> {
-    return Effect.runPromise(
+    return this.traced(
       Clock.currentTimeMillis.pipe(Effect.flatMap((now) => this.search.scheduleAt(now))),
     );
   }
@@ -114,7 +114,7 @@ class GuildStore extends RelationStore {
       Effect.andThen(this.search.publish("due")),
       Effect.andThen(this.search.vectors()),
     );
-    return Effect.runPromise(published);
+    return this.traced(published);
   }
 }
 

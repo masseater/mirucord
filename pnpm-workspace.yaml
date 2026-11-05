@@ -37,7 +37,7 @@ catalog:
   "@sapphire/bitfield": 1.2.4
   discord-api-types: 0.38.57
   "@better-auth/mcp": 1.7.17
-  jose: 6.2.14
+  jose: 6.2.15
   "@better-auth/oauth-provider": 1.7.17
   simple-icons: 16.36.0
   class-variance-authority: 0.7.1

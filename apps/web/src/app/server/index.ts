@@ -1,3 +1,4 @@
+import { tracedHandle } from "@r_masseater/workers-tracing/elysia";
 import { Effect, Option, pipe, String as Str } from "effect";
 
 import { ingestDeliveries } from "#/features/ingest/index.server";
@@ -8,6 +9,8 @@ import { runTraced } from "#/shared/observability/index.server";
 import { api } from "./api.server";
 import { authRejection, mcpRejection } from "./throttle.server";
 import { withWebAnalytics } from "./web-analytics.server";
+
+const handleApi = tracedHandle(api.handle);
 
 const MCP_PATH = new URL(MCP_URL).pathname;
 const API_PREFIX = "/api/";
@@ -40,10 +43,10 @@ const route = (request: Request): Response | Promise<Response> => {
     return unlessRejected(mcpRejection(request), () => serveMcp(request));
   }
   if (pipe(pathname, Str.startsWith(AUTH_PREFIX))) {
-    return unlessRejected(authRejection(request), () => api.handle(request));
+    return unlessRejected(authRejection(request), () => handleApi(request));
   }
   if (pipe(pathname, Str.startsWith(API_PREFIX))) {
-    return api.handle(request);
+    return handleApi(request);
   }
   return renderPage(request);
 };

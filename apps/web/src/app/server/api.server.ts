@@ -1,3 +1,4 @@
+import { elysiaTracing } from "@r_masseater/workers-tracing/elysia";
 import { GATEWAY_PATH } from "@repo/ingest-util-gateway-contract";
 import { env } from "cloudflare:workers";
 import { Record } from "effect";
@@ -9,6 +10,7 @@ import { getAuth } from "#/shared/auth/index.server";
 import { runTraced } from "#/shared/observability/index.server";
 
 export const api = new Elysia({ adapter: CloudflareAdapter, aot: false })
+  .use(elysiaTracing)
   .get("/api/health", () => ({
     status: "ok",
     version: env.VERSION.tag,

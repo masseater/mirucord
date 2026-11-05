@@ -225,7 +225,7 @@ const web = Effect.gen(function* web() {
     name: yield* mirucordName("web"),
     domain: SITE_HOST,
     main: "src/app/server/index.ts",
-    compatibility: { flags: ["global_fetch_strictly_public"] },
+    compatibility: { date: "2026-08-25", flags: ["global_fetch_strictly_public"] },
     logpush: true,
     env: {
       ...discord,
@@ -242,7 +242,7 @@ const web = Effect.gen(function* web() {
       REQUEST_COUNTER: Workers.DurableObject<RequestCounter>("RequestCounter"),
       NEURON_BUDGET: Workers.DurableObject<NeuronBudget>("NeuronBudget"),
     },
-    observability: { enabled: true, traces: { enabled: true } },
+    observability: { enabled: true, traces: { enabled: true, persist: true } },
     viteEnvironments: { entry: "ssr", children: ["rsc"] },
     ...release,
   });

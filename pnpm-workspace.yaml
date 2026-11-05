@@ -10,12 +10,12 @@ catalogMode: prefer
 catalog:
   "@r_masseater/oxlint-typed-rules": 0.1.0
   oxlint-plugin-eslint: 1.90.0
-  "@ast-grep/cli": 0.51.0
+  "@ast-grep/cli": 0.51.1
   "@cloudflare/workers-types": 5.20261102.1
   "@effect/platform-node": 4.1.2
   "@eslint-react/eslint-plugin": 5.28.8
   "@shadcn/lint": 0.2.4
-  "@tanstack/eslint-plugin-query": 5.105.1
+  "@tanstack/eslint-plugin-query": 5.105.2
   "@tanstack/eslint-plugin-router": 1.162.0
   "@r_masseater/oxlint-plugin-decision": 0.1.0
   "@types/node": 26.6.6
@@ -28,10 +28,10 @@ catalog:
   "@html-eslint/eslint-plugin-react": 0.67.0
   "@commitlint/cli": 21.2.4
   "@commitlint/config-conventional": 21.2.4
-  "@tanstack/react-query-devtools": 5.105.1
+  "@tanstack/react-query-devtools": 5.105.2
   "@vitejs/plugin-react": 6.2.1
   "@vitejs/plugin-rsc": 0.5.38
-  skills: 1.7.4
+  skills: 1.7.5
   "@tanstack/intent": 0.5.6
   "@modelcontextprotocol/server": 2.4.0
   "@sapphire/bitfield": 1.2.4
@@ -42,7 +42,7 @@ catalog:
   simple-icons: 16.36.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
-  "@cloudflare/vitest-plugin": 1.4.12
+  "@cloudflare/vitest-plugin": 1.5.0
   msw: 3.0.3
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
@@ -62,7 +62,7 @@ catalogs:
     "@effect/tsgo": 0.63.0
     "@effect/vitest": 4.1.2
     "@openfeature/server-sdk": 1.23.0
-    "@tanstack/react-query": 5.105.1
+    "@tanstack/react-query": 5.105.2
     "@tanstack/react-start": 1.169.4
     "@alchemy.run/cloudflare": 2.0.0-beta.85
     "@alchemy.run/fly": 2.0.0-beta.85
@@ -74,7 +74,7 @@ catalogs:
     effect: 4.1.2
     elysia: 1.4.30
     fallow: 3.38.1
-    renovate: 44.201.1
+    renovate: 44.206.0
     steiger: 0.9.0
     tailwindcss: 4.3.3
     textlint: 15.8.0

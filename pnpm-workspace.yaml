@@ -75,7 +75,7 @@ catalogs:
     elysia: 1.4.30
     fallow: 3.38.1
     renovate: 44.199.0
-    steiger: 0.8.1
+    steiger: 0.9.0
     tailwindcss: 4.3.3
     textlint: 15.8.0
     typescript: 7.1.0-beta

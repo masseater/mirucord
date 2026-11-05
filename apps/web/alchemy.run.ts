@@ -242,7 +242,10 @@ const web = Effect.gen(function* web() {
       REQUEST_COUNTER: Workers.DurableObject<RequestCounter>("RequestCounter"),
       NEURON_BUDGET: Workers.DurableObject<NeuronBudget>("NeuronBudget"),
     },
-    observability: { enabled: true, traces: { enabled: true, persist: true } },
+    observability: {
+      enabled: true,
+      traces: { enabled: true, persist: true, destinations: ["masseater-dev-traces"] },
+    },
     viteEnvironments: { entry: "ssr", children: ["rsc"] },
     ...release,
   });

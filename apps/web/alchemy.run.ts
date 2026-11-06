@@ -11,6 +11,7 @@ import {
   state,
 } from "@alchemy.run/cloudflare";
 import type { InferEnv } from "@alchemy.run/cloudflare";
+import { withWorkersTracing } from "@r_masseater/workers-tracing/alchemy";
 import { APP_NAME, PREFIX, requireAppPrefix } from "@repo/shared-util-app-name";
 import { Resource, Stack, Stage, makeRandom } from "alchemy";
 import { succeed as succeedProvider } from "alchemy/Provider";
@@ -257,7 +258,9 @@ const web = Effect.gen(function* web() {
   return site;
 });
 
-const stackProviders = workerIssuesProvider.pipe(Layer.provideMerge(providers()));
+const tracedProviders = withWorkersTracing(providers());
+
+const stackProviders = workerIssuesProvider.pipe(Layer.provideMerge(tracedProviders));
 
 type WebEnv = InferEnv<typeof web>;
 

@@ -1,12 +1,8 @@
-import { layer as workersTracing } from "@r_masseater/workers-tracing/effect";
+import { runner } from "@r_masseater/workers-tracing/effect";
 import { DurableObject } from "cloudflare:workers";
-import { ManagedRuntime } from "effect";
-import type { Effect } from "effect";
+import { Layer } from "effect";
 
-const runtime = ManagedRuntime.make(workersTracing);
-
-const runTraced = <Success, Failure>(effect: Effect.Effect<Success, Failure>): Promise<Success> =>
-  runtime.runPromise(effect);
+const runTraced = runner(Layer.empty);
 
 abstract class TracedDurableObject extends DurableObject {
   protected readonly traced = runTraced;

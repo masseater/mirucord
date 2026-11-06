@@ -5,7 +5,7 @@ import { Stack } from "alchemy";
 import { Config, Effect, Layer } from "effect";
 
 import { appIntents, appIntentsProvider } from "./app-intents.ts";
-import { BOT_TOKEN_ENV, BOT_TOKEN_SECRET, Gateway, GatewayApp } from "./src/app/service.ts";
+import { BOT_TOKEN_ENV, BOT_TOKEN_SECRET, Gateway, GatewayApp } from "./src/app/gateway-service.ts";
 
 const cloudflare = cloudflareProviders();
 const fly = flyProviders();

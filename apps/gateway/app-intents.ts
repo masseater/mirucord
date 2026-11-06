@@ -5,7 +5,7 @@ import { Array, Config, Effect, Layer, Number, pipe, Redacted, Schema } from "ef
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { BOT_TOKEN_ENV } from "./src/app/service.ts";
+import { BOT_TOKEN_ENV } from "./src/app/gateway-service.ts";
 
 const APP_INTENTS = "Mirucord.AppIntents";
 const APPLICATION_URL = "https://discord.com/api/v10/applications/@me";

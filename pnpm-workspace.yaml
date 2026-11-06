@@ -9,7 +9,7 @@ catalogMode: prefer
 
 catalog:
   "@r_masseater/oxlint-typed-rules": 0.1.0
-  oxlint-plugin-eslint: 1.90.0
+  oxlint-plugin-eslint: 1.91.0
   "@ast-grep/cli": 0.51.1
   "@cloudflare/workers-types": 5.20261103.1
   "@effect/platform-node": 4.1.2
@@ -74,7 +74,7 @@ catalogs:
     effect: 4.1.2
     elysia: 1.4.30
     fallow: 3.38.1
-    renovate: 44.208.0
+    renovate: 44.209.0
     steiger: 0.9.0
     tailwindcss: 4.3.4
     textlint: 15.8.0

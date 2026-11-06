@@ -35,14 +35,6 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: masseater/typescript-template/.github/actions/ci-telemetry@e9cb10133c43cf5bfcea56bdd143c6bad3d13045
         with:
-          persist-credentials: false
-          sparse-checkout: |
-            libs/shared/util-app-name/src/app-name.ts
-          sparse-checkout-cone-mode: false
-      - if: github.ref == 'refs/heads/main'
-        uses: masseater/typescript-template/.github/actions/credentials@0c9f2c316a486637e22878aea5e0a4a1a7f630c4
-      - run: .github/scripts/ci-telemetry.sh
-        env:
-          GH_TOKEN: ${{ github.token }}
+          github-token: ${{ github.token }}

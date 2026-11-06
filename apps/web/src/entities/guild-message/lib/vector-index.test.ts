@@ -50,7 +50,8 @@ describe("vector blocks", () => {
         Array.map((index) => entryAt(index)),
       );
       const bytes = yield* encodeBlock(blockOf(entries));
-      const decoded = entriesOf(yield* decodeBlock(bytes));
+      const block = yield* decodeBlock(bytes);
+      const decoded = entriesOf(block);
       const plain = (list: readonly (typeof entries)[number][]): readonly unknown[] =>
         pipe(
           list,

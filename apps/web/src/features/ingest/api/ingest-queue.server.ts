@@ -2,6 +2,7 @@ import { Cause, Effect, Exit, Option, Schema } from "effect";
 
 import { INGEST_MAX_RETRIES, QueueJobSchema } from "#/features/ingest/model/ingest-job";
 import type { QueueJob } from "#/features/ingest/model/ingest-job";
+import { encodeJsonText } from "#/shared/lib/json";
 
 import { alertOperators } from "./alert-operators.server";
 import { ingestChannel } from "./ingest-channel.server";
@@ -19,6 +20,7 @@ type QueueDelivery = Readonly<{
 }>;
 
 const decodeJob = Schema.decodeUnknownEffect(QueueJobSchema);
+const UNENCODABLE_BODY = "(not JSON)";
 
 type JobError = Effect.Error<ReturnType<typeof ingestChannel>> | GuildDataRemainsError;
 
@@ -54,7 +56,9 @@ const giveUpOrRetry = (delivery: QueueDelivery, cause: Cause.Cause<unknown>): Ef
     {
       onNone: () => Effect.logWarning("Queue job failed; retrying"),
       onSome: ({ body }) =>
-        alertOperators(`Queue job gave up after retries: ${JSON.stringify(body)}`).pipe(
+        encodeJsonText(body).pipe(
+          Effect.orElseSucceed(() => UNENCODABLE_BODY),
+          Effect.flatMap((text) => alertOperators(`Queue job gave up after retries: ${text}`)),
           Effect.andThen(undoDelivery(body)),
         ),
     },

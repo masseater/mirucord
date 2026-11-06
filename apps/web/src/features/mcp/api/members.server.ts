@@ -133,15 +133,13 @@ const listMembers =
   (input: typeof ListMembersInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: input.serverId, discordUserId })((scope) => {
       if (scope.guild.consent !== "consented") {
-        return Effect.succeed(
-          structuredResult({
-            ingest: "notConsented",
-            total: 0,
-            members: [],
-          } satisfies typeof ListMembersOutput.Type),
-        );
+        return structuredResult({
+          ingest: "notConsented",
+          total: 0,
+          members: [],
+        } satisfies typeof ListMembersOutput.Type);
       }
-      return membersOf({ scope, input }).pipe(Effect.map(structuredResult));
+      return membersOf({ scope, input }).pipe(Effect.flatMap(structuredResult));
     });
 
 export { listMembers, storedMembers };

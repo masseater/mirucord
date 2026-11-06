@@ -156,13 +156,15 @@ afterAll(() => {
 
 it.effect("queues nothing for a server that has not consented", () =>
   Effect.gen(function* awaiting() {
-    expect(yield* queuedBy(AWAITING)).toStrictEqual([]);
+    const queued = yield* queuedBy(AWAITING);
+    expect(queued).toStrictEqual([]);
   }),
 );
 
 it.effect("queues only the readable channels of the consenting server", () =>
   Effect.gen(function* granted() {
-    expect(yield* queuedBy(GRANTED)).toStrictEqual([{ guildId: GRANTED, channelId: READABLE }]);
+    const queued = yield* queuedBy(GRANTED);
+    expect(queued).toStrictEqual([{ guildId: GRANTED, channelId: READABLE }]);
   }),
 );
 
@@ -186,9 +188,9 @@ it.effect("fetches a readable channel of a consenting server", () =>
 
 it.effect("leaves channels whose history is complete to the daily poll", () =>
   Effect.gen(function* pendingOnly() {
-    expect(yield* queuedBy(CAUGHT_UP, refreshPendingIngest)).toStrictEqual([]);
-    expect(yield* queuedBy(CAUGHT_UP)).toStrictEqual([
-      { guildId: CAUGHT_UP, channelId: CAUGHT_UP_CHANNEL },
-    ]);
+    const pending = yield* queuedBy(CAUGHT_UP, refreshPendingIngest);
+    expect(pending).toStrictEqual([]);
+    const daily = yield* queuedBy(CAUGHT_UP);
+    expect(daily).toStrictEqual([{ guildId: CAUGHT_UP, channelId: CAUGHT_UP_CHANNEL }]);
   }),
 );

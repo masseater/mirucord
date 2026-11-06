@@ -12,6 +12,7 @@ import type { PathParams } from "msw";
 import { afterAll, afterEach, beforeAll, expect } from "vite-plus/test";
 
 import { db, guild } from "#/shared/db/index.server";
+import { encodeJsonText } from "#/shared/lib/json";
 
 import { syncJoinedGuild } from "./sync-guilds.server";
 
@@ -60,8 +61,9 @@ const outgoing = (
       }
       return Effect.runPromise(
         Effect.promise(() => request.json()).pipe(
-          Effect.map((body) => {
-            record({ channelId, content: JSON.stringify(body) });
+          Effect.flatMap(encodeJsonText),
+          Effect.map((content) => {
+            record({ channelId, content });
             return HttpResponse.json({ id: "1" });
           }),
         ),

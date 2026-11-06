@@ -4,6 +4,7 @@ import { Array, Effect, Option, pipe } from "effect";
 import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
 import { CATEGORY_TYPES, FORUM_TYPES } from "#/shared/discord";
+import { encodeJsonText } from "#/shared/lib/json";
 import { runTraced } from "#/shared/observability/index.server";
 
 import { resolveScope } from "./scope.server";
@@ -13,11 +14,17 @@ const SERVER_NOT_FOUND = "Server not found";
 const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const CHANNEL_NOT_FOUND = "Channel not found";
 
-const structuredResult = (value: Readonly<Record<string, unknown>>): CallToolResult => ({
-  content: [{ type: "text", text: JSON.stringify(value) }],
-  structuredContent: value,
-  isError: false,
-});
+const structuredResult = (
+  value: Readonly<Record<string, unknown>>,
+): Effect.Effect<CallToolResult> =>
+  encodeJsonText(value).pipe(
+    Effect.orDie,
+    Effect.map((text) => ({
+      content: [{ type: "text", text }],
+      structuredContent: value,
+      isError: false,
+    })),
+  );
 const errorResult = (text: string): CallToolResult => ({
   content: [{ type: "text", text }],
   isError: true,

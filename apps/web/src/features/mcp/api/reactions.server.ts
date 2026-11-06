@@ -125,7 +125,7 @@ const liveOf = ({
 
 const reactionsOf = (request: ReactionRequest): Effect.Effect<CallToolResult> =>
   Effect.all({ stored: storedOf(request), live: liveOf(request) }).pipe(
-    Effect.map(({ stored, live }) => structuredResult({ ...stored, live } satisfies Output)),
+    Effect.flatMap(({ stored, live }) => structuredResult({ ...stored, live } satisfies Output)),
     Effect.orElseSucceed(() => errorResult(DISCORD_UNAVAILABLE)),
   );
 
@@ -143,7 +143,7 @@ const listReactions =
         return Effect.succeed(errorResult(CHANNEL_NOT_FOUND));
       }
       if (scope.guild.consent !== "consented") {
-        return Effect.succeed(structuredResult(NOT_CONSENTED));
+        return structuredResult(NOT_CONSENTED);
       }
       return reactionsOf({ scope, input });
     });

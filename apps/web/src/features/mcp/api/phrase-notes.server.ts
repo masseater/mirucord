@@ -1,4 +1,4 @@
-import { Array, DateTime, Effect, Option, pipe } from "effect";
+import { Array, Clock, Effect, Option, pipe } from "effect";
 import { fromUint8Array, toUint8Array } from "js-base64";
 
 import { guildStore } from "#/entities/guild-message/index.server";
@@ -134,18 +134,16 @@ const phraseNotesOf = Effect.fn("phraseNotes")(function* phraseNotes(request: No
       Array.map(({ phrase }) => phrase),
     ),
   );
-  const now = DateTime.toEpochMillis(yield* DateTime.now);
-  const claimed = new Set(
-    yield* Effect.promise(() =>
-      store.claimPhraseNotes({
-        phrases: pipe(
-          phrases,
-          Array.filter((phrase) => !known.has(phrase)),
-        ),
-        now,
-      }),
-    ),
-  );
+  const now = yield* Clock.currentTimeMillis;
+  const claimed = yield* Effect.promise(() =>
+    store.claimPhraseNotes({
+      phrases: pipe(
+        phrases,
+        Array.filter((phrase) => !known.has(phrase)),
+      ),
+      now,
+    }),
+  ).pipe(Effect.map((claimedPhrases) => new Set(claimedPhrases)));
   const generated = yield* generateAll(
     request,
     pipe(

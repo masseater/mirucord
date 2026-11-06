@@ -109,7 +109,8 @@ it.effect("removes every message before the consent goes away", () =>
     const guildId = "800";
     yield* seedGuild(guildId);
     yield* withdrawGuild(guildId);
-    expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 0, messages: 0 });
+    const rows = yield* rowsOf(guildId);
+    expect(rows).toStrictEqual({ consents: 0, messages: 0 });
   }),
 );
 
@@ -121,7 +122,8 @@ it.effect("keeps the consent when the stored data could not be removed", () =>
     const exit = yield* Effect.exit(withdrawGuild(guildId));
     vi.restoreAllMocks();
     expect(Exit.isFailure(exit)).toBe(true);
-    expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 1, messages: STORED });
+    const rows = yield* rowsOf(guildId);
+    expect(rows).toStrictEqual({ consents: 1, messages: STORED });
   }),
 );
 
@@ -131,9 +133,11 @@ it.effect("marks the consent as withdrawing and queues the deletion", () =>
     yield* seedGuild(guildId);
     const send = vi.spyOn(env.INGEST, "send");
     yield* requestWithdrawal(guildId);
-    expect(yield* stateOf(guildId)).toStrictEqual(["withdrawing"]);
+    const state = yield* stateOf(guildId);
+    expect(state).toStrictEqual(["withdrawing"]);
     expect(send).toHaveBeenCalledWith({ kind: "withdraw", guildId });
-    expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 1, messages: STORED });
+    const rows = yield* rowsOf(guildId);
+    expect(rows).toStrictEqual({ consents: 1, messages: STORED });
   }),
 );
 
@@ -144,7 +148,8 @@ it.effect("deletes everything when the queued withdrawal runs", () =>
     yield* requestWithdrawal(guildId);
     yield* deliverWithdrawal(guildId, FIRST_ATTEMPT);
     expect(handled).toStrictEqual({ acked: ONCE, retried: NEVER });
-    expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 0, messages: 0 });
+    const rows = yield* rowsOf(guildId);
+    expect(rows).toStrictEqual({ consents: 0, messages: 0 });
   }),
 );
 
@@ -157,7 +162,8 @@ it.effect("gives the consent back when the queued withdrawal keeps failing", () 
     yield* deliverWithdrawal(guildId, LAST_ATTEMPT);
     vi.restoreAllMocks();
     expect(handled).toStrictEqual({ acked: NEVER, retried: ONCE });
-    expect(yield* stateOf(guildId)).toStrictEqual(["granted"]);
-    expect(yield* rowsOf(guildId)).toStrictEqual({ consents: 1, messages: STORED });
+    const [state, rows] = yield* Effect.all([stateOf(guildId), rowsOf(guildId)]);
+    expect(state).toStrictEqual(["granted"]);
+    expect(rows).toStrictEqual({ consents: 1, messages: STORED });
   }),
 );

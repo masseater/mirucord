@@ -1,6 +1,6 @@
 import { runInDurableObject } from "cloudflare:test";
 import { eq } from "drizzle-orm";
-import { Effect, Option, pipe, Record } from "effect";
+import { Effect, Option, pipe, Record, Schema } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import { sealMember } from "#/shared/crypto/index.server";
@@ -26,6 +26,7 @@ type MemberSeed = Readonly<{
 
 const NO_GLOBAL_NAME = Option.getOrNull(Option.none<string>());
 const NOT_BOT = 0;
+const encodeRoles = Schema.encodeEffect(Schema.fromJsonString(Schema.Array(Schema.String)));
 const INSERT_MEMBER =
   "INSERT INTO member (userId, sealed, roles, bot, joinedAt, leftAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -37,14 +38,17 @@ const seedMembers = ({ guildId, members, roleNames, updatedAt }: MemberSeed): Ef
       nick,
       ...member
     }: SeedMember): Effect.Effect<readonly (string | number | null)[]> =>
-      sealMember({ username, globalName: NO_GLOBAL_NAME, nick }, key, {
-        guildId,
-        userId: member.userId,
-      }).pipe(
-        Effect.map((sealed) => [
+      Effect.all([
+        sealMember({ username, globalName: NO_GLOBAL_NAME, nick }, key, {
+          guildId,
+          userId: member.userId,
+        }),
+        encodeRoles(member.roles).pipe(Effect.orDie),
+      ]).pipe(
+        Effect.map(([sealed, roles]) => [
           member.userId,
           sealed,
-          JSON.stringify(member.roles),
+          roles,
           NOT_BOT,
           member.joinedAt,
           member.leftAt,

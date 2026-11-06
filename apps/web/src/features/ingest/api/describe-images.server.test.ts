@@ -31,7 +31,7 @@ const PHOTO_BYTES = 100_000;
 const BYTE_VALUES = 256;
 
 const photoRequests: URL[] = [];
-const modelImages: string[] = [];
+const modelInputs: unknown[] = [];
 
 const photoMessage = (id: string, size: number): unknown => ({
   id,
@@ -134,7 +134,7 @@ const photoAttachments = Effect.gen(function* opened() {
 });
 
 const answerModel = (inputs: unknown): Promise<Record<string, unknown>> => {
-  modelImages.push(JSON.stringify(inputs));
+  modelInputs.push(inputs);
   return Promise.resolve({ choices: [{ message: { content: ` ${DESCRIPTION}\n` } }] });
 };
 
@@ -145,7 +145,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   photoRequests.length = NONE;
-  modelImages.length = NONE;
+  modelInputs.length = NONE;
   vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => answerModel(inputs));
 });
 
@@ -161,18 +161,27 @@ it.effect("indexes an image-only message by the description of its image", () =>
   Effect.gen(function* described() {
     answerWith(PHOTO, photo);
     yield* ingestChannel({ guildId: GUILD, channelId: PHOTO_CHANNEL });
-    expect(pipe(modelImages, Array.join(""))).toContain(expectedPhoto);
+    expect(modelInputs).toMatchObject([
+      {
+        messages: [
+          {
+            content: [{ type: "text" }, { type: "image_url", image_url: { url: expectedPhoto } }],
+          },
+        ],
+      },
+    ]);
     expect(
       pipe(
         photoRequests,
         Array.map(({ pathname }) => pathname),
       ),
     ).toStrictEqual([new URL(PHOTO_URL).pathname]);
-    expect(yield* describedWithOf({ guildId: GUILD, id: PHOTO })).toStrictEqual([
-      "@cf/google/gemma-4-26b-a4b-it",
-    ]);
-    expect(yield* photoFoundBy("ラーメン")).toStrictEqual([PHOTO]);
-    expect(yield* photoAttachments).toStrictEqual([
+    const describedWith = yield* describedWithOf({ guildId: GUILD, id: PHOTO });
+    expect(describedWith).toStrictEqual(["@cf/google/gemma-4-26b-a4b-it"]);
+    const found = yield* photoFoundBy("ラーメン");
+    expect(found).toStrictEqual([PHOTO]);
+    const attachments = yield* photoAttachments;
+    expect(attachments).toStrictEqual([
       { filename: "ramen.jpg", url: PHOTO_URL, description: DESCRIPTION },
     ]);
   }),
@@ -183,9 +192,8 @@ it.effect("marks an image too large to describe as done without fetching it", ()
     answerWith(LARGE, photo, LARGE_SIZE);
     yield* ingestChannel({ guildId: GUILD, channelId: LARGE_CHANNEL });
     expect(photoRequests).toStrictEqual([]);
-    expect(yield* describedWithOf({ guildId: GUILD, id: LARGE })).toStrictEqual([
-      "@cf/google/gemma-4-26b-a4b-it",
-    ]);
+    const describedWith = yield* describedWithOf({ guildId: GUILD, id: LARGE });
+    expect(describedWith).toStrictEqual(["@cf/google/gemma-4-26b-a4b-it"]);
   }),
 );
 
@@ -194,6 +202,7 @@ it.live("leaves a message to be described again when its image cannot be fetched
     answerWith(BROKEN, forbidden);
     yield* ingestChannel({ guildId: GUILD, channelId: BROKEN_CHANNEL });
     const undescribed = Option.getOrNull(Option.none<string>());
-    expect(yield* describedWithOf({ guildId: GUILD, id: BROKEN })).toStrictEqual([undescribed]);
+    const describedWith = yield* describedWithOf({ guildId: GUILD, id: BROKEN });
+    expect(describedWith).toStrictEqual([undescribed]);
   }),
 );

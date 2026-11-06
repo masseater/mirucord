@@ -53,7 +53,8 @@ it.live("processes a signed gateway event without the queue", () =>
     const send = vi.spyOn(env.INGEST, "send");
     const body = yield* encodeJson(JOB).pipe(Effect.orDie);
     const event = yield* signedRequest(body, now, env.DISCORD_BOT_TOKEN);
-    expect(yield* statusOf(event)).toBe(PROCESSED);
+    const status = yield* statusOf(event);
+    expect(status).toBe(PROCESSED);
     expect(send).not.toHaveBeenCalled();
   }),
 );
@@ -64,7 +65,8 @@ it.live("rejects an event signed with another token", () =>
     const send = vi.spyOn(env.INGEST, "send");
     const body = yield* encodeJson(JOB).pipe(Effect.orDie);
     const event = yield* signedRequest(body, now, "another-token");
-    expect(yield* statusOf(event)).toBe(UNAUTHORIZED);
+    const status = yield* statusOf(event);
+    expect(status).toBe(UNAUTHORIZED);
     expect(send).not.toHaveBeenCalled();
   }),
 );
@@ -75,7 +77,8 @@ it.live("rejects a replayed event", () =>
     const sentAt = DateTime.subtractDuration(now, STALE_BY);
     const body = yield* encodeJson(JOB).pipe(Effect.orDie);
     const event = yield* signedRequest(body, sentAt, env.DISCORD_BOT_TOKEN);
-    expect(yield* statusOf(event)).toBe(UNAUTHORIZED);
+    const status = yield* statusOf(event);
+    expect(status).toBe(UNAUTHORIZED);
   }),
 );
 
@@ -83,7 +86,8 @@ it.live("rejects a signed body that is not a gateway job", () =>
   Effect.gen(function* malformedEvent() {
     const now = yield* DateTime.now;
     const event = yield* signedRequest('{"kind":"withdraw"}', now, env.DISCORD_BOT_TOKEN);
-    expect(yield* statusOf(event)).toBe(BAD_REQUEST);
+    const status = yield* statusOf(event);
+    expect(status).toBe(BAD_REQUEST);
   }),
 );
 
@@ -98,11 +102,14 @@ it.live("forgets a server as soon as the bot is removed from it", () =>
     const now = yield* DateTime.now;
     const body = yield* encodeJson({ kind: "leave", guildId: target.guildId }).pipe(Effect.orDie);
     const event = yield* signedRequest(body, now, env.DISCORD_BOT_TOKEN);
-    expect(yield* statusOf(event)).toBe(PROCESSED);
-    expect(yield* storedCount(target.guildId)).toBe(NOTHING_STORED);
-    const rows = yield* Effect.promise(() =>
-      db.select({ id: guild.id }).from(guild).where(eq(guild.id, target.guildId)),
-    );
-    expect(rows).toStrictEqual([]);
+    const status = yield* statusOf(event);
+    expect(status).toBe(PROCESSED);
+    const [stored, rows] = yield* Effect.all([
+      storedCount(target.guildId),
+      Effect.promise(() =>
+        db.select({ id: guild.id }).from(guild).where(eq(guild.id, target.guildId)),
+      ),
+    ]);
+    expect({ stored, rows }).toStrictEqual({ stored: NOTHING_STORED, rows: [] });
   }),
 );

@@ -109,6 +109,7 @@ it.effect("marks people who left instead of forgetting them", () =>
 it.effect("stores nothing for a server whose admin has not consented", () =>
   Effect.gen(function* quiet() {
     yield* syncMembers(QUIET_GUILD);
-    expect(yield* storedMembers({ guildId: QUIET_GUILD, includeLeft: true })).toStrictEqual([]);
+    const members = yield* storedMembers({ guildId: QUIET_GUILD, includeLeft: true });
+    expect(members).toStrictEqual([]);
   }),
 );

@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
-import { Array, DateTime, Effect, Option, pipe } from "effect";
+import { Array, DateTime, Effect, Option, pipe, Schema } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
@@ -133,10 +133,18 @@ const photoAttachments = Effect.gen(function* opened() {
   return body.attachments;
 });
 
-const answerModel = (inputs: unknown): Promise<Record<string, unknown>> => {
-  modelImages.push(JSON.stringify(inputs));
-  return Promise.resolve({ choices: [{ message: { content: ` ${DESCRIPTION}\n` } }] });
-};
+const encodeInputs = Schema.encodeEffect(Schema.fromJsonString(Schema.Unknown));
+
+const answerModel = (inputs: unknown): Promise<Record<string, unknown>> =>
+  Effect.runPromise(
+    encodeInputs(inputs).pipe(
+      Effect.map((text) => {
+        modelImages.push(text);
+        return { choices: [{ message: { content: ` ${DESCRIPTION}\n` } }] };
+      }),
+      Effect.orDie,
+    ),
+  );
 
 beforeAll(() => {
   network.enable();
@@ -168,11 +176,12 @@ it.effect("indexes an image-only message by the description of its image", () =>
         Array.map(({ pathname }) => pathname),
       ),
     ).toStrictEqual([new URL(PHOTO_URL).pathname]);
-    expect(yield* describedWithOf({ guildId: GUILD, id: PHOTO })).toStrictEqual([
-      "@cf/google/gemma-4-26b-a4b-it",
-    ]);
-    expect(yield* photoFoundBy("ラーメン")).toStrictEqual([PHOTO]);
-    expect(yield* photoAttachments).toStrictEqual([
+    const describedWith = yield* describedWithOf({ guildId: GUILD, id: PHOTO });
+    expect(describedWith).toStrictEqual(["@cf/google/gemma-4-26b-a4b-it"]);
+    const foundIds = yield* photoFoundBy("ラーメン");
+    expect(foundIds).toStrictEqual([PHOTO]);
+    const attachments = yield* photoAttachments;
+    expect(attachments).toStrictEqual([
       { filename: "ramen.jpg", url: PHOTO_URL, description: DESCRIPTION },
     ]);
   }),
@@ -183,9 +192,8 @@ it.effect("marks an image too large to describe as done without fetching it", ()
     answerWith(LARGE, photo, LARGE_SIZE);
     yield* ingestChannel({ guildId: GUILD, channelId: LARGE_CHANNEL });
     expect(photoRequests).toStrictEqual([]);
-    expect(yield* describedWithOf({ guildId: GUILD, id: LARGE })).toStrictEqual([
-      "@cf/google/gemma-4-26b-a4b-it",
-    ]);
+    const describedWith = yield* describedWithOf({ guildId: GUILD, id: LARGE });
+    expect(describedWith).toStrictEqual(["@cf/google/gemma-4-26b-a4b-it"]);
   }),
 );
 
@@ -194,6 +202,7 @@ it.live("leaves a message to be described again when its image cannot be fetched
     answerWith(BROKEN, forbidden);
     yield* ingestChannel({ guildId: GUILD, channelId: BROKEN_CHANNEL });
     const undescribed = Option.getOrNull(Option.none<string>());
-    expect(yield* describedWithOf({ guildId: GUILD, id: BROKEN })).toStrictEqual([undescribed]);
+    const describedWith = yield* describedWithOf({ guildId: GUILD, id: BROKEN });
+    expect(describedWith).toStrictEqual([undescribed]);
   }),
 );

@@ -154,7 +154,8 @@ it.effect("leaves a stored message alone when Discord reports no change", () =>
     const before = yield* sealedIn({ guildId: GUILD, channelId: STORED_CHANNEL });
     answerWith(STORED);
     yield* ingestChannel({ guildId: GUILD, channelId: STORED_CHANNEL });
-    expect(yield* sealedIn({ guildId: GUILD, channelId: STORED_CHANNEL })).toStrictEqual(before);
+    const after = yield* sealedIn({ guildId: GUILD, channelId: STORED_CHANNEL });
+    expect(after).toStrictEqual(before);
   }),
 );
 
@@ -163,9 +164,8 @@ it.effect("rewrites a stored message that was not described with the current mod
     const before = yield* sealedIn({ guildId: GUILD, channelId: UNDESCRIBED_CHANNEL });
     answerWith(UNDESCRIBED);
     yield* ingestChannel({ guildId: GUILD, channelId: UNDESCRIBED_CHANNEL });
-    expect(yield* sealedIn({ guildId: GUILD, channelId: UNDESCRIBED_CHANNEL })).not.toStrictEqual(
-      before,
-    );
+    const after = yield* sealedIn({ guildId: GUILD, channelId: UNDESCRIBED_CHANNEL });
+    expect(after).not.toStrictEqual(before);
   }),
 );
 

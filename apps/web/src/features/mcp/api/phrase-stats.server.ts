@@ -191,7 +191,7 @@ const saveTallied = (
   );
 
 const phraseStatsOf = Effect.fn("phraseStats")(function* stats(request: StatsRequest) {
-  const now = DateTime.toEpochMillis(yield* DateTime.now);
+  const now = yield* DateTime.now.pipe(Effect.map(DateTime.toEpochMillis));
   const visibility = yield* visibilityOf(request.channelIds);
   const { lookup } = yield* Effect.promise(() =>
     guildStore(request.guildId).phraseStats({ guildId: request.guildId, visibility, now }),

@@ -44,7 +44,7 @@ const find =
           limit: limitOf(limit),
           offset: Option.getOrElse(Option.fromUndefinedOr(offset), () => FIRST_OFFSET),
         }).pipe(
-          Effect.map(({ total, messages }) =>
+          Effect.flatMap(({ total, messages }) =>
             structuredResult({
               total,
               messages,
@@ -74,9 +74,9 @@ const findLike =
           channelIds,
           limit: Option.getOrElse(Option.fromUndefinedOr(limit), () => SIMILAR_LIMIT),
         }).pipe(
-          Effect.map((found) => {
+          Effect.flatMap((found) => {
             if (found.status === "overBudget") {
-              return errorResult(OVER_BUDGET);
+              return Effect.succeed(errorResult(OVER_BUDGET));
             }
             return structuredResult({
               messages: found.messages,
@@ -97,7 +97,7 @@ const readChannel = (
 ): Effect.Effect<CallToolResult> =>
   withChannel({ scope, channelId: Option.some(request.channelId) })(() =>
     readMessages({ scope, ...request }).pipe(
-      Effect.map((messages) =>
+      Effect.flatMap((messages) =>
         structuredResult({
           ingest: ingestById({ scope, channelId: request.channelId }),
           messages,
@@ -117,7 +117,7 @@ const readAuthor = (
 ): Effect.Effect<CallToolResult> =>
   withChannel({ scope, channelId: request.channelId })((channelIds) =>
     readAuthorMessages({ scope, ...request, channelIds }).pipe(
-      Effect.map((messages) =>
+      Effect.flatMap((messages) =>
         structuredResult({
           notFullyIngested: notFullyIngested({ scope, channelIds }),
           messages,

@@ -86,7 +86,8 @@ afterAll(() => {
 
 it.effect("lists the posts stored under a forum, newest first, with their messages", () =>
   Effect.gen(function* listed() {
-    expect(yield* forumPosts({ guildId: GUILD, userId: OWNER, channelId: FORUM })).toStrictEqual({
+    const posts = yield* forumPosts({ guildId: GUILD, userId: OWNER, channelId: FORUM });
+    expect(posts).toStrictEqual({
       status: "ready",
       posts: [
         { id: LIVELY_POST, name: `channel ${LIVELY_POST}`, ingest: "done", messages: 2 },
@@ -98,8 +99,7 @@ it.effect("lists the posts stored under a forum, newest first, with their messag
 
 it.effect("refuses the posts to someone who does not manage the server", () =>
   Effect.gen(function* refused() {
-    expect(yield* forumPosts({ guildId: GUILD, userId: STRANGER, channelId: FORUM })).toStrictEqual(
-      { status: "forbidden" },
-    );
+    const posts = yield* forumPosts({ guildId: GUILD, userId: STRANGER, channelId: FORUM });
+    expect(posts).toStrictEqual({ status: "forbidden" });
   }),
 );

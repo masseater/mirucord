@@ -83,7 +83,8 @@ it.effect("keeps who reacts and votes as reactions come and go", () =>
         { kind: "unvote", ...ON_POLL, at: LATER, userId: BOB, answerId: ANSWER },
       ],
     });
-    expect(yield* storedOf(REACTING_GUILD)).toStrictEqual({
+    const stored = yield* storedOf(REACTING_GUILD);
+    expect(stored).toStrictEqual({
       reactions: [
         {
           messageId: POST,
@@ -128,6 +129,7 @@ it.effect("records no reactions before the admin consents", () =>
         },
       ],
     });
-    expect(yield* storedOf(QUIET_GUILD)).toStrictEqual({ reactions: [], votes: [] });
+    const stored = yield* storedOf(QUIET_GUILD);
+    expect(stored).toStrictEqual({ reactions: [], votes: [] });
   }),
 );

@@ -17,12 +17,16 @@ const IMAGE = 500;
 describe("neuron budget", () => {
   it.effect("lets queries use what backfill and images may not, and starts over each day", () =>
     Effect.gen(function* capped() {
-      expect(yield* spendNeurons("background", BACKFILL)).toBe(true);
-      expect(yield* spendNeurons("background", OVERFLOW)).toBe(false);
-      expect(yield* spendNeurons("query", QUERY)).toBe(true);
-      expect(yield* spendNeurons("live", ONE)).toBe(false);
+      const firstDay = yield* Effect.all({
+        backfill: spendNeurons("background", BACKFILL),
+        overflow: spendNeurons("background", OVERFLOW),
+        query: spendNeurons("query", QUERY),
+        live: spendNeurons("live", ONE),
+      });
+      expect(firstDay).toStrictEqual({ backfill: true, overflow: false, query: true, live: false });
       yield* TestClock.adjust("1 day");
-      expect(yield* spendNeurons("background", WHOLE_BACKFILL)).toBe(true);
+      const nextDay = yield* spendNeurons("background", WHOLE_BACKFILL);
+      expect(nextDay).toBe(true);
     }),
   );
 
@@ -30,10 +34,13 @@ describe("neuron budget", () => {
     Effect.gen(function* settled() {
       yield* TestClock.adjust("5 days");
       yield* settleNeurons(OVERSPENT);
-      expect(yield* spendNeurons("query", ONE)).toBe(false);
+      const query = yield* spendNeurons("query", ONE);
+      expect(query).toBe(false);
       yield* settleNeurons(REFUND);
-      expect(yield* spendNeurons("background", ONE)).toBe(false);
-      expect(yield* spendNeurons("live", IMAGE)).toBe(true);
+      const background = yield* spendNeurons("background", ONE);
+      expect(background).toBe(false);
+      const live = yield* spendNeurons("live", IMAGE);
+      expect(live).toBe(true);
     }),
   );
 });

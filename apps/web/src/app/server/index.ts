@@ -33,7 +33,7 @@ const renderPage = (request: Request): Promise<Response> =>
       Effect.flatMap(({ default: pages }) =>
         Effect.promise(() => Promise.resolve(pages.fetch(request))),
       ),
-      Effect.map(withWebAnalytics),
+      Effect.flatMap(withWebAnalytics),
     ),
   );
 

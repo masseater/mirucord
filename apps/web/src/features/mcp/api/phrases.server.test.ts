@@ -43,7 +43,7 @@ const pending: Seed["phrases"] = () => ({ status: "pending" });
 const seedMessages = ({ prefix, channelId, content, phrases }: Seed): Effect.Effect<void> =>
   Effect.gen(function* seed() {
     const keys = yield* guildKeys(GUILD_A);
-    const now = DateTime.toEpochMillis(yield* DateTime.now);
+    const now = yield* DateTime.now.pipe(Effect.map(DateTime.toEpochMillis));
     const body = {
       authorName: "someone",
       mentions: [],

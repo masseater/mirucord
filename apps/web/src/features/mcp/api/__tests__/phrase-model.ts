@@ -19,20 +19,33 @@ const listPhrases = callTool({ name: "list_server_phrases", args: { serverId: GU
   Effect.orDie,
 );
 
-const answerFor = ({ common, note }: ModelAnswers, prompt: string): string => {
+const encodeJson = Schema.encodeEffect(Schema.fromJsonString(Schema.Unknown));
+
+type ModelReply = Readonly<{ choices: readonly Readonly<{ message: { content: string } }>[] }>;
+
+const answerFor = (
+  { common, note }: ModelAnswers,
+  prompt: string,
+): Effect.Effect<string, Schema.SchemaError> => {
   if (pipe(prompt, Str.includes(`「${common}」`))) {
-    return JSON.stringify({ type: "common", note: "" });
+    return encodeJson({ type: "common", note: "" });
   }
-  return JSON.stringify({ type: "server", note });
+  return encodeJson({ type: "server", note });
 };
 
-const mockPhraseModel = (answers: ModelAnswers): void => {
-  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => {
-    const prompt = JSON.stringify(inputs);
+const answerModel = (answers: ModelAnswers, inputs: unknown): Effect.Effect<ModelReply> =>
+  Effect.gen(function* answered() {
+    const prompt = yield* encodeJson(inputs);
     prompts.push(prompt);
-    const content = pipe(["```json", answerFor(answers, prompt), "```"], Array.join("\n"));
-    return Promise.resolve({ choices: [{ message: { content } }] });
-  });
+    const answer = yield* answerFor(answers, prompt);
+    const content = pipe(["```json", answer, "```"], Array.join("\n"));
+    return { choices: [{ message: { content } }] };
+  }).pipe(Effect.orDie);
+
+const mockPhraseModel = (answers: ModelAnswers): void => {
+  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) =>
+    Effect.runPromise(answerModel(answers, inputs)),
+  );
 };
 
 export { listPhrases, mockPhraseModel, prompts };

@@ -91,9 +91,10 @@ it.effect("a new gateway session forgets departed servers and queues a catch-up 
       { body: { kind: "catchUp", guildId: KEPT } },
       { body: { kind: "catchUp", guildId: JOINED } },
     ]);
+    const guilds = yield* Effect.promise(storedGuilds);
     expect(
       pipe(
-        yield* Effect.promise(storedGuilds),
+        guilds,
         Array.map(({ id }) => id),
       ),
     ).toStrictEqual([KEPT]);
@@ -104,7 +105,8 @@ it.effect("a catch-up stores and welcomes a server that joined while the gateway
   Effect.gen(function* catchUp() {
     yield* catchUpGuild(JOINED);
     expect(welcomed).toStrictEqual([DIRECT_CHANNEL]);
-    expect(yield* Effect.promise(storedGuilds)).toStrictEqual([
+    const guilds = yield* Effect.promise(storedGuilds);
+    expect(guilds).toStrictEqual([
       { id: KEPT, name: `guild ${KEPT}` },
       { id: JOINED, name: `renamed ${JOINED}` },
     ]);

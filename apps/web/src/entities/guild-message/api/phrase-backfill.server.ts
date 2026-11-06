@@ -1,4 +1,4 @@
-import { DateTime, Effect, Option, pipe } from "effect";
+import { Clock, Effect, Option, pipe } from "effect";
 
 import { phraseHashes } from "#/entities/guild-message/lib/phrases.server";
 import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
@@ -43,9 +43,15 @@ const backfillPhrases = Effect.fn("backfillPhrases")(function* backfill(target: 
     return;
   }
   const keys = yield* openGuildKeys(wrappedKey.value);
-  const now = DateTime.toEpochMillis(yield* DateTime.now);
+  const now = yield* Clock.currentTimeMillis;
   const pending = target.unphrased(now, BACKFILL_BATCH);
-  target.writePhrases(yield* extractPhrases({ guildId: target.guildId, keys }, pending));
+  yield* extractPhrases({ guildId: target.guildId, keys }, pending).pipe(
+    Effect.flatMap((phrases) =>
+      Effect.sync(() => {
+        target.writePhrases(phrases);
+      }),
+    ),
+  );
   yield* Effect.annotateCurrentSpan({ guildId: target.guildId, messages: pending.length });
   if (pending.length === BACKFILL_BATCH) {
     yield* target.again(now);

@@ -27,8 +27,9 @@ const SessionStartOutput = Schema.Struct({
 
 const currentVersion = Effect.gen(function* currentVersion() {
   const platform = yield* HookPlatform;
+  const dir = yield* projectDir;
   const text = yield* platform
-    .readFile(platform.join(yield* projectDir, MANIFEST_FILE))
+    .readFile(platform.join(dir, MANIFEST_FILE))
     .pipe(Effect.flatMap((found) => Effect.fromOption(found)));
   const manifest = yield* Schema.decodeEffect(Schema.fromJsonString(Manifest))(text);
   return `v${manifest["."]}`;
@@ -61,7 +62,8 @@ const instructions = (current: string, release: typeof Release.Type): string => 
 
 runHook(
   Effect.gen(function* templateRelease() {
-    if (pipe(yield* projectDir, Str.includes(WORKTREE_SEGMENT))) {
+    const dir = yield* projectDir;
+    if (pipe(dir, Str.includes(WORKTREE_SEGMENT))) {
       return;
     }
     const current = yield* currentVersion;

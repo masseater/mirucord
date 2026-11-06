@@ -3,6 +3,7 @@ import { Array, Effect, Option, pipe, Schema, String as Str } from "effect";
 import { vi } from "vite-plus/test";
 
 import { ListServerPhrasesOutput } from "#/features/mcp/api/tool-output";
+import { encodeJsonText } from "#/shared/lib/json";
 
 import { GUILD_A } from "./scenario";
 import { callTool } from "./tool-call";
@@ -19,20 +20,29 @@ const listPhrases = callTool({ name: "list_server_phrases", args: { serverId: GU
   Effect.orDie,
 );
 
-const answerFor = ({ common, note }: ModelAnswers, prompt: string): string => {
+const answerOf = ({ common, note }: ModelAnswers, prompt: string): Record<string, string> => {
   if (pipe(prompt, Str.includes(`「${common}」`))) {
-    return JSON.stringify({ type: "common", note: "" });
+    return { type: "common", note: "" };
   }
-  return JSON.stringify({ type: "server", note });
+  return { type: "server", note };
 };
 
-const mockPhraseModel = (answers: ModelAnswers): void => {
-  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => {
-    const prompt = JSON.stringify(inputs);
+const answerModel = (
+  answers: ModelAnswers,
+  inputs: unknown,
+): Effect.Effect<Record<string, unknown>> =>
+  Effect.gen(function* answer() {
+    const prompt = yield* encodeJsonText(inputs);
     prompts.push(prompt);
-    const content = pipe(["```json", answerFor(answers, prompt), "```"], Array.join("\n"));
-    return Promise.resolve({ choices: [{ message: { content } }] });
-  });
+    const answered = yield* encodeJsonText(answerOf(answers, prompt));
+    const content = pipe(["```json", answered, "```"], Array.join("\n"));
+    return { choices: [{ message: { content } }] };
+  }).pipe(Effect.orDie);
+
+const mockPhraseModel = (answers: ModelAnswers): void => {
+  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) =>
+    Effect.runPromise(answerModel(answers, inputs)),
+  );
 };
 
 export { listPhrases, mockPhraseModel, prompts };

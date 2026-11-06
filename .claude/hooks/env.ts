@@ -39,12 +39,14 @@ const projectDir = Config.String("CLAUDE_PROJECT_DIR").pipe(Config.withDefault("
 
 const projectRoot = Effect.gen(function* projectRoot() {
   const platform = yield* HookPlatform;
-  return platform.resolve(yield* projectDir);
+  const dir = yield* projectDir;
+  return platform.resolve(dir);
 });
 
 const localBin = Effect.fn("localBin")(function* localBin(name: string) {
   const platform = yield* HookPlatform;
-  return platform.join(yield* projectRoot, "node_modules", ".bin", name);
+  const root = yield* projectRoot;
+  return platform.join(root, "node_modules", ".bin", name);
 });
 
 const blockWhen = (reasons: readonly string[]): Effect.Effect<void, HookBlocked> => {

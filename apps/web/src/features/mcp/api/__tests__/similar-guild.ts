@@ -68,7 +68,8 @@ const answerEmbedding = (inputs: unknown): Promise<Record<string, unknown>> =>
 const indexedOf = ({ id, channelId, content }: SimilarSeed): Effect.Effect<IndexedMessage> =>
   Effect.gen(function* seed() {
     const keys = yield* guildKeys(GUILD_A);
-    const now = DateTime.toEpochMillis(yield* DateTime.now);
+    const current = yield* DateTime.now;
+    const now = DateTime.toEpochMillis(current);
     const body = {
       authorName: "someone",
       mentions: [],

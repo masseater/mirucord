@@ -48,15 +48,13 @@ const listVoiceSessions =
   (input: typeof ListVoiceSessionsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: input.serverId, discordUserId })((scope) => {
       if (scope.guild.consent !== "consented") {
-        return Effect.succeed(
-          structuredResult({
-            ingest: "notConsented",
-            total: 0,
-            sessions: [],
-          } satisfies typeof ListVoiceSessionsOutput.Type),
-        );
+        return structuredResult({
+          ingest: "notConsented",
+          total: 0,
+          sessions: [],
+        } satisfies typeof ListVoiceSessionsOutput.Type);
       }
-      return sessionsOf({ scope, input }).pipe(Effect.map(structuredResult));
+      return sessionsOf({ scope, input }).pipe(Effect.flatMap(structuredResult));
     });
 
 export { listVoiceSessions };

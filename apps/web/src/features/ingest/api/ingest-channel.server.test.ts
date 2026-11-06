@@ -155,7 +155,8 @@ it.effect("drops a queued run whose history was already advanced by another run"
     const before = yield* savedOldest;
     const sendBatch = vi.spyOn(env.INGEST, "sendBatch");
     yield* ingestChannel({ guildId: GUILD, channelId: BACKFILLING, resumeBefore: STALE_CURSOR });
-    expect(yield* savedOldest).toStrictEqual(before);
+    const after = yield* savedOldest;
+    expect(after).toStrictEqual(before);
     expect(sendBatch).not.toHaveBeenCalled();
   }),
 );

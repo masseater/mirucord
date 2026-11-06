@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: masseater/typescript-template/.github/actions/skills-lock@e9cb10133c43cf5bfcea56bdd143c6bad3d13045
+      - uses: masseater/typescript-template/.github/actions/skills-lock@77af7f61aed85a96f10d17fa52c46a91d89aa388
         with:
           github-token: ${{ github.token }}
 
@@ -34,6 +34,6 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: masseater/typescript-template/.github/actions/ci-telemetry@e9cb10133c43cf5bfcea56bdd143c6bad3d13045
+      - uses: masseater/typescript-template/.github/actions/ci-telemetry@77af7f61aed85a96f10d17fa52c46a91d89aa388
         with:
           github-token: ${{ github.token }}

@@ -1,3 +1,4 @@
+import { run } from "@r_masseater/workers-tracing/effect";
 import { env } from "cloudflare:workers";
 import { Array, Effect, Option, pipe, Schema, String as Str } from "effect";
 import { vi } from "vite-plus/test";
@@ -43,9 +44,7 @@ const answerModel = (answers: ModelAnswers, inputs: unknown): Effect.Effect<Mode
   }).pipe(Effect.orDie);
 
 const mockPhraseModel = (answers: ModelAnswers): void => {
-  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) =>
-    Effect.runPromise(answerModel(answers, inputs)),
-  );
+  vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => run(answerModel(answers, inputs)));
 };
 
 export { listPhrases, mockPhraseModel, prompts };

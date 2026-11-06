@@ -1,3 +1,4 @@
+import { run } from "@r_masseater/workers-tracing/effect";
 import { env } from "cloudflare:workers";
 import { ConnectionService, ConnectionVisibility } from "discord-api-types/v10";
 import type { APIConnection, RESTGetAPICurrentUserConnectionsResult } from "discord-api-types/v10";
@@ -71,7 +72,7 @@ const revoked: FormDataEntryValue[] = [];
 const discordConnections = [
   http.get(`${DISCORD_API}/users/@me/connections`, () => HttpResponse.json(CONNECTIONS)),
   http.post(`${DISCORD_API}/oauth2/token/revoke`, ({ request }) =>
-    Effect.runPromise(
+    run(
       Effect.promise(() => request.formData()).pipe(
         Effect.map((form) => {
           revoked.push(...form.getAll("token"));

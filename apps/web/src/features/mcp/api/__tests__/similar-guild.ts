@@ -1,3 +1,4 @@
+import { run } from "@r_masseater/workers-tracing/effect";
 import { runDurableObjectAlarm } from "cloudflare:test";
 import { Array, DateTime, Effect, Option, pipe, Schema, String as Str } from "effect";
 
@@ -48,7 +49,7 @@ const decodeTexts = Schema.decodeUnknownEffect(
 );
 
 const answerEmbedding = (inputs: unknown): Promise<Record<string, unknown>> =>
-  Effect.runPromise(
+  run(
     decodeTexts(inputs).pipe(
       Effect.tap(({ text }) =>
         Effect.sync(() => {

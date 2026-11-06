@@ -1,3 +1,7 @@
+import {
+  restrictedImports as untracedImports,
+  restrictedProperties as untracedProperties,
+} from "@r_masseater/workers-tracing/oxlint";
 import { Array, pipe, Record, String as Str } from "effect";
 
 import decisionPlugin from "./decision-rules.ts";
@@ -174,6 +178,14 @@ const restrictedImports = {
   patterns: [...requiredStackPatterns],
 };
 
+const workerRules: Readonly<Record.ReadonlyRecord<string, ["error", ...unknown[]]>> = {
+  "eslint/no-restricted-imports": [
+    "error",
+    { ...restrictedImports, paths: [...restrictedImports.paths, ...untracedImports] },
+  ],
+  "eslint/no-restricted-properties": ["error", ...untracedProperties],
+};
+
 const generated = [
   "**/routeTree.gen.ts",
   "**/generated/**",
@@ -268,5 +280,6 @@ export {
   restrictedImports,
   ruleNamesOf,
   rulesMissingFrom,
+  workerRules,
 };
 export type { RuleMap, Rules };

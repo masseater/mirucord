@@ -1,4 +1,3 @@
-import { tracedHandle } from "@r_masseater/workers-tracing/elysia";
 import { Effect, Option, pipe, String as Str } from "effect";
 
 import { ingestDeliveries } from "#/features/ingest/index.server";
@@ -10,7 +9,7 @@ import { api } from "./api.server";
 import { authRejection, mcpRejection } from "./throttle.server";
 import { withWebAnalytics } from "./web-analytics.server";
 
-const handleApi = tracedHandle(api.handle);
+const handleApi = api.handle;
 
 const MCP_PATH = new URL(MCP_URL).pathname;
 const API_PREFIX = "/api/";

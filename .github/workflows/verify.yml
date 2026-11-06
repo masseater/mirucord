@@ -109,6 +109,8 @@ jobs:
         run: >-
           vp exec workers-traces --request https://mirucord.masseater.dev/
           --expect GET --expect "GET /" --expect d1_all --wait 300
+        env:
+          WORKERS_TRACES_SINK: masseater-dev-trace-sink
 
   release:
     needs: verify

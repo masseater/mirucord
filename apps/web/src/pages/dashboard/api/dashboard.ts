@@ -1,7 +1,8 @@
+import { run } from "@r_masseater/workers-tracing/effect";
 import { queryOptions } from "@tanstack/react-query";
 import type { DataTag, UnusedSkipTokenOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
-import { Array, Duration, Effect, Option, pipe, Schema } from "effect";
+import { Array, Duration, Option, pipe, Schema } from "effect";
 
 import type {
   ConsentResult,
@@ -63,29 +64,27 @@ const ConsentInputSchema = Schema.Struct({
   noticeChannelId: Schema.String,
 });
 
-const getDashboard = createServerFn({ method: "GET" }).handler(() =>
-  Effect.runPromise(loadDashboard),
-);
+const getDashboard = createServerFn({ method: "GET" }).handler(() => run(loadDashboard));
 
 const getGuildPage = createServerFn({ method: "GET" })
   .validator(Schema.toStandardSchemaV1(GuildInput))
-  .handler(({ data }) => Effect.runPromise(loadGuildPage(data.guildId)));
+  .handler(({ data }) => run(loadGuildPage(data.guildId)));
 
 const getForumPosts = createServerFn({ method: "GET" })
   .validator(Schema.toStandardSchemaV1(ChannelInput))
-  .handler(({ data }) => Effect.runPromise(loadForumPosts(data)));
+  .handler(({ data }) => run(loadForumPosts(data)));
 
 const postConsent = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(ConsentInputSchema))
-  .handler(({ data }) => Effect.runPromise(consentTo(data)));
+  .handler(({ data }) => run(consentTo(data)));
 
 const postRevoke = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(GuildInput))
-  .handler(({ data }) => Effect.runPromise(revokeFor(data.guildId)));
+  .handler(({ data }) => run(revokeFor(data.guildId)));
 
 const postPurge = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(ChannelInput))
-  .handler(({ data }) => Effect.runPromise(purgeFor(data)));
+  .handler(({ data }) => run(purgeFor(data)));
 
 const dashboardQuery = queryOptions({
   queryKey: ["dashboard"],
@@ -127,14 +126,14 @@ const withdrawConsent = (guildId: string): Promise<RevokeResult | SignedOut> =>
 
 const postDisconnect = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(AppInput))
-  .handler(({ data }) => Effect.runPromise(disconnectFor(data.clientId)));
+  .handler(({ data }) => run(disconnectFor(data.clientId)));
 
 const disconnectConnectedApp = (clientId: string): Promise<DisconnectResult> =>
   postDisconnect({ data: { clientId } });
 
 const postEraseMessages = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(GuildInput))
-  .handler(({ data }) => Effect.runPromise(eraseMessagesFor(data.guildId)));
+  .handler(({ data }) => run(eraseMessagesFor(data.guildId)));
 
 const eraseMyMessages = (guildId: string): Promise<EraseResult | SignedOut> =>
   postEraseMessages({ data: { guildId } });

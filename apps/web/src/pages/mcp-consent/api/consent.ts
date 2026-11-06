@@ -1,3 +1,4 @@
+import { run } from "@r_masseater/workers-tracing/effect";
 import { queryOptions } from "@tanstack/react-query";
 import { Effect, Option, Schema } from "effect";
 
@@ -8,7 +9,7 @@ const ConsentSearchSchema = Schema.Struct({ client_id: Schema.optional(Schema.St
 const validateConsentSearch = Schema.toStandardSchemaV1(ConsentSearchSchema);
 
 const fetchClientName = (clientId: string): Promise<string> =>
-  Effect.runPromise(
+  run(
     Effect.promise(() =>
       authClient.oauth2.publicClient({
         query: { client_id: clientId },

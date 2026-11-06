@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { DiscordConfig, DiscordREST, DiscordRESTMemoryLive } from "dfx";
 import type { DiscordRestService } from "dfx/DiscordREST";
-import { Context, Effect, Layer, ManagedRuntime, Option, Redacted, Schema } from "effect";
+import { Context, Effect, Layer, Option, Redacted, Schema, Scope } from "effect";
 import { FetchHttpClient } from "effect/http";
 import type { ReadonlyDeep } from "type-fest";
 
@@ -21,9 +21,11 @@ const BotConfig = DiscordConfig.layer({ token: Redacted.make(env.DISCORD_BOT_TOK
 
 const DiscordLive = DiscordRESTMemoryLive.pipe(Layer.provide([BotConfig, FetchHttpClient.layer]));
 
-const discordRuntime = ManagedRuntime.make(DiscordLive);
+const discordMemo = Layer.makeMemoMapUnsafe();
 
-const discordRest = discordRuntime.contextEffect.pipe(
+const discordScope = Scope.makeUnsafe();
+
+const discordRest = Layer.buildWithMemoMap(DiscordLive, discordMemo, discordScope).pipe(
   Effect.map((context) => Context.get(context, DiscordREST)),
 );
 

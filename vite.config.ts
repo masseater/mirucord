@@ -21,6 +21,7 @@ import {
   restrictedSyntaxOverrides,
   ruleNamesOf,
   rulesMissingFrom,
+  workerRules,
 } from "./lint.config.ts";
 
 const reactHooksRules = renamedRulesOf({
@@ -199,11 +200,15 @@ export default defineConfig({
       },
       {
         files: ["apps/web/src/**/*.{ts,tsx}"],
-        rules: decisionRules,
+        rules: { ...decisionRules, ...workerRules },
       },
       {
         files: ["**/*.test.ts"],
-        rules: decisionRulesOff,
+        rules: {
+          ...decisionRulesOff,
+          "eslint/no-restricted-imports": ["error", restrictedImports],
+          "eslint/no-restricted-properties": "off",
+        },
       },
     ],
     settings: {

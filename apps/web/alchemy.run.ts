@@ -258,7 +258,7 @@ const web = Effect.gen(function* web() {
   return site;
 });
 
-const tracedProviders = withWorkersTracing(providers());
+const tracedProviders = withWorkersTracing({ destinations: ["masseater-dev-traces"] })(providers());
 
 const stackProviders = workerIssuesProvider.pipe(Layer.provideMerge(tracedProviders));
 

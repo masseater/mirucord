@@ -1,3 +1,4 @@
+import { run } from "@r_masseater/workers-tracing/effect";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Effect } from "effect";
@@ -18,7 +19,7 @@ const useReturnToDashboard = (): ((departure: Departure) => Promise<void>) => {
       );
       const leave = Effect.promise(() => navigate({ to: DASHBOARD_PATH }));
       const after = { stay: refresh, leave: refresh.pipe(Effect.andThen(leave)) } as const;
-      return Effect.runPromise(after[departure]);
+      return run(after[departure]);
     },
     [navigate, queryClient],
   );

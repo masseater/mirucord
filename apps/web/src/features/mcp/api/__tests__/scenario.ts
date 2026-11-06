@@ -1,3 +1,4 @@
+import { run } from "@r_masseater/workers-tracing/effect";
 import {
   ChannelType,
   OverwriteType,
@@ -270,8 +271,7 @@ const guildKeys = (
     Effect.flatMap(({ wrappedKey }) => openGuildKeys(wrappedKey)),
   );
 
-const seedScenario = (): Promise<void> =>
-  Effect.runPromise(Effect.forEach(GUILDS, seedGuild, { discard: true }));
+const seedScenario = (): Promise<void> => run(Effect.forEach(GUILDS, seedGuild, { discard: true }));
 
 export {
   A_OPEN,

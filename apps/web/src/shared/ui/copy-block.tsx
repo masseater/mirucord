@@ -30,18 +30,24 @@ const CopyBlock = ({ text }: Readonly<{ text: string }>): ReactNode => {
   const copyStateAtom = useMemo(() => Atom.make<CopyState>(IDLE), []);
   const [state, setState] = useAtom(copyStateAtom);
   const [, copyToClipboard] = useCopyToClipboard();
-  const copy = useCallback(() => {
-    Effect.runFork(
-      Effect.promise(() => copyToClipboard(text)).pipe(
-        Effect.map(resultState),
-        Effect.tap((next) =>
-          Effect.sync(() => {
-            setState(next);
-          }),
+  const copyAtom = useMemo(
+    () =>
+      Atom.fn<string>()((value) =>
+        Effect.promise(() => copyToClipboard(value)).pipe(
+          Effect.map(resultState),
+          Effect.flatMap((next) =>
+            Effect.sync(() => {
+              setState(next);
+            }),
+          ),
         ),
       ),
-    );
-  }, [copyToClipboard, setState, text]);
+    [copyToClipboard, setState],
+  );
+  const [, copyText] = useAtom(copyAtom);
+  const copy = useCallback(() => {
+    copyText(text);
+  }, [copyText, text]);
   return (
     <div className="bg-dc-rail border-dc-line flex w-fit max-w-full items-center gap-2 rounded-sm border py-1.5 pr-1.5 pl-3">
       <p className="text-dc-text min-w-0 flex-1 font-mono text-sm wrap-anywhere select-all">

@@ -59,9 +59,9 @@ const outgoing = (
         return HttpResponse.json({ code: CANNOT_DM }, { status: FORBIDDEN });
       }
       return Effect.runPromise(
-        Effect.promise(() => request.json()).pipe(
-          Effect.map((body) => {
-            record({ channelId, content: JSON.stringify(body) });
+        Effect.promise(() => request.text()).pipe(
+          Effect.map((content) => {
+            record({ channelId, content });
             return HttpResponse.json({ id: "1" });
           }),
         ),

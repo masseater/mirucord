@@ -134,18 +134,16 @@ const phraseNotesOf = Effect.fn("phraseNotes")(function* phraseNotes(request: No
       Array.map(({ phrase }) => phrase),
     ),
   );
-  const now = DateTime.toEpochMillis(yield* DateTime.now);
-  const claimed = new Set(
-    yield* Effect.promise(() =>
-      store.claimPhraseNotes({
-        phrases: pipe(
-          phrases,
-          Array.filter((phrase) => !known.has(phrase)),
-        ),
-        now,
-      }),
-    ),
-  );
+  const now = yield* DateTime.now.pipe(Effect.map(DateTime.toEpochMillis));
+  const claimed = yield* Effect.promise(() =>
+    store.claimPhraseNotes({
+      phrases: pipe(
+        phrases,
+        Array.filter((phrase) => !known.has(phrase)),
+      ),
+      now,
+    }),
+  ).pipe(Effect.map((claimedPhrases) => new Set(claimedPhrases)));
   const generated = yield* generateAll(
     request,
     pipe(

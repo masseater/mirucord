@@ -69,9 +69,9 @@ const listLinkedAccounts =
   (input: typeof ListLinkedAccountsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: input.serverId, discordUserId })((scope) => {
       if (scope.guild.consent !== "consented") {
-        return Effect.succeed(structuredResult(NOT_CONSENTED));
+        return structuredResult(NOT_CONSENTED);
       }
-      return linkedAccountsOf(scope, input).pipe(Effect.map(structuredResult));
+      return linkedAccountsOf(scope, input).pipe(Effect.flatMap(structuredResult));
     });
 
 export { listLinkedAccounts };

@@ -75,6 +75,7 @@ it.effect("offers only public connections, publishes the chosen ones and lets th
 it.effect("removes everything when the owner withdraws", () =>
   Effect.gen(function* withdraw() {
     yield* withdrawLinkedAccounts(OWNER);
-    expect(yield* publishedRows).toStrictEqual([]);
+    const rows = yield* publishedRows;
+    expect(rows).toStrictEqual([]);
   }),
 );

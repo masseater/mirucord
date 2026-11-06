@@ -1,5 +1,5 @@
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { Array, Effect, Option, pipe } from "effect";
+import { Array, Effect, Option, Schema, pipe } from "effect";
 
 import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
@@ -12,16 +12,27 @@ import type { GuildScope, StoredChannel } from "./scope.server";
 const SERVER_NOT_FOUND = "Server not found";
 const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const CHANNEL_NOT_FOUND = "Channel not found";
+const RESULT_NOT_ENCODABLE = "The result could not be written as JSON";
 
-const structuredResult = (value: Readonly<Record<string, unknown>>): CallToolResult => ({
-  content: [{ type: "text", text: JSON.stringify(value) }],
-  structuredContent: value,
-  isError: false,
-});
 const errorResult = (text: string): CallToolResult => ({
   content: [{ type: "text", text }],
   isError: true,
 });
+
+const encodeJsonText = Schema.encodeEffect(Schema.fromJsonString(Schema.Unknown));
+
+const structuredResult = (
+  value: Readonly<Record<string, unknown>>,
+): Effect.Effect<CallToolResult> =>
+  encodeJsonText(value).pipe(
+    Effect.map((text): CallToolResult => ({
+      content: [{ type: "text", text }],
+      structuredContent: value,
+      isError: false,
+    })),
+    Effect.tapError((issue) => Effect.logError("Tool result could not be encoded", issue)),
+    Effect.orElseSucceed(() => errorResult(RESULT_NOT_ENCODABLE)),
+  );
 
 type ToolRequest = Readonly<{ guildId: string; discordUserId: string }>;
 type WithinScope = (scope: GuildScope) => Effect.Effect<CallToolResult>;

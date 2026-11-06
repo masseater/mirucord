@@ -19,6 +19,8 @@ type QueueDelivery = Readonly<{
 }>;
 
 const decodeJob = Schema.decodeUnknownEffect(QueueJobSchema);
+const encodeBody = Schema.encodeEffect(Schema.fromJsonString(Schema.Unknown));
+const UNENCODABLE_BODY = "(body is not JSON)";
 
 type JobError = Effect.Error<ReturnType<typeof ingestChannel>> | GuildDataRemainsError;
 
@@ -54,7 +56,9 @@ const giveUpOrRetry = (delivery: QueueDelivery, cause: Cause.Cause<unknown>): Ef
     {
       onNone: () => Effect.logWarning("Queue job failed; retrying"),
       onSome: ({ body }) =>
-        alertOperators(`Queue job gave up after retries: ${JSON.stringify(body)}`).pipe(
+        encodeBody(body).pipe(
+          Effect.orElseSucceed(() => UNENCODABLE_BODY),
+          Effect.flatMap((text) => alertOperators(`Queue job gave up after retries: ${text}`)),
           Effect.andThen(undoDelivery(body)),
         ),
     },

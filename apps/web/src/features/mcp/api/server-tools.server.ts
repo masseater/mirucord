@@ -28,7 +28,7 @@ const PHRASES_HINT = `Before reading messages, call \`${PHRASES_TOOL_NAME}\` onc
 const listServers = (discordUserId: string): Promise<CallToolResult> =>
   runTraced(
     readableGuilds(discordUserId).pipe(
-      Effect.map((guilds) =>
+      Effect.flatMap((guilds) =>
         structuredResult({
           servers: pipe(
             guilds,
@@ -79,7 +79,7 @@ const visibleChannels = ({
       Array.map(({ id }) => id),
     ),
   ).pipe(
-    Effect.map((oldest) =>
+    Effect.flatMap((oldest) =>
       structuredResult({
         channels: pipe(
           channels,
@@ -116,7 +116,7 @@ const phrases =
           Array.map(({ id }) => id),
         ),
       }).pipe(
-        Effect.map((found) =>
+        Effect.flatMap((found) =>
           structuredResult(found satisfies typeof ListServerPhrasesOutput.Type),
         ),
       ),

@@ -65,7 +65,8 @@ it.effect("records a stay per channel as people join, move and leave", () =>
         { userId: ALICE, channelId: LEFT, at: LEFT_AT },
       ],
     });
-    expect(yield* storedSessions(MOVING_GUILD)).toStrictEqual([
+    const sessions = yield* storedSessions(MOVING_GUILD);
+    expect(sessions).toStrictEqual([
       {
         userId: ALICE,
         channelId: LOUNGE,
@@ -105,7 +106,8 @@ it.effect("reconciles open stays with who is in voice after reconnecting", () =>
         { userId: CAROL, channelId: GAMES },
       ],
     });
-    expect(yield* storedSessions(SNAPSHOT_GUILD)).toStrictEqual([
+    const sessions = yield* storedSessions(SNAPSHOT_GUILD);
+    expect(sessions).toStrictEqual([
       {
         userId: ALICE,
         channelId: LOUNGE,
@@ -141,6 +143,7 @@ it.effect("records nothing before the admin consents", () =>
       guildId: QUIET_GUILD,
       changes: [{ userId: ALICE, channelId: LOUNGE, at: JOINED_AT }],
     });
-    expect(yield* storedSessions(QUIET_GUILD)).toStrictEqual([]);
+    const sessions = yield* storedSessions(QUIET_GUILD);
+    expect(sessions).toStrictEqual([]);
   }),
 );

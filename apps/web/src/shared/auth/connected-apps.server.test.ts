@@ -97,12 +97,15 @@ it.effect("disconnects one app of one user and keeps every other grant", () =>
       { userId: "u4", clientId: "claude-2" },
     ]);
     yield* disconnectApp({ userId: "u3", clientId: "claude-2" });
-    expect(yield* listConnectedApps("u3")).toStrictEqual([
-      { clientId: "other-2", name: "Other", ...DATES },
-    ]);
-    expect(yield* listConnectedApps("u4")).toStrictEqual([
-      { clientId: "claude-2", name: "Claude", ...DATES },
-    ]);
-    expect(yield* tokenCount).toStrictEqual({ refresh: 8, access: 4 });
+    const remaining = yield* Effect.all({
+      u3: listConnectedApps("u3"),
+      u4: listConnectedApps("u4"),
+      tokens: tokenCount,
+    });
+    expect(remaining).toStrictEqual({
+      u3: [{ clientId: "other-2", name: "Other", ...DATES }],
+      u4: [{ clientId: "claude-2", name: "Claude", ...DATES }],
+      tokens: { refresh: 8, access: 4 },
+    });
   }),
 );

@@ -42,7 +42,7 @@ jobs:
             libs/shared/util-app-name/src/app-name.ts
           sparse-checkout-cone-mode: false
       - if: github.ref == 'refs/heads/main'
-        uses: masseater/typescript-template/.github/actions/credentials@e304b0a5ab82f6dce917dfd8606f4fa25d89aa21
+        uses: masseater/typescript-template/.github/actions/credentials@0c9f2c316a486637e22878aea5e0a4a1a7f630c4
       - run: .github/scripts/ci-telemetry.sh
         env:
           GH_TOKEN: ${{ github.token }}

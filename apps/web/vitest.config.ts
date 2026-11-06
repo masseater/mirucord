@@ -3,7 +3,10 @@ import { Effect } from "effect";
 import { defineConfig } from "vite-plus";
 
 const readMigrations = Effect.promise(() =>
-  readD1Migrations({ migrationsDir: "drizzle", migrationsPattern: "drizzle/*/migration.sql" }),
+  readD1Migrations({
+    migrationsDir: new URL("drizzle", import.meta.url).pathname,
+    migrationsPattern: new URL("drizzle/*/migration.sql", import.meta.url).pathname,
+  }),
 );
 
 export default defineConfig({

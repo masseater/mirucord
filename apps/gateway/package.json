@@ -3,11 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "scripts": {
-    "deploy": "alchemy deploy",
-    "destroy": "alchemy destroy",
-    "test": "vp exec vp test run"
-  },
   "dependencies": {
     "@alchemy.run/cloudflare": "catalog:stack",
     "@alchemy.run/fly": "catalog:stack",

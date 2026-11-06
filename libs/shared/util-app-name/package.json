@@ -7,9 +7,6 @@
     ".": "./src/index.ts",
     "./app-name": "./src/app-name.ts"
   },
-  "scripts": {
-    "test": "vp exec vp test run"
-  },
   "dependencies": {
     "@alchemy.run/cloudflare": "catalog:stack",
     "@alchemy.run/fly": "catalog:stack",

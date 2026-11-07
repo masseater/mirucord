@@ -25,7 +25,7 @@ mirucord は、Discord のサーバーを読むだけの MCP サーバーをホ�
 
 ## コマンド
 
-- `vp run verify` はルートの `vite.config.ts` のタスクで、`vp check` に加えてテスト・textlint と yomiyasu・steiger・drizzle の差分検査・fallow・gitleaks・audit などを流す。
+- `vp run verify` はルートの `vite.config.ts` のタスクで、`vp check` に加えてテスト・textlint と yomiyasu・steiger・drizzle の差分検査・fallow・betterleaks・audit などを流す。
 - 1 つのテストだけを流すときは、そのワークスペースで `vp exec vp test run <ファイル>` を実行する。`apps/web` のテストは `@cloudflare/vitest-plugin` の上で D1・R2・Queue・Durable Object をそろえて動く。
 
 ## 想定規模と性能要件

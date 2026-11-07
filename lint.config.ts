@@ -5,6 +5,7 @@ import {
 import { Array, pipe, Record, String as Str } from "effect";
 
 import decisionPlugin from "./decision-rules.ts";
+import { asErrors } from "./rule-sets.config.ts";
 
 const REACT_STATE_HOOKS: readonly string[] = [
   "useState",
@@ -198,60 +199,6 @@ const generated = [
   "CHANGELOG.md",
 ];
 
-type RuleMap = Readonly<Record<string, unknown>>;
-type Rules = Readonly<Record<string, "error">>;
-
-const ruleNamesOf = (rules: RuleMap | undefined): readonly string[] => Record.keys(rules ?? {});
-
-const asErrors = (names: readonly string[]): Rules =>
-  Record.fromEntries(
-    pipe(
-      names,
-      Array.map((name) => [name, "error"] as const),
-    ),
-  );
-
-const allRulesOf = ({ prefix, rules }: Readonly<{ prefix: string; rules: RuleMap }>): Rules =>
-  asErrors(
-    pipe(
-      ruleNamesOf(rules),
-      Array.map((rule) => `${prefix}/${rule}`),
-    ),
-  );
-
-const renamedRulesOf = ({
-  rules,
-  from,
-  to,
-}: Readonly<{ rules: RuleMap; from: string; to: string }>): Rules =>
-  asErrors(
-    pipe(
-      ruleNamesOf(rules),
-      Array.map((name) => pipe(name, Str.replace(from, to))),
-    ),
-  );
-
-const rulesMissingFrom = ({
-  rules,
-  from,
-  to,
-  taken,
-}: Readonly<{ rules: RuleMap | undefined; from: string; to: string; taken: Rules }>): Rules =>
-  asErrors(
-    pipe(
-      ruleNamesOf(rules),
-      Array.filter((name) => !(pipe(name, Str.replace(from, to)) in taken)),
-    ),
-  );
-
-const presetRulesOf = (presets: Readonly<Record<string, Readonly<{ rules?: RuleMap }>>>): Rules =>
-  asErrors(
-    pipe(
-      Record.values(presets),
-      Array.flatMap((preset) => ruleNamesOf(preset.rules)),
-    ),
-  );
-
 const decisionPluginName = decisionPlugin.meta.name;
 
 const decisionRules = asErrors(
@@ -270,16 +217,17 @@ export { restrictedSyntaxOverrides } from "./restricted-syntax.config.ts";
 export {
   allRulesOf,
   asErrors,
+  effectRules,
+  eslintReactRules,
+  reactHooksRules,
+  ruleNamesOf,
+} from "./rule-sets.config.ts";
+export {
   decisionPluginName,
   decisionRules,
   decisionRulesOff,
   generated,
-  presetRulesOf,
-  renamedRulesOf,
   requiredStack,
   restrictedImports,
-  ruleNamesOf,
-  rulesMissingFrom,
   workerRules,
 };
-export type { RuleMap, Rules };

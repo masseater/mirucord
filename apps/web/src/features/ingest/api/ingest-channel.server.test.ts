@@ -13,6 +13,7 @@ import {
   putMessages,
   storedIdsIn,
   storedMessage,
+  TEXT_CHANNEL,
 } from "./__tests__/guild-messages";
 import { ingestChannel } from "./ingest-channel.server";
 
@@ -49,7 +50,7 @@ const seed: Effect.Effect<void> = Effect.gen(function* seedChannel() {
       id: CHANNEL,
       guildId: GUILD,
       name: "channel",
-      type: 0,
+      type: TEXT_CHANNEL,
       permissionOverwrites: [],
       backfill: "done",
     }),
@@ -103,7 +104,7 @@ const seedBackfilling = Effect.promise(() =>
     id: BACKFILLING,
     guildId: GUILD,
     name: "backfilling",
-    type: 0,
+    type: TEXT_CHANNEL,
     permissionOverwrites: [],
     newestMessageId: String(LATEST_START),
     oldestMessageId: BACKFILL_CURSOR,

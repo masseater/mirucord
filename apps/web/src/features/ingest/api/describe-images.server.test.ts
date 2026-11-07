@@ -8,7 +8,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plu
 import { createGuildKey, openGuildKeys, openMessage } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
-import { candidateIds, describedWithOf, sealedIn } from "./__tests__/guild-messages";
+import { candidateIds, describedWithOf, sealedIn, TEXT_CHANNEL } from "./__tests__/guild-messages";
 import { ingestChannel } from "./ingest-channel.server";
 
 const DEFAULT_MESSAGE = 0;
@@ -87,7 +87,7 @@ const seedGuild = Effect.gen(function* seed() {
       id,
       guildId: GUILD,
       name: `channel ${id}`,
-      type: DEFAULT_MESSAGE,
+      type: TEXT_CHANNEL,
       permissionOverwrites: [],
     })),
   );

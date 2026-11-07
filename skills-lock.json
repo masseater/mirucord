@@ -216,7 +216,7 @@
       "ref": "6cee5ff090e5f08fc127e15cc73c1d3bed4748d4",
       "sourceType": "github",
       "skillPath": "skills/repo-conventions/SKILL.md",
-      "computedHash": "72d2b260b95db6adc3dcedd9aa2eff3b44faa822523d242f7c02b006b16c294b"
+      "computedHash": "322326f4a37402173dde8d907d60e8c9c826a8d7861922af80ea15caecf7747a"
     },
     "shadcn": {
       "source": "shadcn-ui/ui",
@@ -300,7 +300,7 @@
       "ref": "6cee5ff090e5f08fc127e15cc73c1d3bed4748d4",
       "sourceType": "github",
       "skillPath": "skills/vite-plus/SKILL.md",
-      "computedHash": "9d4a3ea3a7f337728655e31faa78a8116fdb66227a3a7b1681a4ccbdf7b09b59"
+      "computedHash": "8ebe433192b92cafcf50404a4d3c27e03a64000c1b984bceac81898ca83e951b"
     },
     "workers-best-practices": {
       "source": "cloudflare/skills",

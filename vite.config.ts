@@ -1,11 +1,8 @@
-import { presets as effectPresets } from "@effect/tsgo/oxlint-presets";
-import eslintReact from "@eslint-react/eslint-plugin";
 import htmlReact from "@html-eslint/eslint-plugin-react";
 import { plugin as shadcn } from "@shadcn/lint";
 import tanstackQuery from "@tanstack/eslint-plugin-query";
 import tanstackRouter from "@tanstack/eslint-plugin-router";
 import baselineJs from "eslint-plugin-baseline-js";
-import reactHooks from "eslint-plugin-react-hooks";
 import { defineConfig } from "vite-plus";
 
 import {
@@ -14,30 +11,15 @@ import {
   decisionPluginName,
   decisionRules,
   decisionRulesOff,
+  effectRules,
+  eslintReactRules,
   generated,
-  presetRulesOf,
-  renamedRulesOf,
+  reactHooksRules,
   restrictedImports,
   restrictedSyntaxOverrides,
   ruleNamesOf,
-  rulesMissingFrom,
   workerRules,
 } from "./lint.config.ts";
-
-const reactHooksRules = renamedRulesOf({
-  rules: reactHooks.configs["recommended-latest"].rules,
-  from: "react-hooks/",
-  to: "react-hooks-js/",
-});
-
-const eslintReactRules = rulesMissingFrom({
-  rules: eslintReact.configs["strict-typescript"].rules,
-  from: "@eslint-react/",
-  to: "react-hooks-js/",
-  taken: reactHooksRules,
-});
-
-const effectRules = presetRulesOf(effectPresets);
 
 export default defineConfig({
   test: { projects: ["apps/*", "libs/*/*", "infra/*", "tools/*"], passWithNoTests: true },
@@ -276,7 +258,6 @@ export default defineConfig({
           "steiger",
           "db-check-all",
           "fallow",
-          "gitleaks",
           "audit",
         ],
       },
@@ -289,8 +270,14 @@ export default defineConfig({
           'before="$(cksum pnpm-workspace.yaml)"; vp pm audit --fix || exit; if [ "$before" != "$(cksum pnpm-workspace.yaml)" ]; then echo "vp pm audit --fix rewrote pnpm-workspace.yaml. Run vp install and commit the diff." >&2; exit 1; fi',
         cache: false,
       },
-      gitleaks: {
-        command: "go run github.com/zricethezav/gitleaks/v8@v8.30.1 git --redact --no-banner",
+      betterleaks: {
+        command:
+          'go run github.com/betterleaks/betterleaks/v2@v2.0.0-rc.7 git . --config .betterleaks.toml --redact --no-banner --revision="$(git rev-parse -q --verify "$BETTERLEAKS_BASE" || echo origin/main)..HEAD"',
+        cache: false,
+      },
+      "betterleaks:staged": {
+        command:
+          "git diff --cached --no-ext-diff --no-textconv --no-color --src-prefix=a/ --dst-prefix=b/ | go run github.com/betterleaks/betterleaks/v2@v2.0.0-rc.7 stdin --git-diff --config .betterleaks.toml --redact --no-banner",
         cache: false,
       },
     },

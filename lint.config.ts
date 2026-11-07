@@ -222,7 +222,6 @@ export {
   reactHooksRules,
   ruleNamesOf,
 } from "./rule-sets.config.ts";
-export type { RuleMap, Rules } from "./rule-sets.config.ts";
 export {
   decisionPluginName,
   decisionRules,

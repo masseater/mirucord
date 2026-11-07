@@ -1,3 +1,4 @@
+import { ChannelType } from "discord-api-types/v10";
 import { Array, DateTime, Effect, Option, pipe } from "effect";
 
 import { guildStore, queryTokens, searchMessages } from "#/entities/guild-message/index.server";
@@ -6,6 +7,7 @@ import { createGuildKey } from "#/shared/crypto/index.server";
 import { db, guild, ingestConsent } from "#/shared/db/index.server";
 
 const OWNER = "901";
+const TEXT_CHANNEL = ChannelType.GuildText;
 const SEEDED = DateTime.makeUnsafe("2026-10-01T00:00:00Z");
 const SEEDED_AT = DateTime.toEpochMillis(SEEDED);
 const READ_LIMIT = 200;
@@ -123,5 +125,6 @@ export {
   storedCount,
   storedIdsIn,
   storedMessage,
+  TEXT_CHANNEL,
 };
 export type { GuildChannel };

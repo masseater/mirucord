@@ -18,7 +18,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: $/.github/actions/setup
-      - uses: masseater/typescript-template/.github/actions/verify@9fd918dd489a841010b0a5fb6e4ed9d1f8a11ec1
+      - uses: masseater/typescript-template/.github/actions/verify@68becbb0934725055f1c657f1e77a529f0e3e338
         with:
           github-token: ${{ github.token }}
 
@@ -43,22 +43,18 @@ jobs:
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && github.repository == 'masseater/mirucord'
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       id-token: write
       contents: read
     concurrency:
       group: deploy-production
+      queue: max
       cancel-in-progress: false
     steps:
       - id: head
-        env:
-          GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ github.sha }}
-          REF_NAME: ${{ github.ref_name }}
-        run: |
-          current="$(gh api "repos/$GITHUB_REPOSITORY/commits/$REF_NAME" --jq .sha)"
-          if [ "$current" = "$HEAD_SHA" ]; then
-            echo "latest=true" >> "$GITHUB_OUTPUT"
-          fi
+        uses: masseater/typescript-template/.github/actions/latest-verified@b634b841fef32c20d1d970bacd1d113532cf8dc4
+        with:
+          github-token: ${{ github.token }}
       - if: steps.head.outputs.latest == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

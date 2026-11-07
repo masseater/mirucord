@@ -8,7 +8,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect } from "vite-plus/te
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
-import { putMessages, storedIdsIn, storedMessage } from "./__tests__/guild-messages";
+import { putMessages, storedIdsIn, storedMessage, TEXT_CHANNEL } from "./__tests__/guild-messages";
 import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server";
 
 const OWNER = "901";
@@ -55,7 +55,7 @@ const seed = Effect.gen(function* seed() {
       id,
       guildId: GUILD,
       name: `channel ${id}`,
-      type: 0,
+      type: TEXT_CHANNEL,
       permissionOverwrites: [],
     })),
   );

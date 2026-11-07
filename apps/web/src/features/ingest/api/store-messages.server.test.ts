@@ -9,7 +9,7 @@ import { createGuildKey, openGuildKeys, openMessage } from "#/shared/crypto/inde
 import type { MessageBody } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
-import { putMessages, sealedIn, storedMessage } from "./__tests__/guild-messages";
+import { putMessages, sealedIn, storedMessage, TEXT_CHANNEL } from "./__tests__/guild-messages";
 import { ingestChannel } from "./ingest-channel.server";
 
 const DEFAULT_MESSAGE = 0;
@@ -110,7 +110,7 @@ const seedMessages = Effect.gen(function* seed() {
       id,
       guildId: GUILD,
       name: `channel ${id}`,
-      type: 0,
+      type: TEXT_CHANNEL,
       permissionOverwrites: [],
     })),
   );

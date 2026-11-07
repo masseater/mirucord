@@ -7,7 +7,7 @@ import { beforeEach, expect, vi } from "vite-plus/test";
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
-import { putMessages, storedCount, storedMessage } from "./__tests__/guild-messages";
+import { putMessages, storedCount, storedMessage, TEXT_CHANNEL } from "./__tests__/guild-messages";
 import { ingestDeliveries } from "./ingest-queue.server";
 import { requestWithdrawal, withdrawGuild } from "./withdraw-guild.server";
 
@@ -40,7 +40,7 @@ const seedGuild = (guildId: string): Effect.Effect<void> =>
           id: channelId,
           guildId,
           name: channelId,
-          type: 0,
+          type: TEXT_CHANNEL,
           permissionOverwrites: [],
         }),
       ]),

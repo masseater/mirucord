@@ -18,7 +18,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: $/.github/actions/setup
-      - uses: masseater/typescript-template/.github/actions/verify@7358bef427994276d6341d9ea2f5acf4de7b1c82
+      - uses: masseater/typescript-template/.github/actions/verify@7281237f4197f17506c6b5f54ebb90d529faa387
         with:
           github-token: ${{ github.token }}
 
@@ -52,7 +52,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - id: head
-        uses: masseater/typescript-template/.github/actions/latest-verified@7358bef427994276d6341d9ea2f5acf4de7b1c82
+        uses: masseater/typescript-template/.github/actions/latest-verified@7281237f4197f17506c6b5f54ebb90d529faa387
         with:
           github-token: ${{ github.token }}
       - if: steps.head.outputs.latest == 'true'
@@ -62,7 +62,7 @@ jobs:
       - if: steps.head.outputs.latest == 'true'
         uses: $/.github/actions/setup
       - if: steps.head.outputs.latest == 'true'
-        uses: masseater/typescript-template/.github/actions/credentials@7358bef427994276d6341d9ea2f5acf4de7b1c82
+        uses: masseater/typescript-template/.github/actions/credentials@7281237f4197f17506c6b5f54ebb90d529faa387
       - if: steps.head.outputs.latest == 'true'
         working-directory: apps/web
         run: vp exec alchemy deploy --stage prod --yes --no-input
@@ -81,7 +81,7 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - if: steps.fly.outputs.enabled == 'true'
-        uses: masseater/typescript-template/.github/actions/credentials@7358bef427994276d6341d9ea2f5acf4de7b1c82
+        uses: masseater/typescript-template/.github/actions/credentials@7281237f4197f17506c6b5f54ebb90d529faa387
       - if: steps.fly.outputs.enabled == 'true'
         working-directory: apps/gateway
         run: vp exec alchemy deploy --stage prod --yes --no-input
@@ -100,7 +100,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: $/.github/actions/setup
-      - uses: masseater/typescript-template/.github/actions/credentials@7358bef427994276d6341d9ea2f5acf4de7b1c82
+      - uses: masseater/typescript-template/.github/actions/credentials@7281237f4197f17506c6b5f54ebb90d529faa387
       - working-directory: apps/web
         run: >-
           vp exec workers-traces --request https://mirucord.masseater.dev/
@@ -139,6 +139,6 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: masseater/typescript-template/.github/actions/ci-telemetry@7358bef427994276d6341d9ea2f5acf4de7b1c82
+      - uses: masseater/typescript-template/.github/actions/ci-telemetry@7281237f4197f17506c6b5f54ebb90d529faa387
         with:
           github-token: ${{ github.token }}

@@ -25,6 +25,7 @@ import {
 const typedRules = "@r_masseater/oxlint-typed-rules";
 
 export default defineConfig({
+  commitlint: { extends: ["@commitlint/config-conventional"] },
   steiger: [
     ...fsd.configs.recommended,
     {

@@ -70,7 +70,7 @@ catalogs:
     effect: 4.1.2
     elysia: 1.4.31
     fallow: 3.40.0
-    renovate: 44.221.5
+    renovate: 44.221.6
     tailwindcss: 4.3.4
     textlint: 15.8.0
     typescript: 7.1.0-beta

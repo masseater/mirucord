@@ -342,9 +342,6 @@ catalogs:
     renovate:
       specifier: 44.221.4
       version: 44.221.4
-    steiger:
-      specifier: 0.9.0
-      version: 0.9.0
     tailwindcss:
       specifier: 4.3.4
       version: 4.3.4
@@ -443,9 +440,6 @@ importers:
       skills:
         specifier: 'catalog:'
         version: 1.7.6
-      steiger:
-        specifier: catalog:stack
-        version: 0.9.0
       syncpack:
         specifier: 'catalog:'
         version: 15.3.3

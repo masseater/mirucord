@@ -1,4 +1,4 @@
-import fsd from "@feature-sliced/steiger-plugin";
+import fsd from "@r_masseater/vp-tools/fsd";
 import { defineConfig } from "steiger";
 
 export default defineConfig([

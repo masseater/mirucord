@@ -1,6 +1,7 @@
 import htmlReact from "@html-eslint/eslint-plugin-react";
 import tanstackQuery from "@r_masseater/oxlint-typed-rules/tanstack-query";
 import tanstackRouter from "@r_masseater/oxlint-typed-rules/tanstack-router";
+import fsd from "@r_masseater/vp-tools/fsd";
 import { plugin as shadcn } from "@shadcn/lint";
 import baselineJs from "eslint-plugin-baseline-js";
 import { defineConfig } from "vite-plus";
@@ -20,12 +21,20 @@ import {
   ruleNamesOf,
   workerRules,
 } from "./lint.config.ts";
-import steiger from "./steiger.config.ts";
 
 const typedRules = "@r_masseater/oxlint-typed-rules";
 
 export default defineConfig({
-  steiger,
+  steiger: [
+    ...fsd.configs.recommended,
+    {
+      rules: {
+        "fsd/no-cross-imports": "error",
+        "fsd/no-higher-level-imports": "error",
+        "fsd/no-wildcard-exports": "error",
+      },
+    },
+  ],
   test: { projects: ["apps/*", "libs/*/*", "infra/*", "tools/*"], passWithNoTests: true },
   staged: {
     "*": "vp check --fix",

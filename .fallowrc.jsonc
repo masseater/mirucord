@@ -18,6 +18,7 @@
   },
   "typeAware": { "enabled": true, "require": "complete" },
   "failOnParseError": true,
+  "ignoreDependencies": ["@effect/language-service"],
   "ignorePatterns": [".claude/**"],
   "audit": { "gate": "all" },
   "security": {
@@ -157,11 +158,7 @@
       "name": "vite-plus",
       "enablers": ["vite-plus"],
       "entryPoints": ["vite.config.ts"],
-      "toolingDependencies": [
-        "@ast-grep/cli",
-        "eslint-plugin-drizzle",
-        "eslint-plugin-no-comments",
-      ],
+      "toolingDependencies": ["@ast-grep/cli", "eslint-plugin-no-comments"],
     },
     {
       "name": "oxlint-plugin-decision",
@@ -193,11 +190,6 @@
       "enablers": ["@tanstack/intent"],
       "configPatterns": [".intent/hooks/*.mjs"],
       "toolingDependencies": ["@tanstack/intent"],
-    },
-    {
-      "name": "steiger",
-      "enablers": ["steiger"],
-      "alwaysUsed": ["steiger.config.{ts,js,mjs}"],
     },
   ],
   "rules": {

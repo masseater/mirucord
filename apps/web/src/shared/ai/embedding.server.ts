@@ -51,7 +51,8 @@ const runModel = (
   texts: Array.NonEmptyReadonlyArray<string>,
 ): Effect.Effect<readonly (readonly number[])[], EmbeddingError> =>
   runWorkersAi({
-    label: "embedding",
+    operation: "embeddings",
+    model: EMBED_MODEL,
     call: () =>
       env.AI.run(EMBED_MODEL, {
         text: pipe(

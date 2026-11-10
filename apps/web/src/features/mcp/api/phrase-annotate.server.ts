@@ -193,7 +193,9 @@ const answerOf = (output: GemmaOutput): Option.Option<Answered> =>
 
 const askModel = (input: NoteInput, image: Option.Option<Image>): Effect.Effect<GemmaOutput> =>
   runWorkersAi({
-    label: `phrase note: ${input.label.label}`,
+    operation: "chat",
+    model: GEMMA_MODEL,
+    prompt: "phrase-note",
     call: (): Promise<GemmaOutput> =>
       env.AI.run(GEMMA_MODEL, {
         messages: [{ role: "user", content: [...contentOf(promptOf(input), image)] }],

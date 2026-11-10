@@ -24,7 +24,9 @@ ${note}`;
 
 const rewrite = (hedged: Hedged): Effect.Effect<string> =>
   runWorkersAi({
-    label: `narrowed phrase note: ${hedged.label}`,
+    operation: "chat",
+    model: GEMMA_MODEL,
+    prompt: "phrase-note-narrowing",
     call: (): Promise<GemmaOutput> =>
       env.AI.run(GEMMA_MODEL, {
         messages: [{ role: "user", content: promptOf(hedged) }],

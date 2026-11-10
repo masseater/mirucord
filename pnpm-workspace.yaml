@@ -52,7 +52,7 @@ catalog:
   ml-kmeans: ^7.0.1
 catalogs:
   stack:
-    "@r_masseater/workers-tracing": 0.1.4
+    "@r_masseater/workers-tracing": 0.1.5
     "@distilled.cloud/cloudflare": 1.0.0-rc.18
     "@effect/atom-react": 4.1.2
     "@effect/tsgo": 0.67.4
@@ -109,7 +109,7 @@ audit:
   ignore:
     - GHSA-gcqx-w48m-w2h4
 minimumReleaseAgeExclude:
-  - "@r_masseater/workers-tracing@0.1.4"
+  - "@r_masseater/workers-tracing@0.1.5"
   - "better-auth@1.7.17"
   - "auth@1.7.17"
   - "@better-auth/core@1.7.17"

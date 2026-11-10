@@ -74,7 +74,9 @@ const reserveNeurons = spendNeurons("live", RESERVED_NEURONS).pipe(
 
 const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, DescribeError> =>
   runWorkersAi({
-    label: "image description",
+    operation: "chat",
+    model: DESCRIBE_MODEL,
+    prompt: "image-description",
     call: (): Promise<GemmaOutput> =>
       env.AI.run(DESCRIBE_MODEL, {
         messages: [

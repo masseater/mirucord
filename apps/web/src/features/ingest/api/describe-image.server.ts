@@ -1,3 +1,4 @@
+import { runWorkersAi } from "@r_masseater/workers-tracing/workers-ai";
 import { env } from "cloudflare:workers";
 import { Effect, Layer, Option, Schedule, Schema, String } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
@@ -28,7 +29,7 @@ const taggedError = Schema.TaggedError;
 class DescribeError extends taggedError<DescribeError, { readonly brand: unique symbol }>()(
   "DescribeError",
   {
-    stage: Schema.Literals(["budget", "fetch", "model"]),
+    stage: Schema.Literals(["budget", "capacity", "fetch", "model"]),
     reason: Schema.String,
   },
 ) {}
@@ -72,8 +73,9 @@ const reserveNeurons = spendNeurons("live", RESERVED_NEURONS).pipe(
 );
 
 const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, DescribeError> =>
-  Effect.tryPromise({
-    try: () =>
+  runWorkersAi({
+    label: "image description",
+    call: (): Promise<GemmaOutput> =>
       env.AI.run(DESCRIBE_MODEL, {
         messages: [
           {
@@ -87,9 +89,14 @@ const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, De
         max_tokens: MAX_TOKENS,
         chat_template_kwargs: { enable_thinking: false },
       }),
-    catch: (cause) => DescribeError.make({ stage: "model", reason: reasonOf(cause) }),
   }).pipe(
-    Effect.tap((output: GemmaOutput) => settleGemma({ output, reserved: RESERVED_NEURONS })),
+    Effect.mapError(({ cause, outOfCapacity }) => {
+      if (outOfCapacity) {
+        return DescribeError.make({ stage: "capacity", reason: reasonOf(cause) });
+      }
+      return DescribeError.make({ stage: "model", reason: reasonOf(cause) });
+    }),
+    Effect.tap((output) => settleGemma({ output, reserved: RESERVED_NEURONS })),
     Effect.map((output) =>
       Option.match(gemmaText(output), { onNone: () => "", onSome: String.trim }),
     ),
@@ -103,7 +110,7 @@ const describeWithClient = (
     Effect.retry({
       schedule: Schedule.exponential(RETRY_BASE),
       times: RETRY_TIMES,
-      while: ({ stage }) => stage !== "budget",
+      while: ({ stage }) => stage !== "budget" && stage !== "capacity",
     }),
     Effect.map(Option.liftPredicate(String.isNonEmpty)),
     Effect.catchTag("DescribeError", ({ stage, reason }) =>

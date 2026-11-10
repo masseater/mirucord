@@ -1,3 +1,4 @@
+import { restrictedSyntax as unguardedWorkersAi } from "@r_masseater/workers-tracing/oxlint";
 import type { OxlintOverride } from "vite-plus/lint";
 
 const BRAND_WORDS = "/[Mm]irucord|ミル/";
@@ -12,6 +13,7 @@ const restrictedSyntaxOverrides: readonly OxlintOverride[] = [
         { selector: `Literal[value=${BRAND_WORDS}]`, message: BRAND_MESSAGE },
         { selector: `TemplateElement[value.raw=${BRAND_WORDS}]`, message: BRAND_MESSAGE },
         { selector: `JSXText[value=${BRAND_WORDS}]`, message: BRAND_MESSAGE },
+        ...unguardedWorkersAi,
       ],
     },
   },
@@ -21,7 +23,7 @@ const restrictedSyntaxOverrides: readonly OxlintOverride[] = [
       "apps/web/src/shared/config/site.ts",
       "apps/web/src/shared/crypto/keyring.server.ts",
     ],
-    rules: { "eslint-js/no-restricted-syntax": "off" },
+    rules: { "eslint-js/no-restricted-syntax": ["error", ...unguardedWorkersAi] },
   },
   {
     files: ["**/alchemy.*.ts"],

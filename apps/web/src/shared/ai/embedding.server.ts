@@ -1,3 +1,4 @@
+import { runWorkersAi, WorkersAiError } from "@r_masseater/workers-tracing/workers-ai";
 import { env } from "cloudflare:workers";
 import { Array, Effect, Option, pipe, Schedule, Schema, String as Str } from "effect";
 
@@ -28,6 +29,10 @@ type Embedded =
   | Readonly<{ status: "embedded"; vectors: readonly Quantized[] }>
   | Readonly<{ status: "over-budget" }>;
 
+const isWorkersAiError = Schema.is(WorkersAiError);
+
+const isOutOfCapacity = (cause: unknown): boolean => isWorkersAiError(cause) && cause.outOfCapacity;
+
 const clip = (text: string): string => pipe(text, Str.slice(CLIP_START, MAX_CHARS));
 
 const estimateNeurons = (texts: Array.NonEmptyReadonlyArray<string>): number =>
@@ -45,8 +50,9 @@ const estimateNeurons = (texts: Array.NonEmptyReadonlyArray<string>): number =>
 const runModel = (
   texts: Array.NonEmptyReadonlyArray<string>,
 ): Effect.Effect<readonly (readonly number[])[], EmbeddingError> =>
-  Effect.tryPromise({
-    try: () =>
+  runWorkersAi({
+    label: "embedding",
+    call: () =>
       env.AI.run(EMBED_MODEL, {
         text: pipe(
           texts,
@@ -54,7 +60,6 @@ const runModel = (
         ),
         truncate_inputs: true,
       }),
-    catch: (cause) => EmbeddingError.make({ cause }),
   }).pipe(
     Effect.flatMap((output) =>
       Effect.fromOption(
@@ -76,10 +81,17 @@ const runModel = (
         ),
       ),
     ),
-    Effect.mapError((cause) =>
-      EmbeddingError.make({ cause: `${EMBED_MODEL} returned no embeddings: ${String(cause)}` }),
-    ),
-    Effect.retry({ schedule: Schedule.exponential(RETRY_BASE), times: RETRY_TIMES }),
+    Effect.mapError((cause) => {
+      if (isWorkersAiError(cause)) {
+        return EmbeddingError.make({ cause });
+      }
+      return EmbeddingError.make({ cause: `${EMBED_MODEL} returned no embeddings` });
+    }),
+    Effect.retry({
+      schedule: Schedule.exponential(RETRY_BASE),
+      times: RETRY_TIMES,
+      while: ({ cause }) => !isOutOfCapacity(cause),
+    }),
   );
 
 const embedWithin = Effect.fn("embedTexts")(function* embedWithin(

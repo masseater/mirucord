@@ -310,8 +310,8 @@ catalogs:
       specifier: 1.23.0
       version: 1.23.0
     '@r_masseater/workers-tracing':
-      specifier: 0.1.1
-      version: 0.1.1
+      specifier: 0.1.4
+      version: 0.1.4
     '@tanstack/react-query':
       specifier: 5.107.1
       version: 5.107.1
@@ -397,7 +397,7 @@ importers:
         version: 0.2.0(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(redis@6.2.1(@opentelemetry/api@1.10.0))(supports-color@7.2.0)(vite-plus@1.5.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.4(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
-        version: 0.1.1(6fca52948fb46ad7af6294bc678961ff)
+        version: 0.1.4(6fca52948fb46ad7af6294bc678961ff)
       '@shadcn/lint':
         specifier: 'catalog:'
         version: 0.2.5(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))
@@ -543,7 +543,7 @@ importers:
         version: 1.23.0(@openfeature/core@1.12.0)
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
-        version: 0.1.1(6fca52948fb46ad7af6294bc678961ff)
+        version: 0.1.4(6fca52948fb46ad7af6294bc678961ff)
       '@repo/ingest-util-gateway-contract':
         specifier: workspace:*
         version: link:../../libs/ingest/util-gateway-contract
@@ -3329,8 +3329,8 @@ packages:
       vite: '*'
       vite-plus: '>=1.5.0'
 
-  '@r_masseater/workers-tracing@0.1.1':
-    resolution: {integrity: sha512-7SVbCiwn+hGKdwBMAYQkk8UalDBmL+Mt1Dm3/uLevD+/Yc8F8XdSHfMFi/0ttSbs8a1Xc3KJOVFVEHU3d7WG7A==}
+  '@r_masseater/workers-tracing@0.1.4':
+    resolution: {integrity: sha512-VAhV1Udb3t9eXulAEFYhzd9rRJR8+y6TMavnEAq8WbWpLB/3D6dukVGuQ5OA/eFQKApXEBVXhL2cQsCn/tbEAg==}
     engines: {node: '>=26'}
     hasBin: true
     peerDependencies:
@@ -11651,7 +11651,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@r_masseater/workers-tracing@0.1.1(6fca52948fb46ad7af6294bc678961ff)':
+  '@r_masseater/workers-tracing@0.1.4(6fca52948fb46ad7af6294bc678961ff)':
     dependencies:
       '@distilled.cloud/cloudflare': 1.0.0-rc.18(effect@4.1.2)
       '@effect/platform-node': 4.1.2(effect@4.1.2)(redis@6.2.1(@opentelemetry/api@1.10.0))

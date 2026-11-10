@@ -1,3 +1,4 @@
+import { runWorkersAi } from "@r_masseater/workers-tracing/workers-ai";
 import { env } from "cloudflare:workers";
 import { Effect, Option, pipe, String } from "effect";
 
@@ -22,13 +23,16 @@ const promptOf = ({ label, note }: Hedged): string =>
 ${note}`;
 
 const rewrite = (hedged: Hedged): Effect.Effect<string> =>
-  Effect.promise((): Promise<GemmaOutput> =>
-    env.AI.run(GEMMA_MODEL, {
-      messages: [{ role: "user", content: promptOf(hedged) }],
-      max_tokens: MAX_TOKENS,
-      chat_template_kwargs: { enable_thinking: false },
-    }),
-  ).pipe(
+  runWorkersAi({
+    label: `narrowed phrase note: ${hedged.label}`,
+    call: (): Promise<GemmaOutput> =>
+      env.AI.run(GEMMA_MODEL, {
+        messages: [{ role: "user", content: promptOf(hedged) }],
+        max_tokens: MAX_TOKENS,
+        chat_template_kwargs: { enable_thinking: false },
+      }),
+  }).pipe(
+    Effect.orDie,
     Effect.tap((output) => settleGemma({ output, reserved: RESERVED_NEURONS })),
     Effect.map((output) =>
       gemmaText(output).pipe(

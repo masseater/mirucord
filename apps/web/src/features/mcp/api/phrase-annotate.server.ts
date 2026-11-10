@@ -1,3 +1,4 @@
+import { runWorkersAi } from "@r_masseater/workers-tracing/workers-ai";
 import { env } from "cloudflare:workers";
 import { Array, Effect, Layer, Option, pipe, Schema, String } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
@@ -190,14 +191,16 @@ const answerOf = (output: GemmaOutput): Option.Option<Answered> =>
     Option.flatMap(([json]) => decodeAnswer(json)),
   );
 
-const askModel = (prompt: string, image: Option.Option<Image>): Effect.Effect<GemmaOutput> =>
-  Effect.promise((): Promise<GemmaOutput> =>
-    env.AI.run(GEMMA_MODEL, {
-      messages: [{ role: "user", content: [...contentOf(prompt, image)] }],
-      max_tokens: MAX_TOKENS,
-      chat_template_kwargs: { enable_thinking: false },
-    }),
-  ).pipe(Effect.withSpan("annotatePhrase"));
+const askModel = (input: NoteInput, image: Option.Option<Image>): Effect.Effect<GemmaOutput> =>
+  runWorkersAi({
+    label: `phrase note: ${input.label.label}`,
+    call: (): Promise<GemmaOutput> =>
+      env.AI.run(GEMMA_MODEL, {
+        messages: [{ role: "user", content: [...contentOf(promptOf(input), image)] }],
+        max_tokens: MAX_TOKENS,
+        chat_template_kwargs: { enable_thinking: false },
+      }),
+  }).pipe(Effect.orDie, Effect.withSpan("annotatePhrase"));
 
 const namesIn = (input: NoteInput): readonly string[] =>
   pipe(
@@ -230,7 +233,7 @@ const annotatePhrase = (input: NoteInput): Effect.Effect<Option.Option<Note>> =>
           onNone: () => Effect.succeedNone,
           onSome: () =>
             emojiImage(input.label).pipe(
-              Effect.flatMap((image) => askModel(promptOf(input), image)),
+              Effect.flatMap((image) => askModel(input, image)),
               Effect.tap((output) => settleGemma({ output, reserved: RESERVED_NEURONS })),
               Effect.flatMap((output) =>
                 Option.match(answerOf(output), {

@@ -13,7 +13,7 @@ catalog:
   "@r_masseater/vite-plus-adopt": 0.3.3
   oxlint-plugin-eslint: 1.92.0
   "@ast-grep/cli": 0.51.1
-  "@cloudflare/workers-types": 5.20261107.1
+  "@cloudflare/workers-types": 5.20261108.1
   "@effect/platform-node": 4.1.2
   "@shadcn/lint": 0.2.5
   "@r_masseater/oxlint-plugin-decision": 0.1.2
@@ -32,11 +32,11 @@ catalog:
   "@tanstack/intent": 0.5.6
   "@modelcontextprotocol/server": 2.4.0
   "@sapphire/bitfield": 1.2.4
-  discord-api-types: 0.38.57
+  discord-api-types: 0.38.58
   "@better-auth/mcp": 1.7.18
-  jose: 6.2.15
+  jose: 6.2.16
   "@better-auth/oauth-provider": 1.7.18
-  simple-icons: 16.36.0
+  simple-icons: 16.37.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
   "@cloudflare/vitest-plugin": 1.6.0
@@ -60,7 +60,7 @@ catalogs:
     "@effect/vitest": 4.1.2
     "@openfeature/server-sdk": 1.23.0
     "@tanstack/react-query": 5.107.1
-    "@tanstack/react-start": 1.169.4
+    "@tanstack/react-start": 1.169.5
     "@alchemy.run/cloudflare": 2.0.0-beta.85
     "@alchemy.run/fly": 2.0.0-beta.85
     "@alchemy.run/github": 2.0.0-beta.85
@@ -71,7 +71,7 @@ catalogs:
     effect: 4.1.2
     elysia: 1.4.31
     fallow: 3.41.0
-    renovate: 44.222.2
+    renovate: 44.222.4
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
     vite-plus: 1.5.0

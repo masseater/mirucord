@@ -21,8 +21,8 @@ type ScenarioGuild = Readonly<{
   consented: boolean;
   channels: readonly Readonly<{
     id: string;
-    botAccess: "readable" | "hidden";
-    backfill?: "pending" | "done";
+    botAccess: (typeof channel.$inferSelect)["botAccess"];
+    backfill?: (typeof channel.$inferSelect)["backfill"];
   }>[];
 }>;
 

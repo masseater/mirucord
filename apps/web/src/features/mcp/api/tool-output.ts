@@ -1,8 +1,9 @@
 import { Schema } from "effect";
 
+import { INGEST_STATUSES } from "#/features/mcp/model/ingest-status";
 import { MessageAttachment, MessageEmbed, MessagePoll } from "#/shared/discord";
 
-const Ingest = Schema.Literals(["notConsented", "waiting", "backfilling", "done", "empty"]);
+const Ingest = Schema.Literals(INGEST_STATUSES);
 const Mention = Schema.Struct({ id: Schema.String, name: Schema.NullOr(Schema.String) });
 const Message = Schema.Struct({
   id: Schema.String,

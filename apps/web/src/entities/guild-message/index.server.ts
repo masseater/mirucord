@@ -21,7 +21,7 @@ export type {
   StoredRow,
 } from "./api/store-types";
 export { labelOf, PHRASE_WINDOW_DAYS, phraseHashes } from "./lib/phrases.server";
-export type { Phrase, PhraseKind } from "./lib/phrases.server";
+export type { Phrase, PhraseKind, PhraseSource } from "./lib/phrases.server";
 export {
   containsQuery,
   indexTokens,

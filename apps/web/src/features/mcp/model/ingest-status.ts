@@ -1,12 +1,16 @@
 import { Array, Option, pipe } from "effect";
 
+import type { Backfill } from "#/shared/db";
+
 type Consent = "consented" | "notConsented";
 
-type IngestStatus = "notConsented" | "waiting" | "backfilling" | "done" | "empty";
+const INGEST_STATUSES = ["notConsented", "waiting", "backfilling", "done", "empty"] as const;
+
+type IngestStatus = (typeof INGEST_STATUSES)[number];
 
 type ChannelProgress = Readonly<{
   newest: Option.Option<string>;
-  backfill: "pending" | "done";
+  backfill: Backfill;
 }>;
 
 const READY: ReadonlySet<IngestStatus> = new Set(["done", "empty"]);
@@ -82,5 +86,5 @@ const ingestStatus = (request: StatusRequest): IngestStatus => {
 
 const isReady = (status: IngestStatus): boolean => READY.has(status);
 
-export { ingestStatus, isReady };
+export { INGEST_STATUSES, ingestStatus, isReady };
 export type { ChannelProgress, Consent, IngestStatus, StatusRequest };

@@ -1,12 +1,13 @@
 import type { GatewayJob, ReactionChange, ReactionsJob } from "@repo/ingest-util-gateway-contract";
 import { DiscordEmojiSchema as Emoji, emojiKeyOf } from "@repo/shared-util-discord";
 import { Discord } from "dfx";
+import type { GatewayMessagePollVoteDispatchData } from "discord-api-types/v10";
 import { Array, Match, Option, Schema } from "effect";
 
 import { mergeByGuild } from "./guild-batch";
 
 const Target = {
-  guild_id: Schema.optional(Schema.String),
+  guild_id: Schema.optionalKey(Schema.String),
   channel_id: Schema.String,
   message_id: Schema.String,
 };
@@ -21,7 +22,11 @@ const ReactionEvent = Schema.Struct({
 
 const ClearEvent = Schema.Struct({ ...Target, emoji: Schema.optional(Emoji) });
 
-const VoteEvent = Schema.Struct({ ...Target, user_id: Schema.String, answer_id: Schema.Int });
+const VoteEvent = Schema.Struct({
+  ...Target,
+  user_id: Schema.String,
+  answer_id: Schema.Int,
+}) satisfies Schema.Decoder<GatewayMessagePollVoteDispatchData>;
 
 const decodeReaction = Schema.decodeOption(ReactionEvent);
 const decodeClear = Schema.decodeOption(ClearEvent);

@@ -19,4 +19,4 @@ const voiceSession = sqliteTable(
   ],
 );
 
-export { voiceSession };
+export { PRECISIONS, voiceSession };

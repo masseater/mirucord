@@ -91,7 +91,8 @@ type GuildIngest = "awaiting" | "withdrawing" | "waiting" | "backfilling" | "don
 
 type GuildConsent = "awaiting" | "granted" | "withdrawing";
 
-const IN_PROGRESS: ReadonlySet<ChannelIngest> = new Set(["waiting", "backfilling"]);
+const INGESTING = ["waiting", "backfilling"] as const satisfies readonly GuildIngest[];
+const IN_PROGRESS: ReadonlySet<ChannelIngest> = new Set(INGESTING);
 const COUNTED: ReadonlySet<ChannelIngest> = new Set(["waiting", "backfilling", "done"]);
 
 const grantedIngest = (channels: readonly ChannelIngest[]): GuildIngest => {
@@ -144,5 +145,5 @@ const ingestOf: {
   (scope: ConsentScope, row: IngestRow): ChannelIngest;
 } = Function.dual(DATA_FIRST_ARITY, ingestOfDataFirst);
 
-export { forumRowOf, guildIngestOf, ingestOf, isNoticeCandidate, SCOPE_OF_CONSENT };
+export { forumRowOf, guildIngestOf, INGESTING, ingestOf, isNoticeCandidate, SCOPE_OF_CONSENT };
 export type { ChannelIngest, GuildConsent, GuildIngest, IngestRow };

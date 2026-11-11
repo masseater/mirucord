@@ -4,6 +4,7 @@ import { Array, Duration, Option, pipe, String as Str } from "effect";
 import { guildMessage, SEALED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
 import { phraseNote } from "#/entities/guild-message/model/phrase-note.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
+import type { MessageSide } from "#/shared/discord/index.server";
 
 import { PhraseStore } from "./phrase-store.server";
 import type {
@@ -208,7 +209,7 @@ abstract class NoteStore extends PhraseStore {
     );
   }
 
-  private neighbours(use: SealedMessage, side: "before" | "after"): readonly SealedMessage[] {
+  private neighbours(use: SealedMessage, side: MessageSide): readonly SealedMessage[] {
     const sameChannel = eq(guildMessage.channelId, use.channelId);
     if (side === "before") {
       return this.db

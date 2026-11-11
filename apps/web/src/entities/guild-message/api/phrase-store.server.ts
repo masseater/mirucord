@@ -11,6 +11,7 @@ import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
 import { MessageStore } from "./message-store.server";
 import type {
+  PhraseColumn,
   PhraseContext,
   PhraseExample,
   PhraseStatsLookup,
@@ -115,10 +116,7 @@ abstract class PhraseStore extends MessageStore {
     this.saveLedger({ ...ledger, generation: ledger.generation + NEXT_GENERATION });
   }
 
-  protected override forgetPhrases(
-    column: "messageId" | "authorId" | "channelId",
-    values: readonly string[],
-  ): void {
+  protected override forgetPhrases(column: PhraseColumn, values: readonly string[]): void {
     this.forgetStats();
     for (const chunk of Array.chunksOf(values, BOUND_LIMIT)) {
       this.db

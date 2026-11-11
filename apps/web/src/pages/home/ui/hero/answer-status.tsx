@@ -1,13 +1,13 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
+import { TYPING_DOTS } from "#/pages/home/ui/common/typing-dots";
 import { Mascot } from "#/shared/brand";
 import { MASCOT_NAME } from "#/shared/config";
 
 const SEARCHING = `${MASCOT_NAME}がさがしてるよ`;
 const DONE = `${MASCOT_NAME}が見つけてきたよ`;
 const DONE_MARK = "✓";
-const DOTS = ["a", "b", "c"] as const;
 
 const AnswerStatus = (): ReactNode => (
   <p className="answer-status text-ink-soft grid text-xs font-bold">
@@ -15,7 +15,7 @@ const AnswerStatus = (): ReactNode => (
       <Mascot className="motion-safe:animate-wiggle size-6" />
       {SEARCHING}
       {pipe(
-        DOTS,
+        TYPING_DOTS,
         Array.map((dot) => (
           <span key={dot} className="bg-ink-soft size-1 rounded-full motion-safe:animate-pulse" />
         )),

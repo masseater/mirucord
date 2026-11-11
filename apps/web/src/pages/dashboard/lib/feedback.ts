@@ -1,10 +1,9 @@
+import type { MutationStatus } from "@tanstack/react-query";
 import { Option } from "effect";
 
 type Fix = "none" | "signIn" | "refresh";
 
 type Feedback = Readonly<{ tone: "error" | "busy" | "done"; text: string; fix: Fix }>;
-
-type MutationStatus = "idle" | "pending" | "error" | "success";
 
 const fixable =
   (fix: Fix) =>

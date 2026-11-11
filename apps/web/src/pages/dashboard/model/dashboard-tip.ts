@@ -1,11 +1,12 @@
 import { Array, pipe } from "effect";
 
+import { INGESTING } from "#/features/ingest";
 import type { GuildIngest } from "#/features/ingest/index.server";
 import type { ReadyDashboard } from "#/pages/dashboard/model/next-steps";
 
 const WITHDRAWING_TIP = "削除中だよ！";
 const INGESTING_TIP = "思い出を集めてるよ";
-const INGESTING: ReadonlySet<GuildIngest> = new Set(["waiting", "backfilling"]);
+const INGESTING_GUILDS: ReadonlySet<GuildIngest> = new Set(INGESTING);
 
 const tipFor = ({ name, guilds }: ReadyDashboard): string => {
   if (
@@ -19,7 +20,7 @@ const tipFor = ({ name, guilds }: ReadyDashboard): string => {
   if (
     pipe(
       guilds,
-      Array.some(({ ingest }) => INGESTING.has(ingest)),
+      Array.some(({ ingest }) => INGESTING_GUILDS.has(ingest)),
     )
   ) {
     return INGESTING_TIP;

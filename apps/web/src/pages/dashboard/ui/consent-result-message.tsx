@@ -1,3 +1,4 @@
+import type { MutationStatus } from "@tanstack/react-query";
 import { Option } from "effect";
 import type { ReactNode } from "react";
 
@@ -37,7 +38,7 @@ const ConsentResultMessage = ({
   status,
   result,
 }: Readonly<{
-  status: "idle" | "pending" | "success" | "error";
+  status: MutationStatus;
   result: Option.Option<Answer>;
 }>): ReactNode => <FeedbackLine feedback={consentFeedback(status, result)} />;
 

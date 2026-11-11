@@ -3,6 +3,8 @@ import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import type { Overwrite } from "#/shared/permissions";
 
+import { BACKFILLS, BOT_ACCESSES } from "./channel-state";
+
 const guild = sqliteTable("guild", {
   id: text().primaryKey(),
   name: text().notNull(),
@@ -40,12 +42,8 @@ const channel = sqliteTable(
     permissionOverwrites: text({ mode: "json" }).$type<readonly Overwrite[]>().notNull(),
     newestMessageId: text(),
     oldestMessageId: text(),
-    backfill: text({ enum: ["pending", "done"] })
-      .notNull()
-      .default("pending"),
-    botAccess: text({ enum: ["readable", "hidden"] })
-      .notNull()
-      .default("readable"),
+    backfill: text({ enum: BACKFILLS }).notNull().default("pending"),
+    botAccess: text({ enum: BOT_ACCESSES }).notNull().default("readable"),
     hiddenAt: integer(),
     botPost: text({ enum: ["allowed", "denied"] })
       .notNull()

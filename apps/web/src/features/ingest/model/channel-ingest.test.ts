@@ -10,7 +10,7 @@ const GRANTED: ConsentScope = { status: "granted" };
 const AWAITING: ConsentScope = { status: "awaiting" };
 const EMPTY = Option.getOrNull(Option.none<string>());
 
-const row = (botAccess: "readable" | "hidden", newest: string | null): IngestRow => ({
+const row = (botAccess: IngestRow["botAccess"], newest: string | null): IngestRow => ({
   newest,
   backfill: "pending",
   botAccess,

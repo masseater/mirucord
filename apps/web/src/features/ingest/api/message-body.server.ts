@@ -7,6 +7,7 @@ type Forwarded = NonNullable<DiscordMessage["message_snapshots"]>[number]["messa
 type DiscordAttachment = DiscordMessage["attachments"][number];
 type DiscordEmbed = DiscordMessage["embeds"][number];
 type StoredEmbed = MessageBody["embeds"][number];
+type MessageAuthor = Pick<MessageBody, "authorName" | "mentions" | "replyTo">;
 
 const forwardsOf = ({ message_snapshots }: DiscordMessage): readonly Forwarded[] =>
   pipe(
@@ -92,7 +93,7 @@ const bodyOf = ({
 }: Readonly<{
   incoming: DiscordMessage;
   attachments: MessageBody["attachments"];
-}>): Omit<MessageBody, "authorName" | "mentions" | "replyTo"> => ({
+}>): Omit<MessageBody, keyof MessageAuthor> => ({
   content: contentOf(incoming),
   attachments,
   embeds: embedsOf(incoming),
@@ -101,4 +102,4 @@ const bodyOf = ({
 });
 
 export { attachmentsOf, bodyOf, hasRichBody };
-export type { DiscordAttachment };
+export type { DiscordAttachment, MessageAuthor };

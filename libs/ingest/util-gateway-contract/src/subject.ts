@@ -4,12 +4,15 @@ type GuildJob = Extract<GatewayJob, Readonly<{ kind: "join" | "sync" | "leave" }
 
 type MemberJob = Extract<GatewayJob, Readonly<{ kind: "members" | "depart" }>>;
 
-type GuildWideJob = Extract<
-  GatewayJob,
-  Readonly<{
-    kind: "members" | "depart" | "voice" | "voiceSnapshot" | "reactions";
-  }>
->;
+const GUILD_WIDE_KINDS = [
+  "members",
+  "depart",
+  "voice",
+  "voiceSnapshot",
+  "reactions",
+] as const satisfies readonly GatewayJob["kind"][];
+
+type GuildWideJob = Extract<GatewayJob, Readonly<{ kind: (typeof GUILD_WIDE_KINDS)[number] }>>;
 
 const isGuildJob = (job: GatewayJob): job is GuildJob =>
   job.kind === "join" || job.kind === "sync" || job.kind === "leave";
@@ -22,15 +25,9 @@ type VoiceJobs = Extract<GatewayJob, Readonly<{ kind: "voice" | "voiceSnapshot" 
 const isVoiceJob = (job: GatewayJob): job is VoiceJobs =>
   job.kind === "voice" || job.kind === "voiceSnapshot";
 
-const GUILD_WIDE_KINDS: ReadonlySet<GatewayJob["kind"]> = new Set([
-  "members",
-  "depart",
-  "voice",
-  "voiceSnapshot",
-  "reactions",
-]);
+const GUILD_WIDE: ReadonlySet<GatewayJob["kind"]> = new Set(GUILD_WIDE_KINDS);
 
-const isGuildWideJob = (job: GatewayJob): job is GuildWideJob => GUILD_WIDE_KINDS.has(job.kind);
+const isGuildWideJob = (job: GatewayJob): job is GuildWideJob => GUILD_WIDE.has(job.kind);
 
 const subjectOf = (job: GatewayJob): Readonly<Record<string, string>> => {
   if (job.kind === "resync") {

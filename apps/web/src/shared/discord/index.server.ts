@@ -14,7 +14,7 @@ export {
   NOT_FOUND,
   PAGE_SIZE,
 } from "./discord.server";
-export type { DiscordChannel, DiscordGuild, MessagePage } from "./discord.server";
+export type { DiscordChannel, DiscordGuild, MessagePage, MessageSide } from "./discord.server";
 export type {
   DiscordMember as DiscordGuildMember,
   DiscordMessage,

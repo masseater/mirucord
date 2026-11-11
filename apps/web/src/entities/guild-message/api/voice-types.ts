@@ -1,4 +1,6 @@
-type VoicePrecision = "exact" | "noLaterThan";
+import type { PRECISIONS } from "#/entities/guild-message/model/voice-session.schema";
+
+type VoicePrecision = (typeof PRECISIONS)[number];
 
 type VoiceMoment = Readonly<{ at: number; precision: VoicePrecision }>;
 

@@ -25,7 +25,7 @@ mirucord は、Discord のサーバーを読むだけの MCP サーバーをホ�
 
 ## コマンド
 
-- `vp run verify` はルートの `vite.config.ts` のタスクで、`vp check` に加えてテスト・vpa（betterleaks・commitlint・actionlint・zizmor・steiger・textlint）・yomiyasu・drizzle の差分検査・fallow・audit などを流す。検査の設定は `checks.config.ts` にある。
+- `vp run verify` はルートの `vite.config.ts` のタスクで、`vp check` に加えてテスト・vpa（betterleaks・commitlint・actionlint・zizmor・steiger・textlint と yomiyasu のルール）・drizzle の差分検査・fallow・msch・audit などを流す。検査の設定は `checks.config.ts` にある。
 - 1 つのテストだけを流すときは、そのワークスペースで `vp exec vp test run <ファイル>` を実行する。`apps/web` のテストは `@cloudflare/vitest-plugin` の上で D1・R2・Queue・Durable Object をそろえて動く。
 
 ## 想定規模と性能要件
@@ -70,7 +70,6 @@ docs/ に新しいファイルを増やさない。既存のファイルを更�
 
 部品だけを先に入れず、使う側と同じ PR にする。
 
-クラウドのセッションでは、`~/.config/uv/uv.toml` に `system-certs = true` を書いてから verify する。
 `mirucord-ci` スタックの適用など、GitHub Actions の Secrets API と Cloudflare の Global API Key が要る作業は、ユーザーの Mac の Remote Control で行う。
 
 ## テンプレート

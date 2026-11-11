@@ -1,10 +1,11 @@
+import type { APIAttachment } from "discord-api-types/v10";
 import { Schema } from "effect";
 
 const MessageAttachment = Schema.Struct({
   filename: Schema.String,
   url: Schema.String,
-  description: Schema.optional(Schema.String),
-});
+  description: Schema.optionalKey(Schema.String),
+}) satisfies Schema.Decoder<Pick<APIAttachment, "filename" | "url" | "description">>;
 
 const MessageEmbed = Schema.Struct({
   title: Schema.optional(Schema.String),

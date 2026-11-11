@@ -5,6 +5,7 @@ import { Array, Boolean, DateTime, Effect, Number, Option } from "effect";
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { openGuildKeys } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
+import type { Backfill } from "#/shared/db/index.server";
 import { FORBIDDEN } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
@@ -23,8 +24,6 @@ import { removeDeleted } from "./sweep-history.server";
 
 const MAX_PAGES_PER_RUN = 5;
 const LAST_PAGE = 1;
-
-type Backfill = "pending" | "done";
 
 type History = Readonly<{ oldest: Option.Option<string>; backfill: Backfill }>;
 

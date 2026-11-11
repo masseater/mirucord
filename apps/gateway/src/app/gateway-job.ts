@@ -3,6 +3,7 @@ import type { GatewayJob, GuildJob } from "@repo/ingest-util-gateway-contract";
 import { DiscordMessageSchema } from "@repo/shared-util-discord";
 import type { DiscordMessage } from "@repo/shared-util-discord";
 import { Discord } from "dfx";
+import type { GatewayMessageDeleteDispatchData } from "discord-api-types/v10";
 import { Array, Match, Option, pipe, Record, Schema } from "effect";
 
 import { ACTIVITY_JOBS, mergeActivityJobs } from "./activity-job";
@@ -23,7 +24,7 @@ const MessageEvent = Schema.Struct({
   id: Schema.String,
   channel_id: Schema.String,
   guild_id: Schema.optionalKey(Schema.String),
-});
+}) satisfies Schema.Decoder<GatewayMessageDeleteDispatchData>;
 
 const BulkDeleteEvent = Schema.Struct({
   ids: Schema.Array(Schema.String),
@@ -40,12 +41,11 @@ const isDispatch = (payload: GatewayPayload): payload is Discord.GatewayDispatch
 
 type Place = Readonly<{ guildId: string; channelId: string }>;
 
-const placeOf = ({
-  channel_id,
-  guild_id,
-}: Readonly<
+type PlaceSource = Readonly<
   Pick<Discord.GatewayMessageCreateDispatchData, "channel_id" | "guild_id">
->): Option.Option<Place> =>
+>;
+
+const placeOf = ({ channel_id, guild_id }: PlaceSource): Option.Option<Place> =>
   Option.fromUndefinedOr(guild_id).pipe(
     Option.map((guildId) => ({ guildId, channelId: channel_id })),
   );
@@ -67,7 +67,7 @@ const storeOrRefreshJob = (
   );
 
 const forgetOf = (
-  event: Readonly<Pick<Discord.GatewayMessageCreateDispatchData, "channel_id" | "guild_id">>,
+  event: PlaceSource,
   messageIds: readonly [string, ...string[]],
 ): Option.Option<GatewayJob> =>
   placeOf(event).pipe(

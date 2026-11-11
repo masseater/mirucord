@@ -241,7 +241,7 @@ export default defineConfig({
           "test",
           "syncpack",
           "vpa",
-          "yomiyasu",
+          "msch",
           "renovate",
           "actions-lint",
           "db-check-all",
@@ -250,6 +250,12 @@ export default defineConfig({
         ],
       },
       test: "vp test run",
+      msch: {
+        command: "msch",
+        cache: {
+          untrackedEnv: ["HTTPS_PROXY", "https_proxy", "NO_PROXY", "no_proxy", "SSL_CERT_FILE"],
+        },
+      },
       syncpack: "syncpack lint",
       "db-check-all": "vp run -r db:check",
       audit: {

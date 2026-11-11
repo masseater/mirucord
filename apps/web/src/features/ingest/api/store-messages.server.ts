@@ -7,7 +7,11 @@ import {
   phraseHashes,
   searchableTexts,
 } from "#/entities/guild-message/index.server";
-import type { IndexedMessage, PhraseState } from "#/entities/guild-message/index.server";
+import type {
+  IndexedMessage,
+  PhraseSource,
+  PhraseState,
+} from "#/entities/guild-message/index.server";
 import type { IngestJob } from "#/features/ingest/model/ingest-job";
 import { sealMessage } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
@@ -16,7 +20,7 @@ import type { DiscordMessage } from "#/shared/discord/index.server";
 import { DESCRIBE_MODEL, describeImage, isDescribable } from "./describe-image.server";
 import type { ImageSource } from "./describe-image.server";
 import { attachmentsOf, bodyOf, hasRichBody } from "./message-body.server";
-import type { DiscordAttachment } from "./message-body.server";
+import type { DiscordAttachment, MessageAuthor } from "./message-body.server";
 import { findStored } from "./message-rows.server";
 import type { StoredMessage } from "./message-rows.server";
 
@@ -52,7 +56,7 @@ const isAutomated = ({ author, webhook_id }: DiscordMessage): boolean =>
 const phrasesOf = (
   { searchKey, commonKey }: StoreTarget,
   incoming: DiscordMessage,
-  body: Pick<MessageBody, "content" | "stickers">,
+  body: PhraseSource,
 ): Effect.Effect<PhraseState> =>
   Effect.map(
     Boolean.match(isAutomated(incoming), {
@@ -80,9 +84,7 @@ const replyToOf = ({ type, message_reference }: DiscordMessage): string | undefi
     Option.getOrUndefined,
   );
 
-const authorOf = (
-  incoming: DiscordMessage,
-): Pick<MessageBody, "authorName" | "mentions" | "replyTo"> => ({
+const authorOf = (incoming: DiscordMessage): MessageAuthor => ({
   authorName: nameOf(incoming.author),
   mentions: mentionsOf(incoming),
   replyTo: replyToOf(incoming),

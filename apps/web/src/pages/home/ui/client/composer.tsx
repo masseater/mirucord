@@ -1,12 +1,13 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
+import { TYPING_DOTS } from "#/pages/home/ui/common/typing-dots";
+
 import { ComposerHint } from "./composer-hint";
 
 const PLUS = "+";
 const TYPER = "ゆい";
 const TYPING = "が入力中…";
-const DOTS = ["a", "b", "c"] as const;
 
 const Composer = (): ReactNode => (
   <div aria-hidden="true" className="bg-dc-chat sticky bottom-0 px-4 pt-1">
@@ -18,7 +19,7 @@ const Composer = (): ReactNode => (
     </div>
     <p className="composer-typing text-dc-muted flex h-6 items-center gap-0.5 text-xs">
       {pipe(
-        DOTS,
+        TYPING_DOTS,
         Array.map((dot) => (
           <span key={dot} className="bg-dc-text size-1.5 rounded-full motion-safe:animate-pulse" />
         )),

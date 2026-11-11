@@ -1,6 +1,7 @@
 import { DiscordMessageSchema } from "@repo/shared-util-discord";
 import type { DiscordMessage } from "@repo/shared-util-discord";
 import { ChannelType, OverwriteType } from "discord-api-types/v10";
+import type { APIOverwrite, APIRole } from "discord-api-types/v10";
 import { Array, Effect, Function, Option, Schema } from "effect";
 
 import { decodeBody, withDiscord } from "./client.server";
@@ -17,7 +18,13 @@ const PermissionOverwrite = Schema.Struct({
   type: Schema.Enum(OverwriteType),
   allow: Schema.String,
   deny: Schema.String,
-});
+}) satisfies Schema.Decoder<APIOverwrite>;
+
+const Role = Schema.Struct({
+  id: Schema.String,
+  name: Schema.String,
+  permissions: Schema.String,
+}) satisfies Schema.Decoder<Pick<APIRole, "id" | "name" | "permissions">>;
 
 const Guild = Schema.Struct({
   id: Schema.String,
@@ -25,9 +32,7 @@ const Guild = Schema.Struct({
   icon: Schema.optional(Schema.NullOr(Schema.String)),
   owner_id: Schema.String,
   system_channel_id: Schema.optional(Schema.NullOr(Schema.String)),
-  roles: Schema.Array(
-    Schema.Struct({ id: Schema.String, name: Schema.String, permissions: Schema.String }),
-  ),
+  roles: Schema.Array(Role),
 });
 
 const PartialGuild = Schema.Struct({ id: Schema.String });
@@ -148,9 +153,11 @@ const listArchivedThreads = (
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
   listArchivedThreadsBefore(channelId, Option.none());
 
+type MessageSide = "after" | "before";
+
 type MessagePage =
   | Readonly<{ direction: "latest" }>
-  | Readonly<{ direction: "after" | "before"; cursor: string }>;
+  | Readonly<{ direction: MessageSide; cursor: string }>;
 
 const pageParams = (
   page: MessagePage,
@@ -243,4 +250,4 @@ export {
   NOT_FOUND,
   PAGE_SIZE,
 };
-export type { DiscordChannel, DiscordGuild, DiscordMember, MessagePage };
+export type { DiscordChannel, DiscordGuild, DiscordMember, MessagePage, MessageSide };

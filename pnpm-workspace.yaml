@@ -8,25 +8,25 @@ packages:
 catalogMode: prefer
 
 catalog:
-  "@r_masseater/oxlint-typed-rules": 0.1.3
+  "@r_masseater/oxlint-typed-rules": 0.1.6
   "@r_masseater/msch": 0.3.0
   "@r_masseater/vite-plus-adopt": 0.3.3
-  oxlint-plugin-eslint: 1.92.0
+  oxlint-plugin-eslint: 1.93.0
   "@ast-grep/cli": 0.51.1
-  "@cloudflare/workers-types": 5.20261108.1
+  "@cloudflare/workers-types": 5.20261109.1
   "@effect/platform-node": 4.1.2
   "@shadcn/lint": 0.2.5
-  "@r_masseater/oxlint-plugin-decision": 0.1.2
+  "@r_masseater/oxlint-plugin-decision": 0.1.6
   "@types/node": 26.6.6
   eslint-plugin-react-hooks: 7.1.1
   syncpack: 15.3.3
-  vite: npm:@voidzero-dev/vite-plus-core@1.5.0
+  vite: npm:@voidzero-dev/vite-plus-core@1.5.1
   eslint-plugin-no-comments: 1.2.1
   eslint-plugin-baseline-js: 0.7.7
   "@html-eslint/eslint-plugin-react": 0.68.0
   "@commitlint/config-conventional": 21.2.4
   "@tanstack/react-query-devtools": 5.107.1
-  "@vitejs/plugin-react": 6.2.1
+  "@vitejs/plugin-react": 6.3.0
   "@vitejs/plugin-rsc": 0.5.39
   skills: 1.7.6
   "@tanstack/intent": 0.5.6
@@ -34,12 +34,12 @@ catalog:
   "@sapphire/bitfield": 1.2.4
   discord-api-types: 0.38.58
   "@better-auth/mcp": 1.7.18
-  jose: 6.2.16
+  jose: 6.2.17
   "@better-auth/oauth-provider": 1.7.18
   simple-icons: 16.37.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
-  "@cloudflare/vitest-plugin": 1.6.0
+  "@cloudflare/vitest-plugin": 1.6.1
   msw: 3.0.4
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
@@ -71,10 +71,10 @@ catalogs:
     effect: 4.1.2
     elysia: 1.4.31
     fallow: 3.41.0
-    renovate: 44.222.4
+    renovate: 44.224.1
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
-    vite-plus: 1.5.0
+    vite-plus: 1.5.1
 overrides:
   "steiger>@feature-sliced/steiger-plugin": "-"
   "capnp-es>typescript": "-"

@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@alchemy.run/cloudflare": "catalog:stack",
-    "@better-auth/drizzle-adapter": "1.7.18",
+    "@better-auth/drizzle-adapter": "1.7.20",
     "@better-auth/mcp": "catalog:",
     "@better-auth/oauth-provider": "catalog:",
     "@effect/atom-react": "catalog:stack",
@@ -62,7 +62,7 @@
     "@vitejs/plugin-react": "catalog:",
     "@vitejs/plugin-rsc": "catalog:",
     "alchemy": "catalog:stack",
-    "auth": "1.7.18",
+    "auth": "1.7.20",
     "drizzle-kit": "catalog:stack",
     "msw": "catalog:",
     "type-fest": "catalog:",

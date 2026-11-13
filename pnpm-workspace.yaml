@@ -79,6 +79,8 @@ overrides:
   "steiger>@feature-sliced/steiger-plugin": "-"
   "capnp-es>typescript": "-"
   vite@*: "catalog:"
+  effect: "catalog:stack"
+  "@effect/platform-node": "catalog:"
   eslint-plugin-react-hooks>zod-validation-error: ^5.0.0
   glob@>=9.0.0 <=14.0.1: ^14.0.2
   minimatch@<11.0.1: ^11.0.1

@@ -1,8 +1,8 @@
-diff --git a/dist/oauth-DUwhMVr_.d.mts b/dist/oauth-DUwhMVr_.d.mts
-index 3c2ba5d..87d52bb 100644
---- a/dist/oauth-DUwhMVr_.d.mts
-+++ b/dist/oauth-DUwhMVr_.d.mts
-@@ -775,9 +775,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+diff --git a/dist/oauth-D7QYRdb3.d.mts b/dist/oauth-D7QYRdb3.d.mts
+index 8ee8904..7f4d575 100644
+--- a/dist/oauth-D7QYRdb3.d.mts
++++ b/dist/oauth-D7QYRdb3.d.mts
+@@ -776,9 +776,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
              required: false;
              schema: {
                type: "string";
@@ -12,7 +12,7 @@ index 3c2ba5d..87d52bb 100644
              };
              description: string;
            } | {
-@@ -786,9 +783,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+@@ -787,9 +784,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
              required: true;
              schema: {
                type: "string";
@@ -22,7 +22,7 @@ index 3c2ba5d..87d52bb 100644
              };
              description: string;
            } | {
-@@ -798,8 +792,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+@@ -799,8 +793,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
              schema: {
                type: "string";
                format: string;
@@ -31,7 +31,7 @@ index 3c2ba5d..87d52bb 100644
              };
              description: string;
            } | {
-@@ -809,8 +801,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+@@ -810,8 +802,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
              schema: {
                type: "integer";
                minimum: number;
@@ -40,7 +40,7 @@ index 3c2ba5d..87d52bb 100644
              };
              description: string;
            } | {
-@@ -822,8 +812,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
+@@ -823,8 +813,6 @@ declare const oauthProvider: <O extends OAuthOptions<Scope[]>>(options: O) => {
                items: {
                  type: "string";
                };

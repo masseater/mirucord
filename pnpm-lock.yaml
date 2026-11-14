@@ -349,8 +349,8 @@ catalogs:
       specifier: 3.42.0
       version: 3.42.0
     renovate:
-      specifier: 44.232.1
-      version: 44.232.1
+      specifier: 44.234.0
+      version: 44.234.0
     tailwindcss:
       specifier: 4.3.5
       version: 4.3.5
@@ -398,7 +398,7 @@ importers:
         version: 0.68.0(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))
       '@masseater.dev/textlint-rule-yomiyasu':
         specifier: github:masseater/masseater.dev#path:/libs/textlint-rule-yomiyasu
-        version: https://codeload.github.com/masseater/masseater.dev/tar.gz/ce676b7d0a01ac417c5e022cdaceab07c1c3af33#path:/libs/textlint-rule-yomiyasu(effect@4.1.4)
+        version: https://codeload.github.com/masseater/masseater.dev/tar.gz/c92ee1c329e4d2235fd52b6b01272ee6e409ac5b#path:/libs/textlint-rule-yomiyasu(effect@4.1.4)
       '@r_masseater/msch':
         specifier: 'catalog:'
         version: 0.6.1(b91b55c26574df0dffae6ea5c68eedeb)
@@ -446,7 +446,7 @@ importers:
         version: 1.93.0
       renovate:
         specifier: catalog:stack
-        version: 44.232.1(supports-color@7.2.0)(typanion@3.14.0)
+        version: 44.234.0(supports-color@7.2.0)(typanion@3.14.0)
       skills:
         specifier: 'catalog:'
         version: 1.8.1
@@ -2449,8 +2449,8 @@ packages:
   '@loaderkit/resolve@1.0.6':
     resolution: {integrity: sha512-G8FdIoF5CypfwmD9rl8BXod5HDn8JqB0CCNBXDTaRZ+yRYhARrrSToX1zg1zy9jX3zLqigsELwhT4gNtkdQAUg==}
 
-  '@masseater.dev/textlint-rule-yomiyasu@https://codeload.github.com/masseater/masseater.dev/tar.gz/ce676b7d0a01ac417c5e022cdaceab07c1c3af33#path:/libs/textlint-rule-yomiyasu':
-    resolution: {gitHosted: true, integrity: sha512-CVag3WwEZ3Zx9MnAne0z7rCnJouVz1Pc3Nx9O6Y6CGUQzpYJkB/ZCu2JjJigLcS5ARYskYbqEgwszyuyhE3ouA==, path: /libs/textlint-rule-yomiyasu, tarball: https://codeload.github.com/masseater/masseater.dev/tar.gz/ce676b7d0a01ac417c5e022cdaceab07c1c3af33}
+  '@masseater.dev/textlint-rule-yomiyasu@https://codeload.github.com/masseater/masseater.dev/tar.gz/c92ee1c329e4d2235fd52b6b01272ee6e409ac5b#path:/libs/textlint-rule-yomiyasu':
+    resolution: {gitHosted: true, integrity: sha512-Ym3GMDNsGCY5H85VoSlZhgTRwWNYhhPGFSW3CaT5FdcrajY6LE6RSmWPZ8yZ1BaUKmJj1NYIRSxdPMx7XCuNLA==, path: /libs/textlint-rule-yomiyasu, tarball: https://codeload.github.com/masseater/masseater.dev/tar.gz/c92ee1c329e4d2235fd52b6b01272ee6e409ac5b}
     version: 0.0.0
     peerDependencies:
       effect: ^4.0.0
@@ -8135,8 +8135,8 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
-  renovate@44.232.1:
-    resolution: {integrity: sha512-WWU/iasi0aUIv8mOxlU7+moI2J+FGwOFU3cGszh0GYjXnP3hEeMc0X+2mRHYOwdXr0BUzR1XdLmbfO9luTtejw==}
+  renovate@44.234.0:
+    resolution: {integrity: sha512-Xz0BmvnMHPC+vriXWPp2v5yUi8D5iBvM+qFGIcdOLZO5bxGVJUtTH+q7m4SD/ddS/ctS5HOCnQNwY9ClThQ6NA==}
     engines: {node: ^24.11.0 || ^26.13.0, pnpm: ^11.0.0}
     hasBin: true
 
@@ -11090,7 +11090,7 @@ snapshots:
     dependencies:
       '@braidai/lang': 1.1.2
 
-  '@masseater.dev/textlint-rule-yomiyasu@https://codeload.github.com/masseater/masseater.dev/tar.gz/ce676b7d0a01ac417c5e022cdaceab07c1c3af33#path:/libs/textlint-rule-yomiyasu(effect@4.1.4)':
+  '@masseater.dev/textlint-rule-yomiyasu@https://codeload.github.com/masseater/masseater.dev/tar.gz/c92ee1c329e4d2235fd52b6b01272ee6e409ac5b#path:/libs/textlint-rule-yomiyasu(effect@4.1.4)':
     dependencies:
       effect: 4.1.4
 
@@ -16898,7 +16898,7 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
-  renovate@44.232.1(supports-color@7.2.0)(typanion@3.14.0):
+  renovate@44.234.0(supports-color@7.2.0)(typanion@3.14.0):
     dependencies:
       '@aws-sdk/client-codecommit': 3.1139.0
       '@aws-sdk/client-ec2': 3.1139.0

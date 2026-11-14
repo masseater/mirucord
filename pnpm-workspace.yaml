@@ -39,7 +39,7 @@ catalog:
   simple-icons: 16.37.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
-  "@cloudflare/vitest-plugin": 1.7.0
+  "@cloudflare/vitest-plugin": 1.8.0
   msw: 3.0.5
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
@@ -69,9 +69,9 @@ catalogs:
     drizzle-kit: 1.0.0-rc.5-ab785fc
     drizzle-orm: 1.0.0-rc.5-ab785fc
     effect: 4.1.4
-    elysia: 1.4.31
+    elysia: 1.4.32
     fallow: 3.42.0
-    renovate: 44.231.0
+    renovate: 44.232.1
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
     vite-plus: 1.6.0

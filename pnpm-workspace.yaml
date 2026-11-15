@@ -16,7 +16,7 @@ catalog:
   "@cloudflare/workers-types": 5.20261112.1
   "@effect/platform-node": 4.1.4
   "@shadcn/lint": 0.2.5
-  "@r_masseater/oxlint-plugin-decision": 0.4.0
+  "@r_masseater/oxlint-plugin-decision": 0.5.0
   "@types/node": 26.6.6
   eslint-plugin-react-hooks: 7.1.1
   syncpack: 15.3.3
@@ -105,4 +105,5 @@ audit:
     - GHSA-gcqx-w48m-w2h4
 minimumReleaseAgeExclude:
   - "@r_masseater/msch@0.6.1"
+  - "@r_masseater/oxlint-plugin-decision@0.5.0"
   - "@r_masseater/oxlint-typed-rules@0.4.0 || 0.4.1"

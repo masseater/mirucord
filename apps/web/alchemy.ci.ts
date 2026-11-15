@@ -62,7 +62,6 @@ const ci: Effect.Effect<CompiledStack, ConfigError> & Readonly<{ stackName: stri
       secrets: {
         DISCORD_CLIENT_SECRET: Config.schema(NonEmptySecret, "DISCORD_CLIENT_SECRET"),
         DISCORD_BOT_TOKEN: Config.schema(NonEmptySecret, "DISCORD_BOT_TOKEN"),
-        OPENROUTER_API_KEY: Config.schema(NonEmptySecret, "OPENROUTER_API_KEY"),
       },
     });
     yield* Variables({

@@ -33,6 +33,7 @@ const workspace = await workspaceSettings({
 
 export default defineConfig({
   ...checks,
+  msch: { workspaceAgentsMd: true },
   test: { projects: ["apps/*", "libs/*/*", "infra/*", "tools/*"], passWithNoTests: true },
   staged: {
     "*": "vp check --fix",

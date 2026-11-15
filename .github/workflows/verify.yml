@@ -18,7 +18,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: $/.github/actions/setup
-      - uses: masseater/typescript-template/.github/actions/verify@ee56f90bdf77bf747e158391c0ae8a846732b988
+      - uses: masseater/typescript-template/.github/actions/verify@d31880940798de1570171b0bd255ec9e69005d83
         with:
           github-token: ${{ github.token }}
 
@@ -50,11 +50,10 @@ jobs:
       FLY_ENABLED: ${{ secrets.FLY_API_TOKEN != '' }}
     concurrency:
       group: deploy-production
-      queue: max
       cancel-in-progress: false
     steps:
       - id: head
-        uses: masseater/typescript-template/.github/actions/latest-verified@ee56f90bdf77bf747e158391c0ae8a846732b988
+        uses: masseater/typescript-template/.github/actions/latest-verified@d31880940798de1570171b0bd255ec9e69005d83
         with:
           github-token: ${{ github.token }}
       - if: steps.head.outputs.latest == 'true'
@@ -64,7 +63,7 @@ jobs:
       - if: steps.head.outputs.latest == 'true'
         uses: $/.github/actions/setup
       - if: steps.head.outputs.latest == 'true'
-        uses: masseater/typescript-template/.github/actions/credentials@ee56f90bdf77bf747e158391c0ae8a846732b988
+        uses: masseater/typescript-template/.github/actions/credentials@d31880940798de1570171b0bd255ec9e69005d83
       - if: steps.head.outputs.latest == 'true'
         working-directory: apps/web
         run: vp exec alchemy deploy --stage prod --yes --no-input
@@ -75,7 +74,7 @@ jobs:
           MAX_GUILDS: ${{ vars.MAX_GUILDS }}
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
       - if: steps.head.outputs.latest == 'true' && env.FLY_ENABLED == 'true'
-        uses: masseater/typescript-template/.github/actions/credentials@ee56f90bdf77bf747e158391c0ae8a846732b988
+        uses: masseater/typescript-template/.github/actions/credentials@d31880940798de1570171b0bd255ec9e69005d83
       - if: steps.head.outputs.latest == 'true' && env.FLY_ENABLED == 'true'
         working-directory: apps/gateway
         run: vp exec alchemy deploy --stage prod --yes --no-input
@@ -94,7 +93,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: $/.github/actions/setup
-      - uses: masseater/typescript-template/.github/actions/credentials@ee56f90bdf77bf747e158391c0ae8a846732b988
+      - uses: masseater/typescript-template/.github/actions/credentials@d31880940798de1570171b0bd255ec9e69005d83
       - working-directory: apps/web
         run: >-
           vp exec workers-traces --request https://mirucord.masseater.dev/
@@ -133,6 +132,6 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: masseater/typescript-template/.github/actions/ci-telemetry@ee56f90bdf77bf747e158391c0ae8a846732b988
+      - uses: masseater/typescript-template/.github/actions/ci-telemetry@d31880940798de1570171b0bd255ec9e69005d83
         with:
           github-token: ${{ github.token }}

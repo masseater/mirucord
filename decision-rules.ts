@@ -7,7 +7,7 @@ export default createDecisionPlugin({
       id: "exclusive-status",
       target: "file",
       question:
-        "Does this code represent one piece of state with several boolean flags or optional fields whose combinations can contradict each other, instead of one exclusive status expressed as a discriminated union? Answer no when every state is a single exclusive status, or when the file holds no such state. A constant configuration object whose shape a library fixes, such as an OpenFeature flag definition, holds no state and is not a violation.",
+        "Does this code represent one piece of state with several boolean flags or optional fields whose combinations can contradict each other, instead of one exclusive status expressed as a discriminated union? Answer no when every state is a single exclusive status, or when the file holds no such state. A violation needs two or more booleans or optional fields that describe the same piece of state; a single boolean value, parameter, return value or field is not a violation, and a union of objects told apart by a status or kind field is already an exclusive status. A constant configuration object whose shape a library fixes, such as an OpenFeature flag definition, holds no state and is not a violation.",
       message: "状態は排他的なstatusを持つ判別共用体で表し、booleanフラグの組を使わない。",
       cutoff: 0.8,
     }),

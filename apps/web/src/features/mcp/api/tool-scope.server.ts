@@ -1,7 +1,7 @@
 import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, Effect, Option, Schema, pipe } from "effect";
 
-import { ingestStatus, isReady } from "#/features/mcp/model/ingest-status";
+import { READY, ingestStatus } from "#/features/mcp/model/ingest-status";
 import type { IngestStatus } from "#/features/mcp/model/ingest-status";
 import { CATEGORY_TYPES, FORUM_TYPES } from "#/shared/discord";
 import { runTraced } from "#/shared/observability/index.server";
@@ -131,7 +131,7 @@ const notFullyIngested = ({
   pipe(
     channelIds,
     Array.map((id) => ({ channelId: id, ingest: ingestById({ scope, channelId: id }) })),
-    Array.filter(({ ingest }) => !isReady(ingest)),
+    Array.filter(({ ingest }) => !READY.has(ingest)),
   );
 
 export {

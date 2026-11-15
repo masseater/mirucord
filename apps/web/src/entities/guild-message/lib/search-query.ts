@@ -28,8 +28,8 @@ const decodeRecent = (buffer: Readonly<ArrayBuffer>): RecentFile => {
 };
 
 type Filter = Readonly<{
-  allowed: Option.Option<ReadonlySet<number>>;
-  skipped: (ordinal: number) => boolean;
+  channels: Option.Option<ReadonlySet<number>>;
+  hidden: (ordinal: number) => boolean;
 }>;
 
 type Bound = Readonly<{ sorted: Uint32Array; value: number; from: number }>;
@@ -60,14 +60,14 @@ const intersectSorted = (kept: readonly number[], other: Uint32Array): readonly 
   return result;
 };
 
-const keeps = (view: PostingView, index: number, { allowed, skipped }: Filter): boolean => {
-  const channel = view.channels[index] ?? FIRST;
-  const visible = Option.match(allowed, {
+const inScope = (channels: Filter["channels"], channel: number): boolean =>
+  Option.match(channels, {
     onNone: () => true,
     onSome: (set) => set.has(channel),
   });
-  return visible && !skipped(view.ordinals[index] ?? FIRST);
-};
+
+const keeps = (view: PostingView, index: number, { channels, hidden }: Filter): boolean =>
+  inScope(channels, view.channels[index] ?? FIRST) && !hidden(view.ordinals[index] ?? FIRST);
 
 const allowedIn = (view: PostingView, filter: Filter): readonly number[] => {
   const kept: number[] = [];

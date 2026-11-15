@@ -64,7 +64,7 @@ const scanPiece = (
         from: segment.from,
         ordinals: matched({
           views: allViews({ set, tokens: request.tokens }),
-          filter: { allowed, skipped: (ordinal) => invalid.has(ordinal) },
+          filter: { channels: allowed, hidden: (ordinal) => invalid.has(ordinal) },
         }),
       },
       reads,
@@ -90,7 +90,7 @@ const scanRecent = (
             set: { count: ONE_SHARD, shardAt: () => Option.some(file.index) },
             tokens: request.tokens,
           }),
-          filter: { allowed, skipped: (ordinal) => invalid.has(ordinal) },
+          filter: { channels: allowed, hidden: (ordinal) => invalid.has(ordinal) },
         }),
       },
       reads: [read],

@@ -91,7 +91,7 @@ const archivedHits = ({ head, archive, allowed, views }: ArchiveScan): readonly 
         pieces,
         matchPostings({
           views: found,
-          filter: { allowed, skipped: isHidden },
+          filter: { channels: allowed, hidden: isHidden },
         }),
       ),
   });

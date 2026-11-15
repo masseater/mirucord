@@ -15,18 +15,14 @@ mirucord は、Discord のサーバーを読むだけの MCP サーバーをホ�
 ユーザーに手元での作業を頼まない。クラウドのセッションだけで終わらせる。
 文言やデザインの指摘を1件受けたら、同じ基準でアプリの全画面を見直す。
 
-## 構成とデータの流れ
+## 構成
 
 - `apps/gateway` は Fly.io で動く dfx の Discord Gateway 接続で、受けたイベントをジョブにして Web の `/api/gateway` へ署名付きで POST する。ジョブの型・署名・パスは `libs/ingest/util-gateway-contract` が両者で共有する。
-- `apps/web` は 1 つの Worker が画面（TanStack Start）・`/api`・`/mcp`・Queue の consumer をまとめて持つ。入口は `src/app/server/index.ts` である。
-- 取り込みは `features/ingest` が担い、追いつき・撤退・移行のような長い仕事は Queue `INGEST` に積む。メッセージは鯖ごとの Durable Object `GuildStore`（SQLite）に入り、検索用のファイルとベクトルは R2 `SEARCH` に書き出される。MCP のツールは `features/mcp` にある。
-- スキーマは 2 系統ある。D1 は `drizzle.config.ts`（`*.table.ts`、出力は `drizzle/`）、`GuildStore` は `drizzle.guild.config.ts`（`entities/guild-message/model/*.schema.ts`、出力は `drizzle-guild/`）で、`vp run db:generate` が両方を生成する。
 - `apps/web/alchemy.run.ts` が本番の Worker、`apps/web/alchemy.ci.ts` が CI のトークンと GitHub の Secrets を持つ `mirucord-ci` スタックである。main の CI は web と gateway の両方をデプロイする。
 
 ## コマンド
 
-- `vp run verify` はルートの `vite.config.ts` のタスクで、`vp check` に加えてテスト・vpa（betterleaks・commitlint・actionlint・zizmor・steiger・textlint と yomiyasu のルール）・drizzle の差分検査・fallow・msch・audit などを流す。検査の設定は `checks.config.ts` にある。
-- 1 つのテストだけを流すときは、そのワークスペースで `vp exec vp test run <ファイル>` を実行する。`apps/web` のテストは `@cloudflare/vitest-plugin` の上で D1・R2・Queue・Durable Object をそろえて動く。
+- 1 つのテストだけを流すときは、そのワークスペースで `vp exec vp test run <ファイル>` を実行する。
 
 ## 想定規模と性能要件
 

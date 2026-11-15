@@ -8,7 +8,20 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   resolve: { tsconfigPaths: true },
-  msch: { lint: { overrides: [{ files: ["src/**/*.{ts,tsx}"], use: ["decision"] }] } },
+  msch: {
+    lint: {
+      overrides: [
+        { files: ["src/**/*.{ts,tsx}"], use: ["decision"] },
+        {
+          files: ["src/**/*.server.ts", "src/**/__tests__/**"],
+          rules: {
+            "stack/server-state-tanstack-query": "off",
+            "stack/ui-state-effect-atom": "off",
+          },
+        },
+      ],
+    },
+  },
   run: {
     tasks: {
       dev: { command: "alchemy dev", cache: false },

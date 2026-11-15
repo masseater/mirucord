@@ -381,7 +381,7 @@ overrides:
   katex@>=0.11.0 <0.18.2: ^0.19.0
 
 patchedDependencies:
-  '@better-auth/oauth-provider@^1.7.20': ef331111ec5752ea1be7c25388e0ec77ef0f3a45f18f79938050a5ca996b7c5b
+  '@better-auth/oauth-provider@^1.7.20': 3623fc1a46d470be082fafea46c7dccc4329250ec6203fb335d34bec554c341a
 
 importers:
 
@@ -407,7 +407,7 @@ importers:
         version: 0.68.0(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))
       '@masseater.dev/textlint-rule-yomiyasu':
         specifier: github:masseater/masseater.dev#path:/libs/textlint-rule-yomiyasu
-        version: https://codeload.github.com/masseater/masseater.dev/tar.gz/d97138bc867bb998fc912066b212a4b6de330174#path:/libs/textlint-rule-yomiyasu(effect@4.1.4)
+        version: https://codeload.github.com/masseater/masseater.dev/tar.gz/218f2441fbef71358a4b2e07fae14ce4d1aae949#path:/libs/textlint-rule-yomiyasu(effect@4.1.4)
       '@r_masseater/msch':
         specifier: 'catalog:'
         version: 0.9.0(@effect/tsgo@0.68.1)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(oxlint@1.93.0(oxlint-tsgolint@7.0.2006)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1)))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))
@@ -550,7 +550,7 @@ importers:
         version: 1.7.22(@better-auth/core@1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.22(0dc8c1d349571ba12bc1517ddda55db4))(better-call@1.4.5(zod@4.6.7))
       '@better-auth/oauth-provider':
         specifier: 'catalog:'
-        version: 1.7.22(patch_hash=ef331111ec5752ea1be7c25388e0ec77ef0f3a45f18f79938050a5ca996b7c5b)(@better-auth/core@1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.22(0dc8c1d349571ba12bc1517ddda55db4))(better-call@1.4.5(zod@4.6.7))
+        version: 1.7.22(patch_hash=3623fc1a46d470be082fafea46c7dccc4329250ec6203fb335d34bec554c341a)(@better-auth/core@1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.22(0dc8c1d349571ba12bc1517ddda55db4))(better-call@1.4.5(zod@4.6.7))
       '@effect/atom-react':
         specifier: catalog:stack
         version: 4.1.4(effect@4.1.4)(react@19.3.1)(scheduler@0.28.0)
@@ -2454,8 +2454,8 @@ packages:
   '@loaderkit/resolve@1.0.6':
     resolution: {integrity: sha512-G8FdIoF5CypfwmD9rl8BXod5HDn8JqB0CCNBXDTaRZ+yRYhARrrSToX1zg1zy9jX3zLqigsELwhT4gNtkdQAUg==}
 
-  '@masseater.dev/textlint-rule-yomiyasu@https://codeload.github.com/masseater/masseater.dev/tar.gz/d97138bc867bb998fc912066b212a4b6de330174#path:/libs/textlint-rule-yomiyasu':
-    resolution: {gitHosted: true, integrity: sha512-sJe7Dac81783kPRP4eQ/5y/HRtFb+8lj6L6Qi+uMxZaU/WxdV7E9wK2h2iY39TTl1e6YKmgCG4glocfnDcy10g==, path: /libs/textlint-rule-yomiyasu, tarball: https://codeload.github.com/masseater/masseater.dev/tar.gz/d97138bc867bb998fc912066b212a4b6de330174}
+  '@masseater.dev/textlint-rule-yomiyasu@https://codeload.github.com/masseater/masseater.dev/tar.gz/218f2441fbef71358a4b2e07fae14ce4d1aae949#path:/libs/textlint-rule-yomiyasu':
+    resolution: {gitHosted: true, integrity: sha512-XctvDLpqO77nnTjVPVEG9C5MijU1FSZlcEpATVrU1rIOx2kmRk5pB6JHcrIagjK9UxYAAE9WKwunP+dx+nTvNQ==, path: /libs/textlint-rule-yomiyasu, tarball: https://codeload.github.com/masseater/masseater.dev/tar.gz/218f2441fbef71358a4b2e07fae14ce4d1aae949}
     version: 0.0.0
     peerDependencies:
       effect: ^4.0.0
@@ -10134,7 +10134,7 @@ snapshots:
   '@better-auth/mcp@1.7.22(@better-auth/core@1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.22(0dc8c1d349571ba12bc1517ddda55db4))(better-call@1.4.5(zod@4.6.7))':
     dependencies:
       '@better-auth/core': 1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4)
-      '@better-auth/oauth-provider': 1.7.22(patch_hash=ef331111ec5752ea1be7c25388e0ec77ef0f3a45f18f79938050a5ca996b7c5b)(@better-auth/core@1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.22(0dc8c1d349571ba12bc1517ddda55db4))(better-call@1.4.5(zod@4.6.7))
+      '@better-auth/oauth-provider': 1.7.22(patch_hash=3623fc1a46d470be082fafea46c7dccc4329250ec6203fb335d34bec554c341a)(@better-auth/core@1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.22(0dc8c1d349571ba12bc1517ddda55db4))(better-call@1.4.5(zod@4.6.7))
       better-auth: 1.7.22(0dc8c1d349571ba12bc1517ddda55db4)
       better-call: 1.4.5(zod@4.6.7)
       jose: 6.2.17
@@ -10152,7 +10152,7 @@ snapshots:
       '@better-auth/core': 1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4)
       '@better-auth/utils': 0.5.1
 
-  '@better-auth/oauth-provider@1.7.22(patch_hash=ef331111ec5752ea1be7c25388e0ec77ef0f3a45f18f79938050a5ca996b7c5b)(@better-auth/core@1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.22(0dc8c1d349571ba12bc1517ddda55db4))(better-call@1.4.5(zod@4.6.7))':
+  '@better-auth/oauth-provider@1.7.22(patch_hash=3623fc1a46d470be082fafea46c7dccc4329250ec6203fb335d34bec554c341a)(@better-auth/core@1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.22(0dc8c1d349571ba12bc1517ddda55db4))(better-call@1.4.5(zod@4.6.7))':
     dependencies:
       '@better-auth/core': 1.7.22(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.5(zod@4.6.7))(jose@6.2.17)(kysely@0.29.6)(nanostores@1.5.4)
       '@better-auth/utils': 0.5.1
@@ -11128,7 +11128,7 @@ snapshots:
     dependencies:
       '@braidai/lang': 1.1.2
 
-  '@masseater.dev/textlint-rule-yomiyasu@https://codeload.github.com/masseater/masseater.dev/tar.gz/d97138bc867bb998fc912066b212a4b6de330174#path:/libs/textlint-rule-yomiyasu(effect@4.1.4)':
+  '@masseater.dev/textlint-rule-yomiyasu@https://codeload.github.com/masseater/masseater.dev/tar.gz/218f2441fbef71358a4b2e07fae14ce4d1aae949#path:/libs/textlint-rule-yomiyasu(effect@4.1.4)':
     dependencies:
       effect: 4.1.4
 

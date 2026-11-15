@@ -12,12 +12,10 @@ export default defineConfig({
       dev: { command: "alchemy dev", cache: false },
       "db:generate": {
         command: ["drizzle-kit generate", "drizzle-kit generate --config drizzle.guild.config.ts"],
-        cache: false,
       },
       "auth:generate": {
         command:
           "auth generate --config auth.config.ts --output src/shared/auth/generated/auth.table.ts --yes",
-        cache: false,
       },
       "db:check": [
         "drizzle-kit check",

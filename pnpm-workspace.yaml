@@ -13,7 +13,7 @@ catalog:
   "@r_masseater/vite-plus-adopt": 0.4.0
   oxlint-plugin-eslint: 1.93.0
   "@ast-grep/cli": 0.51.2
-  "@cloudflare/workers-types": 5.20261110.1
+  "@cloudflare/workers-types": 5.20261112.1
   "@effect/platform-node": 4.1.4
   "@shadcn/lint": 0.2.5
   "@r_masseater/oxlint-plugin-decision": 0.4.0
@@ -71,7 +71,7 @@ catalogs:
     effect: 4.1.4
     elysia: 1.4.32
     fallow: 3.42.0
-    renovate: 44.234.1
+    renovate: 44.235.1
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
     vite-plus: 1.6.0

@@ -50,7 +50,6 @@ jobs:
       FLY_ENABLED: ${{ secrets.FLY_API_TOKEN != '' }}
     concurrency:
       group: deploy-production
-      queue: max
       cancel-in-progress: false
     steps:
       - id: head

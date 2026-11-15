@@ -4,7 +4,12 @@
   "include": ["src", "test", "*.ts"],
   "compilerOptions": {
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "@cloudflare/workers-types", "@cloudflare/vitest-plugin/types"],
+    "types": [
+      "vite/client",
+      "@cloudflare/workers-types",
+      "@cloudflare/vitest-plugin/types",
+      "@r_masseater/msch/vite"
+    ],
     "paths": {
       "#/*": ["./src/*"]
     },

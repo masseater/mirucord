@@ -1,4 +1,5 @@
 import htmlReact from "@html-eslint/eslint-plugin-react";
+import { workspaceSettings } from "@r_masseater/msch/workspace-settings";
 import tanstackQuery from "@r_masseater/oxlint-typed-rules/tanstack-query";
 import tanstackRouter from "@r_masseater/oxlint-typed-rules/tanstack-router";
 import { plugin as shadcn } from "@shadcn/lint";
@@ -24,6 +25,12 @@ import {
 
 const typedRules = "@r_masseater/oxlint-typed-rules";
 
+const workspace = await workspaceSettings({
+  root: import.meta.dirname,
+  ruleSets: { decision: { ...decisionRules, ...workerRules } },
+  dependencySets: {},
+});
+
 export default defineConfig({
   ...checks,
   test: { projects: ["apps/*", "libs/*/*", "infra/*", "tools/*"], passWithNoTests: true },
@@ -37,7 +44,7 @@ export default defineConfig({
     sortPackageJson: true,
   },
   lint: {
-    ignorePatterns: generated,
+    ignorePatterns: [...generated, ...workspace.lint.ignorePatterns],
     plugins: [
       "eslint",
       "typescript",
@@ -181,13 +188,14 @@ export default defineConfig({
         rules: { "import/no-default-export": "off" },
       },
       {
+        files: ["**/vite.config.ts"],
+        rules: { "baseline-js/use-baseline": "off" },
+      },
+      {
         files: ["**/shared/ui/**"],
         rules: { "shadcn/no-restyle": "off", "react/jsx-props-no-spreading": "off" },
       },
-      {
-        files: ["apps/web/src/**/*.{ts,tsx}"],
-        rules: { ...decisionRules, ...workerRules },
-      },
+      ...workspace.lint.overrides,
       {
         files: ["**/*.test.ts"],
         rules: {

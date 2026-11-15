@@ -7,6 +7,7 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   resolve: { tsconfigPaths: true },
+  msch: { lint: { overrides: [{ files: ["src/**/*.{ts,tsx}"], use: ["decision"] }] } },
   run: {
     tasks: {
       dev: { command: "alchemy dev", cache: false },

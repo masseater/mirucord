@@ -129,14 +129,14 @@ const SECTIONS: readonly GuideSection[] = [
         rows: [
           [
             "Actions secrets",
-            "`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`、`DISCORD_CLIENT_SECRET`、`DISCORD_BOT_TOKEN`、`FLY_API_TOKEN`、`ALERT_WEBHOOK_URL`、`OPENROUTER_API_KEY`",
+            "`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`、`DISCORD_CLIENT_SECRET`、`DISCORD_BOT_TOKEN`、`FLY_API_TOKEN`、`ALERT_WEBHOOK_URL`",
           ],
           ["Actions variables", "`DISCORD_CLIENT_ID`、`MAX_GUILDS`"],
         ],
       },
       {
         type: "text",
-        text: `\`OPENROUTER_API_KEY\` は検査の oxlint-plugin-decision が使います。\`apps/web/alchemy.ci.ts\` を手元からデプロイすると、デプロイに要る権限だけを持つ \`${SERVICE_NAME}-deploy\` という Cloudflare の API トークンを作り、上の値を GitHub に登録します。このときだけは、API トークンを作る権限のある Cloudflare の認証と \`GITHUB_TOKEN\` が要ります。`,
+        text: `検査の oxlint-plugin-decision は、Cloudflare AI Gateway を通して Workers AI のモデルを \`CLOUDFLARE_API_TOKEN\` で呼びます。このトークンには Workers AI Read の権限も付けてください。\`apps/web/alchemy.ci.ts\` を手元からデプロイすると、デプロイに要る権限だけを持つ \`${SERVICE_NAME}-deploy\` という Cloudflare の API トークンを作り、上の値を GitHub に登録します。このときだけは、API トークンを作る権限のある Cloudflare の認証と \`GITHUB_TOKEN\` が要ります。`,
       },
       {
         type: "code",

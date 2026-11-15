@@ -3,6 +3,7 @@ import { setupNetwork } from "@msw/cloudflare";
 import { Array, Effect, Option, pipe, Schema } from "effect";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
+import { readMessages } from "./messages.server";
 import {
   A_OPEN,
   A_OPEN_MESSAGE,
@@ -19,11 +20,10 @@ import {
   SAME_WORDS,
   seedScenario,
   USER,
-} from "./__tests__/scenario";
-import { callTool, idsOf, readIngestOf } from "./__tests__/tool-call";
-import type { ToolOutcome } from "./__tests__/tool-call";
-import { readMessages } from "./messages.server";
+} from "./scenario.test.support";
 import { resolveScope } from "./scope.server";
+import { callTool, idsOf, readIngestOf } from "./tool-call.test.support";
+import type { ToolOutcome } from "./tool-call.test.support";
 
 const READ_LIMIT = 50;
 const REFUSED = { text: "Channel not found", isError: true, structured: Option.none() };

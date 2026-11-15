@@ -5,8 +5,8 @@ import { beforeAll, expect } from "vite-plus/test";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 
-import { seedMemberGuild } from "./__tests__/stored-members";
 import { storeGatewayReactions } from "./store-activity.server";
+import { seedMemberGuild } from "./stored-members.test.support";
 
 const REACTING_GUILD = "870";
 const QUIET_GUILD = "880";

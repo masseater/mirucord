@@ -13,7 +13,7 @@ import {
   JOBS_OUTSIDE_SCOPE,
   READABLE,
   seedScenario,
-} from "./__tests__/consent-scenario";
+} from "./consent-scenario.test.support";
 import { refreshIngest, refreshPendingIngest } from "./consent-scope.server";
 import { ingestChannel } from "./ingest-channel.server";
 

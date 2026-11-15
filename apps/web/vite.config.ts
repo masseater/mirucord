@@ -13,7 +13,7 @@ export default defineConfig({
       overrides: [
         { files: ["src/**/*.{ts,tsx}"], use: ["decision"] },
         {
-          files: ["src/**/*.server.ts", "src/**/__tests__/**"],
+          files: ["src/**/*.server.ts", "src/**/*.test.support.ts"],
           rules: {
             "stack/server-state-tanstack-query": "off",
             "stack/ui-state-effect-atom": "off",

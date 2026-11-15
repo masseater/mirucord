@@ -14,7 +14,7 @@ import {
   storedIdsIn,
   storedMessage,
   TEXT_CHANNEL,
-} from "./__tests__/guild-messages";
+} from "./guild-messages.test.support";
 import { ingestChannel } from "./ingest-channel.server";
 
 const OWNER = "901";

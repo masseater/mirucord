@@ -8,8 +8,8 @@ import { afterAll, beforeAll, expect } from "vite-plus/test";
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
-import { putMessages, storedMessage } from "./__tests__/guild-messages";
 import { forumPosts } from "./forum-posts.server";
+import { putMessages, storedMessage } from "./guild-messages.test.support";
 
 const OWNER = "901";
 const STRANGER = "902";

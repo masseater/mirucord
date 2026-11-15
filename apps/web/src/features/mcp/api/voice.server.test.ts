@@ -13,8 +13,8 @@ import {
   GUILD_A,
   GUILD_B,
   seedScenario,
-} from "./__tests__/scenario";
-import { callTool } from "./__tests__/tool-call";
+} from "./scenario.test.support";
+import { callTool } from "./tool-call.test.support";
 
 const ALICE = "801";
 const BOB = "802";

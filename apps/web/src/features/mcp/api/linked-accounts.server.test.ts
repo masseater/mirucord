@@ -5,12 +5,12 @@ import { afterAll, beforeAll, expect } from "vite-plus/test";
 
 import { ListLinkedAccountsOutput } from "#/features/mcp/api/tool-output";
 
-import { seedLinkedAccounts } from "./__tests__/linked-seed";
-import type { SeedLink } from "./__tests__/linked-seed";
-import { seedMembers } from "./__tests__/member-seed";
-import type { SeedMember } from "./__tests__/member-seed";
-import { discordMembers, GUILD_A, seedScenario } from "./__tests__/scenario";
-import { callTool } from "./__tests__/tool-call";
+import { seedLinkedAccounts } from "./linked-seed.test.support";
+import type { SeedLink } from "./linked-seed.test.support";
+import { seedMembers } from "./member-seed.test.support";
+import type { SeedMember } from "./member-seed.test.support";
+import { discordMembers, GUILD_A, seedScenario } from "./scenario.test.support";
+import { callTool } from "./tool-call.test.support";
 
 const ALICE = "801";
 const BOB = "802";

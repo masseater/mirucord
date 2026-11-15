@@ -8,13 +8,13 @@ import { beforeEach, expect, vi } from "vite-plus/test";
 
 import { db, guild } from "#/shared/db/index.server";
 
+import { receiveGatewayEvent } from "./gateway-event.server";
 import {
   consentedGuild,
   putMessages,
   storedCount,
   storedMessage,
-} from "./__tests__/guild-messages";
-import { receiveGatewayEvent } from "./gateway-event.server";
+} from "./guild-messages.test.support";
 
 type GatewayEvent = Readonly<{ body: string; headers: Readonly<Record<string, string>> }>;
 

@@ -13,7 +13,7 @@ import {
   revoked,
   seedConnectionsAccount,
   storedToken,
-} from "./__tests__/connections-account";
+} from "./connections-account.test.support";
 import {
   loadLinkedAccounts,
   publishLinkedAccounts,

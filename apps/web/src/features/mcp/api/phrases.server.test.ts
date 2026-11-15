@@ -8,7 +8,7 @@ import { guildStore, indexTokens, phraseHashes } from "#/entities/guild-message/
 import type { IndexedMessage, PhraseState } from "#/entities/guild-message/index.server";
 import { sealMessage } from "#/shared/crypto/index.server";
 
-import { listPhrases, mockPhraseModel, prompts } from "./__tests__/phrase-model";
+import { listPhrases, mockPhraseModel, prompts } from "./phrase-model.test.support";
 import {
   A_OPEN,
   A_STAFF,
@@ -16,7 +16,7 @@ import {
   GUILD_A,
   guildKeys,
   seedScenario,
-} from "./__tests__/scenario";
+} from "./scenario.test.support";
 
 const ERASED_AUTHOR = "501";
 const PEOPLE = [ERASED_AUTHOR, "502", "503", ERASED_AUTHOR, "502"];

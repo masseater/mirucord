@@ -4,7 +4,7 @@ import { FLUSH_DELAY_MS } from "#/entities/guild-message/lib/search-layout";
 import { openGuildKey } from "#/shared/crypto/index.server";
 
 import { scheduleSearch } from "./search-alarm.server";
-import type { Published } from "./search-alarm.server";
+import type { PublishTarget } from "./search-alarm.server";
 import { embedPending } from "./vector-embed.server";
 import type { EmbedOutcome } from "./vector-embed.server";
 import { publishVectors } from "./vector-publish.server";
@@ -35,12 +35,12 @@ const retryLater = (cause: unknown): Effect.Effect<EmbedOutcome> =>
     Effect.map((now) => ({ status: "waiting", until: now + FLUSH_DELAY_MS })),
   );
 
-const vectorsWithKey = (published: Published, key: CryptoKey): Effect.Effect<void> => {
-  const keys = { guildId: published.guildId, key };
-  return embedPending({ db: published.db, keys }).pipe(
+const vectorsWithKey = (target: PublishTarget, key: CryptoKey): Effect.Effect<void> => {
+  const keys = { guildId: target.guildId, key };
+  return embedPending({ db: target.db, keys }).pipe(
     Effect.catchTag("EmbeddingError", ({ cause }) => retryLater(cause)),
     Effect.flatMap((embedded) =>
-      publishVectors({ db: published.db, bucket: published.bucket, keys }).pipe(
+      publishVectors({ db: target.db, bucket: target.bucket, keys }).pipe(
         Effect.map(({ status }) => ({ embedded, publishedMore: status === "more" })),
       ),
     ),
@@ -49,7 +49,7 @@ const vectorsWithKey = (published: Published, key: CryptoKey): Effect.Effect<voi
         Effect.flatMap((now) =>
           Option.match(delayOf(followup, now), {
             onNone: () => Effect.void,
-            onSome: (delay) => scheduleSearch({ ...published, delay }),
+            onSome: (delay) => scheduleSearch({ ...target, delay }),
           }),
         ),
       ),
@@ -57,16 +57,16 @@ const vectorsWithKey = (published: Published, key: CryptoKey): Effect.Effect<voi
   );
 };
 
-const publishGuildVectors = (published: Published): Effect.Effect<void> =>
-  wrappedKeyOf(published.guildId).pipe(
+const publishGuildVectors = (target: PublishTarget): Effect.Effect<void> =>
+  wrappedKeyOf(target.guildId).pipe(
     Effect.flatMap(
       Option.match({
         onNone: () => Effect.void,
         onSome: (wrappedKey) =>
-          openGuildKey(wrappedKey).pipe(Effect.flatMap((key) => vectorsWithKey(published, key))),
+          openGuildKey(wrappedKey).pipe(Effect.flatMap((key) => vectorsWithKey(target, key))),
       }),
     ),
-    Effect.withSpan("vectors.alarm", { attributes: { guildId: published.guildId } }),
+    Effect.withSpan("vectors.alarm", { attributes: { guildId: target.guildId } }),
   );
 
 export { publishGuildVectors };

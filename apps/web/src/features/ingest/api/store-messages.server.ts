@@ -92,10 +92,14 @@ const authorOf = (incoming: DiscordMessage): MessageAuthor => ({
 
 type StoredAttachment = MessageBody["attachments"][number];
 
-type DescribedAttachment = Readonly<{
-  status: "described" | "undescribed" | "failed";
-  attachment: StoredAttachment;
-}>;
+type PlainAttachment = Omit<StoredAttachment, "description">;
+
+type DescribedAttachment =
+  | Readonly<{
+      status: "described";
+      attachment: PlainAttachment & Readonly<{ description: string }>;
+    }>
+  | Readonly<{ status: "undescribed" | "failed"; attachment: PlainAttachment }>;
 
 type DescribedMessage = Readonly<{
   incoming: DiscordMessage;

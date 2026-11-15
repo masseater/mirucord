@@ -11,18 +11,22 @@ import { searchLedger } from "./search-ledger.server";
 import type { Segment } from "./search-ledger.server";
 import { centroidStamp } from "./vector-centroids.server";
 
-const entryOf = (segment: Segment, isArchived: (name: string) => boolean): SegmentEntry => ({
-  name: segment.name,
-  kind: segment.kind,
-  from: segment.fromCreatedAt,
-  archived: isArchived(segment.name),
-  count: segment.count,
-  shards: segment.shards,
-  ...Option.match(vectorsOfRow(segment), {
-    onNone: () => ({}),
-    onSome: (vectors) => ({ vectors }),
-  }),
-});
+const entryOf = (segment: Segment, isArchived: (name: string) => boolean): SegmentEntry => {
+  const fields = {
+    name: segment.name,
+    from: segment.fromCreatedAt,
+    count: segment.count,
+    shards: segment.shards,
+    ...Option.match(vectorsOfRow(segment), {
+      onNone: () => ({}),
+      onSome: (vectors) => ({ vectors }),
+    }),
+  };
+  if (segment.kind === "recent") {
+    return { ...fields, kind: "recent" };
+  }
+  return { ...fields, kind: "sealed", archived: isArchived(segment.name) };
+};
 
 type InvalidRow = Readonly<{ segment: string; ordinal: number }>;
 

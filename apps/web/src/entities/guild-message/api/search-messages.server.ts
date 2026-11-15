@@ -172,7 +172,7 @@ const gather = (scope: Scope): Effect.Effect<Gathered, MissingFile, FileGate> =>
   );
   const pieces = pipe(
     scope.head.segments,
-    Array.filter(({ kind, archived }) => kind === "sealed" && !archived),
+    Array.filter((segment) => segment.kind === "sealed" && !segment.archived),
   );
   return Effect.all(
     {

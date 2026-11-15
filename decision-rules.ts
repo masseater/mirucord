@@ -7,15 +7,16 @@ export default createDecisionPlugin({
       id: "exclusive-status",
       target: "file",
       question:
-        "Does this code represent one piece of state with several boolean flags or optional fields whose combinations can contradict each other, instead of one exclusive status expressed as a discriminated union? Answer no when every state is a single exclusive status, or when the file holds no such state. A constant configuration object whose shape a library fixes, such as an OpenFeature flag definition, holds no state and is not a violation.",
+        'Does this code represent one piece of state with several boolean flags or optional fields whose combinations can contradict each other, instead of one exclusive status expressed as a discriminated union? Answer no when every state is a single exclusive status, or when the file holds no such state. A constant configuration object whose shape a library fixes, such as an OpenFeature flag definition, holds no state and is not a violation. A field typed as a union of string literals, such as "allowed" | "denied", is already an exclusive status. A single boolean, such as a parameter, a return value or one field of a record, is not a set of flags. An optional field that carries extra data, such as an optional payload or count on a record, is data rather than a status flag. Answer yes only when two or more booleans or optional fields together say which of several mutually exclusive statuses one thing is in.',
       message: "状態は排他的なstatusを持つ判別共用体で表し、booleanフラグの組を使わない。",
       cutoff: 0.8,
     }),
     defineDecisionRule({
       id: "server-state-tanstack-query",
+      model: "cloudflare/@cf/meta/llama-4-scout-17b-16e-instruct",
       target: "file",
       question:
-        "Does this code fetch, cache or synchronize server data on the client with something other than TanStack Query, such as fetch inside useEffect, SWR or a hand-written cache? Answer no when server data on the client goes only through TanStack Query, or when the file handles none. Creating an API client such as a better-auth or Eden client, which fetches nothing until a query calls it, is not a violation.",
+        "Does this code fetch, cache or synchronize server data on the client with something other than TanStack Query, such as fetch inside useEffect, SWR or a hand-written cache? Answer no when server data on the client goes only through TanStack Query, or when the file handles none. Creating an API client such as a better-auth or Eden client, which fetches nothing until a query calls it, is not a violation. A file that imports from cloudflare:workers or from a module whose path ends in .server runs only on the server, because TanStack Start keeps such imports out of the client bundle, so it is not client code, even when it uses fetch, caches.open or a Map as a cache.",
       message: "サーバー状態はTanStack Queryだけで扱う。",
       cutoff: 0.8,
     }),

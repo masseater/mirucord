@@ -16,18 +16,18 @@ type Alarms = Readonly<{
   set: (at: number) => Promise<void>;
 }>;
 
-type Alarmed = Readonly<{ db: DrizzleSqliteDODatabase; alarms: Alarms }>;
+type AlarmTarget = Readonly<{ db: DrizzleSqliteDODatabase; alarms: Alarms }>;
 
-type Scheduled = Alarmed & Readonly<{ delay: number }>;
+type ScheduleTarget = AlarmTarget & Readonly<{ delay: number }>;
 
-type Forgotten = Alarmed &
+type ForgetTarget = AlarmTarget &
   Readonly<{ rows: readonly TrackedRow[]; publishHead: Effect.Effect<void> }>;
 
-type Published = Alarmed & Readonly<{ bucket: Readonly<R2Bucket>; guildId: string }>;
+type PublishTarget = AlarmTarget & Readonly<{ bucket: Readonly<R2Bucket>; guildId: string }>;
 
-type Flushing = Published & Readonly<{ flush: Flush }>;
+type FlushTarget = PublishTarget & Readonly<{ flush: Flush }>;
 
-const scheduleSearch = ({ alarms, delay }: Scheduled): Effect.Effect<void> =>
+const scheduleSearch = ({ alarms, delay }: ScheduleTarget): Effect.Effect<void> =>
   Effect.all({
     now: Clock.currentTimeMillis,
     current: Effect.promise(() => alarms.current()),
@@ -46,7 +46,7 @@ const scheduleSearch = ({ alarms, delay }: Scheduled): Effect.Effect<void> =>
     Effect.asVoid,
   );
 
-const forgetRows = ({ db, alarms, rows, publishHead }: Forgotten): Effect.Effect<void> => {
+const forgetRows = ({ db, alarms, rows, publishHead }: ForgetTarget): Effect.Effect<void> => {
   const published = publishHead.pipe(
     Effect.andThen(scheduleSearch({ db, alarms, delay: FLUSH_DELAY_MS })),
   );
@@ -57,38 +57,36 @@ const forgetRows = ({ db, alarms, rows, publishHead }: Forgotten): Effect.Effect
   );
 };
 
-const scheduleNext = (alarmed: Alarmed, next: Option.Option<number>): Effect.Effect<void> =>
+const scheduleNext = (target: AlarmTarget, next: Option.Option<number>): Effect.Effect<void> =>
   Option.match(next, {
     onNone: () => Effect.void,
     onSome: (at) =>
       Clock.currentTimeMillis.pipe(
-        Effect.flatMap((now) =>
-          scheduleSearch({ ...alarmed, delay: Math.max(at - now, NO_DELAY) }),
-        ),
+        Effect.flatMap((now) => scheduleSearch({ ...target, delay: Math.max(at - now, NO_DELAY) })),
       ),
   });
 
 const nextVersion = (db: DrizzleSqliteDODatabase): number => searchLedger(db).nextVersion();
 
-const publishIndexed = (published: Flushing): Effect.Effect<void> => {
-  const { db, bucket, guildId, flush } = published;
+const publishIndexed = (target: FlushTarget): Effect.Effect<void> => {
+  const { db, bucket, guildId, flush } = target;
   return Clock.currentTimeMillis.pipe(
     Effect.flatMap((now) => publishSearch({ db, bucket, guildId, now, flush })),
-    Effect.flatMap((next) => scheduleNext(published, next)),
+    Effect.flatMap((next) => scheduleNext(target, next)),
   );
 };
 
-const afterReindex = (published: Flushing, remaining: boolean): Effect.Effect<void> => {
+const afterReindex = (target: FlushTarget, remaining: boolean): Effect.Effect<void> => {
   if (remaining) {
-    return scheduleSearch({ ...published, delay: NO_DELAY });
+    return scheduleSearch({ ...target, delay: NO_DELAY });
   }
-  return publishIndexed(published);
+  return publishIndexed(target);
 };
 
-const publishGuild = (published: Flushing): Effect.Effect<void> =>
-  reindexMissing({ store: published.db, guildId: published.guildId }).pipe(
-    Effect.flatMap((remaining) => afterReindex(published, remaining)),
+const publishGuild = (target: FlushTarget): Effect.Effect<void> =>
+  reindexMissing({ store: target.db, guildId: target.guildId }).pipe(
+    Effect.flatMap((remaining) => afterReindex(target, remaining)),
   );
 
 export { forgetRows, nextVersion, publishGuild, scheduleSearch };
-export type { Alarmed, Alarms, Flushing, Forgotten, Published, Scheduled };
+export type { AlarmTarget, Alarms, FlushTarget, ForgetTarget, PublishTarget, ScheduleTarget };

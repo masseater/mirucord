@@ -8,15 +8,18 @@ const DELETE_BATCH = 1000;
 
 const SegmentVectorsSchema = Schema.Struct({ through: Schema.Int, clusters: Schema.Int });
 
-const SegmentEntrySchema = Schema.Struct({
+const segmentFields = {
   name: Schema.String,
-  kind: Schema.Literals(["sealed", "recent"]),
   from: Schema.Finite,
-  archived: Schema.Boolean,
   count: Schema.Int,
   shards: Schema.Int,
   vectors: Schema.optionalKey(SegmentVectorsSchema),
-});
+};
+
+const SegmentEntrySchema = Schema.Union([
+  Schema.Struct({ ...segmentFields, kind: Schema.Literal("recent") }),
+  Schema.Struct({ ...segmentFields, kind: Schema.Literal("sealed"), archived: Schema.Boolean }),
+]);
 
 const ArchiveEntrySchema = Schema.Struct({
   name: Schema.String,

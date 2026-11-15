@@ -7,7 +7,7 @@ import type { IndexedMessage } from "#/entities/guild-message/index.server";
 import { DIMENSIONS } from "#/shared/ai";
 import { sealMessage } from "#/shared/crypto/index.server";
 
-import { GUILD_A, guildKeys } from "./scenario";
+import { GUILD_A, guildKeys } from "./scenario.test.support";
 
 const RAMEN_AXIS = 0;
 const CAT_AXIS = 1;

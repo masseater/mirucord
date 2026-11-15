@@ -4,9 +4,9 @@ import { Array, DateTime, Effect, Option, pipe } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
-import { seedMemberGuild, storedMembers } from "./__tests__/stored-members";
-import type { StoredRow } from "./__tests__/stored-members";
 import { departGatewayMembers, storeGatewayMembers, syncMembers } from "./store-members.server";
+import { seedMemberGuild, storedMembers } from "./stored-members.test.support";
+import type { StoredRow } from "./stored-members.test.support";
 
 const GUILD = "800";
 const QUIET_GUILD = "810";

@@ -5,8 +5,8 @@ import { vi } from "vite-plus/test";
 
 import { ListServerPhrasesOutput } from "#/features/mcp/api/tool-output";
 
-import { GUILD_A } from "./scenario";
-import { callTool } from "./tool-call";
+import { GUILD_A } from "./scenario.test.support";
+import { callTool } from "./tool-call.test.support";
 
 type ModelAnswers = Readonly<{ common: string; note: string }>;
 

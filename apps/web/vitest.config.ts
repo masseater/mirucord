@@ -16,7 +16,7 @@ export default defineConfig({
       Effect.runPromise(
         readMigrations.pipe(
           Effect.map((migrations) => ({
-            main: "./test/worker.ts",
+            main: "./vitest.worker.ts",
             miniflare: {
               compatibilityDate: "2026-09-01",
               compatibilityFlags: ["nodejs_compat"],
@@ -44,7 +44,7 @@ export default defineConfig({
     ),
   ],
   test: {
-    setupFiles: ["./test/setup.ts"],
+    setupFiles: ["./vitest.setup.ts"],
     fsModuleCache: false,
     deps: { optimizer: { ssr: { enabled: true, include: ["discord-api-types/v10"] } } },
   },

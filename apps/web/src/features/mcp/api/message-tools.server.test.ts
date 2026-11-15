@@ -11,9 +11,9 @@ import {
   OWNER,
   seedScenario,
   SEEDED,
-} from "./__tests__/scenario";
-import { callTool } from "./__tests__/tool-call";
-import type { ToolOutcome } from "./__tests__/tool-call";
+} from "./scenario.test.support";
+import { callTool } from "./tool-call.test.support";
+import type { ToolOutcome } from "./tool-call.test.support";
 
 const AuthoredMessage = Schema.Struct({ id: Schema.String, authorId: Schema.String });
 const Authored = Schema.Struct({ messages: Schema.Array(AuthoredMessage) });

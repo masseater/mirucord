@@ -7,7 +7,12 @@ import { beforeEach, expect, vi } from "vite-plus/test";
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
-import { putMessages, storedCount, storedMessage, TEXT_CHANNEL } from "./__tests__/guild-messages";
+import {
+  putMessages,
+  storedCount,
+  storedMessage,
+  TEXT_CHANNEL,
+} from "./guild-messages.test.support";
 import { ingestDeliveries } from "./ingest-queue.server";
 import { requestWithdrawal, withdrawGuild } from "./withdraw-guild.server";
 

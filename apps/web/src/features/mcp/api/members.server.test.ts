@@ -3,9 +3,15 @@ import { setupNetwork } from "@msw/cloudflare";
 import { Array, DateTime, Effect, Option, pipe, Schema } from "effect";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
-import { seedMembers } from "./__tests__/member-seed";
-import { discordMembers, GUILD_A, GUILD_B, MEMBER_ROLE, seedScenario } from "./__tests__/scenario";
-import { callTool } from "./__tests__/tool-call";
+import { seedMembers } from "./member-seed.test.support";
+import {
+  discordMembers,
+  GUILD_A,
+  GUILD_B,
+  MEMBER_ROLE,
+  seedScenario,
+} from "./scenario.test.support";
+import { callTool } from "./tool-call.test.support";
 
 const ALICE = "801";
 const BOB = "802";

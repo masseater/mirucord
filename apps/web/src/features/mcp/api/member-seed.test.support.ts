@@ -6,7 +6,7 @@ import { guildStore } from "#/entities/guild-message/index.server";
 import { sealMember } from "#/shared/crypto/index.server";
 import { db, role } from "#/shared/db/index.server";
 
-import { guildKeys } from "./scenario";
+import { guildKeys } from "./scenario.test.support";
 
 type SeedMember = Readonly<{
   userId: string;

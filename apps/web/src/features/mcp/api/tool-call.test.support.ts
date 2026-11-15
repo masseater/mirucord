@@ -4,7 +4,7 @@ import { Array, Effect, Option, pipe, Schema, String as Str } from "effect";
 import { buildServer } from "#/features/mcp/api/tools.server";
 import { SITE_ORIGIN } from "#/shared/config";
 
-import { USER } from "./scenario";
+import { USER } from "./scenario.test.support";
 
 const SSE_DATA = "data: ";
 

@@ -6,14 +6,14 @@ import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
 import { spendNeurons } from "#/shared/ai/index.server";
 
-import { A_OPEN, A_STAFF, discordMembers, GUILD_A, seedScenario } from "./__tests__/scenario";
+import { A_OPEN, A_STAFF, discordMembers, GUILD_A, seedScenario } from "./scenario.test.support";
 import {
   answerEmbedding,
   drainAlarms,
   embeddedTexts,
   writeMessages,
-} from "./__tests__/similar-guild";
-import { callTool } from "./__tests__/tool-call";
+} from "./similar-guild.test.support";
+import { callTool } from "./tool-call.test.support";
 import { FindSimilarMessagesOutput } from "./tool-output";
 
 const RAMEN = "81";

@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./app-name": "./src/app-name.ts"
+    "./app-name": "./src/app-name.ts",
+    "./run-tasks": "./src/run-tasks.ts"
   },
   "dependencies": {
     "@alchemy.run/cloudflare": "catalog:stack",

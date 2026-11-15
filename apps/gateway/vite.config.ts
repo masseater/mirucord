@@ -1,10 +1,6 @@
+import { alchemyTasks } from "@repo/shared-util-app-name/run-tasks";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  run: {
-    tasks: {
-      deploy: { command: "alchemy deploy", cache: false },
-      destroy: { command: "alchemy destroy", cache: false },
-    },
-  },
+  run: { tasks: alchemyTasks },
 });

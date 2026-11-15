@@ -1,3 +1,4 @@
+import { alchemyTasks } from "@repo/shared-util-app-name/run-tasks";
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
@@ -24,8 +25,7 @@ export default defineConfig({
         "drizzle-kit check --config drizzle.guild.config.ts",
         `drizzle-kit generate --config drizzle.guild.config.ts --explain --output json | grep -q '"status":"no_changes"'`,
       ],
-      deploy: { command: "alchemy deploy", cache: false },
-      destroy: { command: "alchemy destroy", cache: false },
+      ...alchemyTasks,
       "deploy:ci": {
         command: "alchemy deploy --config alchemy.ci.ts --stage prod --env-file alchemy.ci.env",
         cache: false,

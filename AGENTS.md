@@ -17,8 +17,8 @@ mirucord は、Discord のサーバーを読むだけの MCP サーバーをホ�
 
 ## 構成
 
-- `apps/gateway` は Fly.io で動く dfx の Discord Gateway 接続で、受けたイベントをジョブにして Web の `/api/gateway` へ署名付きで POST する。ジョブの型・署名・パスは `libs/ingest/util-gateway-contract` が両者で共有する。
-- `apps/web/alchemy.run.ts` が本番の Worker、`apps/web/alchemy.ci.ts` が CI のトークンと GitHub の Secrets を持つ `mirucord-ci` スタックである。main の CI は web と gateway の両方をデプロイする。
+- Discord Gateway の接続と Web の Worker は別のワークスペースにあり、main の CI は両方をデプロイする。
+- ワークスペースを変更する前に、そのワークスペースの AGENTS.md を読む。
 
 ## コマンド
 
@@ -51,7 +51,6 @@ mirucord は、Discord のサーバーを読むだけの MCP サーバーをホ�
 ## 文書
 
 docs/ に新しいファイルを増やさない。既存のファイルを更新し、終わった計画や経緯は消す。
-リポジトリで管理するスキルは .claude/skills/ に置く。
 
 ## 配置
 

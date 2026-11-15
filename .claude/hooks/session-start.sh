@@ -15,5 +15,10 @@ cd "$CLAUDE_PROJECT_DIR"
 vp env on >&2
 vp install --frozen-lockfile >&2
 
+export FLYCTL_INSTALL="$HOME/.fly"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"
 echo "export PATH=\"\$HOME/.fly/bin:\$PATH\"" >>"$CLAUDE_ENV_FILE"
-.claude/hooks/flyctl.sh version >&2
+if ! command -v flyctl >/dev/null 2>&1; then
+  curl -fsSL https://fly.io/install.sh | sh -s -- --non-interactive >&2
+fi
+flyctl version >&2

@@ -17,8 +17,9 @@
     },
     "flyctl": {
       "type": "stdio",
-      "command": "bash",
-      "args": [".claude/hooks/flyctl.sh", "mcp", "server"]
+      "command": "flyctl",
+      "args": ["mcp", "server"],
+      "env": { "PATH": "${HOME}/.fly/bin:${PATH}" }
     }
   }
 }

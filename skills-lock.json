@@ -143,14 +143,14 @@
     },
     "how-to-use-react": {
       "source": "masseater/skills",
-      "ref": "f7980002625d132ae42ace39ae25444ffafeae8b",
+      "ref": "40c8069607f259ab20d7cfee82f7c29b29fc65ad",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/how-to-use-react/SKILL.md",
       "computedHash": "5212da88f156efd2e27456684749ed21a8ea609ef464a1f716b481875c364028"
     },
     "integrate": {
       "source": "masseater/skills",
-      "ref": "f7980002625d132ae42ace39ae25444ffafeae8b",
+      "ref": "40c8069607f259ab20d7cfee82f7c29b29fc65ad",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/integrate/SKILL.md",
       "computedHash": "a0a371d26ea3634aeecb293a469cca2b488f92ed8d602bb995ec8be9082e2d5d"
@@ -192,7 +192,7 @@
     },
     "measure-dont-guess": {
       "source": "masseater/skills",
-      "ref": "f7980002625d132ae42ace39ae25444ffafeae8b",
+      "ref": "40c8069607f259ab20d7cfee82f7c29b29fc65ad",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/measure-dont-guess/SKILL.md",
       "computedHash": "fb14f7dab81e75d2a3f3b9220a5829b21e3e0d4637b49d59f34b559db435c615"
@@ -213,7 +213,7 @@
     },
     "repo-conventions": {
       "source": "masseater/skills",
-      "ref": "f7980002625d132ae42ace39ae25444ffafeae8b",
+      "ref": "40c8069607f259ab20d7cfee82f7c29b29fc65ad",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/repo-conventions/SKILL.md",
       "computedHash": "ae24178d07d6b0fdf37e6e906aea01b07804fcbc23228a16488524dbd2fbbf8f"
@@ -227,7 +227,7 @@
     },
     "skill-authoring": {
       "source": "masseater/skills",
-      "ref": "f7980002625d132ae42ace39ae25444ffafeae8b",
+      "ref": "40c8069607f259ab20d7cfee82f7c29b29fc65ad",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/skill-authoring/SKILL.md",
       "computedHash": "637b2cbc95448d90b53e0ce928fe077fc63c1c06a3328845ea304ff74021cad9"
@@ -297,7 +297,7 @@
     },
     "vite-plus": {
       "source": "masseater/skills",
-      "ref": "f7980002625d132ae42ace39ae25444ffafeae8b",
+      "ref": "40c8069607f259ab20d7cfee82f7c29b29fc65ad",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/vite-plus/SKILL.md",
       "computedHash": "5ee8b5e12252c0451c4e170b1bec0126c810791e190965290c66b366ffba4453"

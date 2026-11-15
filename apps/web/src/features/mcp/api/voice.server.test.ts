@@ -25,12 +25,10 @@ const STILL_THERE = Option.getOrNull(Option.none<number>());
 const INSERT_SESSION =
   "INSERT INTO voice_session (userId, channelId, joinedAt, joinPrecision, leftAt, leavePrecision) VALUES (?, ?, ?, ?, ?, ?)";
 
-const at = (moment: DateTime.Utc): number => DateTime.toEpochMillis(moment);
-
 const SEEDED_SESSIONS: readonly (readonly (string | number | null)[])[] = [
-  [ALICE, A_OPEN, at(MORNING), "exact", at(NOON), "exact"],
-  [BOB, A_OPEN, at(NOON), "noLaterThan", STILL_THERE, STILL_THERE],
-  [ALICE, A_STAFF, at(EVENING), "exact", STILL_THERE, STILL_THERE],
+  [ALICE, A_OPEN, DateTime.toEpochMillis(MORNING), "exact", DateTime.toEpochMillis(NOON), "exact"],
+  [BOB, A_OPEN, DateTime.toEpochMillis(NOON), "noLaterThan", STILL_THERE, STILL_THERE],
+  [ALICE, A_STAFF, DateTime.toEpochMillis(EVENING), "exact", STILL_THERE, STILL_THERE],
 ];
 
 const Moment = Schema.Struct({ at: Schema.String, precision: Schema.String });

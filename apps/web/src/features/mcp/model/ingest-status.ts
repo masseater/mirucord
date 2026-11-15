@@ -84,7 +84,5 @@ const ingestStatus = (request: StatusRequest): IngestStatus => {
   return progressStatus(request.progress);
 };
 
-const isReady = (status: IngestStatus): boolean => READY.has(status);
-
-export { INGEST_STATUSES, ingestStatus, isReady };
+export { INGEST_STATUSES, READY, ingestStatus };
 export type { ChannelProgress, Consent, IngestStatus, StatusRequest };

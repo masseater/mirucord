@@ -37,12 +37,10 @@ const INSERT_REACTION =
 const INSERT_VOTE =
   "INSERT INTO poll_vote (messageId, channelId, userId, answerId, votedAt) VALUES (?, ?, ?, ?, ?)";
 
-const at = (moment: DateTime.Utc): number => DateTime.toEpochMillis(moment);
-
 const SEEDED_REACTIONS: readonly (readonly (string | number)[])[] = [
-  [POST, A_OPEN, ALICE, BOB, "👍", NOT_BURST, at(MORNING)],
-  [POST, A_OPEN, CAROL, BOB, "miku:555", NOT_BURST, at(NOON)],
-  [SECRET, A_STAFF, ALICE, BOB, "👍", NOT_BURST, at(NOON)],
+  [POST, A_OPEN, ALICE, BOB, "👍", NOT_BURST, DateTime.toEpochMillis(MORNING)],
+  [POST, A_OPEN, CAROL, BOB, "miku:555", NOT_BURST, DateTime.toEpochMillis(NOON)],
+  [SECRET, A_STAFF, ALICE, BOB, "👍", NOT_BURST, DateTime.toEpochMillis(NOON)],
 ];
 
 const Page = Schema.Struct({
@@ -69,7 +67,7 @@ const seedReactions = (): Promise<void> =>
     for (const row of SEEDED_REACTIONS) {
       state.storage.sql.exec(INSERT_REACTION, ...row);
     }
-    state.storage.sql.exec(INSERT_VOTE, POLL, A_OPEN, CAROL, ANSWER, at(NOON));
+    state.storage.sql.exec(INSERT_VOTE, POLL, A_OPEN, CAROL, ANSWER, DateTime.toEpochMillis(NOON));
   });
 
 const api = (path: string): string => `${RouteBases.api}${decodeURIComponent(path)}`;

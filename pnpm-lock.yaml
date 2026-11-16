@@ -331,8 +331,8 @@ catalogs:
       specifier: 3.42.0
       version: 3.42.0
     renovate:
-      specifier: 44.236.5
-      version: 44.236.5
+      specifier: 44.237.3
+      version: 44.237.3
     tailwindcss:
       specifier: 4.3.5
       version: 4.3.5
@@ -400,7 +400,7 @@ importers:
         version: 3.42.0
       renovate:
         specifier: catalog:stack
-        version: 44.236.5(supports-color@7.2.0)(typanion@3.14.0)
+        version: 44.237.3(supports-color@7.2.0)(typanion@3.14.0)
       skills:
         specifier: 'catalog:'
         version: 1.8.1
@@ -1455,6 +1455,15 @@ packages:
 
   '@containerbase/base@14.66.21':
     resolution: {integrity: sha512-/8lJd5meOFzLcAZ2HCwl4GD3RbvlpVqr5xUUgTLUzsmUXPjO3Zzh7MafCpIlCSuyom22pl6hSLeoz6gInEGoRA==}
+    engines: {node: '>=24.10.0'}
+    peerDependencies:
+      zod: ^4.0.0
+    peerDependenciesMeta:
+      zod:
+        optional: true
+
+  '@containerbase/base@14.66.25':
+    resolution: {integrity: sha512-UcvT+lvEWtbiDHvo4Hhhw1kqtflRTBXmBSn4YumHZ1ghgV1HImHpDl7a6QL+3c/TWDR4O+jO1n0UO771LZighg==}
     engines: {node: '>=24.10.0'}
     peerDependencies:
       zod: ^4.0.0
@@ -3402,8 +3411,8 @@ packages:
     peerDependencies:
       '@redis/client': ^6.2.1
 
-  '@renovatebot/base-image@13.165.7':
-    resolution: {integrity: sha512-puiZyVQFK7WFtxDqM+p6mDBGld2frn5u3CtU4YVZmp8E/b+bV8A3iJfyFo1gwi/9Vl8UXip2uV2rU5xtcpDQSQ==}
+  '@renovatebot/base-image@13.166.3':
+    resolution: {integrity: sha512-V2ZsLdmHVCdz9hOmWGNhSSDr+w/l5FSk/toDCyyw+565kfFXbRoGkszixW1tLRCbQYQHRjJXbsLMy9Th1YKHRg==}
     engines: {node: '>=24.10.0'}
     peerDependencies:
       zod: ^4.0.0
@@ -7395,10 +7404,6 @@ packages:
   minimalistic-assert@1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
 
-  minimatch@11.0.5:
-    resolution: {integrity: sha512-snPlVppFcYWfLLFQGhDxUyBcHNtMlWmn3jtj7pEaO+DP8pqL0IvAzXhMYmn1z9ASNtgmwLBdFxSf4tMUB0OTKA==}
-    engines: {node: 20 || >=22}
-
   minimatch@11.0.8:
     resolution: {integrity: sha512-nFQuYSTVrGvysVBps5Ih+0BdnYFN/Cj3C816r6+p7yK+FHrVLGE4O4N9AFwykrlNlvM2HYt+Rad1Uiro6h88Ig==}
     engines: {node: 20 || >=22}
@@ -7619,8 +7624,8 @@ packages:
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
     hasBin: true
 
-  node-html-parser@9.0.6:
-    resolution: {integrity: sha512-q3ETJ2gU+VlERyYbiJ5JQ6+mMVV1Bc6mZQ7MdJ30moq+h3oN0kQGj3rWDORaSX1SOLSkPbY/bN+sBzDlliVOBA==}
+  node-html-parser@9.0.7:
+    resolution: {integrity: sha512-0Io6nKYNN2e+QSoJFxU991Z8kX4H2Ogy3l14Ow0XxR2Wonk9l5qBonx1dYO97UyVfYJ1U9H0WHZOIZW6q5KPrA==}
 
   node-localstorage@2.2.1:
     resolution: {integrity: sha512-vv8fJuOUCCvSPjDjBLlMqYMHob4aGjkmrkaE42/mZr0VT+ZAU10jRF8oTnX9+pgU9/vYJ8P7YT3Vd6ajkmzSCw==}
@@ -8099,8 +8104,8 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
-  renovate@44.236.5:
-    resolution: {integrity: sha512-wTj1r2iWIa/dnd5+7swp1YCmIaK4jLKdN23M6WbOlxXbq+EMy4BX5cwe02RGq0/8mEwvRUXEtjnOlg0nhgZ2Rw==}
+  renovate@44.237.3:
+    resolution: {integrity: sha512-vHHEpnoLEfVz5kFWTuW+yvczvKcEgsT456UDYZVX4mnihW1wuIjKArvqetNriz3+skyHWxcuWl46/FX9RMZGmA==}
     engines: {node: ^24.11.0 || ^26.13.0, pnpm: ^11.0.0}
     hasBin: true
 
@@ -10270,6 +10275,12 @@ snapshots:
     optionalDependencies:
       zod: 4.6.7
 
+  '@containerbase/base@14.66.25(zod@4.6.7)':
+    dependencies:
+      semver: 7.8.6
+    optionalDependencies:
+      zod: 4.6.7
+
   '@conventional-changelog/template@1.4.0': {}
 
   '@corvu/utils@0.4.2(solid-js@1.9.15)':
@@ -11772,9 +11783,9 @@ snapshots:
     dependencies:
       '@redis/client': 6.2.1(@opentelemetry/api@1.10.0)
 
-  '@renovatebot/base-image@13.165.7(zod@4.6.7)':
+  '@renovatebot/base-image@13.166.3(zod@4.6.7)':
     dependencies:
-      '@containerbase/base': 14.66.21(zod@4.6.7)
+      '@containerbase/base': 14.66.25(zod@4.6.7)
     optionalDependencies:
       zod: 4.6.7
 
@@ -14183,7 +14194,7 @@ snapshots:
     dependencies:
       '@one-ini/wasm': 0.2.1
       commander: 14.0.3
-      minimatch: 11.0.5
+      minimatch: 11.0.8
       semver: 7.8.6
 
   effect@4.1.4: {}
@@ -14824,7 +14835,7 @@ snapshots:
 
   glob@14.0.3:
     dependencies:
-      minimatch: 11.0.5
+      minimatch: 11.0.8
       minipass: 7.1.3
       path-scurry: 3.0.0
 
@@ -14832,7 +14843,7 @@ snapshots:
     dependencies:
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 11.0.5
+      minimatch: 11.0.8
       once: 1.4.0
       path-is-absolute: 1.0.1
     optional: true
@@ -16095,11 +16106,6 @@ snapshots:
 
   minimalistic-assert@1.0.1: {}
 
-  minimatch@11.0.5:
-    dependencies:
-      '@isaacs/nonrecursive-glob-match': 1.1.0
-      brace-expansion: 5.0.12
-
   minimatch@11.0.8:
     dependencies:
       '@isaacs/nonrecursive-glob-match': 1.1.0
@@ -16296,7 +16302,7 @@ snapshots:
       which: 7.0.0
     optional: true
 
-  node-html-parser@9.0.6:
+  node-html-parser@9.0.7:
     dependencies:
       css-select: 5.2.2
       entities: 8.1.0
@@ -16953,7 +16959,7 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
-  renovate@44.236.5(supports-color@7.2.0)(typanion@3.14.0):
+  renovate@44.237.3(supports-color@7.2.0)(typanion@3.14.0):
     dependencies:
       '@aws-sdk/client-codecommit': 3.1139.0
       '@aws-sdk/client-ec2': 3.1139.0
@@ -16986,7 +16992,7 @@ snapshots:
       '@pnpm/parse-overrides': 1001.0.4
       '@qnighy/marshal': 0.1.3
       '@redis/client': 6.3.1(@opentelemetry/api@1.10.0)
-      '@renovatebot/base-image': 13.165.7(zod@4.6.7)
+      '@renovatebot/base-image': 13.166.3(zod@4.6.7)
       '@renovatebot/detect-tools': 5.0.0
       '@renovatebot/good-enough-parser': 4.0.3
       '@renovatebot/osv-offline': 4.5.10(supports-color@7.2.0)(zod@4.6.7)
@@ -17042,11 +17048,11 @@ snapshots:
       luxon: 3.7.2
       markdown-it: 15.0.3
       markdown-table: 3.1.0
-      minimatch: 11.0.5
+      minimatch: 11.0.8
       moo: 0.5.3
       ms: 2.1.3
       neotraverse: 1.0.1
-      node-html-parser: 9.0.6
+      node-html-parser: 9.0.7
       p-all: 5.0.1
       p-map: 7.1.1
       p-queue: 9.3.5

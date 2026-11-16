@@ -86,8 +86,6 @@ allowBuilds:
   dtrace-provider: false
   re2: true
   "@openrouter/sdk": false
-patchedDependencies:
-  "@better-auth/oauth-provider@^1.7.20": patches/@better-auth__oauth-provider.patch
 audit:
   ignorePrune: true
   ignore:

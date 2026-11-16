@@ -267,6 +267,13 @@
       "skillPath": "plugins/masseater-skills/skills/measure-postmortem/SKILL.md",
       "computedHash": "b3fd0885294550e3df2b7b99d745a5faffd54fa338dd71de80f8c527d1c1951d"
     },
+    "measure-readiness": {
+      "source": "masseater/skills",
+      "ref": "936c1d53cbc673845592aa9192d72d776dfc38bf",
+      "sourceType": "github",
+      "skillPath": "plugins/masseater-skills/skills/measure-readiness/SKILL.md",
+      "computedHash": "ae813252a0c32af52aaccac7595273494cb9aca18eddf5b77915a965abe52939"
+    },
     "modern-web-guidance": {
       "source": "GoogleChrome/modern-web-guidance",
       "ref": "64a6d708f5a43f2cd3fde5d4d7db3905ba1bdf65",

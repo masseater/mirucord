@@ -20,27 +20,19 @@ import { SERVICE_NAME } from "#/shared/config";
 import { find, findLike, readTool } from "./message-tools.server";
 import { PHRASES_DESCRIPTION } from "./phrases.server";
 import { serverWithRelationTools } from "./relation-tools.server";
-import {
-  listChannels,
-  listServers,
-  phrases,
-  PHRASES_HINT,
-  PHRASES_TOOL_NAME,
-} from "./server-tools.server";
-import { TOOL_BASE, UNTRUSTED_CONTENT } from "./tool-base";
-
-const INGEST_GUIDE = `Each channel carries \`ingest\`: only \`empty\` means the channel has no messages in Discord. \`notConsented\`, \`waiting\` and \`backfilling\` mean ${SERVICE_NAME} has not stored all of its messages yet, so an empty or short result does not mean the channel is empty; say so instead of reporting that there are no messages.`;
+import { listChannels, listServers, phrases, PHRASES_TOOL_NAME } from "./server-tools.server";
+import { TOOL_BASE } from "./tool-base";
 
 const LIST_SERVERS_TOOL = {
   title: "List servers",
-  description: `List the Discord servers you can read through ${SERVICE_NAME}. \`ingest\` is \`notConsented\` until the server's admin allows ${SERVICE_NAME} to store its messages; until then every channel reads as empty. ${PHRASES_HINT}`,
+  description: `List the Discord servers you can read through ${SERVICE_NAME}.`,
   ...TOOL_BASE,
   outputSchema: ListServersOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
 const LIST_CHANNELS_TOOL = {
   title: "List channels",
-  description: `List the text, voice, announcement, stage and forum channels and the threads (including forum posts) you can read in a server. \`oldestStoredAt\` is when the oldest message ${SERVICE_NAME} has stored for the channel was posted; nothing older can be found, so a person missing before that time may only be missing from the data. ${INGEST_GUIDE}`,
+  description: "List the channels and threads you can read in a server.",
   ...TOOL_BASE,
   outputSchema: ListChannelsOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: ListChannelsInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
@@ -59,7 +51,7 @@ const LIST_SERVER_PHRASES_TOOL = {
 
 const FIND_MESSAGES_TOOL = {
   title: "Find messages",
-  description: `Find messages whose text, image description, embed, sticker name or poll contains \`query\` exactly, ignoring letter case. Matching is literal, so try other wordings and synonyms yourself when a search finds little. \`total\` counts the matches in the searched channels, so it shows how often a topic comes up; for queries longer than three characters it can count a few messages that only contain the pieces of \`query\`. \`messages\` holds the exact matches among \`limit\` candidates, newest first, starting at \`offset\`, so it can hold fewer than \`limit\`; advance \`offset\` by \`limit\` to read the next page. \`notFullyIngested\` lists the searched channels whose messages are not all stored yet, so the count may be low. ${UNTRUSTED_CONTENT} ${INGEST_GUIDE}`,
+  description: "Find messages that contain exact words.",
   ...TOOL_BASE,
   outputSchema: FindMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: FindMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
@@ -67,7 +59,7 @@ const FIND_MESSAGES_TOOL = {
 
 const FIND_SIMILAR_MESSAGES_TOOL = {
   title: "Find similar messages",
-  description: `Find messages whose meaning is close to \`query\`, even when they share no words with it, most similar first. Write \`query\` as a sentence or a few words describing what you are looking for. Use it when \`find_messages\` finds nothing because people worded things differently; use \`find_messages\` for exact words, names and counts. \`score\` is the cosine similarity. The closest messages come back even when none is about \`query\`, so read them before treating them as matches. \`embedded\` of \`stored\` messages can be searched this way so far; older messages are added a day's share at a time, so say so when \`embedded\` is below \`stored\`. ${UNTRUSTED_CONTENT} ${INGEST_GUIDE}`,
+  description: "Find messages by meaning when find_messages misses other wordings.",
   ...TOOL_BASE,
   outputSchema: FindSimilarMessagesOutput.pipe(
     Schema.toStandardSchemaV1,
@@ -81,7 +73,7 @@ const FIND_SIMILAR_MESSAGES_TOOL = {
 
 const READ_MESSAGES_TOOL = {
   title: "Read messages",
-  description: `Read the latest messages, newest first: those of \`channelId\`, or those written by \`authorId\` across every channel and thread you can read (narrowed to \`channelId\` and its threads when both are given). Pass the oldest returned \`id\` as \`before\` to read further back. Each message carries \`authorId\`, the users it mentions (\`name\` is null when ${SERVICE_NAME} only knows the ID) and \`replyTo\`, the ID of the message it replies to; replies stored before 2026-11 have \`replyTo\` null. ${UNTRUSTED_CONTENT} ${INGEST_GUIDE}`,
+  description: "Read the latest messages of a channel or of one person, newest first.",
   ...TOOL_BASE,
   outputSchema: ReadMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: ReadMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),

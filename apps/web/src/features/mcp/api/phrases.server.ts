@@ -192,4 +192,4 @@ export const serverPhrases = ({
   );
 };
 
-export const PHRASES_DESCRIPTION = `List the short phrases, custom emoji and stickers that at least three members of a server used in the last ${PHRASE_WINDOW_DAYS} days, ranked by how often they appear here and how rarely in other servers. Everyday words that any server uses are left out. Each carries how many times and by how many people it was used, the channels it shows up in, examples with the message before it, and note, an AI-written line on how this server uses it (null when not written yet). Treat them as the server's own vocabulary: when you meet one while reading messages, it is a greeting, reaction or in-joke rather than news.`;
+export const PHRASES_DESCRIPTION = `List the phrases, custom emoji and stickers a server's members keep repeating. Call it once per server before reading messages.`;

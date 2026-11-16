@@ -48,7 +48,7 @@
       "ref": "936c1d53cbc673845592aa9192d72d776dfc38bf",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/cloudflare-caution/SKILL.md",
-      "computedHash": "fbfb796e333150b01a666eaf9413ea881bf73b2223af2d85198d5fa95a9515d1"
+      "computedHash": "b6a8d841340941b4a433dd9b9436be810ea4c5144f4fcb8989db0ee3aa6bae4f"
     },
     "commit-and-git": {
       "source": "philtzjp/skills",
@@ -188,7 +188,7 @@
       "ref": "936c1d53cbc673845592aa9192d72d776dfc38bf",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/how-to-use-react/SKILL.md",
-      "computedHash": "5212da88f156efd2e27456684749ed21a8ea609ef464a1f716b481875c364028"
+      "computedHash": "a3cce0bed6fa03a112b4b1a855e8a84b718bf98f3bc42791de0ea3ee1f614905"
     },
     "humanity-and-humanness": {
       "source": "masseater/skills",
@@ -244,7 +244,7 @@
       "ref": "936c1d53cbc673845592aa9192d72d776dfc38bf",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/masseater-ecosystem/SKILL.md",
-      "computedHash": "c8994c701b6f4d54f8433dff144e385710b19828e1ee7bfaf64631588397a5de"
+      "computedHash": "b63c8d4b8bcfbc8e49465016246860c7a9083962dfca3dc69dc581d7ef960fbc"
     },
     "measure-dont-guess": {
       "source": "masseater/skills",
@@ -279,7 +279,7 @@
       "ref": "936c1d53cbc673845592aa9192d72d776dfc38bf",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/project-checklist/SKILL.md",
-      "computedHash": "230f48c3f4c914ab71ec3498bc1c58d5119ff9320b3f969ecf64339c2cb24641"
+      "computedHash": "3c3a212dc6eef3b838889ffb3ea1aa862788e9f8a646d837452e3b6e6e57fb11"
     },
     "refresh-skills": {
       "source": "philtzjp/skills",
@@ -293,7 +293,7 @@
       "ref": "936c1d53cbc673845592aa9192d72d776dfc38bf",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/repo-conventions/SKILL.md",
-      "computedHash": "940123b4ef6f23555888aa6b8709efd7aa54c3e098a0effe003cab0f37e9d5e9"
+      "computedHash": "aebcadd6926b89f2e10fb3586ddfb0c8e29b6e11187f217afe2f7b34ae87b6e4"
     },
     "shadcn": {
       "source": "shadcn-ui/ui",
@@ -307,7 +307,7 @@
       "ref": "936c1d53cbc673845592aa9192d72d776dfc38bf",
       "sourceType": "github",
       "skillPath": "plugins/masseater-skills/skills/simplify-repo/SKILL.md",
-      "computedHash": "c1f5027d211bc4667e6ce7f3a557212110b28c8763b373b2b8159066596f9ec1"
+      "computedHash": "568da8602f890b68f248550578274aeb6c220164c3281bba2f1ead2f174c0458"
     },
     "skill-authoring": {
       "source": "masseater/skills",

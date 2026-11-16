@@ -14,7 +14,7 @@ import type { ToolSections } from "@r_masseater/msch/vite";
 import { workspaceSettings } from "@r_masseater/msch/workspace-settings";
 import type { RuleSets } from "@r_masseater/msch/workspace-settings";
 import { restrictedSyntax as unguardedWorkersAi } from "@r_masseater/workers-tracing/oxlint";
-import { Array as Arr, Record as Rec, pipe } from "effect";
+import { Array as Arr, pipe } from "effect";
 import { defineConfig } from "vite-plus";
 import type { UserConfig } from "vite-plus";
 
@@ -94,13 +94,6 @@ const overrides = [
   {
     files: ["**/*.test.ts"],
     rules: decisionTestRules,
-  },
-  {
-    files: ["**"],
-    rules: pipe(
-      decisionRules,
-      Rec.map(() => "off" as const),
-    ),
   },
 ] satisfies LintConfig["overrides"];
 

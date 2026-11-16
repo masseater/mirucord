@@ -1,7 +1,7 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import type { ManagedGuild } from "#/features/ingest/index.server";
+import type { ManagedGuild } from "#/features/ingest-messages/index.server";
 
 import { WaitingGuildLink } from "./waiting-guild-link";
 

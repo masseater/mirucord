@@ -1,7 +1,7 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import type { GuildSettings, SettingsChannel } from "#/features/ingest/index.server";
+import type { GuildSettings, SettingsChannel } from "#/features/ingest-messages/index.server";
 import { groupByCategory } from "#/pages/dashboard/model/channel-groups";
 
 import { CategoryHeading } from "./category-heading";

@@ -1,0 +1,96 @@
+import { Cause, Effect, Exit, Option, Schema } from "effect";
+
+import { INGEST_MAX_RETRIES, QueueJobSchema } from "#/features/ingest-messages/model/ingest-job";
+import type { QueueJob } from "#/features/ingest-messages/model/ingest-job";
+
+import { alertOperators } from "./alert-operators.server";
+import { ingestChannel } from "./ingest-channel.server";
+import { migrateMessages } from "./migrate-messages.server";
+import { catchUpGuild } from "./resync.server";
+import { syncMembers } from "./store-members.server";
+import { abandonWithdrawal, withdrawGuild } from "./withdraw-guild.server";
+import type { GuildDataRemainsError } from "./withdraw-guild.server";
+
+export type QueueDelivery = Readonly<{
+  body: unknown;
+  attempts: number;
+  ack: () => void;
+  retry: () => void;
+}>;
+
+const decodeJob = Schema.decodeUnknownEffect(QueueJobSchema);
+const encodeBody = Schema.encodeEffect(Schema.fromJsonString(Schema.Unknown));
+const UNENCODABLE_BODY = "(body is not JSON)";
+
+type JobError = Effect.Error<ReturnType<typeof ingestChannel>> | GuildDataRemainsError;
+
+const runJob = (job: QueueJob): Effect.Effect<void, JobError> => {
+  if (!("kind" in job)) {
+    return ingestChannel(job);
+  }
+  if (job.kind === "migrate") {
+    return migrateMessages;
+  }
+  if (job.kind === "catchUp") {
+    return catchUpGuild(job.guildId);
+  }
+  if (job.kind === "members") {
+    return syncMembers(job.guildId);
+  }
+  return withdrawGuild(job.guildId);
+};
+
+const undoJob = (job: QueueJob): Effect.Effect<void> => {
+  if ("kind" in job && job.kind === "withdraw") {
+    return abandonWithdrawal(job.guildId);
+  }
+  return Effect.void;
+};
+
+const undoDelivery = (body: unknown): Effect.Effect<void> =>
+  decodeJob(body).pipe(Effect.flatMap(undoJob), Effect.ignore);
+
+const giveUpOrRetry = (delivery: QueueDelivery, cause: Cause.Cause<unknown>): Effect.Effect<void> =>
+  Option.match(
+    Option.liftPredicate(delivery, ({ attempts }) => attempts > INGEST_MAX_RETRIES),
+    {
+      onNone: () => Effect.logWarning("Queue job failed; retrying"),
+      onSome: ({ body }) =>
+        encodeBody(body).pipe(
+          Effect.orElseSucceed(() => UNENCODABLE_BODY),
+          Effect.flatMap((text) => alertOperators(`Queue job gave up after retries: ${text}`)),
+          Effect.andThen(undoDelivery(body)),
+        ),
+    },
+  ).pipe(
+    Effect.annotateLogs({
+      job: delivery.body,
+      attempts: delivery.attempts,
+      cause: Cause.pretty(cause),
+    }),
+  );
+
+const processDelivery = (delivery: QueueDelivery): Effect.Effect<void> =>
+  decodeJob(delivery.body).pipe(
+    Effect.flatMap(runJob),
+    Effect.exit,
+    Effect.flatMap((exit) =>
+      Exit.match(exit, {
+        onSuccess: () =>
+          Effect.sync(() => {
+            delivery.ack();
+          }),
+        onFailure: (cause) =>
+          giveUpOrRetry(delivery, cause).pipe(
+            Effect.andThen(
+              Effect.sync(() => {
+                delivery.retry();
+              }),
+            ),
+          ),
+      }),
+    ),
+  );
+
+export const ingestDeliveries = (deliveries: readonly QueueDelivery[]): Effect.Effect<void> =>
+  Effect.forEach(deliveries, processDelivery, { concurrency: 1, discard: true });

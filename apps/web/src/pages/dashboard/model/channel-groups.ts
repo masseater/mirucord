@@ -1,6 +1,6 @@
 import { Array, Function, pipe } from "effect";
 
-import type { GuildSettings, SettingsChannel } from "#/features/ingest/index.server";
+import type { GuildSettings, SettingsChannel } from "#/features/ingest-messages/index.server";
 
 const DATA_FIRST_ARITY = 2;
 

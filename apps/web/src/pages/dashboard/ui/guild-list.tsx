@@ -1,7 +1,7 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import type { ManagedGuild } from "#/features/ingest/index.server";
+import type { ManagedGuild } from "#/features/ingest-messages/index.server";
 import { MASCOT_NAME } from "#/shared/config";
 import { Panel } from "#/shared/ui/panel";
 import { popButtonVariants } from "#/shared/ui/pop-variants";

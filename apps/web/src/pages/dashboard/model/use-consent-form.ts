@@ -4,7 +4,7 @@ import type { UseMutationResult } from "@tanstack/react-query";
 import { Atom } from "effect/reactivity";
 import { useCallback } from "react";
 
-import type { ConsentResult, GuildSettings } from "#/features/ingest/index.server";
+import type { ConsentResult, GuildSettings } from "#/features/ingest-messages/index.server";
 import { saveConsent } from "#/pages/dashboard/api/dashboard";
 import type { ConsentInput } from "#/pages/dashboard/api/dashboard.server";
 

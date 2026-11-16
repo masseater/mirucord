@@ -10,7 +10,7 @@ import type {
   GuildIngest,
   PurgeResult,
   RevokeResult,
-} from "#/features/ingest/index.server";
+} from "#/features/ingest-messages/index.server";
 
 import {
   consentTo,

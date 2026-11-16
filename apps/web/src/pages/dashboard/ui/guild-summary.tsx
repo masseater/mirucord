@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { ManagedGuild } from "#/features/ingest/index.server";
+import type { ManagedGuild } from "#/features/ingest-messages/index.server";
 
 import { IngestPill } from "./ingest-pill";
 

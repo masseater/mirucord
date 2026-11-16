@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { SettingsChannel } from "#/features/ingest/index.server";
+import type { SettingsChannel } from "#/features/ingest-messages/index.server";
 import { ChannelIcon } from "#/shared/ui/channel-icon";
 
 const KIND_LABEL = {

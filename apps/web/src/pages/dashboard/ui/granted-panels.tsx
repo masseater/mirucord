@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { GuildSettings } from "#/features/ingest/index.server";
+import type { GuildSettings } from "#/features/ingest-messages/index.server";
 
 import { IngestStatus } from "./ingest-status";
 import { McpUrlPanel } from "./mcp-url-panel";

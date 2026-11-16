@@ -1,6 +1,6 @@
 import { Array, pipe } from "effect";
 
-import type { ManagedGuild } from "#/features/ingest/index.server";
+import type { ManagedGuild } from "#/features/ingest-messages/index.server";
 import type { Dashboard } from "#/pages/dashboard/api/dashboard.server";
 
 export type ReadyDashboard = Extract<Dashboard, Readonly<{ status: "ready" }>>;

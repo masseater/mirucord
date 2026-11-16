@@ -1,7 +1,7 @@
 import { Array } from "effect";
 import type { ReactNode } from "react";
 
-import type { SettingsChannel } from "#/features/ingest/index.server";
+import type { SettingsChannel } from "#/features/ingest-messages/index.server";
 import { MASCOT_NAME } from "#/shared/config";
 import { IconLine } from "#/shared/ui/icon-line";
 

@@ -2,7 +2,7 @@ import type { MutationStatus } from "@tanstack/react-query";
 import { Option } from "effect";
 import type { ReactNode } from "react";
 
-import type { ConsentResult } from "#/features/ingest/index.server";
+import type { ConsentResult } from "#/features/ingest-messages/index.server";
 import {
   failure,
   fixable,

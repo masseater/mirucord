@@ -1,0 +1,116 @@
+import { eq } from "drizzle-orm";
+import { Array, Effect, Option, pipe } from "effect";
+
+import { guildStore } from "#/entities/guild-message/index.server";
+import { guildIngestOf } from "#/features/ingest-messages/model/channel-ingest";
+import type { GuildIngest } from "#/features/ingest-messages/model/channel-ingest";
+import type { ConsentScope } from "#/features/ingest-messages/model/consent-scope";
+import { db, ingestConsent } from "#/shared/db/index.server";
+import type { DiscordRequestError } from "#/shared/discord/index.server";
+
+import { managedGuild } from "./managed-guild.server";
+import type { GuildMembership } from "./managed-guild.server";
+import { loadChannels } from "./settings-channels.server";
+import type { SettingsCategory, SettingsChannel } from "./settings-channels.server";
+
+export type Consent =
+  | Readonly<{ status: "awaiting" }>
+  | Readonly<{ status: "withdrawing" }>
+  | Readonly<{
+      status: "granted";
+      grantedBy: string;
+      grantedAt: number;
+      noticeChannelId: string;
+    }>;
+
+export type ConsentedChannels = Readonly<{
+  categories: readonly SettingsCategory[];
+  channels: readonly SettingsChannel[];
+  consent: Consent;
+}>;
+
+export type GuildSettings = Readonly<{
+  id: string;
+  name: string;
+  categories: readonly SettingsCategory[];
+  channels: readonly SettingsChannel[];
+  consent: Consent;
+  ingest: GuildIngest;
+  storedMessages: number;
+}>;
+
+const loadConsent = (guildId: string): Effect.Effect<Consent> =>
+  Effect.promise(() =>
+    db.select().from(ingestConsent).where(eq(ingestConsent.guildId, guildId)),
+  ).pipe(
+    Effect.map((rows) =>
+      Option.match(Array.head(rows), {
+        onNone: (): Consent => ({ status: "awaiting" }),
+        onSome: (row): Consent => {
+          if (row.state === "withdrawing") {
+            return { status: "withdrawing" };
+          }
+          return {
+            status: "granted",
+            grantedBy: row.grantedBy,
+            grantedAt: row.grantedAt.getTime(),
+            noticeChannelId: row.noticeChannelId,
+          };
+        },
+      }),
+    ),
+  );
+
+const countMessages = (guildId: string): Effect.Effect<number> =>
+  Effect.promise(() => guildStore(guildId).count());
+
+const scopeOf = (consent: Consent): ConsentScope => {
+  if (consent.status === "granted") {
+    return consent;
+  }
+  return { status: "awaiting" };
+};
+
+export const loadConsentedChannels = (guildId: string): Effect.Effect<ConsentedChannels> =>
+  loadConsent(guildId).pipe(
+    Effect.flatMap((consent) =>
+      loadChannels({ guildId, scope: scopeOf(consent) }).pipe(
+        Effect.map((listed) => ({ ...listed, consent })),
+      ),
+    ),
+  );
+
+export const guildSettings = (
+  membership: GuildMembership,
+): Effect.Effect<Option.Option<GuildSettings>, DiscordRequestError> =>
+  managedGuild(membership).pipe(
+    Effect.flatMap(
+      Option.match({
+        onNone: () => Effect.succeedNone,
+        onSome: ({ name }) =>
+          Effect.all(
+            {
+              consented: loadConsentedChannels(membership.guildId),
+              storedMessages: countMessages(membership.guildId),
+            },
+            { concurrency: "unbounded" },
+          ).pipe(
+            Effect.map(({ consented, storedMessages }) => {
+              const channelIngest = pipe(
+                consented.channels,
+                Array.map(({ ingest }) => ingest),
+              );
+              return Option.some({
+                ...consented,
+                ingest: guildIngestOf(consented.consent.status, channelIngest),
+                storedMessages,
+                id: membership.guildId,
+                name,
+              });
+            }),
+          ),
+      }),
+    ),
+  );
+
+export type { SettingsCategory, SettingsChannel } from "./settings-channels.server";

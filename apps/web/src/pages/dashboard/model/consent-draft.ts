@@ -1,7 +1,7 @@
 import { Array, Function, Option, pipe } from "effect";
 
-import { isNoticeCandidate } from "#/features/ingest";
-import type { GuildSettings } from "#/features/ingest/index.server";
+import { isNoticeCandidate } from "#/features/ingest-messages";
+import type { GuildSettings } from "#/features/ingest-messages/index.server";
 
 const DATA_FIRST_ARITY = 2;
 export const NO_CHANNEL = "";

@@ -1,7 +1,7 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import { Array, Option } from "effect";
 
-import type { ForumPost } from "#/features/ingest/index.server";
+import type { ForumPost } from "#/features/ingest-messages/index.server";
 import type { ForumPostsOutcome } from "#/pages/dashboard/api/dashboard";
 
 export type ForumPostsView =

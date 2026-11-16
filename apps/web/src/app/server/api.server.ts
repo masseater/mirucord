@@ -5,7 +5,7 @@ import { Record } from "effect";
 import { t } from "elysia";
 import { CloudflareAdapter } from "elysia/adapter/cloudflare-worker";
 
-import { receiveGatewayEvent } from "#/features/ingest/index.server";
+import { receiveGatewayEvent } from "#/features/ingest-messages/index.server";
 import { getAuth } from "#/shared/auth/index.server";
 import { runTraced } from "#/shared/observability/index.server";
 

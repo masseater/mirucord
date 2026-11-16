@@ -1,7 +1,7 @@
 import { Effect, Option, pipe, String as Str } from "effect";
 
-import { ingestDeliveries } from "#/features/ingest/index.server";
-import { serveMcp } from "#/features/mcp/index.server";
+import { ingestDeliveries } from "#/features/ingest-messages/index.server";
+import { serveMcp } from "#/features/serve-mcp/index.server";
 import { MCP_URL } from "#/shared/config";
 import { runTraced } from "#/shared/observability/index.server";
 

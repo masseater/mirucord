@@ -1,13 +1,13 @@
 import { DateTime, Option, Schema } from "effect";
 
-const FIRST_OFFSET = 0;
+export const FIRST_OFFSET = 0;
 const MAX_LIMIT = 50;
 const DEFAULT_LIMIT = 20;
 const MAX_MEMBER_LIMIT = 200;
 const DEFAULT_MEMBER_LIMIT = 100;
 const MAX_MEMBER_IDS = 100;
 
-const limitOf = (limit: number | undefined): number =>
+export const limitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_LIMIT);
 
 const Offset = Schema.optionalKey(Schema.Int.check(Schema.isGreaterThanOrEqualTo(FIRST_OFFSET)));
@@ -15,21 +15,21 @@ const Limit = Schema.optionalKey(
   Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: MAX_LIMIT })),
 );
 
-const ListChannelsInput = Schema.Struct({ serverId: Schema.String });
-const FindMessagesInput = Schema.Struct({
+export const ListChannelsInput = Schema.Struct({ serverId: Schema.String });
+export const FindMessagesInput = Schema.Struct({
   serverId: Schema.String,
   query: Schema.NonEmptyString,
   channelId: Schema.optionalKey(Schema.String),
   limit: Limit,
   offset: Offset,
 });
-const FindSimilarMessagesInput = Schema.Struct({
+export const FindSimilarMessagesInput = Schema.Struct({
   serverId: Schema.String,
   query: Schema.NonEmptyString,
   channelId: Schema.optionalKey(Schema.String),
   limit: Limit,
 });
-const ReadMessagesInput = Schema.Struct({
+export const ReadMessagesInput = Schema.Struct({
   serverId: Schema.String,
   channelId: Schema.optionalKey(Schema.String),
   authorId: Schema.optionalKey(Schema.String),
@@ -40,7 +40,7 @@ const ReadMessagesInput = Schema.Struct({
 const Ids = Schema.Array(Schema.String).check(Schema.isMaxLength(MAX_MEMBER_IDS));
 const MemberLimit = Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: MAX_MEMBER_LIMIT }));
 
-const ListMembersInput = Schema.Struct({
+export const ListMembersInput = Schema.Struct({
   serverId: Schema.String,
   userIds: Schema.optionalKey(Ids),
   query: Schema.optionalKey(Schema.NonEmptyString),
@@ -59,30 +59,30 @@ const SpanFilter = {
   offset: Offset,
 };
 
-const ListVoiceSessionsInput = Schema.Struct(SpanFilter);
+export const ListVoiceSessionsInput = Schema.Struct(SpanFilter);
 
 const MessageRef = Schema.Struct({ channelId: Schema.String, messageId: Schema.String });
 
-const ListReactionsInput = Schema.Struct({
+export const ListReactionsInput = Schema.Struct({
   ...SpanFilter,
   message: Schema.optionalKey(MessageRef),
   authorIds: Schema.optionalKey(Ids),
 });
 
-const ListLinkedAccountsInput = Schema.Struct({
+export const ListLinkedAccountsInput = Schema.Struct({
   serverId: Schema.String,
   userIds: Ids,
 });
 
-const memberLimitOf = (limit: number | undefined): number =>
+export const memberLimitOf = (limit: number | undefined): number =>
   Option.getOrElse(Option.fromUndefinedOr(limit), () => DEFAULT_MEMBER_LIMIT);
 
-type SpanInput = Pick<
+export type SpanInput = Pick<
   typeof ListVoiceSessionsInput.Type,
   "userIds" | "since" | "until" | "limit" | "offset"
 >;
 
-type SpanLookup = Readonly<{
+export type SpanLookup = Readonly<{
   userIds: readonly string[] | null;
   since: number | null;
   until: number | null;
@@ -93,26 +93,10 @@ type SpanLookup = Readonly<{
 const millisOf = (at: DateTime.Utc | undefined): number | null =>
   Option.getOrNull(Option.map(Option.fromUndefinedOr(at), DateTime.toEpochMillis));
 
-const spanLookupOf = (input: SpanInput): SpanLookup => ({
+export const spanLookupOf = (input: SpanInput): SpanLookup => ({
   userIds: Option.getOrNull(Option.fromUndefinedOr(input.userIds)),
   since: millisOf(input.since),
   until: millisOf(input.until),
   limit: memberLimitOf(input.limit),
   offset: Option.getOrElse(Option.fromUndefinedOr(input.offset), () => FIRST_OFFSET),
 });
-
-export {
-  FindMessagesInput,
-  FindSimilarMessagesInput,
-  FIRST_OFFSET,
-  limitOf,
-  ListChannelsInput,
-  ListLinkedAccountsInput,
-  ListMembersInput,
-  ListReactionsInput,
-  ListVoiceSessionsInput,
-  memberLimitOf,
-  ReadMessagesInput,
-  spanLookupOf,
-};
-export type { SpanInput, SpanLookup };

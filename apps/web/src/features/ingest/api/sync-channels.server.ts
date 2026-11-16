@@ -104,10 +104,8 @@ const upsertChannels = (sync: ChannelSync): Effect.Effect<void> =>
     ),
   );
 
-const syncChannels = (sync: ChannelSync): Effect.Effect<void> =>
+export const syncChannels = (sync: ChannelSync): Effect.Effect<void> =>
   settleStoredChannels(sync).pipe(
     Effect.andThen(upsertChannels(sync)),
     Effect.andThen(refreshPendingIngest(sync.discordGuild.id)),
   );
-
-export { syncChannels };

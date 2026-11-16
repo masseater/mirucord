@@ -17,7 +17,7 @@ const FIRST_OFFSET = 0;
 
 type MemberView = (typeof ListMembersOutput.Type)["members"][number];
 
-type MemberRequest = Readonly<{ scope: GuildScope; input: typeof ListMembersInput.Type }>;
+export type MemberRequest = Readonly<{ scope: GuildScope; input: typeof ListMembersInput.Type }>;
 
 const isoOf = (at: number | null): string | null =>
   Option.getOrNull(
@@ -96,7 +96,10 @@ const pageOf = <Item>(items: readonly Item[], { input }: MemberRequest): readonl
   return items.slice(offset, offset + memberLimitOf(input.limit));
 };
 
-const storedMembers = ({ scope, input }: MemberRequest): Effect.Effect<readonly StoredMember[]> => {
+export const storedMembers = ({
+  scope,
+  input,
+}: MemberRequest): Effect.Effect<readonly StoredMember[]> => {
   const userIds = Option.fromUndefinedOr(input.userIds);
   return Effect.promise(() =>
     guildStore(scope.guild.guildId).readMembers({
@@ -128,7 +131,7 @@ const membersOf = (request: MemberRequest): Effect.Effect<typeof ListMembersOutp
     Effect.map((found) => ({ ingest: "consented" as const, ...found })),
   );
 
-const listMembers =
+export const listMembers =
   (discordUserId: string) =>
   (input: typeof ListMembersInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: input.serverId, discordUserId })((scope) => {
@@ -141,6 +144,3 @@ const listMembers =
       }
       return membersOf({ scope, input }).pipe(Effect.flatMap(structuredResult));
     });
-
-export { listMembers, storedMembers };
-export type { MemberRequest };

@@ -6,12 +6,12 @@ const DashboardSearchSchema = Schema.Struct({ from: Schema.optional(Schema.Liter
 
 type DashboardSearch = typeof DashboardSearchSchema.Type;
 
-type Landing =
+export type Landing =
   | Readonly<{ status: "stay" }>
   | Readonly<{ status: "tidy" }>
   | Readonly<{ status: "consent"; guildId: string }>;
 
-const validateDashboardSearch = Schema.toStandardSchemaV1(DashboardSearchSchema);
+export const validateDashboardSearch = Schema.toStandardSchemaV1(DashboardSearchSchema);
 
 const STAY: Landing = { status: "stay" };
 const TIDY: Landing = { status: "tidy" };
@@ -25,7 +25,7 @@ const awaitingGuildOf = (dashboard: Dashboard): Option.Option<string> => {
   );
 };
 
-const landingOf = ({
+export const landingOf = ({
   dashboard,
   search,
 }: Readonly<{ dashboard: Dashboard; search: DashboardSearch }>): Landing => {
@@ -37,6 +37,3 @@ const landingOf = ({
     onSome: (guildId): Landing => ({ status: "consent", guildId }),
   });
 };
-
-export { landingOf, validateDashboardSearch };
-export type { Landing };

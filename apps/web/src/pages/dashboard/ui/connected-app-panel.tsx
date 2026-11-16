@@ -8,7 +8,9 @@ import { ConnectedAppRow } from "./connected-app-row";
 
 const TITLE = "つないでいるアプリ";
 
-const ConnectedAppPanel = ({ apps }: Readonly<{ apps: readonly ConnectedApp[] }>): ReactNode =>
+export const ConnectedAppPanel = ({
+  apps,
+}: Readonly<{ apps: readonly ConnectedApp[] }>): ReactNode =>
   Array.isReadonlyArrayNonEmpty(apps) && (
     <Panel>
       <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
@@ -20,5 +22,3 @@ const ConnectedAppPanel = ({ apps }: Readonly<{ apps: readonly ConnectedApp[] }>
       </ul>
     </Panel>
   );
-
-export { ConnectedAppPanel };

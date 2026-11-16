@@ -1,4 +1,4 @@
-type StoredReaction = Readonly<{
+export type StoredReaction = Readonly<{
   messageId: string;
   channelId: string;
   userId: string;
@@ -8,7 +8,7 @@ type StoredReaction = Readonly<{
   reactedAt: number;
 }>;
 
-type StoredVote = Readonly<{
+export type StoredVote = Readonly<{
   messageId: string;
   channelId: string;
   userId: string;
@@ -16,7 +16,7 @@ type StoredVote = Readonly<{
   votedAt: number;
 }>;
 
-type ReactionLookup = Readonly<{
+export type ReactionLookup = Readonly<{
   channelIds: readonly string[];
   messageId: string | null;
   userIds: readonly string[] | null;
@@ -27,11 +27,9 @@ type ReactionLookup = Readonly<{
   offset: number;
 }>;
 
-type ReactionPage = Readonly<{
+export type ReactionPage = Readonly<{
   reactionTotal: number;
   reactions: readonly StoredReaction[];
   voteTotal: number;
   votes: readonly StoredVote[];
 }>;
-
-export type { ReactionLookup, ReactionPage, StoredReaction, StoredVote };

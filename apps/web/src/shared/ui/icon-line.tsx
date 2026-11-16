@@ -36,7 +36,7 @@ const iconLineVariants = cva("flex items-start gap-2", {
   },
 });
 
-const IconLine = ({
+export const IconLine = ({
   icon,
   role,
   tone = "plain",
@@ -57,5 +57,3 @@ const IconLine = ({
     </span>
   );
 };
-
-export { IconLine };

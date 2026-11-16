@@ -13,7 +13,7 @@ import type { GuildMembership } from "./managed-guild.server";
 import { loadChannels } from "./settings-channels.server";
 import type { SettingsCategory, SettingsChannel } from "./settings-channels.server";
 
-type Consent =
+export type Consent =
   | Readonly<{ status: "awaiting" }>
   | Readonly<{ status: "withdrawing" }>
   | Readonly<{
@@ -23,13 +23,13 @@ type Consent =
       noticeChannelId: string;
     }>;
 
-type ConsentedChannels = Readonly<{
+export type ConsentedChannels = Readonly<{
   categories: readonly SettingsCategory[];
   channels: readonly SettingsChannel[];
   consent: Consent;
 }>;
 
-type GuildSettings = Readonly<{
+export type GuildSettings = Readonly<{
   id: string;
   name: string;
   categories: readonly SettingsCategory[];
@@ -71,7 +71,7 @@ const scopeOf = (consent: Consent): ConsentScope => {
   return { status: "awaiting" };
 };
 
-const loadConsentedChannels = (guildId: string): Effect.Effect<ConsentedChannels> =>
+export const loadConsentedChannels = (guildId: string): Effect.Effect<ConsentedChannels> =>
   loadConsent(guildId).pipe(
     Effect.flatMap((consent) =>
       loadChannels({ guildId, scope: scopeOf(consent) }).pipe(
@@ -80,7 +80,7 @@ const loadConsentedChannels = (guildId: string): Effect.Effect<ConsentedChannels
     ),
   );
 
-const guildSettings = (
+export const guildSettings = (
   membership: GuildMembership,
 ): Effect.Effect<Option.Option<GuildSettings>, DiscordRequestError> =>
   managedGuild(membership).pipe(
@@ -113,6 +113,4 @@ const guildSettings = (
     ),
   );
 
-export { guildSettings, loadConsentedChannels };
-export type { Consent, ConsentedChannels, GuildSettings };
 export type { SettingsCategory, SettingsChannel } from "./settings-channels.server";

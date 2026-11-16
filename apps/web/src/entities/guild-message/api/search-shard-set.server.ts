@@ -11,15 +11,18 @@ import type { SearchHead } from "./search-files.server";
 import { required } from "./search-page.server";
 import type { MissingFile } from "./search-page.server";
 
-const invalidOf = ({
+export const invalidOf = ({
   head,
   segment,
 }: Readonly<{ head: SearchHead; segment: string }>): ReadonlySet<number> =>
   new Set(Option.getOrElse(Record.get(head.invalid, segment), () => []));
 
-type ShardSet = Readonly<{ count: number; shardAt: (shard: number) => Option.Option<ArrayBuffer> }>;
+export type ShardSet = Readonly<{
+  count: number;
+  shardAt: (shard: number) => Option.Option<ArrayBuffer>;
+}>;
 
-const allViews = ({
+export const allViews = ({
   set,
   tokens,
 }: Readonly<{ set: ShardSet; tokens: readonly number[] }>): Option.Option<
@@ -37,7 +40,7 @@ const allViews = ({
   );
 };
 
-const readShardSet = ({
+export const readShardSet = ({
   tokens,
   shardCount,
   keyOf,
@@ -81,7 +84,7 @@ const readShardSet = ({
     }),
   );
 
-const matched = ({
+export const matched = ({
   views,
   filter,
 }: Readonly<{ views: Option.Option<readonly PostingView[]>; filter: Filter }>): readonly number[] =>
@@ -89,6 +92,3 @@ const matched = ({
     onNone: () => [],
     onSome: (found) => matchPostings({ views: found, filter }),
   });
-
-export { allViews, invalidOf, matched, readShardSet };
-export type { ShardSet };

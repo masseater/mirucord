@@ -6,7 +6,7 @@ const encodeBeaconConfig = Schema.encodeEffect(
   Schema.fromJsonString(Schema.Struct({ token: Schema.String })),
 );
 
-const webAnalyticsBeacon = (
+export const webAnalyticsBeacon = (
   token: string,
 ): Effect.Effect<
   Readonly<{ src: string; defer: true; "data-cf-beacon": string }>,
@@ -19,5 +19,3 @@ const webAnalyticsBeacon = (
       "data-cf-beacon": config,
     })),
   );
-
-export { webAnalyticsBeacon };

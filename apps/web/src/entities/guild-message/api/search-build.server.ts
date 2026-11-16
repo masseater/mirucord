@@ -21,7 +21,7 @@ import { searchRows } from "./search-rows.server";
 
 const NO_CHANNEL = 0;
 
-type Publisher = Readonly<{
+export type Publisher = Readonly<{
   db: DrizzleSqliteDODatabase;
   bucket: Readonly<R2Bucket>;
   guildId: string;
@@ -29,7 +29,7 @@ type Publisher = Readonly<{
   flush: Flush;
 }>;
 
-type BuiltPiece = Readonly<{
+export type BuiltPiece = Readonly<{
   entry: Readonly<{ name: string; count: number; shards: number }>;
   ids: readonly string[];
   range: Range;
@@ -97,9 +97,13 @@ const indexFiles = (
   return buildIndex(rows).shards;
 };
 
-type PieceBuild = Readonly<{ publisher: Publisher; kind: Segment["kind"]; piece: PieceSpec }>;
+export type PieceBuild = Readonly<{
+  publisher: Publisher;
+  kind: Segment["kind"];
+  piece: PieceSpec;
+}>;
 
-const buildPiece = ({
+export const buildPiece = ({
   publisher,
   kind,
   piece: { range, rows },
@@ -122,14 +126,14 @@ const buildPiece = ({
   );
 };
 
-type Recorded = Readonly<{
+export type Recorded = Readonly<{
   publisher: Publisher;
   kind: Segment["kind"];
   pieces: readonly BuiltPiece[];
   built: number;
 }>;
 
-const recordPieces = ({ publisher: { db, now }, kind, pieces, built }: Recorded): void => {
+export const recordPieces = ({ publisher: { db, now }, kind, pieces, built }: Recorded): void => {
   for (const { entry, ids, range } of pieces) {
     db.insert(searchSegment)
       .values({
@@ -153,6 +157,3 @@ const recordPieces = ({ publisher: { db, now }, kind, pieces, built }: Recorded)
     );
   }
 };
-
-export { buildPiece, recordPieces };
-export type { BuiltPiece, PieceBuild, Publisher, Recorded };

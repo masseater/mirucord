@@ -26,7 +26,7 @@ const resultState = (copied: boolean): CopyState =>
     Match.orElse(() => FAILED),
   );
 
-const CopyBlock = ({ text }: Readonly<{ text: string }>): ReactNode => {
+export const CopyBlock = ({ text }: Readonly<{ text: string }>): ReactNode => {
   const copyStateAtom = useMemo(() => Atom.make<CopyState>(IDLE), []);
   const [state, setState] = useAtom(copyStateAtom);
   const [, copyToClipboard] = useCopyToClipboard();
@@ -64,5 +64,3 @@ const CopyBlock = ({ text }: Readonly<{ text: string }>): ReactNode => {
     </div>
   );
 };
-
-export { CopyBlock };

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { popButtonVariants } from "./pop-variants";
 
-const PopButton = ({
+export const PopButton = ({
   tone,
   size = "md",
   disabled,
@@ -24,5 +24,3 @@ const PopButton = ({
     {children}
   </button>
 );
-
-export { PopButton };

@@ -6,13 +6,13 @@ import { botInviteUrl } from "#/shared/discord/index.server";
 
 const NO_GUILDS = 0;
 
-type Invite =
+export type Invite =
   | Readonly<{ status: "open"; url: string; remaining: number }>
   | Readonly<{ status: "full"; limit: number }>;
 
 const registeredGuilds: Effect.Effect<number> = Effect.promise(() => db.$count(guild));
 
-const invite: Effect.Effect<Invite> = Effect.all({
+export const invite: Effect.Effect<Invite> = Effect.all({
   limit: guildLimit,
   registered: registeredGuilds,
 }).pipe(
@@ -27,6 +27,3 @@ const invite: Effect.Effect<Invite> = Effect.all({
     );
   }),
 );
-
-export { invite };
-export type { Invite };

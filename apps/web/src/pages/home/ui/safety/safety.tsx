@@ -7,11 +7,9 @@ import { SafetyBody } from "./safety-body";
 
 const CHANNEL = "あんしん";
 
-const Safety = (): ReactNode => (
+export const Safety = (): ReactNode => (
   <ChannelSection id="safety">
     <ChannelHeader name={CHANNEL} />
     <SafetyBody />
   </ChannelSection>
 );
-
-export { Safety };

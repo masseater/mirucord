@@ -11,7 +11,7 @@ import { rewrapWhileRotating } from "./rewrap-keys.server";
 import { syncMembers } from "./store-members.server";
 import { syncOneGuild } from "./sync-guilds.server";
 
-const resyncGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled(
+export const resyncGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled(
   Effect.gen(function* resync() {
     yield* rewrapWhileRotating;
     const { admitted } = yield* reconcileMembership;
@@ -23,10 +23,8 @@ const resyncGuilds: Effect.Effect<void, DiscordRequestError> = whenIngestEnabled
   }),
 );
 
-const catchUpGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+export const catchUpGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   syncOneGuild(guildId).pipe(
     Effect.andThen(syncMembers(guildId)),
     Effect.andThen(refreshIngest(guildId)),
   );
-
-export { catchUpGuild, resyncGuilds };

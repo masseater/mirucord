@@ -31,7 +31,7 @@ const STORED_TYPES: ReadonlySet<number> = new Set([
 const DESCRIBED_IMAGES_PER_MESSAGE = 4;
 const WITH_RICH_BODY = `${DESCRIBE_MODEL}+rich`;
 
-type StoreTarget = Readonly<{
+export type StoreTarget = Readonly<{
   key: CryptoKey;
   searchKey: CryptoKey;
   commonKey: CryptoKey;
@@ -220,7 +220,7 @@ const writeMessages = (
     ),
   );
 
-const storeMessages = ({
+export const storeMessages = ({
   page,
   ...target
 }: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<void> => {
@@ -254,6 +254,3 @@ const storeMessages = ({
     Effect.flatMap((stale) => writeMessages(target, stale)),
   );
 };
-
-export { storeMessages };
-export type { StoreTarget };

@@ -4,7 +4,7 @@ import { Array, Option } from "effect";
 import type { ForumPost } from "#/features/ingest/index.server";
 import type { ForumPostsOutcome } from "#/pages/dashboard/api/dashboard";
 
-type ForumPostsView =
+export type ForumPostsView =
   | Readonly<{ status: "loading" }>
   | Readonly<{ status: "failed" }>
   | Readonly<{ status: "unavailable" }>
@@ -28,7 +28,7 @@ const viewOfOutcome = (outcome: ForumPostsOutcome): ForumPostsView => {
   return { status: "listed", posts: outcome.posts };
 };
 
-const forumPostsViewOf = ({
+export const forumPostsViewOf = ({
   status,
   data,
 }: Readonly<Pick<UseQueryResult<ForumPostsOutcome>, "data" | "status">>): ForumPostsView => {
@@ -41,8 +41,6 @@ const forumPostsViewOf = ({
   });
 };
 
-const forumPostsNote = (view: Exclude<ForumPostsView, Readonly<{ status: "listed" }>>): string =>
-  NOTE[view.status];
-
-export { forumPostsNote, forumPostsViewOf };
-export type { ForumPostsView };
+export const forumPostsNote = (
+  view: Exclude<ForumPostsView, Readonly<{ status: "listed" }>>,
+): string => NOTE[view.status];

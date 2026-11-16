@@ -9,7 +9,7 @@ import type { ReactionLookup, ReactionPage } from "./reaction-ledger.server";
 import { voiceLedger } from "./voice-ledger.server";
 import type { VoiceChangeWrite, VoiceLookup, VoicePage, VoiceSnapshotWrite } from "./voice-types";
 
-abstract class RelationStore extends NoteStore {
+export abstract class RelationStore extends NoteStore {
   readonly #members = memberLedger(this.db);
 
   readonly #voice = voiceLedger(this.db);
@@ -76,5 +76,3 @@ abstract class RelationStore extends NoteStore {
     return super.eraseAuthor(authorId);
   }
 }
-
-export { RelationStore };

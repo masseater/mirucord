@@ -7,11 +7,9 @@ import { FeaturesBody } from "./features-body";
 
 const CHANNEL = "とくちょう";
 
-const Features = (): ReactNode => (
+export const Features = (): ReactNode => (
   <ChannelSection id="features">
     <ChannelHeader name={CHANNEL} />
     <FeaturesBody />
   </ChannelSection>
 );
-
-export { Features };

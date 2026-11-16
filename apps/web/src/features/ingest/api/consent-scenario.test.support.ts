@@ -5,15 +5,15 @@ import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
 const OWNER = "901";
-const AWAITING = "400";
-const GRANTED = "500";
+export const AWAITING = "400";
+export const GRANTED = "500";
 const OTHER = "600";
 const AWAITING_CHANNEL = "410";
-const READABLE = "510";
+export const READABLE = "510";
 const HIDDEN = "520";
 const OTHER_CHANNEL = "610";
-const CAUGHT_UP = "700";
-const CAUGHT_UP_CHANNEL = "710";
+export const CAUGHT_UP = "700";
+export const CAUGHT_UP_CHANNEL = "710";
 const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 
 type ScenarioGuild = Readonly<{
@@ -44,7 +44,7 @@ const GUILDS: readonly ScenarioGuild[] = [
   },
 ];
 
-const JOBS_OUTSIDE_SCOPE = [
+export const JOBS_OUTSIDE_SCOPE = [
   { guildId: AWAITING, channelId: AWAITING_CHANNEL },
   { guildId: GRANTED, channelId: HIDDEN },
   { guildId: GRANTED, channelId: OTHER_CHANNEL },
@@ -94,16 +94,6 @@ const seedConsents = (): Promise<unknown> =>
     ),
   );
 
-const seedScenario = Effect.forEach(GUILDS, seedGuild, { discard: true }).pipe(
+export const seedScenario = Effect.forEach(GUILDS, seedGuild, { discard: true }).pipe(
   Effect.andThen(Effect.promise(seedConsents)),
 );
-
-export {
-  AWAITING,
-  CAUGHT_UP,
-  CAUGHT_UP_CHANNEL,
-  GRANTED,
-  JOBS_OUTSIDE_SCOPE,
-  READABLE,
-  seedScenario,
-};

@@ -133,7 +133,7 @@ const rebuildAll = (publisher: Publisher): Effect.Effect<Rebuilt> => {
   );
 };
 
-const publishSearch = (publisher: Publisher): Effect.Effect<Option.Option<number>> => {
+export const publishSearch = (publisher: Publisher): Effect.Effect<Option.Option<number>> => {
   const { bucket, guildId } = publisher;
   const archiving = Effect.suspend(() =>
     archiveStep({
@@ -161,5 +161,3 @@ const publishSearch = (publisher: Publisher): Effect.Effect<Option.Option<number
     Effect.withSpan("search.publish", { attributes: { guildId } }),
   );
 };
-
-export { publishSearch };

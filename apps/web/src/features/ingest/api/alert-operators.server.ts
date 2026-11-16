@@ -9,7 +9,7 @@ const webhookUrl: Effect.Effect<Option.Option<string>> = Config.option(
   .parse(ConfigProvider.fromUnknown(env))
   .pipe(Effect.map(Option.map(Redacted.value)), Effect.orDie);
 
-const alertOperators = (content: string): Effect.Effect<void> =>
+export const alertOperators = (content: string): Effect.Effect<void> =>
   Effect.logError(content).pipe(
     Effect.andThen(webhookUrl),
     Effect.flatMap(
@@ -24,5 +24,3 @@ const alertOperators = (content: string): Effect.Effect<void> =>
       }),
     ),
   );
-
-export { alertOperators };

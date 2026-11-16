@@ -4,7 +4,11 @@ import type { GuildSettings, SettingsChannel } from "#/features/ingest/index.ser
 
 const DATA_FIRST_ARITY = 2;
 
-type ChannelGroup = Readonly<{ id: string; name: string; channels: readonly SettingsChannel[] }>;
+export type ChannelGroup = Readonly<{
+  id: string;
+  name: string;
+  channels: readonly SettingsChannel[];
+}>;
 
 const UNCATEGORIZED = { id: "", name: "" } as const;
 
@@ -25,10 +29,7 @@ const groupByCategoryDataFirst = (
     Array.filter((group) => Array.isReadonlyArrayNonEmpty(group.channels)),
   );
 
-const groupByCategory: {
+export const groupByCategory: {
   (channels: readonly SettingsChannel[]): (settings: GuildSettings) => readonly ChannelGroup[];
   (settings: GuildSettings, channels: readonly SettingsChannel[]): readonly ChannelGroup[];
 } = Function.dual(DATA_FIRST_ARITY, groupByCategoryDataFirst);
-
-export { groupByCategory };
-export type { ChannelGroup };

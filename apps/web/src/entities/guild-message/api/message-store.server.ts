@@ -42,7 +42,7 @@ type Seq = Readonly<{ seq: number }>;
 
 type Versioned = StoredRow & Readonly<{ tokens: readonly number[]; version: number }>;
 
-abstract class MessageStore extends TracedDurableObject {
+export abstract class MessageStore extends TracedDurableObject {
   protected readonly db = this.#open();
 
   protected abstract recordPhrases(message: UnphrasedMessage, hashes: ExtractedHashes): void;
@@ -276,5 +276,3 @@ abstract class MessageStore extends TracedDurableObject {
       .all();
   }
 }
-
-export { MessageStore };

@@ -11,33 +11,33 @@ import { loadScope } from "./consent-scope.server";
 import { storeMessages } from "./store-messages.server";
 import type { StoreTarget } from "./store-messages.server";
 
-type IngestError = DiscordRequestError;
+export type IngestError = DiscordRequestError;
 
 const SnowflakeOrder: Order.Order<string> = Order.mapInput(Order.BigInt, BigInt);
 
-const newestId = (ids: readonly string[]): Option.Option<string> =>
+export const newestId = (ids: readonly string[]): Option.Option<string> =>
   Array.match(ids, {
     onEmpty: () => Option.none(),
     onNonEmpty: (nonEmpty) => Option.some(Array.max(nonEmpty, SnowflakeOrder)),
   });
 
-const oldestId = (ids: readonly string[]): Option.Option<string> =>
+export const oldestId = (ids: readonly string[]): Option.Option<string> =>
   Array.match(ids, {
     onEmpty: () => Option.none(),
     onNonEmpty: (nonEmpty) => Option.some(Array.min(nonEmpty, SnowflakeOrder)),
   });
 
-const isNewerThan = Order.isGreaterThan(SnowflakeOrder);
+export const isNewerThan = Order.isGreaterThan(SnowflakeOrder);
 
-const idsOf = (page: readonly DiscordMessage[]): readonly string[] =>
+export const idsOf = (page: readonly DiscordMessage[]): readonly string[] =>
   pipe(
     page,
     Array.map(({ id }) => id),
   );
 
-const isFullPage = (page: readonly DiscordMessage[]): boolean => page.length >= PAGE_SIZE;
+export const isFullPage = (page: readonly DiscordMessage[]): boolean => page.length >= PAGE_SIZE;
 
-const storeConsented = ({
+export const storeConsented = ({
   page,
   ...target
 }: StoreTarget & Readonly<{ page: readonly DiscordMessage[] }>): Effect.Effect<void> =>
@@ -50,7 +50,7 @@ const storeConsented = ({
     }),
   );
 
-const fetchAndStore = ({
+export const fetchAndStore = ({
   target,
   request,
 }: Readonly<{ target: StoreTarget; request: MessagePage }>): Effect.Effect<
@@ -61,6 +61,4 @@ const fetchAndStore = ({
     Effect.tap((page) => storeConsented({ ...target, page })),
   );
 
-export { fetchAndStore, idsOf, storeConsented, isFullPage, isNewerThan, newestId, oldestId };
-export type { IngestError };
 export type { StoreTarget } from "./store-messages.server";

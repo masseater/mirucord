@@ -8,11 +8,10 @@ import type { Invite } from "./invite.server";
 
 const getInvite = createServerFn({ method: "GET" }).handler(() => run(invite));
 
-const inviteQuery = queryOptions({
+export const inviteQuery = queryOptions({
   queryKey: ["invite"],
   queryFn: () => getInvite(),
 });
 
-const loadHomePage = (queryClient: QueryClient): Promise<Invite> => queryClient.query(inviteQuery);
-
-export { inviteQuery, loadHomePage };
+export const loadHomePage = (queryClient: QueryClient): Promise<Invite> =>
+  queryClient.query(inviteQuery);

@@ -12,7 +12,7 @@ const ISSUES_URL = `${REPOSITORY_URL}/issues`;
 
 type Section = Readonly<{ heading: string; paragraphs: readonly string[] }>;
 
-const LegalDocument = ({
+export const LegalDocument = ({
   title,
   sections,
 }: Readonly<{ title: string; sections: readonly Section[] }>): ReactNode => (
@@ -34,5 +34,3 @@ const LegalDocument = ({
     </a>
   </AppFrame>
 );
-
-export { LegalDocument };

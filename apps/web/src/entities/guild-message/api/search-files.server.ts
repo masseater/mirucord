@@ -24,11 +24,11 @@ const ArchiveEntrySchema = Schema.Struct({
   pieces: Schema.Array(Schema.Struct({ name: Schema.String, offset: Schema.Int })),
 });
 
-type ArchiveEntry = typeof ArchiveEntrySchema.Type;
+export type ArchiveEntry = typeof ArchiveEntrySchema.Type;
 
-type SegmentVectors = typeof SegmentVectorsSchema.Type;
+export type SegmentVectors = typeof SegmentVectorsSchema.Type;
 
-type SegmentEntry = typeof SegmentEntrySchema.Type;
+export type SegmentEntry = typeof SegmentEntrySchema.Type;
 
 const SearchHeadSchema = Schema.Struct({
   segments: Schema.Array(SegmentEntrySchema),
@@ -38,37 +38,45 @@ const SearchHeadSchema = Schema.Struct({
   centroids: Schema.optionalKey(Schema.Int),
 });
 
-type SearchHead = typeof SearchHeadSchema.Type;
+export type SearchHead = typeof SearchHeadSchema.Type;
 
 const SearchHeadJson = Schema.fromJsonString(SearchHeadSchema);
 const decodeHead = Schema.decodeEffect(SearchHeadJson);
 const encodeHead = Schema.encodeEffect(SearchHeadJson);
 
-type SegmentFile = Readonly<{ guildId: string; segment: string }>;
+export type SegmentFile = Readonly<{ guildId: string; segment: string }>;
 
 const headKey = (guildId: string): string => `${guildId}/head`;
-const recentKey = ({ guildId, segment }: SegmentFile): string => `${guildId}/${segment}/x`;
-const shardKey = ({ guildId, segment, shard }: SegmentFile & Readonly<{ shard: number }>): string =>
-  `${guildId}/${segment}/i${shard}`;
-const archiveKey = ({
+export const recentKey = ({ guildId, segment }: SegmentFile): string => `${guildId}/${segment}/x`;
+export const shardKey = ({
+  guildId,
+  segment,
+  shard,
+}: SegmentFile & Readonly<{ shard: number }>): string => `${guildId}/${segment}/i${shard}`;
+export const archiveKey = ({
   guildId,
   archive,
   shard,
 }: Readonly<{ guildId: string; archive: string; shard: number }>): string =>
   `${guildId}/${archive}/a${shard}`;
-const chunkKey = ({ guildId, segment, chunk }: SegmentFile & Readonly<{ chunk: number }>): string =>
-  `${guildId}/${segment}/b${chunk}`;
+export const chunkKey = ({
+  guildId,
+  segment,
+  chunk,
+}: SegmentFile & Readonly<{ chunk: number }>): string => `${guildId}/${segment}/b${chunk}`;
 
-const vectorFileKey = ({
+export const vectorFileKey = ({
   guildId,
   segment,
   file,
 }: SegmentFile & Readonly<{ file: string }>): string => `${guildId}/${segment}/${file}`;
 
-const centroidsKey = ({ guildId, stamp }: Readonly<{ guildId: string; stamp: number }>): string =>
-  `${guildId}/vc${stamp}`;
+export const centroidsKey = ({
+  guildId,
+  stamp,
+}: Readonly<{ guildId: string; stamp: number }>): string => `${guildId}/vc${stamp}`;
 
-const clusterKey = ({
+export const clusterKey = ({
   guildId,
   segment,
   through,
@@ -83,7 +91,7 @@ const keysOfVectors = (
 ): readonly string[] =>
   Array.makeBy(clusters, (cluster) => clusterKey({ guildId, segment, through, cluster }));
 
-const vectorsOfRow = ({
+export const vectorsOfRow = ({
   vectorThrough,
   vectorClusters,
 }: Readonly<{
@@ -96,7 +104,7 @@ const vectorsOfRow = ({
     clusters: Option.fromNullOr(vectorClusters),
   });
 
-const vectorKeys = ({
+export const vectorKeys = ({
   guildId,
   row,
 }: Readonly<{
@@ -135,7 +143,7 @@ const segmentKeys = (guildId: string, entry: SegmentEntry): readonly string[] =>
 
 const EMPTY_HEAD: SearchHead = { segments: [], channels: [], invalid: {} };
 
-const readHead = (guildId: string): Effect.Effect<SearchHead> =>
+export const readHead = (guildId: string): Effect.Effect<SearchHead> =>
   Effect.promise(() => env.SEARCH.get(headKey(guildId))).pipe(
     Effect.map(Option.fromNullOr),
     Effect.flatMap(
@@ -148,9 +156,9 @@ const readHead = (guildId: string): Effect.Effect<SearchHead> =>
     Effect.withSpan("search.readHead"),
   );
 
-type Bucketed = Readonly<{ bucket: Readonly<R2Bucket>; guildId: string }>;
+export type Bucketed = Readonly<{ bucket: Readonly<R2Bucket>; guildId: string }>;
 
-const writeHead = ({
+export const writeHead = ({
   bucket,
   guildId,
   head,
@@ -161,9 +169,9 @@ const writeHead = ({
     Effect.asVoid,
   );
 
-type StoredFile = Readonly<{ key: string; body: Readonly<ArrayBuffer> | string }>;
+export type StoredFile = Readonly<{ key: string; body: Readonly<ArrayBuffer> | string }>;
 
-const writeFiles = ({
+export const writeFiles = ({
   bucket,
   files,
 }: Readonly<{ bucket: Readonly<R2Bucket>; files: readonly StoredFile[] }>): Effect.Effect<void> =>
@@ -172,7 +180,7 @@ const writeFiles = ({
     discard: true,
   }).pipe(Effect.withSpan("search.writeFiles", { attributes: { files: files.length } }));
 
-const deleteKeys = ({
+export const deleteKeys = ({
   bucket,
   keys,
 }: Readonly<{ bucket: Readonly<R2Bucket>; keys: readonly string[] }>): Effect.Effect<void> =>
@@ -212,9 +220,10 @@ const sweepFrom = (
     ),
   );
 
-const deletePrefix = (target: Bucketed): Effect.Effect<void> => sweepFrom(target, Option.none());
+export const deletePrefix = (target: Bucketed): Effect.Effect<void> =>
+  sweepFrom(target, Option.none());
 
-const deleteSegments = ({
+export const deleteSegments = ({
   bucket,
   guildId,
   segments,
@@ -226,30 +235,3 @@ const deleteSegments = ({
       Array.flatMap((segment) => segmentKeys(guildId, segment)),
     ),
   });
-
-export {
-  archiveKey,
-  centroidsKey,
-  chunkKey,
-  clusterKey,
-  deleteKeys,
-  deletePrefix,
-  deleteSegments,
-  recentKey,
-  readHead,
-  shardKey,
-  vectorFileKey,
-  vectorKeys,
-  vectorsOfRow,
-  writeFiles,
-  writeHead,
-};
-export type {
-  ArchiveEntry,
-  Bucketed,
-  SearchHead,
-  SegmentEntry,
-  SegmentFile,
-  SegmentVectors,
-  StoredFile,
-};

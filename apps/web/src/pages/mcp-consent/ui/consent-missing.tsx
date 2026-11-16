@@ -7,7 +7,7 @@ import { Panel } from "#/shared/ui/panel";
 const TIP = "あれれ、つなぐ相手が見つからないよ";
 const TITLE = "この画面はアプリから開いてね";
 
-const ConsentMissing = (): ReactNode => (
+export const ConsentMissing = (): ReactNode => (
   <AppFrame>
     <MascotTip>{TIP}</MascotTip>
     <Panel>
@@ -15,5 +15,3 @@ const ConsentMissing = (): ReactNode => (
     </Panel>
   </AppFrame>
 );
-
-export { ConsentMissing };

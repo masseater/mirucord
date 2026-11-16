@@ -25,7 +25,7 @@ class EmbeddingError extends taggedError<EmbeddingError, { readonly brand: uniqu
   },
 ) {}
 
-type Embedded =
+export type Embedded =
   | Readonly<{ status: "embedded"; vectors: readonly Quantized[] }>
   | Readonly<{ status: "over-budget" }>;
 
@@ -114,7 +114,7 @@ const embedWithin = Effect.fn("embedTexts")(function* embedWithin(
   } satisfies Embedded;
 });
 
-const embedTexts = ({
+export const embedTexts = ({
   priority,
   texts,
 }: Readonly<{ priority: Priority; texts: readonly string[] }>): Effect.Effect<
@@ -126,5 +126,4 @@ const embedTexts = ({
     onNonEmpty: (nonEmpty) => embedWithin(priority, nonEmpty),
   });
 
-export { embedTexts };
-export type { Embedded, EmbeddingError };
+export type { EmbeddingError };

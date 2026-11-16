@@ -102,6 +102,4 @@ const SECTIONS = [
   },
 ] as const;
 
-const PrivacyPage = (): ReactNode => <LegalDocument title={TITLE} sections={SECTIONS} />;
-
-export { PrivacyPage };
+export const PrivacyPage = (): ReactNode => <LegalDocument title={TITLE} sections={SECTIONS} />;

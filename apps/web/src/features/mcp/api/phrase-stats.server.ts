@@ -27,9 +27,9 @@ const StoredStatsSchema = Schema.fromJsonString(
 const decodeStats = Schema.decodeEffect(StoredStatsSchema);
 const encodeStats = Schema.encodeEffect(StoredStatsSchema);
 
-type StoredStats = typeof StoredStatsSchema.Type;
-type StoredPhrase = typeof StoredPhraseSchema.Type;
-type StatsRequest = Readonly<{ guildId: string; channelIds: readonly string[] }>;
+export type StoredStats = typeof StoredStatsSchema.Type;
+export type StoredPhrase = typeof StoredPhraseSchema.Type;
+export type StatsRequest = Readonly<{ guildId: string; channelIds: readonly string[] }>;
 type Tallied = Readonly<{ stats: StoredStats; written: number; generation: number }>;
 
 const textEncoder = new TextEncoder();
@@ -190,7 +190,7 @@ const saveTallied = (
     Effect.as(stats),
   );
 
-const phraseStatsOf = Effect.fn("phraseStats")(function* stats(request: StatsRequest) {
+export const phraseStatsOf = Effect.fn("phraseStats")(function* stats(request: StatsRequest) {
   const now = yield* DateTime.now.pipe(Effect.map(DateTime.toEpochMillis));
   const visibility = yield* visibilityOf(request.channelIds);
   const { lookup } = yield* Effect.promise(() =>
@@ -202,6 +202,3 @@ const phraseStatsOf = Effect.fn("phraseStats")(function* stats(request: StatsReq
   const tallied = yield* tallyStats(request, now);
   return yield* saveTallied({ guildId: request.guildId, visibility, now }, tallied);
 });
-
-export { phraseStatsOf };
-export type { StatsRequest, StoredPhrase, StoredStats };

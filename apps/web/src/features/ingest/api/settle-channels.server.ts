@@ -83,12 +83,10 @@ const pauseChannels = (ids: readonly string[]): Effect.Effect<void> =>
     Effect.asVoid,
   );
 
-const settleStoredChannels = (sync: ChannelSync): Effect.Effect<void> =>
+export const settleStoredChannels = (sync: ChannelSync): Effect.Effect<void> =>
   loadStored(sync.discordGuild.id).pipe(
     Effect.map((rows) => settlementOf(sync, rows)),
     Effect.flatMap(({ departed, orphaned }) =>
       removeChannels(sync.discordGuild.id, departed).pipe(Effect.andThen(pauseChannels(orphaned))),
     ),
   );
-
-export { settleStoredChannels };

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { Panel } from "#/shared/ui/panel";
 
-const LegalSection = ({
+export const LegalSection = ({
   heading,
   paragraphs,
 }: Readonly<{ heading: string; paragraphs: readonly string[] }>): ReactNode => (
@@ -19,5 +19,3 @@ const LegalSection = ({
     )}
   </Panel>
 );
-
-export { LegalSection };

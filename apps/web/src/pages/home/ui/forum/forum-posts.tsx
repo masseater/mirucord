@@ -39,7 +39,7 @@ const POSTS = [
   },
 ] as const;
 
-const ForumPosts = (): ReactNode => (
+export const ForumPosts = (): ReactNode => (
   <div className="relative mt-1 max-w-xl">
     <ul className="grid gap-2">
       {pipe(
@@ -62,5 +62,3 @@ const ForumPosts = (): ReactNode => (
     </span>
   </div>
 );
-
-export { ForumPosts };

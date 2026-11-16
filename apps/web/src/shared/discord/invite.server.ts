@@ -7,12 +7,10 @@ const BOT_PERMISSIONS =
   PermissionFlagsBits.SendMessages +
   PermissionFlagsBits.ViewAuditLog;
 
-const botInviteUrl = (): string => {
+export const botInviteUrl = (): string => {
   const url = new URL(OAuth2Routes.authorizationURL);
   url.searchParams.set("client_id", env.DISCORD_CLIENT_ID);
   url.searchParams.set("scope", OAuth2Scopes.Bot);
   url.searchParams.set("permissions", BOT_PERMISSIONS.toString());
   return url.href;
 };
-
-export { botInviteUrl };

@@ -1,6 +1,6 @@
 import { Schema } from "effect";
 
-const INGEST_MAX_RETRIES = 5;
+export const INGEST_MAX_RETRIES = 5;
 
 const IngestJobSchema = Schema.Struct({
   guildId: Schema.String,
@@ -25,7 +25,7 @@ const MembersJobSchema = Schema.Struct({
   guildId: Schema.String,
 });
 
-const QueueJobSchema = Schema.Union([
+export const QueueJobSchema = Schema.Union([
   WithdrawJobSchema,
   MigrateJobSchema,
   CatchUpJobSchema,
@@ -33,9 +33,6 @@ const QueueJobSchema = Schema.Union([
   IngestJobSchema,
 ]);
 
-type IngestJob = typeof IngestJobSchema.Type;
+export type IngestJob = typeof IngestJobSchema.Type;
 
-type QueueJob = typeof QueueJobSchema.Type;
-
-export { INGEST_MAX_RETRIES, QueueJobSchema };
-export type { IngestJob, QueueJob };
+export type QueueJob = typeof QueueJobSchema.Type;

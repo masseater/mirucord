@@ -13,7 +13,7 @@ import {
 import type { InferEnv } from "@alchemy.run/cloudflare";
 import { withWorkersTracing } from "@r_masseater/workers-tracing/alchemy";
 import { APP_NAME, PREFIX, requireAppPrefix } from "@repo/shared-util-app-name";
-import { Resource, Stack, Stage, makeRandom } from "alchemy";
+import { RemovalPolicy, Resource, Stack, Stage, makeRandom } from "alchemy";
 import { succeed as succeedProvider } from "alchemy/Provider";
 import { Boolean, Config, Effect, Layer, Match, Option, Redacted, Schema } from "effect";
 import type { Context } from "effect";
@@ -208,12 +208,12 @@ const storage = Effect.gen(function* storage() {
     name: yield* mirucordName("db"),
     primaryLocationHint: "apac",
     migrations: "./drizzle",
-  });
+  }).pipe(RemovalPolicy.protect());
   const INGEST = yield* Queues.Queue("Ingest", { name: yield* mirucordName("ingest") });
   const SEARCH = yield* R2.Bucket("Search", {
     name: yield* mirucordName("search"),
     locationHint: "enam",
-  });
+  }).pipe(RemovalPolicy.protect());
   return { DB, INGEST, SEARCH };
 });
 
@@ -262,9 +262,8 @@ const tracedProviders = withWorkersTracing({ destinations: ["masseater-dev-trace
 
 const stackProviders = workerIssuesProvider.pipe(Layer.provideMerge(tracedProviders));
 
-type WebEnv = InferEnv<typeof web>;
+export type WebEnv = InferEnv<typeof web>;
 
-export type { WebEnv };
 export default Stack(
   APP_NAME,
   {

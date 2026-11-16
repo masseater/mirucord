@@ -5,7 +5,7 @@ import { ChannelIcon } from "#/shared/ui/channel-icon";
 
 const NO_TOPIC = "";
 
-const ChannelHeader = ({
+export const ChannelHeader = ({
   name,
   kind = "text",
   topic = NO_TOPIC,
@@ -22,5 +22,3 @@ const ChannelHeader = ({
     )}
   </div>
 );
-
-export { ChannelHeader };

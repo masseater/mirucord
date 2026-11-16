@@ -34,17 +34,21 @@ const decodeMessage = decodeBody(MessageReactions);
 const decodeUsers = decodeBody(Users);
 const decodeVoters = decodeBody(Voters);
 
-type ReactedEmoji = Readonly<{ emoji: string; burst: boolean; userIds: readonly string[] }>;
+export type ReactedEmoji = Readonly<{ emoji: string; burst: boolean; userIds: readonly string[] }>;
 
-type AnswerVoters = Readonly<{ answerId: number; text: string | null; userIds: readonly string[] }>;
+export type AnswerVoters = Readonly<{
+  answerId: number;
+  text: string | null;
+  userIds: readonly string[];
+}>;
 
-type LiveReactions = Readonly<{
+export type LiveReactions = Readonly<{
   authorId: string;
   reactions: readonly ReactedEmoji[];
   votes: readonly AnswerVoters[];
 }>;
 
-type MessageRef = Readonly<{ channelId: string; messageId: string }>;
+export type MessageRef = Readonly<{ channelId: string; messageId: string }>;
 
 const reactionTypeOf = Match.type<boolean>().pipe(
   Match.when(true, () => Discord.ReactionTypes.BURST),
@@ -120,7 +124,7 @@ const answersOf = (found: typeof MessageReactions.Type): readonly Omit<AnswerVot
     Option.getOrElse(() => []),
   );
 
-const liveReactionsOf = (
+export const liveReactionsOf = (
   ref: MessageRef,
 ): Effect.Effect<Option.Option<LiveReactions>, DiscordRequestError> =>
   withDiscord((rest) =>
@@ -138,6 +142,3 @@ const liveReactionsOf = (
     ),
     Effect.withSpan("liveReactions", { attributes: { ...ref } }),
   );
-
-export { liveReactionsOf };
-export type { AnswerVoters, LiveReactions, MessageRef, ReactedEmoji };

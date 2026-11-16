@@ -10,7 +10,7 @@ const BACKFILL_BATCH = 200;
 
 type GuildKeys = Effect.Success<ReturnType<typeof openGuildKeys>>;
 
-type BackfillTarget = Readonly<{
+export type BackfillTarget = Readonly<{
   guildId: string;
   unphrased: (now: number, limit: number) => readonly UnphrasedMessage[];
   writePhrases: (extracted: readonly ExtractedPhrases[]) => void;
@@ -37,7 +37,9 @@ const extractPhrases = (
     ),
   );
 
-const backfillPhrases = Effect.fn("backfillPhrases")(function* backfill(target: BackfillTarget) {
+export const backfillPhrases = Effect.fn("backfillPhrases")(function* backfill(
+  target: BackfillTarget,
+) {
   const wrappedKey = yield* wrappedKeyOf(target.guildId);
   if (Option.isNone(wrappedKey)) {
     return;
@@ -57,6 +59,3 @@ const backfillPhrases = Effect.fn("backfillPhrases")(function* backfill(target: 
     yield* target.again(now);
   }
 });
-
-export { backfillPhrases };
-export type { BackfillTarget };

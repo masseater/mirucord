@@ -6,7 +6,7 @@ import { DASHBOARD_PATH } from "#/shared/config";
 const START = "Discord でログインしてはじめる";
 const HOW = "しくみを見る";
 
-const HeroActions = (): ReactNode => (
+export const HeroActions = (): ReactNode => (
   <div className="mt-2 flex flex-wrap gap-3">
     <DcLink href={DASHBOARD_PATH} tone="primary" size="lg">
       {START}
@@ -16,5 +16,3 @@ const HeroActions = (): ReactNode => (
     </DcLink>
   </div>
 );
-
-export { HeroActions };

@@ -59,7 +59,7 @@ const nearestCentroids = ({
     Array.map(({ row }) => row),
   );
 
-type Grouped = Readonly<{
+export type Grouped = Readonly<{
   centroids: Option.Option<readonly VectorEntry[]>;
   clusters: readonly (readonly VectorEntry[])[];
 }>;
@@ -75,7 +75,7 @@ const sampleOf = (entries: readonly VectorEntry[]): readonly Quantized[] => {
   );
 };
 
-const groupEntries = ({
+export const groupEntries = ({
   flat,
   entries,
 }: Readonly<{ flat: boolean; entries: readonly VectorEntry[] }>): Grouped => {
@@ -109,6 +109,3 @@ const groupEntries = ({
     ),
   };
 };
-
-export { groupEntries };
-export type { Grouped };

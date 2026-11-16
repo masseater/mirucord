@@ -30,7 +30,7 @@ const BURNT_REACTIONS = [
 ] as const;
 const BURNT_REPLY: Reply = { author: memberAuthor(MEMBERS.tanaka), text: VOW };
 
-const ChatLog = (): ReactNode => (
+export const ChatLog = (): ReactNode => (
   <div>
     <Message id="log-2202" author={memberAuthor(MEMBERS.yui)} time="22:02">
       <p>{SKY}</p>
@@ -67,5 +67,3 @@ const ChatLog = (): ReactNode => (
     </Message>
   </div>
 );
-
-export { ChatLog };

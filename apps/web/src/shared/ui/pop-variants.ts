@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 
-const popButtonVariants = cva(
+export const popButtonVariants = cva(
   "focus-visible:outline-dc-link inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full font-bold whitespace-nowrap no-underline focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-50 motion-safe:transition-colors",
   {
     variants: {
@@ -17,5 +17,3 @@ const popButtonVariants = cva(
     },
   },
 );
-
-export { popButtonVariants };

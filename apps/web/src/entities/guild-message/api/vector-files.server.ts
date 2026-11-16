@@ -48,7 +48,7 @@ const sealedVectors = (
   );
 };
 
-const openEntries = ({
+export const openEntries = ({
   keys,
   segment,
   stored,
@@ -81,7 +81,7 @@ const namedBlocks = (through: number, grouped: Grouped): readonly NamedBlock[] =
     Array.map((entries, cluster) => ({ file: `v${through}-${cluster}`, entries })),
   );
 
-const sealFiles = ({
+export const sealFiles = ({
   keys,
   segment,
   through,
@@ -102,5 +102,3 @@ const sealFiles = ({
       );
     }),
   );
-
-export { openEntries, sealFiles };

@@ -10,18 +10,18 @@ import { resolveScope } from "./scope.server";
 import type { GuildScope, StoredChannel } from "./scope.server";
 
 const SERVER_NOT_FOUND = "Server not found";
-const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
+export const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";
 const CHANNEL_NOT_FOUND = "Channel not found";
 const RESULT_NOT_ENCODABLE = "The result could not be written as JSON";
 
-const errorResult = (text: string): CallToolResult => ({
+export const errorResult = (text: string): CallToolResult => ({
   content: [{ type: "text", text }],
   isError: true,
 });
 
 const encodeJsonText = Schema.encodeEffect(Schema.fromJsonString(Schema.Unknown));
 
-const structuredResult = (
+export const structuredResult = (
   value: Readonly<Record<string, unknown>>,
 ): Effect.Effect<CallToolResult> =>
   encodeJsonText(value).pipe(
@@ -48,18 +48,18 @@ const scoped = (request: ToolRequest, withinScope: WithinScope): Effect.Effect<C
     Effect.orElseSucceed(() => errorResult(DISCORD_UNAVAILABLE)),
   );
 
-const withScope =
+export const withScope =
   (request: Readonly<{ guildId: string; discordUserId: string }>) =>
   (withinScope: (scope: GuildScope) => Effect.Effect<CallToolResult>): Promise<CallToolResult> =>
     runTraced(scoped(request, withinScope));
 
-const readableChannels = (scope: GuildScope): readonly StoredChannel[] =>
+export const readableChannels = (scope: GuildScope): readonly StoredChannel[] =>
   pipe(
     scope.guild.channels,
     Array.filter(({ id, type }) => scope.visible.includes(id) && !CATEGORY_TYPES.has(type)),
   );
 
-const withChannel =
+export const withChannel =
   ({ scope, channelId }: Readonly<{ scope: GuildScope; channelId: Option.Option<string> }>) =>
   (
     withinChannels: (channelIds: readonly string[]) => Effect.Effect<CallToolResult>,
@@ -93,7 +93,7 @@ const withChannel =
         ),
     });
 
-const ingestOf = ({
+export const ingestOf = ({
   scope,
   stored,
 }: Readonly<{ scope: GuildScope; stored: StoredChannel }>): IngestStatus => {
@@ -108,7 +108,7 @@ const ingestOf = ({
   return ingestStatus({ consent, kind: "forum", posts });
 };
 
-const ingestById = ({
+export const ingestById = ({
   scope,
   channelId,
 }: Readonly<{ scope: GuildScope; channelId: string }>): IngestStatus =>
@@ -121,7 +121,7 @@ const ingestById = ({
     }),
   );
 
-const notFullyIngested = ({
+export const notFullyIngested = ({
   scope,
   channelIds,
 }: Readonly<{
@@ -133,15 +133,3 @@ const notFullyIngested = ({
     Array.map((id) => ({ channelId: id, ingest: ingestById({ scope, channelId: id }) })),
     Array.filter(({ ingest }) => !READY.has(ingest)),
   );
-
-export {
-  DISCORD_UNAVAILABLE,
-  errorResult,
-  ingestById,
-  ingestOf,
-  notFullyIngested,
-  readableChannels,
-  structuredResult,
-  withChannel,
-  withScope,
-};

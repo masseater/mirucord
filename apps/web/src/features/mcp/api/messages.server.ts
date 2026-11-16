@@ -13,9 +13,9 @@ import type { MessageBody } from "#/shared/crypto/index.server";
 
 import type { GuildScope } from "./scope.server";
 
-type MentionView = Readonly<{ id: string; name: string | null }>;
+export type MentionView = Readonly<{ id: string; name: string | null }>;
 
-type MessageView = Readonly<{
+export type MessageView = Readonly<{
   id: string;
   channelId: string;
   author: string;
@@ -108,7 +108,7 @@ const attributed = (
     Option.toArray,
   );
 
-const openStored = ({
+export const openStored = ({
   scope,
   stored,
 }: Readonly<{
@@ -144,7 +144,7 @@ const openStored = ({
   );
 };
 
-type FindRequest = Readonly<{
+export type FindRequest = Readonly<{
   scope: GuildScope;
   query: string;
   channelIds: readonly string[];
@@ -152,11 +152,11 @@ type FindRequest = Readonly<{
   offset: number;
 }>;
 
-type FoundMessages = Readonly<{ total: number; messages: readonly MessageView[] }>;
+export type FoundMessages = Readonly<{ total: number; messages: readonly MessageView[] }>;
 
 const NOTHING_FOUND: FoundMessages = { total: 0, messages: [] };
 
-const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
+export const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
   const { guildId, wrappedKey, consent } = request.scope.guild;
   if (consent !== "consented") {
     return Effect.succeed(NOTHING_FOUND);
@@ -188,14 +188,14 @@ const findMessages = (request: FindRequest): Effect.Effect<FoundMessages> => {
   );
 };
 
-type ReadRequest = Readonly<{
+export type ReadRequest = Readonly<{
   scope: GuildScope;
   channelId: string;
   before: Option.Option<string>;
   limit: number;
 }>;
 
-const readMessages = (request: ReadRequest): Effect.Effect<readonly MessageView[]> =>
+export const readMessages = (request: ReadRequest): Effect.Effect<readonly MessageView[]> =>
   Effect.promise(() =>
     guildStore(request.scope.guild.guildId).read(request.channelId, {
       before: Option.getOrNull(request.before),
@@ -203,7 +203,7 @@ const readMessages = (request: ReadRequest): Effect.Effect<readonly MessageView[
     }),
   ).pipe(Effect.flatMap((stored) => openStored({ scope: request.scope, stored })));
 
-type AuthorReadRequest = Readonly<{
+export type AuthorReadRequest = Readonly<{
   scope: GuildScope;
   authorId: string;
   channelIds: readonly string[];
@@ -211,7 +211,9 @@ type AuthorReadRequest = Readonly<{
   limit: number;
 }>;
 
-const readAuthorMessages = (request: AuthorReadRequest): Effect.Effect<readonly MessageView[]> =>
+export const readAuthorMessages = (
+  request: AuthorReadRequest,
+): Effect.Effect<readonly MessageView[]> =>
   Effect.promise(() =>
     guildStore(request.scope.guild.guildId).readByAuthor({
       authorId: request.authorId,
@@ -220,13 +222,3 @@ const readAuthorMessages = (request: AuthorReadRequest): Effect.Effect<readonly 
       limit: request.limit,
     }),
   ).pipe(Effect.flatMap((stored) => openStored({ scope: request.scope, stored })));
-
-export { findMessages, openStored, readAuthorMessages, readMessages };
-export type {
-  AuthorReadRequest,
-  FindRequest,
-  FoundMessages,
-  MentionView,
-  MessageView,
-  ReadRequest,
-};

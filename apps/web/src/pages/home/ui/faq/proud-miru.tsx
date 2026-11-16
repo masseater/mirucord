@@ -6,7 +6,7 @@ import proudMiru from "./proud-miru.webp";
 
 const BOAST = "えっへん！";
 
-const ProudMiru = (): ReactNode => (
+export const ProudMiru = (): ReactNode => (
   <div className="text-ink flex items-end gap-2 py-2">
     <img
       src={proudMiru}
@@ -20,5 +20,3 @@ const ProudMiru = (): ReactNode => (
     <SpeechBubble>{BOAST}</SpeechBubble>
   </div>
 );
-
-export { ProudMiru };

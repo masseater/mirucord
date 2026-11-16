@@ -10,7 +10,7 @@ import { ChatLog } from "./chat-log";
 
 const DATE = "2024年8月12日";
 
-const Hero = (): ReactNode => (
+export const Hero = (): ReactNode => (
   <ChannelSection id={TOP_CHANNEL.id}>
     <ChannelHeader name={TOP_CHANNEL.name} topic={TOP_CHANNEL.topic} />
     <ChannelWelcome />
@@ -25,5 +25,3 @@ const Hero = (): ReactNode => (
     </div>
   </ChannelSection>
 );
-
-export { Hero };

@@ -9,7 +9,7 @@ import { DASHBOARD_PATH } from "#/shared/config";
 
 type Departure = "stay" | "leave";
 
-const useReturnToDashboard = (): ((departure: Departure) => Promise<void>) => {
+export const useReturnToDashboard = (): ((departure: Departure) => Promise<void>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useCallback(
@@ -24,5 +24,3 @@ const useReturnToDashboard = (): ((departure: Departure) => Promise<void>) => {
     [navigate, queryClient],
   );
 };
-
-export { useReturnToDashboard };

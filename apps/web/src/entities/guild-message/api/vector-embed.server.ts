@@ -16,9 +16,9 @@ const NO_VECTOR = 0;
 const NEXT = 1;
 const TEXT_SEPARATOR = "\n";
 
-type Keys = Readonly<{ guildId: string; key: CryptoKey }>;
+export type Keys = Readonly<{ guildId: string; key: CryptoKey }>;
 
-type EmbedOutcome =
+export type EmbedOutcome =
   | Readonly<{ status: "done" }>
   | Readonly<{ status: "more" }>
   | Readonly<{ status: "waiting"; until: number }>;
@@ -32,7 +32,7 @@ type PendingRow = Readonly<{
 
 type Embedding = Readonly<{ row: PendingRow; text: string }>;
 
-const vectorContext = ({
+export const vectorContext = ({
   guildId,
   messageId,
 }: Readonly<{ guildId: string; messageId: string }>): string => `${guildId}/${messageId}/vector`;
@@ -168,7 +168,7 @@ const runOutcome = (rows: number): EmbedOutcome =>
     onFalse: () => ({ status: "more" }),
   });
 
-const embedPending = Effect.fn("vectors.embedPending")(function* embedPending(
+export const embedPending = Effect.fn("vectors.embedPending")(function* embedPending(
   batch: Readonly<{ db: DrizzleSqliteDODatabase; keys: Keys }>,
 ) {
   const rows = pendingRows(batch.db, RUN_SIZE);
@@ -180,6 +180,3 @@ const embedPending = Effect.fn("vectors.embedPending")(function* embedPending(
   }
   return runOutcome(rows.length);
 });
-
-export { embedPending, vectorContext };
-export type { EmbedOutcome, Keys };

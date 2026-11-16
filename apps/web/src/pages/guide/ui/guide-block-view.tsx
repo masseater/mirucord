@@ -19,7 +19,7 @@ const Items = ({ items }: Readonly<{ items: readonly string[] }>): ReactNode =>
     )),
   );
 
-const GuideBlockView = ({ block }: Readonly<{ block: GuideBlock }>): ReactNode =>
+export const GuideBlockView = ({ block }: Readonly<{ block: GuideBlock }>): ReactNode =>
   Match.value(block).pipe(
     Match.discriminatorsExhaustive("type")({
       text: ({ text }) => (
@@ -46,5 +46,3 @@ const GuideBlockView = ({ block }: Readonly<{ block: GuideBlock }>): ReactNode =
       flow: ({ edges }) => <GuideFlow edges={edges} />,
     }),
   );
-
-export { GuideBlockView };

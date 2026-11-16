@@ -7,7 +7,7 @@ const CAPTIONS = [
   ["検索しても 1,284 件", "追いかけきれない…"],
 ] as const;
 
-const Captions = (): ReactNode => (
+export const Captions = (): ReactNode => (
   <div className="scene-captions">
     {pipe(
       CAPTIONS,
@@ -25,5 +25,3 @@ const Captions = (): ReactNode => (
     )}
   </div>
 );
-
-export { Captions };

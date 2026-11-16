@@ -12,7 +12,7 @@ import {
 import { newServer } from "./tool-base";
 import { listVoiceSessions } from "./voice.server";
 
-const serverWithRelationTools = (discordUserId: string): McpServer => {
+export const serverWithRelationTools = (discordUserId: string): McpServer => {
   const server = newServer();
   server.registerTool("list_members", LIST_MEMBERS_TOOL, listMembers(discordUserId));
   server.registerTool(
@@ -28,5 +28,3 @@ const serverWithRelationTools = (discordUserId: string): McpServer => {
   );
   return server;
 };
-
-export { serverWithRelationTools };

@@ -18,7 +18,7 @@ const rowKey = (row: SidebarRow): string => {
   return row.place.name;
 };
 
-const SidebarGroup = ({ category }: Readonly<{ category: SidebarCategory }>): ReactNode => {
+export const SidebarGroup = ({ category }: Readonly<{ category: SidebarCategory }>): ReactNode => {
   if (category.state === "collapsed") {
     return <CategoryHeading name={category.name} state={category.state} />;
   }
@@ -34,5 +34,3 @@ const SidebarGroup = ({ category }: Readonly<{ category: SidebarCategory }>): Re
     </div>
   );
 };
-
-export { SidebarGroup };

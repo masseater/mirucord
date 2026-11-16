@@ -6,7 +6,7 @@ import { popButtonVariants } from "#/shared/ui/pop-variants";
 
 const consentLabel = (name: string): string => `「${name}」で同意する`;
 
-const WaitingGuildLink = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => (
+export const WaitingGuildLink = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => (
   <li>
     <GuildPageLink
       guildId={guild.id}
@@ -16,5 +16,3 @@ const WaitingGuildLink = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNo
     </GuildPageLink>
   </li>
 );
-
-export { WaitingGuildLink };

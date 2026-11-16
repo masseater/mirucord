@@ -36,15 +36,18 @@ const Channel = Schema.Struct({
 });
 const PendingChannel = Schema.Struct({ channelId: Schema.String, ingest: Ingest });
 
-const ListServersOutput = Schema.Struct({ servers: Schema.Array(Server) });
-const ListChannelsOutput = Schema.Struct({ channels: Schema.Array(Channel), hint: Schema.String });
-const FindMessagesOutput = Schema.Struct({
+export const ListServersOutput = Schema.Struct({ servers: Schema.Array(Server) });
+export const ListChannelsOutput = Schema.Struct({
+  channels: Schema.Array(Channel),
+  hint: Schema.String,
+});
+export const FindMessagesOutput = Schema.Struct({
   total: Schema.Int,
   messages: Schema.Array(Message),
   notFullyIngested: Schema.Array(PendingChannel),
 });
 const SimilarMessage = Schema.Struct({ ...Message.fields, score: Schema.Finite });
-const FindSimilarMessagesOutput = Schema.Struct({
+export const FindSimilarMessagesOutput = Schema.Struct({
   messages: Schema.Array(SimilarMessage),
   embedded: Schema.Int,
   stored: Schema.Int,
@@ -60,7 +63,7 @@ const ServerPhrase = Schema.Struct({
   examples: Schema.Array(Schema.Array(Schema.String)),
   note: Schema.NullOr(Schema.String),
 });
-const ListServerPhrasesOutput = Schema.Struct({
+export const ListServerPhrasesOutput = Schema.Struct({
   days: Schema.Int,
   phrases: Schema.Array(ServerPhrase),
 });
@@ -74,7 +77,7 @@ const Member = Schema.Struct({
   joinedAt: Schema.NullOr(Schema.String),
   leftAt: Schema.NullOr(Schema.String),
 });
-const ListMembersOutput = Schema.Struct({
+export const ListMembersOutput = Schema.Struct({
   ingest: Schema.Literals(["consented", "notConsented"]),
   total: Schema.Int,
   members: Schema.Array(Member),
@@ -90,7 +93,7 @@ const VoiceSession = Schema.Struct({
   joined: VoiceMoment,
   left: Schema.NullOr(VoiceMoment),
 });
-const ListVoiceSessionsOutput = Schema.Struct({
+export const ListVoiceSessionsOutput = Schema.Struct({
   ingest: Schema.Literals(["consented", "notConsented"]),
   total: Schema.Int,
   sessions: Schema.Array(VoiceSession),
@@ -126,7 +129,7 @@ const LiveMessage = Schema.Struct({
   reactions: Schema.Array(LiveReaction),
   votes: Schema.Array(LiveAnswer),
 });
-const ListReactionsOutput = Schema.Struct({
+export const ListReactionsOutput = Schema.Struct({
   ingest: Schema.Literals(["consented", "notConsented"]),
   reactionTotal: Schema.Int,
   reactions: Schema.Array(Reaction),
@@ -144,25 +147,12 @@ const LinkedPerson = Schema.Struct({
   userId: Schema.String,
   accounts: Schema.Array(LinkedAccount),
 });
-const ListLinkedAccountsOutput = Schema.Struct({
+export const ListLinkedAccountsOutput = Schema.Struct({
   ingest: Schema.Literals(["consented", "notConsented"]),
   people: Schema.Array(LinkedPerson),
 });
-const ReadMessagesOutput = Schema.Struct({
+export const ReadMessagesOutput = Schema.Struct({
   ingest: Schema.optionalKey(Ingest),
   notFullyIngested: Schema.optionalKey(Schema.Array(PendingChannel)),
   messages: Schema.Array(Message),
 });
-
-export {
-  FindMessagesOutput,
-  FindSimilarMessagesOutput,
-  ListChannelsOutput,
-  ListLinkedAccountsOutput,
-  ListMembersOutput,
-  ListReactionsOutput,
-  ListServerPhrasesOutput,
-  ListServersOutput,
-  ListVoiceSessionsOutput,
-  ReadMessagesOutput,
-};

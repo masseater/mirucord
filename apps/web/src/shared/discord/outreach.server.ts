@@ -20,7 +20,7 @@ const decodeAuditLog = decodeBody(AuditLog);
 
 const decodeChannel = decodeBody(Channel);
 
-const postWebhookMessage = ({
+export const postWebhookMessage = ({
   webhookUrl,
   content,
 }: Readonly<{ webhookUrl: string; content: string }>): Effect.Effect<void, DiscordRequestError> => {
@@ -36,7 +36,7 @@ const postWebhookMessage = ({
   ).pipe(Effect.asVoid);
 };
 
-type OutgoingMessage = Readonly<{
+export type OutgoingMessage = Readonly<{
   content: string;
   links?: readonly Readonly<{
     [Key in "label" | "url"]: NonNullable<Discord.ButtonComponentForMessageRequest[Key]>;
@@ -55,7 +55,7 @@ const linkRow = (
     ),
   );
 
-const postChannelMessage = ({
+export const postChannelMessage = ({
   channelId,
   content,
   links = [],
@@ -77,7 +77,7 @@ const openDirectChannel = (userId: string): Effect.Effect<string, DiscordRequest
     Effect.map(({ id }) => id),
   );
 
-const sendDirectMessage = ({
+export const sendDirectMessage = ({
   userId,
   ...message
 }: OutgoingMessage & Readonly<{ userId: string }>): Effect.Effect<void, DiscordRequestError> =>
@@ -85,7 +85,7 @@ const sendDirectMessage = ({
     Effect.flatMap((channelId) => postChannelMessage({ channelId, ...message })),
   );
 
-const findBotAdder = ({
+export const findBotAdder = ({
   guildId,
   botUserId,
 }: Readonly<{ guildId: string; botUserId: string }>): Effect.Effect<
@@ -104,6 +104,3 @@ const findBotAdder = ({
       ),
     ),
   );
-
-export { findBotAdder, postChannelMessage, postWebhookMessage, sendDirectMessage };
-export type { OutgoingMessage };

@@ -7,11 +7,11 @@ const NOTHING_SPENT = 0;
 const Spent = Schema.Struct({ day: Schema.String, neurons: Schema.Finite });
 const decodeSpent = Schema.decodeUnknownOption(Spent);
 
-type Spending =
+export type Spending =
   | Readonly<{ status: "capped"; day: string; neurons: number; limit: number }>
   | Readonly<{ status: "settled"; day: string; neurons: number }>;
 
-class NeuronBudget extends DurableObject {
+export class NeuronBudget extends DurableObject {
   private spentOn(day: string): number {
     return decodeSpent(this.ctx.storage.kv.get(SPENT_KEY)).pipe(
       Option.filter((spent) => spent.day === day),
@@ -33,6 +33,3 @@ class NeuronBudget extends DurableObject {
     return granted;
   }
 }
-
-export { NeuronBudget };
-export type { Spending };

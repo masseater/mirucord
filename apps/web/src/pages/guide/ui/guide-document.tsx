@@ -12,7 +12,7 @@ import { GuideBlockView } from "./guide-block-view";
 
 const SOURCE = "ソースコードは GitHub で公開しています。";
 
-const GuideDocument = ({
+export const GuideDocument = ({
   title,
   tip,
   lead,
@@ -44,5 +44,3 @@ const GuideDocument = ({
     </a>
   </AppFrame>
 );
-
-export { GuideDocument };

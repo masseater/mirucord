@@ -14,7 +14,7 @@ const UNIT = "件";
 
 type ForumChannel = Extract<SettingsChannel, Readonly<{ kind: "forum" }>>;
 
-const ForumToggle = ({
+export const ForumToggle = ({
   guildId,
   channel,
 }: Readonly<{ guildId: string; channel: ForumChannel }>): ReactNode => {
@@ -39,5 +39,3 @@ const ForumToggle = ({
     </>
   );
 };
-
-export { ForumToggle };

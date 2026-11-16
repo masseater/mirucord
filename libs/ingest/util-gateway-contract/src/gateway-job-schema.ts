@@ -113,7 +113,7 @@ const ReactionsJobSchema = Schema.Struct({
 
 const ResyncJobSchema = Schema.Struct({ kind: Schema.Literal("resync") });
 
-const GatewayJobSchema = Schema.Union([
+export const GatewayJobSchema = Schema.Union([
   StoreJobSchema,
   RefreshJobSchema,
   ForgetJobSchema,
@@ -128,39 +128,24 @@ const GatewayJobSchema = Schema.Union([
   ResyncJobSchema,
 ]);
 
-type GatewayJob = typeof GatewayJobSchema.Type;
+export type GatewayJob = typeof GatewayJobSchema.Type;
 
-type RefreshJob = typeof RefreshJobSchema.Type;
+export type RefreshJob = typeof RefreshJobSchema.Type;
 
-type ForgetJob = typeof ForgetJobSchema.Type;
+export type ForgetJob = typeof ForgetJobSchema.Type;
 
-type StoreJob = typeof StoreJobSchema.Type;
+export type StoreJob = typeof StoreJobSchema.Type;
 
-type MembersJob = typeof MembersJobSchema.Type;
+export type MembersJob = typeof MembersJobSchema.Type;
 
-type DepartJob = typeof DepartJobSchema.Type;
+export type DepartJob = typeof DepartJobSchema.Type;
 
-type VoiceJob = typeof VoiceJobSchema.Type;
+export type VoiceJob = typeof VoiceJobSchema.Type;
 
-type VoiceSnapshotJob = typeof VoiceSnapshotJobSchema.Type;
+export type VoiceSnapshotJob = typeof VoiceSnapshotJobSchema.Type;
 
-type VoiceChange = typeof VoiceChangeSchema.Type;
+export type VoiceChange = typeof VoiceChangeSchema.Type;
 
-type ReactionsJob = typeof ReactionsJobSchema.Type;
+export type ReactionsJob = typeof ReactionsJobSchema.Type;
 
-type ReactionChange = typeof ReactionChangeSchema.Type;
-
-export { GatewayJobSchema };
-export type {
-  DepartJob,
-  ForgetJob,
-  GatewayJob,
-  MembersJob,
-  ReactionChange,
-  ReactionsJob,
-  RefreshJob,
-  StoreJob,
-  VoiceChange,
-  VoiceJob,
-  VoiceSnapshotJob,
-};
+export type ReactionChange = typeof ReactionChangeSchema.Type;

@@ -16,7 +16,7 @@ const bytesColumn = customType<{ data: Uint8Array; driverData: ArrayBuffer }>({
 
 const UNPUBLISHED = 0;
 
-const guildMessage = sqliteTable(
+export const guildMessage = sqliteTable(
   "message",
   {
     seq: integer().primaryKey({ autoIncrement: true }),
@@ -44,15 +44,15 @@ const guildMessage = sqliteTable(
   ],
 );
 
-const BOUND_LIMIT = 90;
+export const BOUND_LIMIT = 90;
 
-const TRACKED_COLUMNS = {
+export const TRACKED_COLUMNS = {
   id: guildMessage.id,
   createdAt: guildMessage.createdAt,
   version: guildMessage.version,
 };
 
-const SEALED_COLUMNS = {
+export const SEALED_COLUMNS = {
   id: guildMessage.id,
   channelId: guildMessage.channelId,
   sealed: guildMessage.sealed,
@@ -60,22 +60,13 @@ const SEALED_COLUMNS = {
   editedAt: guildMessage.editedAt,
 };
 
-const vectorCentroid = sqliteTable("vector_centroid", {
+export const vectorCentroid = sqliteTable("vector_centroid", {
   segment: text().primaryKey(),
   through: integer().notNull(),
   sealed: bytesColumn().notNull(),
 });
 
-const vectorCentroidFile = sqliteTable("vector_centroid_file", {
+export const vectorCentroidFile = sqliteTable("vector_centroid_file", {
   id: integer().primaryKey(),
   stamp: integer().notNull(),
 });
-
-export {
-  BOUND_LIMIT,
-  guildMessage,
-  SEALED_COLUMNS,
-  TRACKED_COLUMNS,
-  vectorCentroid,
-  vectorCentroidFile,
-};

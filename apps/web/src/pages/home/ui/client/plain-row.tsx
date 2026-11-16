@@ -37,7 +37,7 @@ const spoken = (activity: Activity): string => {
   return "";
 };
 
-const PlainRow = ({
+export const PlainRow = ({
   place,
   activity,
   peek,
@@ -73,5 +73,3 @@ const PlainRow = ({
     {children}
   </span>
 );
-
-export { PlainRow };

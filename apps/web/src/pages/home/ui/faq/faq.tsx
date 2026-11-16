@@ -7,11 +7,9 @@ import { FaqBody } from "./faq-body";
 
 const CHANNEL = "よくある質問";
 
-const Faq = (): ReactNode => (
+export const Faq = (): ReactNode => (
   <ChannelSection id="faq">
     <ChannelHeader name={CHANNEL} />
     <FaqBody />
   </ChannelSection>
 );
-
-export { Faq };

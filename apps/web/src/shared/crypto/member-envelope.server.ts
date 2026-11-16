@@ -10,9 +10,9 @@ const MemberProfileSchema = Schema.Struct({
   nick: Schema.NullOr(Schema.String),
 });
 
-type MemberProfile = typeof MemberProfileSchema.Type;
+export type MemberProfile = typeof MemberProfileSchema.Type;
 
-type MemberAddress = Readonly<{ guildId: string; userId: string }>;
+export type MemberAddress = Readonly<{ guildId: string; userId: string }>;
 
 const ProfileJson = Schema.fromJsonString(MemberProfileSchema);
 const encodeProfile = Schema.encodeEffect(ProfileJson);
@@ -29,7 +29,7 @@ const sealMemberDataFirst = (
   return encodeProfile(profile).pipe(Effect.orDie, Effect.flatMap(sealWithKey));
 };
 
-const sealMember: {
+export const sealMember: {
   (key: CryptoKey, address: MemberAddress): (profile: MemberProfile) => Effect.Effect<string>;
   (profile: MemberProfile, key: CryptoKey, address: MemberAddress): Effect.Effect<string>;
 } = Function.dual(DATA_FIRST_ARITY, sealMemberDataFirst);
@@ -41,10 +41,7 @@ const openMemberDataFirst = (
 ): Effect.Effect<MemberProfile> =>
   unseal(sealed, key, contextOf(address)).pipe(Effect.flatMap(decodeProfile), Effect.orDie);
 
-const openMember: {
+export const openMember: {
   (key: CryptoKey, address: MemberAddress): (sealed: string) => Effect.Effect<MemberProfile>;
   (sealed: string, key: CryptoKey, address: MemberAddress): Effect.Effect<MemberProfile>;
 } = Function.dual(DATA_FIRST_ARITY, openMemberDataFirst);
-
-export { openMember, sealMember };
-export type { MemberAddress, MemberProfile };

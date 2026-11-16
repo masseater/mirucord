@@ -11,7 +11,7 @@ const REPLIES = "💬";
 const REPLIES_LABEL = "返信";
 const READ = `${MASCOT_NAME}がよんだよ`;
 
-const ForumPost = ({
+export const ForumPost = ({
   tags,
   title,
   member,
@@ -52,5 +52,3 @@ const ForumPost = ({
     </span>
   </li>
 );
-
-export { ForumPost };

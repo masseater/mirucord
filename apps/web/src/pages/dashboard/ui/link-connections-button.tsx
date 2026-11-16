@@ -9,7 +9,7 @@ import { PopButton } from "#/shared/ui/pop-button";
 
 const FAILED = "Discord に移れませんでした";
 
-const LinkConnectionsButton = ({ label }: Readonly<{ label: string }>): ReactNode => {
+export const LinkConnectionsButton = ({ label }: Readonly<{ label: string }>): ReactNode => {
   const { mutate, status } = useMutation({
     mutationFn: () =>
       authClient.linkSocial({
@@ -40,5 +40,3 @@ const LinkConnectionsButton = ({ label }: Readonly<{ label: string }>): ReactNod
     </div>
   );
 };
-
-export { LinkConnectionsButton };

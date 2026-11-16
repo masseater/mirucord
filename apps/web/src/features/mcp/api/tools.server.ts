@@ -87,7 +87,7 @@ const READ_MESSAGES_TOOL = {
   inputSchema: ReadMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
 
-const buildServer = (discordUserId: string): McpServer => {
+export const buildServer = (discordUserId: string): McpServer => {
   const server = serverWithRelationTools(discordUserId);
   server.registerTool("list_servers", LIST_SERVERS_TOOL, () => listServers(discordUserId));
   server.registerTool("list_channels", LIST_CHANNELS_TOOL, listChannels(discordUserId));
@@ -97,5 +97,3 @@ const buildServer = (discordUserId: string): McpServer => {
   server.registerTool("read_messages", READ_MESSAGES_TOOL, readTool(discordUserId));
   return server;
 };
-
-export { buildServer };

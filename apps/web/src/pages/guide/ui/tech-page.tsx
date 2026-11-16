@@ -179,8 +179,6 @@ const SECTIONS: readonly GuideSection[] = [
   },
 ];
 
-const TechPage = (): ReactNode => (
+export const TechPage = (): ReactNode => (
   <GuideDocument title={TITLE} tip={TIP} lead={LEAD} sections={SECTIONS} />
 );
-
-export { TechPage };

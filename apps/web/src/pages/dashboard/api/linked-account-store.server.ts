@@ -8,9 +8,9 @@ import { db, linkedAccount } from "#/shared/db/index.server";
 import { listPublicConnections, revokeUserToken } from "#/shared/discord/index.server";
 import type { PublicConnection } from "#/shared/discord/index.server";
 
-type LinkedChoice = PublicConnection & Readonly<{ published: boolean }>;
+export type LinkedChoice = PublicConnection & Readonly<{ published: boolean }>;
 
-type LinkedAccounts =
+export type LinkedAccounts =
   | Readonly<{ status: "idle"; published: readonly PublicConnection[] }>
   | Readonly<{
       status: "choosing";
@@ -18,11 +18,11 @@ type LinkedAccounts =
       choices: readonly LinkedChoice[];
     }>;
 
-type ConnectionKey = Readonly<{ type: string; name: string }>;
+export type ConnectionKey = Readonly<{ type: string; name: string }>;
 
 type PublishInput = Readonly<{ owner: TokenOwner; selected: readonly ConnectionKey[] }>;
 
-type PublishResult =
+export type PublishResult =
   | Readonly<{ status: "published"; count: number }>
   | Readonly<{ status: "expired" }>;
 
@@ -88,7 +88,7 @@ const choosingOf =
       ),
     );
 
-const loadLinkedAccounts = (owner: TokenOwner): Effect.Effect<LinkedAccounts> =>
+export const loadLinkedAccounts = (owner: TokenOwner): Effect.Effect<LinkedAccounts> =>
   Effect.all([readPublished(owner.userId), connectionsTokenOf(owner)]).pipe(
     Effect.flatMap(([published, token]) =>
       Option.match(token, {
@@ -155,7 +155,7 @@ const publishOrExpire = (
     onSome: publishWith(input),
   });
 
-const publishLinkedAccounts = (input: PublishInput): Effect.Effect<PublishResult> =>
+export const publishLinkedAccounts = (input: PublishInput): Effect.Effect<PublishResult> =>
   connectionsTokenOf(input.owner).pipe(
     Effect.flatMap(publishOrExpire(input)),
     Effect.withSpan("publishLinkedAccounts"),
@@ -166,23 +166,15 @@ const discardOrForget = (
 ): ((token: Option.Option<string>) => Effect.Effect<void>) =>
   Option.match({ onNone: () => forgetConnectionsToken(owner), onSome: discardToken(owner) });
 
-const discardLinkedAccountsDraft = (owner: TokenOwner): Effect.Effect<void> =>
+export const discardLinkedAccountsDraft = (owner: TokenOwner): Effect.Effect<void> =>
   connectionsTokenOf(owner).pipe(
     Effect.flatMap(discardOrForget(owner)),
     Effect.withSpan("discardLinkedAccountsDraft"),
   );
 
-const withdrawLinkedAccounts = (owner: TokenOwner): Effect.Effect<void> =>
+export const withdrawLinkedAccounts = (owner: TokenOwner): Effect.Effect<void> =>
   replaceRows(owner)([]).pipe(
     Effect.andThen(discardLinkedAccountsDraft(owner)),
     Effect.andThen(Effect.logInfo("Linked accounts withdrawn")),
     Effect.withSpan("withdrawLinkedAccounts"),
   );
-
-export {
-  discardLinkedAccountsDraft,
-  loadLinkedAccounts,
-  publishLinkedAccounts,
-  withdrawLinkedAccounts,
-};
-export type { ConnectionKey, LinkedAccounts, LinkedChoice, PublishResult };

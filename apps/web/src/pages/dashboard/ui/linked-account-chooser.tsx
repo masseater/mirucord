@@ -16,7 +16,7 @@ const PUBLISH = "選んだものを公開する";
 const CANCEL = "選ばずにやめる";
 const FAILED = "保存できませんでした";
 
-const LinkedAccountChooser = ({
+export const LinkedAccountChooser = ({
   choices,
 }: Readonly<{ choices: readonly LinkedChoice[] }>): ReactNode => {
   const { selected, toggle, publish, discard, publishing, discarding } =
@@ -56,5 +56,3 @@ const LinkedAccountChooser = ({
     </div>
   );
 };
-
-export { LinkedAccountChooser };

@@ -11,7 +11,7 @@ const KINDS = {
   pin: { icon: Pin, color: "text-dc-muted" },
 } as const;
 
-const SystemMessage = ({
+export const SystemMessage = ({
   kind,
   actor,
   text,
@@ -39,5 +39,3 @@ const SystemMessage = ({
     </div>
   );
 };
-
-export { SystemMessage };

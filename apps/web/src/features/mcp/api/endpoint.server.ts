@@ -25,7 +25,7 @@ const respond = (request: Request, discordUserId: Option.Option<string>): Effect
       Effect.promise(() => createMcpHandler(() => buildServer(linked)).fetch(request)),
   });
 
-const serveMcp = (request: Request): Promise<Response> =>
+export const serveMcp = (request: Request): Promise<Response> =>
   requireMcpAuth(
     getAuth(),
     (authorized, claims) =>
@@ -36,5 +36,3 @@ const serveMcp = (request: Request): Promise<Response> =>
       ),
     { resource: MCP_URL },
   )(request);
-
-export { serveMcp };

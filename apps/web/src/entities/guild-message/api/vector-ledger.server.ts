@@ -12,9 +12,9 @@ import type { Segment } from "./search-ledger.server";
 const NO_VECTOR = 0;
 const ONE_ROW = 1;
 
-type StoredVector = Readonly<{ id: string; channelId: string; vector: Uint8Array | null }>;
+export type StoredVector = Readonly<{ id: string; channelId: string; vector: Uint8Array | null }>;
 
-type Coverage = Readonly<{ stored: number; embedded: number }>;
+export type Coverage = Readonly<{ stored: number; embedded: number }>;
 
 const hasRow = (db: DrizzleSqliteDODatabase, condition: SQL): boolean =>
   Option.isSome(
@@ -106,7 +106,7 @@ const coverageOf = (db: DrizzleSqliteDODatabase): Coverage => {
   }));
 };
 
-type VectorLedger = Readonly<{
+export type VectorLedger = Readonly<{
   coverage: () => Coverage;
   latestVectorAt: () => number;
   staleSegments: () => readonly Segment[];
@@ -116,7 +116,7 @@ type VectorLedger = Readonly<{
   ) => void;
 }>;
 
-const vectorLedger = (db: DrizzleSqliteDODatabase): VectorLedger => ({
+export const vectorLedger = (db: DrizzleSqliteDODatabase): VectorLedger => ({
   coverage: (): Coverage => coverageOf(db),
   latestVectorAt: (): number => latestVectorAt(db),
   staleSegments: (): readonly Segment[] => staleSegments(db),
@@ -125,6 +125,3 @@ const vectorLedger = (db: DrizzleSqliteDODatabase): VectorLedger => ({
     markPublished(db, published);
   },
 });
-
-export { vectorLedger };
-export type { Coverage, StoredVector, VectorLedger };

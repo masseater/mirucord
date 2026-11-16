@@ -8,7 +8,7 @@ import { InviteGuide } from "./invite-guide";
 import { NextStep } from "./next-step";
 import { WaitingGuildLinks } from "./waiting-guild-links";
 
-const NextStepList = ({
+export const NextStepList = ({
   consent,
   register,
   inviteUrl,
@@ -26,5 +26,3 @@ const NextStepList = ({
     </NextStep>
   </ol>
 );
-
-export { NextStepList };

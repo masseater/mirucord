@@ -108,6 +108,4 @@ const SECTIONS = [
   },
 ] as const;
 
-const TermsPage = (): ReactNode => <LegalDocument title={TITLE} sections={SECTIONS} />;
-
-export { TermsPage };
+export const TermsPage = (): ReactNode => <LegalDocument title={TITLE} sections={SECTIONS} />;

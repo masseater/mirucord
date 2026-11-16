@@ -6,7 +6,7 @@ import { forumPostsId, useForumDisclosure } from "#/pages/dashboard/model/forum-
 import { ChannelLabel } from "./channel-label";
 import { ForumChevron } from "./forum-chevron";
 
-const ForumPillToggle = ({ channel }: Readonly<{ channel: SettingsChannel }>): ReactNode => {
+export const ForumPillToggle = ({ channel }: Readonly<{ channel: SettingsChannel }>): ReactNode => {
   const { disclosure, toggle } = useForumDisclosure(channel.id);
   return (
     <button
@@ -21,5 +21,3 @@ const ForumPillToggle = ({ channel }: Readonly<{ channel: SettingsChannel }>): R
     </button>
   );
 };
-
-export { ForumPillToggle };

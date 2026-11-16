@@ -8,7 +8,7 @@ import { ChannelLink } from "./channel-link";
 import { GUIDE_CHANNELS } from "./guide-channels";
 import { PageLink } from "./page-link";
 
-const ChannelItems = ({ className }: Readonly<{ className: string }>): ReactNode => (
+export const ChannelItems = ({ className }: Readonly<{ className: string }>): ReactNode => (
   <ul className={cn("gap-0.5", className)}>
     {pipe(
       CHANNELS,
@@ -28,5 +28,3 @@ const ChannelItems = ({ className }: Readonly<{ className: string }>): ReactNode
     )}
   </ul>
 );
-
-export { ChannelItems };

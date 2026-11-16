@@ -7,7 +7,7 @@ import { SidebarGroup } from "./sidebar-group";
 const SERVER = "みんなのサーバー";
 const LABEL = "チャンネル";
 
-const ChannelSidebar = (): ReactNode => (
+export const ChannelSidebar = (): ReactNode => (
   <nav
     aria-label={LABEL}
     className="ch-sidebar bg-dc-sidebar sticky hidden w-60 shrink-0 flex-col rounded-tl-lg md:flex"
@@ -23,5 +23,3 @@ const ChannelSidebar = (): ReactNode => (
     </div>
   </nav>
 );
-
-export { ChannelSidebar };

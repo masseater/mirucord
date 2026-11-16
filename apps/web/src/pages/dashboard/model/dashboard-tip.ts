@@ -8,7 +8,7 @@ const WITHDRAWING_TIP = "削除中だよ！";
 const INGESTING_TIP = "思い出を集めてるよ";
 const INGESTING_GUILDS: ReadonlySet<GuildIngest> = new Set(INGESTING);
 
-const tipFor = ({ name, guilds }: ReadyDashboard): string => {
+export const tipFor = ({ name, guilds }: ReadyDashboard): string => {
   if (
     pipe(
       guilds,
@@ -27,5 +27,3 @@ const tipFor = ({ name, guilds }: ReadyDashboard): string => {
   }
   return `${name}さん、おかえり！`;
 };
-
-export { tipFor };

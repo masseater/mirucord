@@ -7,7 +7,7 @@ import { ChannelLabel } from "./channel-label";
 
 const GROUP = "notice-channel";
 
-const NoticeChannelOption = ({
+export const NoticeChannelOption = ({
   channel,
   checked,
   onChoose,
@@ -32,5 +32,3 @@ const NoticeChannelOption = ({
     </label>
   );
 };
-
-export { NoticeChannelOption };

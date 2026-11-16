@@ -100,7 +100,7 @@ const voteChangeOf = (
     ),
   );
 
-const reactionJobOf = Match.type<Discord.GatewayDispatchPayload>().pipe(
+export const reactionJobOf = Match.type<Discord.GatewayDispatchPayload>().pipe(
   Match.discriminator("t")(
     Discord.GatewayDispatchEvents.MessageReactionAdd,
     (dispatch) =>
@@ -135,16 +135,14 @@ const reactionJobOf = Match.type<Discord.GatewayDispatchPayload>().pipe(
   Match.orElse(() => (): Option.Option<GatewayJob> => Option.none()),
 );
 
-const reactionJobKeyOf = (job: ReactionsJob): string => {
+export const reactionJobKeyOf = (job: ReactionsJob): string => {
   const { messageId, at } = Array.headNonEmpty(job.changes);
   return `${job.guildId}-${messageId}-${at}`;
 };
 
 const isReactionsJob = (job: GatewayJob): job is ReactionsJob => job.kind === "reactions";
 
-const mergeReactionJobs = mergeByGuild({
+export const mergeReactionJobs = mergeByGuild({
   isBatch: isReactionsJob,
   rebuild: (guildId, changes): GatewayJob => ({ kind: "reactions", guildId, changes }),
 });
-
-export { mergeReactionJobs, reactionJobKeyOf, reactionJobOf };

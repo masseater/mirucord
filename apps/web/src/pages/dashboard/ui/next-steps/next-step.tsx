@@ -14,7 +14,7 @@ const BADGE = {
 
 const DONE = "済み";
 
-const NextStep = ({
+export const NextStep = ({
   order,
   title,
   state,
@@ -45,5 +45,3 @@ const NextStep = ({
     </div>
   </li>
 );
-
-export { NextStep };

@@ -64,7 +64,7 @@ const linkedAccountsOf = (
     Effect.map((rows): Output => ({ ingest: "consented", people: peopleOf(rows) })),
   );
 
-const listLinkedAccounts =
+export const listLinkedAccounts =
   (discordUserId: string) =>
   (input: typeof ListLinkedAccountsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: input.serverId, discordUserId })((scope) => {
@@ -73,5 +73,3 @@ const listLinkedAccounts =
       }
       return linkedAccountsOf(scope, input).pipe(Effect.flatMap(structuredResult));
     });
-
-export { listLinkedAccounts };

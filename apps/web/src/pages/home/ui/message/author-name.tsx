@@ -9,7 +9,7 @@ import type { Author } from "./author";
 const NAME = MASCOT_NAME;
 const BOT_TONE = "text-lavender-deep";
 
-const AuthorName = ({
+export const AuthorName = ({
   author,
   mark = "",
 }: Readonly<{ author: Author; mark?: string }>): ReactNode => {
@@ -26,5 +26,3 @@ const AuthorName = ({
     </span>
   );
 };
-
-export { AuthorName };

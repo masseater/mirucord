@@ -8,7 +8,7 @@ const GRANTED = "同意済み";
 const GRANTED_AT = "同意した日時";
 const WITHDRAWING = "削除中";
 
-const ConsentRecord = ({
+export const ConsentRecord = ({
   consent,
 }: Readonly<{ consent: Exclude<Consent, Readonly<{ status: "awaiting" }>> }>): ReactNode => {
   if (consent.status === "withdrawing") {
@@ -28,5 +28,3 @@ const ConsentRecord = ({
     </Panel>
   );
 };
-
-export { ConsentRecord };

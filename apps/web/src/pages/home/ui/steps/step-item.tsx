@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { TitledEmbed } from "#/pages/home/ui/message/titled-embed";
 
-const StepItem = ({
+export const StepItem = ({
   accent,
   title,
   children,
@@ -13,5 +13,3 @@ const StepItem = ({
     </TitledEmbed>
   </li>
 );
-
-export { StepItem };

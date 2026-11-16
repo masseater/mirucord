@@ -12,7 +12,7 @@ import { wrappedKeyOf } from "./wrapped-key.server";
 
 const REINDEX_BATCH = 500;
 
-type Reindexing = Readonly<{ store: DrizzleSqliteDODatabase; guildId: string }>;
+export type Reindexing = Readonly<{ store: DrizzleSqliteDODatabase; guildId: string }>;
 
 type MissingRow = Readonly<{ id: string; channelId: string; sealed: string }>;
 
@@ -57,7 +57,7 @@ const storeTokens = (store: DrizzleSqliteDODatabase, indexed: readonly Reindexed
   }
 };
 
-const reindexMissing = (reindexing: Reindexing): Effect.Effect<boolean> => {
+export const reindexMissing = (reindexing: Reindexing): Effect.Effect<boolean> => {
   const { store, guildId } = reindexing;
   const rows = missingRows(store);
   if (Array.isReadonlyArrayEmpty(rows)) {
@@ -79,6 +79,3 @@ const reindexMissing = (reindexing: Reindexing): Effect.Effect<boolean> => {
     Effect.withSpan("search.reindexMissing", { attributes: { guildId, rows: rows.length } }),
   );
 };
-
-export { reindexMissing };
-export type { Reindexing };

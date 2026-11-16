@@ -5,12 +5,12 @@ import cutinMiru from "./cutin-miru.svg";
 import { FinaleCount } from "./finale-count";
 import { FinaleTitle } from "./finale-title";
 import { FragmentCard } from "./fragment-card";
-import { FRAGMENTS } from "./fragments";
+import { FRAGMENTS } from "./fragment-rows";
 
 const SPARKS = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
 const SPARK = "✦";
 
-const GatherCard = (): ReactNode => (
+export const GatherCard = (): ReactNode => (
   <div className="scene-finale">
     <span aria-hidden="true" className="finale-lines finale-part" />
     <span aria-hidden="true" className="finale-burst finale-part" />
@@ -50,5 +50,3 @@ const GatherCard = (): ReactNode => (
     <FinaleCount />
   </div>
 );
-
-export { GatherCard };

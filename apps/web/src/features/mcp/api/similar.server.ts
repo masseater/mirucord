@@ -18,7 +18,7 @@ const CACHE_CONTROL = "public, max-age=604800, immutable";
 const NONE = 0;
 const MAX_SCORE = 1;
 
-type SimilarRequest = Readonly<{
+export type SimilarRequest = Readonly<{
   scope: GuildScope;
   query: string;
   channelIds: readonly string[];
@@ -27,7 +27,7 @@ type SimilarRequest = Readonly<{
 
 type Coverage = Readonly<{ stored: number; embedded: number }>;
 
-type SimilarMessages =
+export type SimilarMessages =
   | Readonly<{
       status: "found";
       messages: readonly (MessageView & Readonly<{ score: number }>)[];
@@ -126,7 +126,7 @@ const withScores = (
   );
 };
 
-const findSimilar = (request: SimilarRequest): Effect.Effect<SimilarMessages> => {
+export const findSimilar = (request: SimilarRequest): Effect.Effect<SimilarMessages> => {
   const { guildId, wrappedKey } = request.scope.guild;
   return queryVector(request.query).pipe(
     Effect.flatMap(
@@ -162,6 +162,3 @@ const findSimilar = (request: SimilarRequest): Effect.Effect<SimilarMessages> =>
     ),
   );
 };
-
-export { findSimilar };
-export type { SimilarMessages, SimilarRequest };

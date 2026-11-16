@@ -23,7 +23,7 @@ const inviteActions = (): ReactNode => (
   </div>
 );
 
-const StepList = (): ReactNode => (
+export const StepList = (): ReactNode => (
   <ol className="grid gap-2">
     <StepItem accent="border-lavender-deep" title={INVITE}>
       {inviteActions()}
@@ -36,5 +36,3 @@ const StepList = (): ReactNode => (
     </StepItem>
   </ol>
 );
-
-export { StepList };

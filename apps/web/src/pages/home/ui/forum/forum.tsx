@@ -42,7 +42,7 @@ const CHATTER: readonly ChatLine[] = [
   },
 ];
 
-const Forum = (): ReactNode => (
+export const Forum = (): ReactNode => (
   <ChannelSection id="forum">
     <ChannelHeader name={CHANNEL} kind="forum" />
     <Message author={BOT} time={TIME}>
@@ -52,5 +52,3 @@ const Forum = (): ReactNode => (
     <Chatter lines={CHATTER} />
   </ChannelSection>
 );
-
-export { Forum };

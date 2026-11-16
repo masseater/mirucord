@@ -12,16 +12,16 @@ import { loadChannels } from "./settings-channels.server";
 
 const MEMBER_CONCURRENCY = 4;
 
-type ManagedGuild = Readonly<{
+export type ManagedGuild = Readonly<{
   id: string;
   name: string;
   icon: string | null;
   ingest: GuildIngest;
 }>;
 
-type GuildMembership = Readonly<{ guildId: string; userId: string }>;
+export type GuildMembership = Readonly<{ guildId: string; userId: string }>;
 
-const managedGuild = ({
+export const managedGuild = ({
   guildId,
   userId,
 }: GuildMembership): Effect.Effect<
@@ -55,7 +55,7 @@ const managedGuild = ({
     ),
   );
 
-const whenManaged = <Value, const Denied, Failure>({
+export const whenManaged = <Value, const Denied, Failure>({
   membership,
   denied,
   use,
@@ -86,7 +86,7 @@ const managedIngest = (guildId: string, consent: GuildConsent): Effect.Effect<Gu
     ),
   );
 
-const listManagedGuilds = (userId: string): Effect.Effect<readonly ManagedGuild[]> =>
+export const listManagedGuilds = (userId: string): Effect.Effect<readonly ManagedGuild[]> =>
   Effect.promise(() =>
     db
       .select({ id: guild.id, icon: guild.icon, consent: ingestConsent.state })
@@ -120,6 +120,3 @@ const listManagedGuilds = (userId: string): Effect.Effect<readonly ManagedGuild[
     ),
     Effect.map(Array.getSomes),
   );
-
-export { listManagedGuilds, managedGuild, whenManaged };
-export type { GuildMembership, ManagedGuild };

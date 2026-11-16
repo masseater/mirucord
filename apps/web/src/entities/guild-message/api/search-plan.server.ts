@@ -22,21 +22,21 @@ const RECENT_LIMIT = 500;
 const RECENT_MAX = 2000;
 const PIECE_TARGET = 12_000;
 const SPLIT_ABOVE = 18_000;
-const PURGE_AFTER_MS = 3_600_000;
+export const PURGE_AFTER_MS = 3_600_000;
 const NONE = 0;
 const NEXT = 1;
 const LAST = -1;
 
-type PieceRow = Readonly<{
+export type PieceRow = Readonly<{
   id: string;
   channelId: string;
   createdAt: number;
   tokens: readonly number[];
 }>;
 
-type PieceSpec = Readonly<{ range: Range; rows: readonly PieceRow[] }>;
+export type PieceSpec = Readonly<{ range: Range; rows: readonly PieceRow[] }>;
 
-type Plan =
+export type Plan =
   | Readonly<{ status: "rebuild"; replaced: readonly Segment[]; pieces: readonly PieceSpec[] }>
   | Readonly<{ status: "recentOnly" }>;
 
@@ -229,15 +229,12 @@ const recentRows = (db: DrizzleSqliteDODatabase, sealed: readonly Segment[]): re
       .all(),
   );
 
-type SearchPlanner = Readonly<{
+export type SearchPlanner = Readonly<{
   plan: (now: number) => Plan;
   recentRows: (sealed: readonly Segment[]) => readonly PieceRow[];
 }>;
 
-const searchPlanner = (db: DrizzleSqliteDODatabase): SearchPlanner => ({
+export const searchPlanner = (db: DrizzleSqliteDODatabase): SearchPlanner => ({
   plan: (now) => planOf(db, now),
   recentRows: (sealed) => recentRows(db, sealed),
 });
-
-export { PURGE_AFTER_MS, searchPlanner };
-export type { PieceRow, PieceSpec, Plan, SearchPlanner };

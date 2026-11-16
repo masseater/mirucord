@@ -66,7 +66,7 @@ const QUESTIONS = [
   },
 ] as const;
 
-const FaqBody = (): ReactNode => (
+export const FaqBody = (): ReactNode => (
   <>
     <Message author={BOT} time={TIME}>
       <PostHeading guide={GUIDE} lead={LEAD} />
@@ -82,5 +82,3 @@ const FaqBody = (): ReactNode => (
     <Closing />
   </>
 );
-
-export { FaqBody };

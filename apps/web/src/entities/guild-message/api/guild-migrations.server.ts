@@ -16,8 +16,6 @@ const GUILD_MIGRATIONS: Readonly<Record<string, string>> = Record.fromEntries(
   ),
 );
 
-const migrateGuild = (db: DrizzleSqliteDODatabase): void => {
+export const migrateGuild = (db: DrizzleSqliteDODatabase): void => {
   migrate(db, { migrations: GUILD_MIGRATIONS });
 };
-
-export { migrateGuild };

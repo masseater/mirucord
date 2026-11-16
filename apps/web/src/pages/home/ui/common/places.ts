@@ -1,10 +1,10 @@
 import type { ChannelKind } from "#/shared/discord";
 
-type Place =
+export type Place =
   | Readonly<{ type: "channel"; name: string; kind: ChannelKind }>
   | Readonly<{ type: "thread"; name: string; parent: string }>;
 
-const PLACES = {
+export const PLACES = {
   announce: { type: "channel", name: "お知らせ", kind: "announcement" },
   campPlan: { type: "thread", name: "キャンプ計画", parent: "ざつだん" },
   hitori: { type: "channel", name: "ひとりごと", kind: "text" },
@@ -15,7 +15,4 @@ const PLACES = {
   game: { type: "channel", name: "げーむ部", kind: "text" },
 } as const satisfies Readonly<Record<string, Place>>;
 
-type PlaceId = keyof typeof PLACES;
-
-export { PLACES };
-export type { Place, PlaceId };
+export type PlaceId = keyof typeof PLACES;

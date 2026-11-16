@@ -7,11 +7,9 @@ import { ProblemBody } from "./problem-body";
 
 const CHANNEL = "思い出";
 
-const Problem = (): ReactNode => (
+export const Problem = (): ReactNode => (
   <ChannelSection id="why">
     <ChannelHeader name={CHANNEL} />
     <ProblemBody />
   </ChannelSection>
 );
-
-export { Problem };

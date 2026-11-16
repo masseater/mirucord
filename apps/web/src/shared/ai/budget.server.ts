@@ -9,7 +9,7 @@ const LIVE_LIMIT = 8000;
 const BACKGROUND_LIMIT = 7000;
 const ONE_DAY = 1;
 
-type Priority = "query" | "live" | "background";
+export type Priority = "query" | "live" | "background";
 
 const LIMITS: Readonly<Record<Priority, number>> = {
   query: QUERY_LIMIT,
@@ -22,7 +22,7 @@ const spendOn = (spending: Spending): Effect.Effect<boolean> =>
 
 const today = DateTime.now.pipe(Effect.map(DateTime.formatIsoDateUtc));
 
-const spendNeurons = Effect.fn("spendNeurons")(function* spendNeurons(
+export const spendNeurons = Effect.fn("spendNeurons")(function* spendNeurons(
   priority: Priority,
   neurons: number,
 ) {
@@ -32,16 +32,13 @@ const spendNeurons = Effect.fn("spendNeurons")(function* spendNeurons(
   return granted;
 });
 
-const settleNeurons = Effect.fn("settleNeurons")(function* settleNeurons(neurons: number) {
+export const settleNeurons = Effect.fn("settleNeurons")(function* settleNeurons(neurons: number) {
   const day = yield* today;
   yield* spendOn({ status: "settled", day, neurons });
 });
 
-const nextBudgetDay = DateTime.now.pipe(
+export const nextBudgetDay = DateTime.now.pipe(
   Effect.map((now) =>
     DateTime.toEpochMillis(DateTime.add(DateTime.startOf(now, "day"), { days: ONE_DAY })),
   ),
 );
-
-export { nextBudgetDay, settleNeurons, spendNeurons };
-export type { Priority };

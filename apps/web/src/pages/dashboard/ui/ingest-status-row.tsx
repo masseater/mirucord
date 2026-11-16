@@ -7,7 +7,7 @@ import { ForumToggle } from "./forum-toggle";
 import { IngestPill } from "./ingest-pill";
 import { PurgeChannelButton } from "./purge-channel-button";
 
-const IngestStatusRow = ({
+export const IngestStatusRow = ({
   guildId,
   channel,
 }: Readonly<{ guildId: string; channel: SettingsChannel }>): ReactNode => (
@@ -24,5 +24,3 @@ const IngestStatusRow = ({
     )}
   </li>
 );
-
-export { IngestStatusRow };

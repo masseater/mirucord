@@ -11,7 +11,7 @@ import { syncMembers } from "./store-members.server";
 import { abandonWithdrawal, withdrawGuild } from "./withdraw-guild.server";
 import type { GuildDataRemainsError } from "./withdraw-guild.server";
 
-type QueueDelivery = Readonly<{
+export type QueueDelivery = Readonly<{
   body: unknown;
   attempts: number;
   ack: () => void;
@@ -92,8 +92,5 @@ const processDelivery = (delivery: QueueDelivery): Effect.Effect<void> =>
     ),
   );
 
-const ingestDeliveries = (deliveries: readonly QueueDelivery[]): Effect.Effect<void> =>
+export const ingestDeliveries = (deliveries: readonly QueueDelivery[]): Effect.Effect<void> =>
   Effect.forEach(deliveries, processDelivery, { discard: true });
-
-export { ingestDeliveries };
-export type { QueueDelivery };

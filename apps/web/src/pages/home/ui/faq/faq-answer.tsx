@@ -6,7 +6,7 @@ import { CopyBlock } from "#/shared/ui/copy-block";
 
 const THINKING = `${MASCOT_NAME}がさがし中…`;
 
-const FaqAnswer = ({
+export const FaqAnswer = ({
   answer,
   copy,
   children,
@@ -23,5 +23,3 @@ const FaqAnswer = ({
     </div>
   </div>
 );
-
-export { FaqAnswer };

@@ -66,7 +66,7 @@ const snapshotJobOf = (
     })),
   );
 
-const voiceJobOf = Match.type<Discord.GatewayDispatchPayload>().pipe(
+export const voiceJobOf = Match.type<Discord.GatewayDispatchPayload>().pipe(
   Match.discriminator("t")(
     Discord.GatewayDispatchEvents.VoiceStateUpdate,
     (dispatch) =>
@@ -82,7 +82,7 @@ const voiceJobOf = Match.type<Discord.GatewayDispatchPayload>().pipe(
   Match.orElse(() => (): Option.Option<GatewayJob> => Option.none()),
 );
 
-const voiceJobKeyOf = (job: VoiceJob | VoiceSnapshotJob): string => {
+export const voiceJobKeyOf = (job: VoiceJob | VoiceSnapshotJob): string => {
   if (job.kind === "voiceSnapshot") {
     return `${job.guildId}-${job.at}`;
   }
@@ -130,12 +130,10 @@ const guildVoiceOf = (jobs: readonly (VoiceJob | VoiceSnapshotJob)[]): GuildVoic
   ),
 });
 
-const mergeVoiceJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
+export const mergeVoiceJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
   const byGuild = Array.groupBy(pipe(jobs, Array.filter(isVoiceJob)), ({ guildId }) => guildId);
   return pipe(
     Record.toEntries(byGuild),
     Array.flatMap(([guildId, guildJobs]) => jobsOfGuild(guildId, guildVoiceOf(guildJobs))),
   );
 };
-
-export { mergeVoiceJobs, voiceJobKeyOf, voiceJobOf };

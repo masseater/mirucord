@@ -5,7 +5,7 @@ import { CHANNELS } from "#/pages/home/ui/common/channels";
 
 const SUFFIX = " へメッセージを送信";
 
-const ComposerHint = (): ReactNode => (
+export const ComposerHint = (): ReactNode => (
   <span className="grid min-w-0">
     {pipe(
       CHANNELS,
@@ -21,5 +21,3 @@ const ComposerHint = (): ReactNode => (
     )}
   </span>
 );
-
-export { ComposerHint };

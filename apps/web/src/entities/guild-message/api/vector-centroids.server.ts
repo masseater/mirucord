@@ -25,13 +25,13 @@ const SINGLE_CLUSTER = 1;
 const NEXT_STAMP = 1;
 const NO_STAMP = 0;
 
-type CentroidTarget = Readonly<{
+export type CentroidTarget = Readonly<{
   db: DrizzleSqliteDODatabase;
   keys: Keys;
   bucket: Readonly<R2Bucket>;
 }>;
 
-type SavedCentroids = CentroidTarget &
+export type SavedCentroids = CentroidTarget &
   Readonly<{
     segment: Segment;
     through: number;
@@ -80,7 +80,7 @@ const keepCentroids = (saved: SavedCentroids): Effect.Effect<void> =>
     onSome: storeCentroids(saved),
   });
 
-const centroidStamp = (db: DrizzleSqliteDODatabase): Option.Option<number> => {
+export const centroidStamp = (db: DrizzleSqliteDODatabase): Option.Option<number> => {
   const row = db.select().from(vectorCentroidFile).where(eq(vectorCentroidFile.id, FILE_ROW)).get();
   return Option.map(Option.fromUndefinedOr(row), ({ stamp }) => stamp);
 };
@@ -185,12 +185,9 @@ const publishCentroids = Effect.fn("vectors.publishCentroids")(function* publish
   yield* dropMerged(target);
 });
 
-const saveCentroids = Effect.fnUntraced(function* saveCentroids(saved: SavedCentroids) {
+export const saveCentroids = Effect.fnUntraced(function* saveCentroids(saved: SavedCentroids) {
   yield* keepCentroids(saved);
   if (saved.segment.kind !== "recent") {
     yield* publishCentroids(saved);
   }
 });
-
-export { centroidStamp, saveCentroids };
-export type { CentroidTarget, SavedCentroids };

@@ -13,7 +13,7 @@ import {
 } from "#/shared/ai/index.server";
 import type { GemmaOutput } from "#/shared/ai/index.server";
 
-const DESCRIBE_MODEL = GEMMA_MODEL;
+export const DESCRIBE_MODEL = GEMMA_MODEL;
 const OK_STATUS = 200;
 const MAX_TOKENS = 160;
 const RETRY_TIMES = 2;
@@ -39,9 +39,9 @@ const reasonOf = (cause: unknown): string =>
     Option.match({ onNone: () => "unknown", onSome: ({ name, message }) => `${name}: ${message}` }),
   );
 
-type ImageSource = Readonly<{ url: string; contentType: string; size: number }>;
+export type ImageSource = Readonly<{ url: string; contentType: string; size: number }>;
 
-const isDescribable = ({ contentType, size }: ImageSource): boolean =>
+export const isDescribable = ({ contentType, size }: ImageSource): boolean =>
   DESCRIBABLE_TYPES.has(contentType) && size <= MAX_IMAGE_BYTES;
 
 type FetchedImage = Readonly<{ data: string; contentType: string }>;
@@ -123,12 +123,9 @@ const describeWithClient = (
     ),
   );
 
-const describeImage = (source: ImageSource): Effect.Effect<Option.Option<string>> =>
+export const describeImage = (source: ImageSource): Effect.Effect<Option.Option<string>> =>
   Effect.scoped(
     Layer.build(FetchHttpClient.layer).pipe(
       Effect.flatMap((context) => describeWithClient(source).pipe(Effect.provideContext(context))),
     ),
   ).pipe(Effect.withSpan("describeImage"));
-
-export { DESCRIBE_MODEL, describeImage, isDescribable };
-export type { ImageSource };

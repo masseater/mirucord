@@ -45,7 +45,7 @@ const SPECS = [
   },
 ] as const;
 
-const SpecList = (): ReactNode => (
+export const SpecList = (): ReactNode => (
   <Embed accent="border-lavender-deep">
     <dl className="grid gap-4 sm:grid-cols-2">
       {pipe(
@@ -63,5 +63,3 @@ const SpecList = (): ReactNode => (
     </dl>
   </Embed>
 );
-
-export { SpecList };

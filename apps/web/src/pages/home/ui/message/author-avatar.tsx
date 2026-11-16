@@ -15,7 +15,7 @@ const AVATAR_SIZE = {
 const avatarClass = (size: keyof typeof AVATAR_SIZE, tone: string): string =>
   cn("text-ink grid shrink-0 place-items-center rounded-full font-bold", AVATAR_SIZE[size], tone);
 
-const AuthorAvatar = ({
+export const AuthorAvatar = ({
   author,
   size,
 }: Readonly<{ author: Author; size: keyof typeof AVATAR_SIZE }>): ReactNode =>
@@ -33,5 +33,3 @@ const AuthorAvatar = ({
       ),
     }),
   );
-
-export { AuthorAvatar };

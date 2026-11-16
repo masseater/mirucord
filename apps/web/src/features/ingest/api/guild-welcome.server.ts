@@ -7,7 +7,7 @@ import type { DiscordChannel, DiscordGuild, OutgoingMessage } from "#/shared/dis
 
 import type { ChannelListing } from "./channel-listing.server";
 
-type Welcome = Readonly<{
+export type Welcome = Readonly<{
   botUserId: string;
   discordGuild: DiscordGuild;
   listing: ChannelListing;
@@ -85,7 +85,7 @@ const postToChannels = (welcome: Welcome): Effect.Effect<Delivery> =>
     ),
   );
 
-const welcomeGuild = (welcome: Welcome): Effect.Effect<void> =>
+export const welcomeGuild = (welcome: Welcome): Effect.Effect<void> =>
   inviterOf(welcome).pipe(
     Effect.flatMap((userId) =>
       sendDirectMessage({ userId, ...welcomeMessage("inviter", welcome.discordGuild) }),
@@ -97,6 +97,3 @@ const welcomeGuild = (welcome: Welcome): Effect.Effect<void> =>
     ),
     Effect.annotateLogs({ guildId: welcome.discordGuild.id }),
   );
-
-export { welcomeGuild };
-export type { Welcome };

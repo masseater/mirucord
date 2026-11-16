@@ -5,7 +5,7 @@ import type { LinkedChoice } from "#/pages/dashboard/api/linked-account-store.se
 
 import { LinkedAccountLine } from "./linked-account-line";
 
-const LinkedAccountChoiceRow = ({
+export const LinkedAccountChoiceRow = ({
   choice,
   checked,
   onToggle,
@@ -31,5 +31,3 @@ const LinkedAccountChoiceRow = ({
     </li>
   );
 };
-
-export { LinkedAccountChoiceRow };

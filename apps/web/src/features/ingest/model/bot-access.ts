@@ -4,11 +4,11 @@ const DATA_FIRST_ARITY = 2;
 const RETENTION_DAYS = 30;
 const HIDDEN_RETENTION = Duration.days(RETENTION_DAYS);
 
-type BotAccess =
+export type BotAccess =
   | Readonly<{ status: "readable" }>
   | Readonly<{ status: "hidden"; since: DateTime.Utc }>;
 
-const observeAccess = ({
+export const observeAccess = ({
   readable,
   previous,
   now,
@@ -22,7 +22,7 @@ const observeAccess = ({
   return { status: "hidden", since: now };
 };
 
-const isPastRetention: {
+export const isPastRetention: {
   (now: DateTime.Utc): (access: BotAccess) => boolean;
   (access: BotAccess, now: DateTime.Utc): boolean;
 } = Function.dual(
@@ -31,6 +31,3 @@ const isPastRetention: {
     access.status === "hidden" &&
     DateTime.isGreaterThanOrEqualTo(now, DateTime.addDuration(access.since, HIDDEN_RETENTION)),
 );
-
-export { isPastRetention, observeAccess };
-export type { BotAccess };

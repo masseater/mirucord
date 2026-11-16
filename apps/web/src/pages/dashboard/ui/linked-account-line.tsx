@@ -7,7 +7,7 @@ import { Pill } from "./pill";
 
 const VERIFIED = "確認済み";
 
-const LinkedAccountLine = ({
+export const LinkedAccountLine = ({
   connection,
 }: Readonly<{ connection: PublicConnection }>): ReactNode => (
   <span className="flex flex-wrap items-center gap-2">
@@ -20,5 +20,3 @@ const LinkedAccountLine = ({
     )}
   </span>
 );
-
-export { LinkedAccountLine };

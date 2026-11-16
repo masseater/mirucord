@@ -8,16 +8,16 @@ import type {
 } from "#/shared/discord/index.server";
 import { postableChannelIds, visibleChannelIds } from "#/shared/permissions";
 
-type BotView = Readonly<{
+export type BotView = Readonly<{
   botUserId: string;
   discordGuild: DiscordGuild;
 }>;
 
-type BotReader = (
+export type BotReader = (
   channels: readonly DiscordChannel[],
 ) => Readonly<{ readable: ReadonlySet<string>; postable: ReadonlySet<string> }>;
 
-const botReader = ({
+export const botReader = ({
   botUserId,
   discordGuild,
 }: BotView): Effect.Effect<BotReader, DiscordRequestError> =>
@@ -52,6 +52,3 @@ const botReader = ({
       };
     }),
   );
-
-export { botReader };
-export type { BotReader, BotView };

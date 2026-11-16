@@ -4,21 +4,21 @@ import { isNoticeCandidate } from "#/features/ingest";
 import type { GuildSettings } from "#/features/ingest/index.server";
 
 const DATA_FIRST_ARITY = 2;
-const NO_CHANNEL = "";
+export const NO_CHANNEL = "";
 
-type ConsentDraft =
+export type ConsentDraft =
   | Readonly<{ status: "untouched" }>
   | Readonly<{ status: "edited"; noticeChannelId: string }>;
 
-const UNTOUCHED: ConsentDraft = { status: "untouched" };
+export const UNTOUCHED: ConsentDraft = { status: "untouched" };
 
-const readableChannels = (settings: GuildSettings): GuildSettings["channels"] =>
+export const readableChannels = (settings: GuildSettings): GuildSettings["channels"] =>
   pipe(
     settings.channels,
     Array.filter(({ ingest }) => ingest !== "unreadable"),
   );
 
-const noticeChannels = (settings: GuildSettings): GuildSettings["channels"] =>
+export const noticeChannels = (settings: GuildSettings): GuildSettings["channels"] =>
   pipe(settings.channels, Array.filter(isNoticeCandidate));
 
 const noticeChannelOfDataFirst = (settings: GuildSettings, draft: ConsentDraft): string => {
@@ -31,10 +31,7 @@ const noticeChannelOfDataFirst = (settings: GuildSettings, draft: ConsentDraft):
   );
 };
 
-const noticeChannelOf: {
+export const noticeChannelOf: {
   (draft: ConsentDraft): (settings: GuildSettings) => string;
   (settings: GuildSettings, draft: ConsentDraft): string;
 } = Function.dual(DATA_FIRST_ARITY, noticeChannelOfDataFirst);
-
-export { NO_CHANNEL, noticeChannelOf, noticeChannels, readableChannels, UNTOUCHED };
-export type { ConsentDraft };

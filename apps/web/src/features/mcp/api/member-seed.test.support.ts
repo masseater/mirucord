@@ -8,7 +8,7 @@ import { db, role } from "#/shared/db/index.server";
 
 import { guildKeys } from "./scenario.test.support";
 
-type SeedMember = Readonly<{
+export type SeedMember = Readonly<{
   userId: string;
   username: string;
   nick: string | null;
@@ -17,7 +17,7 @@ type SeedMember = Readonly<{
   leftAt: number | null;
 }>;
 
-type MemberSeed = Readonly<{
+export type MemberSeed = Readonly<{
   guildId: string;
   members: readonly SeedMember[];
   roleNames: Readonly<Record<string, string>>;
@@ -30,7 +30,12 @@ const encodeRoles = Schema.encodeEffect(Schema.fromJsonString(Schema.Array(Schem
 const INSERT_MEMBER =
   "INSERT INTO member (userId, sealed, roles, bot, joinedAt, leftAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-const seedMembers = ({ guildId, members, roleNames, updatedAt }: MemberSeed): Effect.Effect<void> =>
+export const seedMembers = ({
+  guildId,
+  members,
+  roleNames,
+  updatedAt,
+}: MemberSeed): Effect.Effect<void> =>
   Effect.gen(function* seed() {
     const { key } = yield* guildKeys(guildId);
     const sealRow = ({
@@ -67,6 +72,3 @@ const seedMembers = ({ guildId, members, roleNames, updatedAt }: MemberSeed): Ef
       yield* Effect.promise(() => db.update(role).set({ name }).where(eq(role.id, id)));
     }
   });
-
-export { seedMembers };
-export type { MemberSeed, SeedMember };

@@ -19,7 +19,7 @@ import type {
 import { vectorLedger } from "./vector-ledger.server";
 import type { Coverage } from "./vector-ledger.server";
 
-class GuildStore extends RelationStore {
+export class GuildStore extends RelationStore {
   public phraseStats({
     guildId,
     visibility,
@@ -117,5 +117,3 @@ class GuildStore extends RelationStore {
     return this.traced(published);
   }
 }
-
-export { GuildStore };

@@ -8,12 +8,10 @@ import { RevokePanel } from "./revoke-panel";
 
 const SHARE_TITLE = "メンバーに URL を共有";
 
-const GrantedPanels = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (
+export const GrantedPanels = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (
   <>
     <McpUrlPanel title={SHARE_TITLE} />
     <IngestStatus settings={settings} />
     <RevokePanel guildId={settings.id} />
   </>
 );
-
-export { GrantedPanels };

@@ -6,7 +6,7 @@ import { DASHBOARD_PATH, REPOSITORY_URL } from "#/shared/config";
 const START = "Discord でログインしてはじめる";
 const SOURCE = "GitHub を見る";
 
-const ClosingActions = (): ReactNode => (
+export const ClosingActions = (): ReactNode => (
   <div className="mt-1 flex flex-wrap gap-2">
     <DcLink href={DASHBOARD_PATH} tone="primary">
       {START}
@@ -16,5 +16,3 @@ const ClosingActions = (): ReactNode => (
     </DcLink>
   </div>
 );
-
-export { ClosingActions };

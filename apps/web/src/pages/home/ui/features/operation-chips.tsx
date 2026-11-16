@@ -11,7 +11,7 @@ const OPERATIONS = [
   { label: "編集", allowed: false },
 ] as const;
 
-const OperationChips = (): ReactNode => (
+export const OperationChips = (): ReactNode => (
   <ul className="flex flex-wrap gap-2 text-sm font-bold">
     {pipe(
       OPERATIONS,
@@ -30,5 +30,3 @@ const OperationChips = (): ReactNode => (
     )}
   </ul>
 );
-
-export { OperationChips };

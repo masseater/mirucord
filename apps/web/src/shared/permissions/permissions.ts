@@ -5,9 +5,9 @@ import { Array, Function, Option, pipe, Record } from "effect";
 
 const DATA_FIRST_ARITY = 2;
 
-type Overwrite = Readonly<APIOverwrite>;
+export type Overwrite = Readonly<APIOverwrite>;
 
-type ReaderContext = Readonly<{
+export type ReaderContext = Readonly<{
   guildId: string;
   ownerId: string;
   userId: string;
@@ -89,7 +89,7 @@ const canReadHistoryDataFirst = (
   overwrites: readonly Overwrite[],
 ): boolean => hasInChannel(reader, overwrites, READ_HISTORY);
 
-const canReadHistory: {
+export const canReadHistory: {
   (overwrites: readonly Overwrite[]): (reader: ReaderContext) => boolean;
   (reader: ReaderContext, overwrites: readonly Overwrite[]): boolean;
 } = Function.dual(DATA_FIRST_ARITY, canReadHistoryDataFirst);
@@ -99,13 +99,10 @@ const canSendMessagesDataFirst = (
   overwrites: readonly Overwrite[],
 ): boolean => hasInChannel(reader, overwrites, SEND);
 
-const canSendMessages: {
+export const canSendMessages: {
   (overwrites: readonly Overwrite[]): (reader: ReaderContext) => boolean;
   (reader: ReaderContext, overwrites: readonly Overwrite[]): boolean;
 } = Function.dual(DATA_FIRST_ARITY, canSendMessagesDataFirst);
 
-const isGuildManager = (reader: ReaderContext): boolean =>
+export const isGuildManager = (reader: ReaderContext): boolean =>
   reader.userId === reader.ownerId || Permissions.any(basePermissions(reader), MANAGE);
-
-export { canReadHistory, canSendMessages, isGuildManager };
-export type { Overwrite, ReaderContext };

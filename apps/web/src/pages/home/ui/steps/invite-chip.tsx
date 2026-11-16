@@ -11,7 +11,7 @@ import { IconLine } from "#/shared/ui/icon-line";
 const LABEL = `${MASCOT_NAME}をサーバーに招待`;
 const FULL = "招待の受付を締め切りました";
 
-const InviteChip = (): ReactNode => {
+export const InviteChip = (): ReactNode => {
   const { data } = useSuspenseQuery(inviteQuery);
   return Match.value(data).pipe(
     Match.discriminatorsExhaustive("status")({
@@ -29,5 +29,3 @@ const InviteChip = (): ReactNode => {
     }),
   );
 };
-
-export { InviteChip };

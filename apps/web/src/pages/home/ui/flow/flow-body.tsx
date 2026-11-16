@@ -42,7 +42,7 @@ const CHATTER: readonly ChatLine[] = [
   },
 ];
 
-const FlowBody = (): ReactNode => (
+export const FlowBody = (): ReactNode => (
   <>
     <Message author={BOT} time={TIME}>
       <PostHeading guide={GUIDE} lead={LEAD} tail={TAIL} />
@@ -52,5 +52,3 @@ const FlowBody = (): ReactNode => (
     <Chatter lines={CHATTER} />
   </>
 );
-
-export { FlowBody };

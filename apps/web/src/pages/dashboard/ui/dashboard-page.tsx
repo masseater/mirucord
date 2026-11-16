@@ -11,7 +11,7 @@ import { DashboardView } from "./dashboard-view";
 import { LandingRedirect } from "./landing-redirect";
 import { SignInPanel } from "./sign-in-panel";
 
-const DashboardPage = (): ReactNode => {
+export const DashboardPage = (): ReactNode => {
   const { data } = useSuspenseQuery(dashboardQuery);
   const search = useSearch({ from: "/dashboard/" });
   const landing = landingOf({ dashboard: data, search });
@@ -23,5 +23,3 @@ const DashboardPage = (): ReactNode => {
     </AppFrame>
   );
 };
-
-export { DashboardPage };

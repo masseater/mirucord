@@ -11,23 +11,23 @@ import type { TrackedRow } from "./store-types";
 
 const NO_DELAY = 0;
 
-type Alarms = Readonly<{
+export type Alarms = Readonly<{
   current: () => Promise<number | null>;
   set: (at: number) => Promise<void>;
 }>;
 
-type Alarmed = Readonly<{ db: DrizzleSqliteDODatabase; alarms: Alarms }>;
+export type Alarmed = Readonly<{ db: DrizzleSqliteDODatabase; alarms: Alarms }>;
 
-type Scheduled = Alarmed & Readonly<{ delay: number }>;
+export type Scheduled = Alarmed & Readonly<{ delay: number }>;
 
-type Forgotten = Alarmed &
+export type Forgotten = Alarmed &
   Readonly<{ rows: readonly TrackedRow[]; publishHead: Effect.Effect<void> }>;
 
-type Published = Alarmed & Readonly<{ bucket: Readonly<R2Bucket>; guildId: string }>;
+export type Published = Alarmed & Readonly<{ bucket: Readonly<R2Bucket>; guildId: string }>;
 
-type Flushing = Published & Readonly<{ flush: Flush }>;
+export type Flushing = Published & Readonly<{ flush: Flush }>;
 
-const scheduleSearch = ({ alarms, delay }: Scheduled): Effect.Effect<void> =>
+export const scheduleSearch = ({ alarms, delay }: Scheduled): Effect.Effect<void> =>
   Effect.all({
     now: Clock.currentTimeMillis,
     current: Effect.promise(() => alarms.current()),
@@ -46,7 +46,7 @@ const scheduleSearch = ({ alarms, delay }: Scheduled): Effect.Effect<void> =>
     Effect.asVoid,
   );
 
-const forgetRows = ({ db, alarms, rows, publishHead }: Forgotten): Effect.Effect<void> => {
+export const forgetRows = ({ db, alarms, rows, publishHead }: Forgotten): Effect.Effect<void> => {
   const published = publishHead.pipe(
     Effect.andThen(scheduleSearch({ db, alarms, delay: FLUSH_DELAY_MS })),
   );
@@ -68,7 +68,7 @@ const scheduleNext = (alarmed: Alarmed, next: Option.Option<number>): Effect.Eff
       ),
   });
 
-const nextVersion = (db: DrizzleSqliteDODatabase): number => searchLedger(db).nextVersion();
+export const nextVersion = (db: DrizzleSqliteDODatabase): number => searchLedger(db).nextVersion();
 
 const publishIndexed = (published: Flushing): Effect.Effect<void> => {
   const { db, bucket, guildId, flush } = published;
@@ -85,10 +85,7 @@ const afterReindex = (published: Flushing, remaining: boolean): Effect.Effect<vo
   return publishIndexed(published);
 };
 
-const publishGuild = (published: Flushing): Effect.Effect<void> =>
+export const publishGuild = (published: Flushing): Effect.Effect<void> =>
   reindexMissing({ store: published.db, guildId: published.guildId }).pipe(
     Effect.flatMap((remaining) => afterReindex(published, remaining)),
   );
-
-export { forgetRows, nextVersion, publishGuild, scheduleSearch };
-export type { Alarmed, Alarms, Flushing, Forgotten, Published, Scheduled };

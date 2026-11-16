@@ -14,7 +14,7 @@ const formatted = (epoch: number | null): string =>
     onSome: (value) => dateFormat.format(value),
   });
 
-const ConnectedAppDates = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode => (
+export const ConnectedAppDates = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode => (
   <dl className="text-dc-muted grid w-full grid-cols-2 gap-y-1 text-sm">
     <dt className="font-bold">{CONNECTED_AT}</dt>
     <dd>{formatted(app.connectedAt)}</dd>
@@ -22,5 +22,3 @@ const ConnectedAppDates = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode 
     <dd>{formatted(app.updatedAt)}</dd>
   </dl>
 );
-
-export { ConnectedAppDates };

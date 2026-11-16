@@ -1,3 +1,1 @@
-const MEMORY_ID = "memory-2214";
-
-export { MEMORY_ID };
+export const MEMORY_ID = "memory-2214";

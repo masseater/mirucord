@@ -28,7 +28,7 @@ const consentDraftAtom = Atom.family((guildId: string) =>
   Atom.make<ConsentDraft>(UNTOUCHED).pipe(Atom.withLabel(`consent-draft:${guildId}`)),
 );
 
-const useConsentForm = (settings: GuildSettings): ConsentForm => {
+export const useConsentForm = (settings: GuildSettings): ConsentForm => {
   const [draft, setDraft] = useAtom(consentDraftAtom(settings.id));
   const noticeChannelId = noticeChannelOf(settings, draft);
   const returnToDashboard = useReturnToDashboard();
@@ -60,5 +60,3 @@ const useConsentForm = (settings: GuildSettings): ConsentForm => {
     mutation,
   };
 };
-
-export { useConsentForm };

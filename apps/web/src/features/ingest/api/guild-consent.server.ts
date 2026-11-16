@@ -14,13 +14,13 @@ import { whenManaged } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 import { requestWithdrawal } from "./withdraw-guild.server";
 
-type ConsentRequest = Readonly<{
+export type ConsentRequest = Readonly<{
   guildId: string;
   userId: string;
   noticeChannelId: string;
 }>;
 
-type ConsentResult =
+export type ConsentResult =
   | Readonly<{ status: "saved" }>
   | Readonly<{ status: "forbidden" }>
   | Readonly<{ status: "invalid" }>
@@ -29,7 +29,7 @@ type ConsentResult =
   | Readonly<{ status: "noticeMissing" }>
   | Readonly<{ status: "noticeFailed" }>;
 
-type RevokeResult = Readonly<{ status: "withdrawing" }> | Readonly<{ status: "forbidden" }>;
+export type RevokeResult = Readonly<{ status: "withdrawing" }> | Readonly<{ status: "forbidden" }>;
 
 const NOTICE: OutgoingMessage = {
   content: pipe(
@@ -127,7 +127,9 @@ const applyConsent = (
   );
 };
 
-const grantConsent = (request: ConsentRequest): Effect.Effect<ConsentResult, DiscordRequestError> =>
+export const grantConsent = (
+  request: ConsentRequest,
+): Effect.Effect<ConsentResult, DiscordRequestError> =>
   whenManaged({
     membership: request,
     denied: { status: "forbidden" },
@@ -142,7 +144,7 @@ const grantConsent = (request: ConsentRequest): Effect.Effect<ConsentResult, Dis
       ),
   });
 
-const revokeConsent = (
+export const revokeConsent = (
   membership: GuildMembership,
 ): Effect.Effect<RevokeResult, DiscordRequestError> =>
   whenManaged({
@@ -151,6 +153,3 @@ const revokeConsent = (
     use: () =>
       requestWithdrawal(membership.guildId).pipe(Effect.as({ status: "withdrawing" } as const)),
   });
-
-export { grantConsent, revokeConsent };
-export type { ConsentRequest, ConsentResult, RevokeResult };

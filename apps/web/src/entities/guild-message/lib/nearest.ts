@@ -5,9 +5,9 @@ import type { Quantized } from "#/shared/ai";
 
 import type { VectorBlock } from "./vector-block";
 
-type Scored = Readonly<{ row: number; score: number }>;
+export type Scored = Readonly<{ row: number; score: number }>;
 
-type ScoreRequest = Readonly<{
+export type ScoreRequest = Readonly<{
   query: Quantized;
   block: VectorBlock;
   keep: (row: number) => boolean;
@@ -31,7 +31,7 @@ const dotAt = (query: Int8Array, block: VectorBlock, row: number): number => {
 const scoreAt = ({ query, block }: ScoreRequest, row: number): number =>
   dotAt(query.values, block, row) * query.scale * (block.scales[row] ?? NO_SCORE);
 
-const nearestRows = (request: ScoreRequest): readonly Scored[] =>
+export const nearestRows = (request: ScoreRequest): readonly Scored[] =>
   pipe(
     Array.range(NO_SCORE, request.block.ordinals.length - NEXT),
     Array.filter((row) => row < request.block.ordinals.length && request.keep(row)),
@@ -39,6 +39,3 @@ const nearestRows = (request: ScoreRequest): readonly Scored[] =>
     (rows) => Array.sort(rows, byScore),
     Array.take(request.limit),
   );
-
-export { nearestRows };
-export type { ScoreRequest, Scored };

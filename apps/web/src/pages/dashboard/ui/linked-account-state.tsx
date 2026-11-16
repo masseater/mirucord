@@ -20,7 +20,7 @@ const pageOf = (page: LinkedAccountsPage): ReactNode =>
 const loadedOf = (data: Option.Option<LinkedAccountsPage>): ReactNode =>
   Option.match(data, { onNone: () => false, onSome: pageOf });
 
-const LinkedAccountState = ({
+export const LinkedAccountState = ({
   status,
   data,
 }: Readonly<{ status: QueryStatus; data: Option.Option<LinkedAccountsPage> }>): ReactNode =>
@@ -29,5 +29,3 @@ const LinkedAccountState = ({
     Match.when("error", () => <FeedbackLine feedback={UNAVAILABLE} />),
     Match.orElse(() => loadedOf(data)),
   );
-
-export { LinkedAccountState };

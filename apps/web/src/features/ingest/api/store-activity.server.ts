@@ -5,7 +5,7 @@ import { guildStore } from "#/entities/guild-message/index.server";
 
 import { whenConsented } from "./consented.server";
 
-const storeGatewayVoice = ({ guildId, changes }: VoiceJob): Effect.Effect<void> => {
+export const storeGatewayVoice = ({ guildId, changes }: VoiceJob): Effect.Effect<void> => {
   const logged = Effect.logInfo("Voice changes stored").pipe(
     Effect.annotateLogs({ guildId, changes: changes.length }),
   );
@@ -16,7 +16,11 @@ const storeGatewayVoice = ({ guildId, changes }: VoiceJob): Effect.Effect<void> 
   );
 };
 
-const storeVoiceSnapshot = ({ guildId, at, present }: VoiceSnapshotJob): Effect.Effect<void> => {
+export const storeVoiceSnapshot = ({
+  guildId,
+  at,
+  present,
+}: VoiceSnapshotJob): Effect.Effect<void> => {
   const logged = Effect.logInfo("Voice snapshot stored").pipe(
     Effect.annotateLogs({ guildId, present: present.length }),
   );
@@ -27,7 +31,7 @@ const storeVoiceSnapshot = ({ guildId, at, present }: VoiceSnapshotJob): Effect.
   );
 };
 
-const storeGatewayReactions = ({ guildId, changes }: ReactionsJob): Effect.Effect<void> => {
+export const storeGatewayReactions = ({ guildId, changes }: ReactionsJob): Effect.Effect<void> => {
   const logged = Effect.logInfo("Reactions stored").pipe(
     Effect.annotateLogs({ guildId, changes: changes.length }),
   );
@@ -35,5 +39,3 @@ const storeGatewayReactions = ({ guildId, changes }: ReactionsJob): Effect.Effec
     Effect.promise(() => guildStore(guildId).saveReactions(changes)).pipe(Effect.andThen(logged)),
   );
 };
-
-export { storeGatewayReactions, storeGatewayVoice, storeVoiceSnapshot };

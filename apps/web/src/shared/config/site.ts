@@ -1,23 +1,10 @@
-const SITE_HOST = "mirucord.masseater.dev";
-const SITE_ORIGIN = `https://${SITE_HOST}`;
-const MCP_URL = `${SITE_ORIGIN}/mcp`;
-const DASHBOARD_PATH = "/dashboard";
-const SIGN_IN_LANDING = `${DASHBOARD_PATH}?from=signIn`;
-const PRIVACY_PATH = "/privacy";
-const TERMS_PATH = "/terms";
-const TECH_PATH = "/tech";
-const SELF_HOST_PATH = "/self-host";
-const REPOSITORY_URL = "https://github.com/masseater/mirucord";
-
-export {
-  DASHBOARD_PATH,
-  MCP_URL,
-  PRIVACY_PATH,
-  REPOSITORY_URL,
-  SITE_HOST,
-  SELF_HOST_PATH,
-  SIGN_IN_LANDING,
-  SITE_ORIGIN,
-  TECH_PATH,
-  TERMS_PATH,
-};
+export const SITE_HOST = "mirucord.masseater.dev";
+export const SITE_ORIGIN = `https://${SITE_HOST}`;
+export const MCP_URL = `${SITE_ORIGIN}/mcp`;
+export const DASHBOARD_PATH = "/dashboard";
+export const SIGN_IN_LANDING = `${DASHBOARD_PATH}?from=signIn`;
+export const PRIVACY_PATH = "/privacy";
+export const TERMS_PATH = "/terms";
+export const TECH_PATH = "/tech";
+export const SELF_HOST_PATH = "/self-host";
+export const REPOSITORY_URL = "https://github.com/masseater/mirucord";

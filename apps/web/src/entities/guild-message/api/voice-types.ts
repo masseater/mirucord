@@ -1,24 +1,24 @@
 import type { PRECISIONS } from "#/entities/guild-message/model/voice-session.schema";
 
-type VoicePrecision = (typeof PRECISIONS)[number];
+export type VoicePrecision = (typeof PRECISIONS)[number];
 
-type VoiceMoment = Readonly<{ at: number; precision: VoicePrecision }>;
+export type VoiceMoment = Readonly<{ at: number; precision: VoicePrecision }>;
 
-type StoredVoiceSession = Readonly<{
+export type StoredVoiceSession = Readonly<{
   userId: string;
   channelId: string;
   joined: VoiceMoment;
   left: VoiceMoment | null;
 }>;
 
-type VoiceChangeWrite = Readonly<{ userId: string; channelId: string | null; at: number }>;
+export type VoiceChangeWrite = Readonly<{ userId: string; channelId: string | null; at: number }>;
 
-type VoiceSnapshotWrite = Readonly<{
+export type VoiceSnapshotWrite = Readonly<{
   at: number;
   present: readonly Readonly<{ userId: string; channelId: string }>[];
 }>;
 
-type VoiceLookup = Readonly<{
+export type VoiceLookup = Readonly<{
   channelIds: readonly string[];
   userIds: readonly string[] | null;
   since: number | null;
@@ -27,14 +27,4 @@ type VoiceLookup = Readonly<{
   offset: number;
 }>;
 
-type VoicePage = Readonly<{ total: number; sessions: readonly StoredVoiceSession[] }>;
-
-export type {
-  StoredVoiceSession,
-  VoiceMoment,
-  VoicePrecision,
-  VoiceChangeWrite,
-  VoiceLookup,
-  VoicePage,
-  VoiceSnapshotWrite,
-};
+export type VoicePage = Readonly<{ total: number; sessions: readonly StoredVoiceSession[] }>;

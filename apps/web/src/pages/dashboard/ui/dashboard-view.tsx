@@ -23,7 +23,9 @@ const stepsOrUrl = (steps: NextSteps, inviteUrl: string): ReactNode => {
   return <McpUrlPanel title={URL_TITLE} />;
 };
 
-const DashboardView = ({ dashboard }: Readonly<{ dashboard: ReadyDashboard }>): ReactNode => {
+export const DashboardView = ({
+  dashboard,
+}: Readonly<{ dashboard: ReadyDashboard }>): ReactNode => {
   const steps = nextStepsOf(dashboard);
   return (
     <>
@@ -37,5 +39,3 @@ const DashboardView = ({ dashboard }: Readonly<{ dashboard: ReadyDashboard }>): 
     </>
   );
 };
-
-export { DashboardView };

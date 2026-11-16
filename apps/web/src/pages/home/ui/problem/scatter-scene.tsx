@@ -8,7 +8,7 @@ import { SceneMiru } from "./scene-miru";
 
 const FOUND = "みっけ";
 
-const ScatterScene = (): ReactNode => (
+export const ScatterScene = (): ReactNode => (
   <div className="scene-track mt-4">
     <div className="scene-stage grid gap-6 px-4">
       <Fragments />
@@ -25,5 +25,3 @@ const ScatterScene = (): ReactNode => (
     <GatherCard />
   </div>
 );
-
-export { ScatterScene };

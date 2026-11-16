@@ -1,4 +1,4 @@
-type StoredMember = Readonly<{
+export type StoredMember = Readonly<{
   userId: string;
   sealed: string;
   roles: readonly string[];
@@ -7,12 +7,10 @@ type StoredMember = Readonly<{
   leftAt: number | null;
 }>;
 
-type MemberWrite = Readonly<{
+export type MemberWrite = Readonly<{
   members: readonly Omit<StoredMember, "leftAt">[];
   now: number;
   coverage: "complete" | "partial";
 }>;
 
-type MemberLookup = Readonly<{ userIds: readonly string[] | null; includeLeft: boolean }>;
-
-export type { MemberLookup, MemberWrite, StoredMember };
+export type MemberLookup = Readonly<{ userIds: readonly string[] | null; includeLeft: boolean }>;

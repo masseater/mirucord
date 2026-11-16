@@ -2,7 +2,7 @@ import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlit
 
 import { user } from "#/shared/auth/generated/auth.table";
 
-const linkedAccount = sqliteTable(
+export const linkedAccount = sqliteTable(
   "linked_account",
   {
     userId: text()
@@ -19,5 +19,3 @@ const linkedAccount = sqliteTable(
     index("linked_account_user_idx").on(table.userId),
   ],
 );
-
-export { linkedAccount };

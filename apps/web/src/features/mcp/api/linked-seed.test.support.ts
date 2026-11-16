@@ -3,7 +3,7 @@ import { Array, Effect, pipe } from "effect";
 
 import { db, linkedAccount } from "#/shared/db/index.server";
 
-type SeedLink = Readonly<{
+export type SeedLink = Readonly<{
   discordUserId: string;
   type: string;
   name: string;
@@ -18,7 +18,7 @@ const SEEDED_AT = 1;
 
 const accountUserOf = (discordUserId: string): string => `user-${discordUserId}`;
 
-const seedLinkedAccounts = (links: readonly SeedLink[]): Effect.Effect<void> => {
+export const seedLinkedAccounts = (links: readonly SeedLink[]): Effect.Effect<void> => {
   const owners = pipe(
     links,
     Array.map(({ discordUserId }) => accountUserOf(discordUserId)),
@@ -43,6 +43,3 @@ const seedLinkedAccounts = (links: readonly SeedLink[]): Effect.Effect<void> => 
     Effect.asVoid,
   );
 };
-
-export { seedLinkedAccounts };
-export type { SeedLink };

@@ -8,22 +8,13 @@ packages:
 catalogMode: prefer
 
 catalog:
-  "@r_masseater/oxlint-typed-rules": 0.4.1
-  "@r_masseater/msch": 0.15.0
-  "@r_masseater/vite-plus-adopt": 0.4.0
-  oxlint-plugin-eslint: 1.93.0
+  "@r_masseater/msch": 0.24.1
+  "@r_masseater/textlint-rule-preset-ja": 0.1.1
   "@ast-grep/cli": 0.51.2
   "@cloudflare/workers-types": 5.20261112.1
   "@effect/platform-node": 4.1.4
-  "@shadcn/lint": 0.2.5
-  "@r_masseater/oxlint-plugin-decision": 0.5.1
   "@types/node": 26.6.6
-  eslint-plugin-react-hooks: 7.1.1
-  syncpack: 15.3.3
   vite: npm:@voidzero-dev/vite-plus-core@1.6.0
-  eslint-plugin-no-comments: 1.2.1
-  eslint-plugin-baseline-js: 0.7.7
-  "@html-eslint/eslint-plugin-react": 0.68.0
   "@commitlint/config-conventional": 21.2.4
   "@tanstack/react-query-devtools": 5.107.1
   "@vitejs/plugin-react": 6.3.0
@@ -53,7 +44,7 @@ catalog:
   ml-kmeans: ^7.0.1
 catalogs:
   stack:
-    "@r_masseater/workers-tracing": 0.2.0
+    "@r_masseater/workers-tracing": 0.3.0
     "@distilled.cloud/cloudflare": 1.0.0-rc.20
     "@effect/atom-react": 4.1.4
     "@effect/tsgo": 0.68.1
@@ -79,7 +70,6 @@ overrides:
   "steiger>@feature-sliced/steiger-plugin": "-"
   "capnp-es>typescript": "-"
   vite@*: "catalog:"
-  eslint-plugin-react-hooks>zod-validation-error: ^5.0.0
   glob@>=9.0.0 <=14.0.1: ^14.0.2
   minimatch@<11.0.1: ^11.0.1
   seroval@<1.6.11: ^1.6.11
@@ -104,5 +94,8 @@ audit:
   ignore:
     - GHSA-gcqx-w48m-w2h4
 minimumReleaseAgeExclude:
-  - "@r_masseater/msch@0.15.0"
-  - "@r_masseater/oxlint-plugin-decision@0.5.0 || 0.5.1"
+  - "@r_masseater/msch@0.24.1"
+  - "@r_masseater/oxlint-plugin-decision@0.6.0"
+  - "@r_masseater/textlint-rule-preset-ja@0.1.1"
+  - "@r_masseater/vite-plus-adopt@0.6.0"
+  - "@r_masseater/workers-tracing@0.3.0"

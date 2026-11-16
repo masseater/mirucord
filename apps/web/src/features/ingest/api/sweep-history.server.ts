@@ -18,7 +18,7 @@ const oldestTimestamp = (page: readonly DiscordMessage[]): Option.Option<DateTim
     },
   });
 
-const removeDeleted = ({
+export const removeDeleted = ({
   ref,
   latest,
 }: Readonly<{
@@ -40,5 +40,3 @@ const removeDeleted = ({
     Effect.flatMap((gone) => deleteMessages({ guildId: ref.guildId, ids: gone })),
   );
 };
-
-export { removeDeleted };

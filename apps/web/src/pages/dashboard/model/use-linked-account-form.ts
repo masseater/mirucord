@@ -26,7 +26,7 @@ import {
 } from "./linked-account-draft";
 import type { LinkedDraft } from "./linked-account-draft";
 
-type LinkedAccountForm = Readonly<{
+export type LinkedAccountForm = Readonly<{
   selected: readonly string[];
   toggle: (choice: LinkedChoice) => void;
   publish: () => void;
@@ -39,7 +39,7 @@ const linkedDraftAtom = Atom.make<LinkedDraft>(UNTOUCHED_LINKS).pipe(
   Atom.withLabel("linked-account-draft"),
 );
 
-const useInvalidateLinkedAccounts = (): (() => Promise<void>) => {
+export const useInvalidateLinkedAccounts = (): (() => Promise<void>) => {
   const queryClient = useQueryClient();
   return useCallback(
     () => queryClient.invalidateQueries({ queryKey: linkedAccountsQuery.queryKey }),
@@ -78,7 +78,7 @@ const useLinkedMutations = (
   return { publish, discard, publishing, discarding };
 };
 
-const useLinkedAccountForm = (choices: readonly LinkedChoice[]): LinkedAccountForm => {
+export const useLinkedAccountForm = (choices: readonly LinkedChoice[]): LinkedAccountForm => {
   const [draft, setDraft] = useAtom(linkedDraftAtom);
   const selected = selectedKeysOf(choices)(draft);
   const reset = useCallback(() => {
@@ -93,6 +93,3 @@ const useLinkedAccountForm = (choices: readonly LinkedChoice[]): LinkedAccountFo
   );
   return { selected, toggle, ...mutations };
 };
-
-export { useInvalidateLinkedAccounts, useLinkedAccountForm };
-export type { LinkedAccountForm };

@@ -11,7 +11,7 @@ const CHEVRON: Readonly<Record<SidebarCategory["state"], string>> = {
   collapsed: "rotate-0",
 };
 
-const CategoryHeading = ({
+export const CategoryHeading = ({
   name,
   state,
 }: Readonly<{ name: string; state: SidebarCategory["state"] }>): ReactNode => (
@@ -32,5 +32,3 @@ const CategoryHeading = ({
     {state === "collapsed" && <span className="sr-only">{COLLAPSED_LABEL}</span>}
   </p>
 );
-
-export { CategoryHeading };

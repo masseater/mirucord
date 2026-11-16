@@ -14,14 +14,14 @@ import { publishGuildVectors } from "./vector-alarm.server";
 const ONE_PUBLISH = 1;
 const NO_DELAY = 0;
 
-type HookTarget = Readonly<{
+export type HookTarget = Readonly<{
   db: DrizzleSqliteDODatabase;
   alarms: Alarms;
   bucket: Readonly<R2Bucket>;
   guildId: Option.Option<string>;
 }>;
 
-type SearchHooks = Readonly<{
+export type SearchHooks = Readonly<{
   forget: (rows: readonly TrackedRow[]) => Effect.Effect<void>;
   flushLater: () => Effect.Effect<void>;
   scheduleAt: (at: number) => Effect.Effect<void>;
@@ -30,7 +30,7 @@ type SearchHooks = Readonly<{
   clearFiles: () => Effect.Effect<void>;
 }>;
 
-const searchHooks = ({ db, alarms, bucket, guildId }: HookTarget): SearchHooks => {
+export const searchHooks = ({ db, alarms, bucket, guildId }: HookTarget): SearchHooks => {
   const publishing = Semaphore.makeUnsafe(ONE_PUBLISH);
   const named = (run: (id: string) => Effect.Effect<void>): Effect.Effect<void> =>
     Option.match(guildId, {
@@ -62,5 +62,3 @@ const searchHooks = ({ db, alarms, bucket, guildId }: HookTarget): SearchHooks =
 };
 
 export { nextVersion } from "./search-alarm.server";
-export { searchHooks };
-export type { HookTarget, SearchHooks };

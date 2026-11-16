@@ -7,7 +7,7 @@ import { NextStepList } from "./next-step-list";
 
 const TITLE = "次にやること";
 
-const NextStepsPanel = ({
+export const NextStepsPanel = ({
   consent,
   register,
   inviteUrl,
@@ -17,5 +17,3 @@ const NextStepsPanel = ({
     <NextStepList consent={consent} register={register} inviteUrl={inviteUrl} />
   </Panel>
 );
-
-export { NextStepsPanel };

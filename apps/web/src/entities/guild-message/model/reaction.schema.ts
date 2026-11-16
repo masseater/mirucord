@@ -1,6 +1,6 @@
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-const reaction = sqliteTable(
+export const reaction = sqliteTable(
   "reaction",
   {
     messageId: text().notNull(),
@@ -19,7 +19,7 @@ const reaction = sqliteTable(
   ],
 );
 
-const pollVote = sqliteTable(
+export const pollVote = sqliteTable(
   "poll_vote",
   {
     messageId: text().notNull(),
@@ -33,5 +33,3 @@ const pollVote = sqliteTable(
     index("poll_vote_user_idx").on(table.userId, table.votedAt),
   ],
 );
-
-export { pollVote, reaction };

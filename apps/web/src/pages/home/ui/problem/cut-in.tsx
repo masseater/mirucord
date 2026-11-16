@@ -8,7 +8,7 @@ import cutinMiru from "./cutin-miru.svg";
 const LEAD = `${MASCOT_NAME}が`;
 const TITLE = ["ぜんぶ集めて", "くるよ！"] as const;
 
-const CutIn = (): ReactNode => (
+export const CutIn = (): ReactNode => (
   <div className="cutin">
     <span aria-hidden="true" className="cutin-flash bg-milk" />
     <span aria-hidden="true" className="cutin-lines" />
@@ -24,5 +24,3 @@ const CutIn = (): ReactNode => (
     </p>
   </div>
 );
-
-export { CutIn };

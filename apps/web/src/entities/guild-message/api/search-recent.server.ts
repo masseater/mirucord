@@ -8,9 +8,9 @@ import { searchInvalid } from "#/entities/guild-message/model/search-segment.sch
 import { EARLIEST, recentOf, sealedOf, searchLedger } from "./search-ledger.server";
 import type { Segment } from "./search-ledger.server";
 
-type Flush = "due" | "now";
+export type Flush = "due" | "now";
 
-type RecentCheck = Readonly<{ db: DrizzleSqliteDODatabase; now: number; flush: Flush }>;
+export type RecentCheck = Readonly<{ db: DrizzleSqliteDODatabase; now: number; flush: Flush }>;
 
 const hasInvalid = (db: DrizzleSqliteDODatabase, segment: Segment): boolean => {
   const found = db
@@ -42,16 +42,16 @@ const dueAt = (recent: Option.Option<Segment>): number =>
     onSome: ({ builtAt }) => builtAt + FLUSH_DELAY_MS,
   });
 
-type RecentPlan = Readonly<{ rebuild: boolean; waitUntil: Option.Option<number> }>;
+export type RecentPlan = Readonly<{ rebuild: boolean; waitUntil: Option.Option<number> }>;
 
-type PlanCheck = RecentCheck & Readonly<{ sealedChanged: boolean }>;
+export type PlanCheck = RecentCheck & Readonly<{ sealedChanged: boolean }>;
 
 const mayWait = ({ flush, sealedChanged }: PlanCheck): boolean => flush === "due" && !sealedChanged;
 
 const isWaiting = (check: PlanCheck, recent: Option.Option<Segment>): boolean =>
   mayWait(check) && check.now < dueAt(recent) && recentIsStale(check, recent, false);
 
-const recentPlan = (check: PlanCheck): RecentPlan => {
+export const recentPlan = (check: PlanCheck): RecentPlan => {
   const recent = recentOf(searchLedger(check.db).segments());
   const waiting = isWaiting(check, recent);
   return {
@@ -62,6 +62,3 @@ const recentPlan = (check: PlanCheck): RecentPlan => {
     ),
   };
 };
-
-export { recentPlan };
-export type { Flush, PlanCheck, RecentCheck, RecentPlan };

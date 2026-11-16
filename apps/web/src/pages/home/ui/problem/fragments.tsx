@@ -1,13 +1,13 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import { MEMBERS } from "#/pages/home/ui/common/members";
 import type { Member } from "#/pages/home/ui/common/members";
-import { PLACES } from "#/pages/home/ui/common/places";
 import type { Place } from "#/pages/home/ui/common/places";
 import type { ChannelKind } from "#/shared/discord";
 import { cn } from "#/shared/lib/utils";
 import { ChannelIcon } from "#/shared/ui/channel-icon";
+
+import { FRAGMENTS } from "./fragment-rows";
 
 const THREAD = "·";
 
@@ -70,26 +70,7 @@ const tile = ({
   </li>
 );
 
-const FRAGMENTS = [
-  {
-    place: PLACES.announce,
-    member: MEMBERS.miho,
-    text: "8/11〜12 キャンプ！ 駅に 9 時集合",
-  },
-  { place: PLACES.campPlan, member: MEMBERS.kenta, text: "カレーの材料 買っといた" },
-  {
-    place: PLACES.hitori,
-    member: MEMBERS.tanaka,
-    text: "次こそカレー焦がさないって誓う",
-  },
-  { place: PLACES.recipe, member: MEMBERS.miho, text: "カレーは弱火でじっくり" },
-  { place: PLACES.photo, member: MEMBERS.yui, text: "カレー焦げてるの 写ってた笑" },
-  { place: PLACES.hansei, member: MEMBERS.kenta, text: "火力つよすぎでは" },
-  { place: PLACES.game, member: MEMBERS.tanaka, text: "キャンプ前に 1 戦だけやろ" },
-  { place: PLACES.kansou, member: MEMBERS.yui, text: "この前のキャンプ 最高だった" },
-] as const;
-
-const Fragments = (): ReactNode => (
+export const Fragments = (): ReactNode => (
   <ul className="scene-frags">
     {pipe(
       FRAGMENTS,
@@ -97,5 +78,3 @@ const Fragments = (): ReactNode => (
     )}
   </ul>
 );
-
-export { FRAGMENTS, Fragments };

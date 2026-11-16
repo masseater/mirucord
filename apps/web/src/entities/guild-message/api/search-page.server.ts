@@ -11,14 +11,14 @@ import { chunkKey } from "./search-files.server";
 
 const taggedError = Schema.TaggedError;
 
-class MissingFile extends taggedError<MissingFile, { readonly brand: unique symbol }>()(
+export class MissingFile extends taggedError<MissingFile, { readonly brand: unique symbol }>()(
   "MissingFile",
   {
     key: Schema.String,
   },
 ) {}
 
-const required = (read: FileRead): Effect.Effect<ArrayBuffer, MissingFile> =>
+export const required = (read: FileRead): Effect.Effect<ArrayBuffer, MissingFile> =>
   Effect.fromOption(read.bytes).pipe(Effect.mapError(() => MissingFile.make({ key: read.key })));
 
 const textDecoder = new TextDecoder();
@@ -42,7 +42,7 @@ const loadChunk = (
     ),
   );
 
-type LoadedPage = Readonly<{ entries: readonly SealedEntry[]; reads: readonly FileRead[] }>;
+export type LoadedPage = Readonly<{ entries: readonly SealedEntry[]; reads: readonly FileRead[] }>;
 
 const entryAt = (
   chunks: readonly LoadedChunk[],
@@ -56,7 +56,7 @@ const entryAt = (
   );
 };
 
-const loadPage = ({
+export const loadPage = ({
   guildId,
   page,
 }: Readonly<{ guildId: string; page: readonly Hit[] }>): Effect.Effect<
@@ -84,6 +84,3 @@ const loadPage = ({
       ),
     })),
   );
-
-export { loadPage, MissingFile, required };
-export type { LoadedPage };

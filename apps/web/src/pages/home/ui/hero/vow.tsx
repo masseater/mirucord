@@ -9,7 +9,7 @@ import { SeekMiru } from "./seek-miru";
 
 const EDITED = "(編集済)";
 
-const Vow = ({ text }: Readonly<{ text: string }>): ReactNode => (
+export const Vow = ({ text }: Readonly<{ text: string }>): ReactNode => (
   <Message id={MEMORY_ID} author={memberAuthor(MEMBERS.tanaka)} time="22:14" variant="highlight">
     <p>
       {text}
@@ -18,5 +18,3 @@ const Vow = ({ text }: Readonly<{ text: string }>): ReactNode => (
     <SeekMiru kind="found" step="2" />
   </Message>
 );
-
-export { Vow };

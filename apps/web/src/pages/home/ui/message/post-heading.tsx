@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-const PostHeading = ({
+export const PostHeading = ({
   guide,
   lead,
   tail,
@@ -13,5 +13,3 @@ const PostHeading = ({
     </h2>
   </>
 );
-
-export { PostHeading };

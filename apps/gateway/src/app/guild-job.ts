@@ -8,27 +8,25 @@ const GuildChangeEvent = Schema.Struct({ guild_id: Schema.optionalKey(Schema.Str
 
 const decodeGuild = Schema.decodeOption(GuildEvent);
 const decodeGuildChange = Schema.decodeOption(GuildChangeEvent);
-const joinJob = (data: typeof GuildEvent.Encoded): Option.Option<GatewayJob> =>
+export const joinJob = (data: typeof GuildEvent.Encoded): Option.Option<GatewayJob> =>
   decodeGuild(data).pipe(Option.map(({ id }) => ({ kind: "join", guildId: id })));
 
-const leaveJob = (
+export const leaveJob = (
   data: Readonly<Discord.GatewayGuildDeleteDispatchData>,
 ): Option.Option<GatewayJob> =>
   Option.liftPredicate(data, ({ unavailable }) => unavailable !== true).pipe(
     Option.map(({ id }) => ({ kind: "leave", guildId: id })),
   );
 
-const resyncJob = (): Option.Option<GatewayJob> => Option.some({ kind: "resync" });
+export const resyncJob = (): Option.Option<GatewayJob> => Option.some({ kind: "resync" });
 
-const syncJobOf = (guildId: string): GatewayJob => ({ kind: "sync", guildId });
+export const syncJobOf = (guildId: string): GatewayJob => ({ kind: "sync", guildId });
 
-const syncJob = (data: typeof GuildChangeEvent.Encoded): Option.Option<GatewayJob> =>
+export const syncJob = (data: typeof GuildChangeEvent.Encoded): Option.Option<GatewayJob> =>
   decodeGuildChange(data).pipe(
     Option.flatMap(({ guild_id }) => Option.fromUndefinedOr(guild_id)),
     Option.map(syncJobOf),
   );
 
-const guildUpdateJob = (data: typeof GuildEvent.Encoded): Option.Option<GatewayJob> =>
+export const guildUpdateJob = (data: typeof GuildEvent.Encoded): Option.Option<GatewayJob> =>
   decodeGuild(data).pipe(Option.map(({ id }) => syncJobOf(id)));
-
-export { guildUpdateJob, joinJob, leaveJob, resyncJob, syncJob, syncJobOf };

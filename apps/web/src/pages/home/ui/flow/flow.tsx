@@ -7,11 +7,9 @@ import { FlowBody } from "./flow-body";
 
 const CHANNEL = "しくみ";
 
-const Flow = (): ReactNode => (
+export const Flow = (): ReactNode => (
   <ChannelSection id="how">
     <ChannelHeader name={CHANNEL} />
     <FlowBody />
   </ChannelSection>
 );
-
-export { Flow };

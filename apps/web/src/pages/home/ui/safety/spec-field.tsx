@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-const SpecField = ({
+export const SpecField = ({
   label,
   tags,
   accent,
@@ -36,5 +36,3 @@ const SpecField = ({
     </dd>
   </div>
 );
-
-export { SpecField };

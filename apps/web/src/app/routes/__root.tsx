@@ -10,7 +10,7 @@ const FONTS_ORIGIN = "https://fonts.googleapis.com";
 const FONTS_STATIC_ORIGIN = "https://fonts.gstatic.com";
 const FONTS_URL = `${FONTS_ORIGIN}/css2?family=JetBrains+Mono:wght@400;500&family=Zen+Maru+Gothic:wght@500;700;900&display=swap`;
 
-const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: "utf8" },
@@ -30,5 +30,3 @@ const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   }),
   shellComponent: RootDocument,
 });
-
-export { Route };

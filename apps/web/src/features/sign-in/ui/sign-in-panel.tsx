@@ -4,10 +4,9 @@ import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 
 import { DiscordSignIn } from "./discord-sign-in";
+import { SIGN_IN_TIP } from "./sign-in-tip";
 
-const SIGN_IN_TIP = "おかえり！";
-
-const SignInPanel = ({
+export const SignInPanel = ({
   title,
   returnTo,
 }: Readonly<{ title: string; returnTo: string }>): ReactNode => (
@@ -19,5 +18,3 @@ const SignInPanel = ({
     </Panel>
   </>
 );
-
-export { SIGN_IN_TIP, SignInPanel };

@@ -7,7 +7,7 @@ import { NoticeChannelOption } from "./notice-channel-option";
 
 const LEGEND = "お知らせを投稿するチャンネル";
 
-const NoticeChannelPicker = ({
+export const NoticeChannelPicker = ({
   channels,
   value,
   onChoose,
@@ -33,5 +33,3 @@ const NoticeChannelPicker = ({
     </div>
   </fieldset>
 );
-
-export { NoticeChannelPicker };

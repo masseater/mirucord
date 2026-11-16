@@ -34,12 +34,10 @@ const consentFeedback = mutationFeedback({
   result: (status: Answer["status"]) => RESULTS[status],
 });
 
-const ConsentResultMessage = ({
+export const ConsentResultMessage = ({
   status,
   result,
 }: Readonly<{
   status: MutationStatus;
   result: Option.Option<Answer>;
 }>): ReactNode => <FeedbackLine feedback={consentFeedback(status, result)} />;
-
-export { ConsentResultMessage };

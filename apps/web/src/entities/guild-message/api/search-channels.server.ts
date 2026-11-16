@@ -62,15 +62,12 @@ const channelList = (db: DrizzleSqliteDODatabase): readonly string[] =>
     Array.map(({ id }) => id),
   );
 
-type SearchChannels = Readonly<{
+export type SearchChannels = Readonly<{
   positions: (channelIds: readonly string[]) => ReadonlyMap<string, number>;
   list: () => readonly string[];
 }>;
 
-const searchChannels = (db: DrizzleSqliteDODatabase): SearchChannels => ({
+export const searchChannels = (db: DrizzleSqliteDODatabase): SearchChannels => ({
   positions: (channelIds) => positionsOf(db, channelIds),
   list: () => channelList(db),
 });
-
-export { searchChannels };
-export type { SearchChannels };

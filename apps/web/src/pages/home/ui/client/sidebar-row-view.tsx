@@ -9,7 +9,7 @@ import { PageLink } from "./page-link";
 import { PlainRow } from "./plain-row";
 import type { SidebarRow } from "./sidebar-categories";
 
-const SidebarRowView = ({ row }: Readonly<{ row: SidebarRow }>): ReactNode =>
+export const SidebarRowView = ({ row }: Readonly<{ row: SidebarRow }>): ReactNode =>
   Match.value(row).pipe(
     Match.discriminatorsExhaustive("type")({
       link: ({ channel }) => (
@@ -24,5 +24,3 @@ const SidebarRowView = ({ row }: Readonly<{ row: SidebarRow }>): ReactNode =>
       idle: ({ place, activity }) => <PlainRow place={place} activity={activity} />,
     }),
   );
-
-export { SidebarRowView };

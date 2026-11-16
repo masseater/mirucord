@@ -12,7 +12,7 @@ const COUNT = "128 件のメッセージ ›";
 const LAST = "火力つよすぎでは";
 const AGO = "3 日前";
 
-const CampThread = (): ReactNode => (
+export const CampThread = (): ReactNode => (
   <Message author={memberAuthor(MEMBERS.kenta)} time={TIME}>
     <p>{TEXT}</p>
     <p className="bg-dc-sidebar flex max-w-md flex-wrap gap-x-2 rounded-t-lg px-3 pt-2 text-sm">
@@ -26,5 +26,3 @@ const CampThread = (): ReactNode => (
     </p>
   </Message>
 );
-
-export { CampThread };

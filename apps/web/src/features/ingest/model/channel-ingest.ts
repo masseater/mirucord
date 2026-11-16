@@ -13,7 +13,7 @@ const HIDDEN_INGEST = {
   awaiting: { stored: "unreadable", empty: "unreadable" },
 } as const;
 
-type ChannelIngest =
+export type ChannelIngest =
   | "unreadable"
   | "awaiting"
   | "paused"
@@ -22,7 +22,7 @@ type ChannelIngest =
   | "backfilling"
   | "done";
 
-type IngestRow = Readonly<{
+export type IngestRow = Readonly<{
   newest: string | null;
   backfill: keyof typeof BACKFILL_INGEST;
   botAccess: BotAccess["status"];
@@ -70,14 +70,14 @@ const forumRowOfDataFirst = (
   botAccess: forum.botAccess,
 });
 
-const forumRowOf: {
+export const forumRowOf: {
   (posts: readonly IngestRow[]): (forum: Pick<IngestRow, "botAccess">) => IngestRow;
   (forum: Pick<IngestRow, "botAccess">, posts: readonly IngestRow[]): IngestRow;
 } = Function.dual(DATA_FIRST_ARITY, forumRowOfDataFirst);
 
 const NOTICE_KINDS: ReadonlySet<ChannelKind> = new Set(["text", "announcement"]);
 
-const isNoticeCandidate = ({
+export const isNoticeCandidate = ({
   kind,
   ingest,
   botPost,
@@ -87,11 +87,11 @@ const isNoticeCandidate = ({
   botPost: "allowed" | "denied";
 }>): boolean => NOTICE_KINDS.has(kind) && ingest !== "unreadable" && botPost === "allowed";
 
-type GuildIngest = "awaiting" | "withdrawing" | "waiting" | "backfilling" | "done";
+export type GuildIngest = "awaiting" | "withdrawing" | "waiting" | "backfilling" | "done";
 
-type GuildConsent = "awaiting" | "granted" | "withdrawing";
+export type GuildConsent = "awaiting" | "granted" | "withdrawing";
 
-const INGESTING = ["waiting", "backfilling"] as const satisfies readonly GuildIngest[];
+export const INGESTING = ["waiting", "backfilling"] as const satisfies readonly GuildIngest[];
 const IN_PROGRESS: ReadonlySet<ChannelIngest> = new Set(INGESTING);
 const COUNTED: ReadonlySet<ChannelIngest> = new Set(["waiting", "backfilling", "done"]);
 
@@ -129,21 +129,18 @@ const guildIngestOfDataFirst = (
   return consent;
 };
 
-const guildIngestOf: {
+export const guildIngestOf: {
   (channels: readonly ChannelIngest[]): (consent: GuildConsent) => GuildIngest;
   (consent: GuildConsent, channels: readonly ChannelIngest[]): GuildIngest;
 } = Function.dual(DATA_FIRST_ARITY, guildIngestOfDataFirst);
 
-const SCOPE_OF_CONSENT = {
+export const SCOPE_OF_CONSENT = {
   awaiting: { status: "awaiting" },
   granted: { status: "granted" },
   withdrawing: { status: "awaiting" },
 } as const satisfies Record<GuildConsent, ConsentScope>;
 
-const ingestOf: {
+export const ingestOf: {
   (row: IngestRow): (scope: ConsentScope) => ChannelIngest;
   (scope: ConsentScope, row: IngestRow): ChannelIngest;
 } = Function.dual(DATA_FIRST_ARITY, ingestOfDataFirst);
-
-export { forumRowOf, guildIngestOf, INGESTING, ingestOf, isNoticeCandidate, SCOPE_OF_CONSENT };
-export type { ChannelIngest, GuildConsent, GuildIngest, IngestRow };

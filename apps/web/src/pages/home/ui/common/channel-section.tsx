@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-const ChannelSection = ({
+export const ChannelSection = ({
   id,
   children,
 }: Readonly<{ id: string; children: ReactNode }>): ReactNode => (
@@ -8,5 +8,3 @@ const ChannelSection = ({
     <div className="ch-pane pb-10">{children}</div>
   </section>
 );
-
-export { ChannelSection };

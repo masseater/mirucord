@@ -6,7 +6,7 @@ import { GuildIcon } from "./guild-icon";
 import { GuildPageLink } from "./guild-page-link";
 import { GuildSummary } from "./guild-summary";
 
-const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => (
+export const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => (
   <li>
     <GuildPageLink
       guildId={guild.id}
@@ -17,5 +17,3 @@ const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => (
     </GuildPageLink>
   </li>
 );
-
-export { GuildCard };

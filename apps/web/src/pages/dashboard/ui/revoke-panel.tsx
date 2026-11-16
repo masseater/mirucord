@@ -26,7 +26,7 @@ const revokeFeedback = mutationFeedback({
   result: (status: keyof typeof RESULTS) => RESULTS[status],
 });
 
-const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
+export const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
   const returnToDashboard = useReturnToDashboard();
   const { mutate, status, data } = useMutation({
     mutationFn: withdrawConsent,
@@ -59,5 +59,3 @@ const RevokePanel = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
     </details>
   );
 };
-
-export { RevokePanel };

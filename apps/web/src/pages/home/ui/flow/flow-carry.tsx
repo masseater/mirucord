@@ -12,7 +12,7 @@ const CHIPS = [
   { key: "d", leg: "second", tone: "fill-lavender-deep" },
 ] as const;
 
-const FlowCarry = ({
+export const FlowCarry = ({
   starts,
 }: Readonly<{ starts: Readonly<{ first: Point; second: Point }> }>): ReactNode => (
   <g aria-hidden="true">
@@ -34,5 +34,3 @@ const FlowCarry = ({
     )}
   </g>
 );
-
-export { FlowCarry };

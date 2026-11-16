@@ -13,7 +13,7 @@ const FIRST_SHARD = 0;
 const ONE_SHARD = 1;
 const DOUBLE = 2;
 
-type Archive = typeof searchArchive.$inferSelect;
+export type Archive = typeof searchArchive.$inferSelect;
 
 const archiveIn = (
   db: DrizzleSqliteDODatabase,
@@ -23,7 +23,8 @@ const archiveIn = (
     db.select().from(searchArchive).where(eq(searchArchive.status, status)).get(),
   );
 
-const liveArchive = (db: DrizzleSqliteDODatabase): Option.Option<Archive> => archiveIn(db, "live");
+export const liveArchive = (db: DrizzleSqliteDODatabase): Option.Option<Archive> =>
+  archiveIn(db, "live");
 
 const buildingArchive = (db: DrizzleSqliteDODatabase): Option.Option<Archive> =>
   archiveIn(db, "building");
@@ -131,7 +132,7 @@ const finishArchive = (db: DrizzleSqliteDODatabase, name: string): Option.Option
   return old;
 };
 
-type ArchiveLedger = Readonly<{
+export type ArchiveLedger = Readonly<{
   live: () => Option.Option<Archive>;
   building: () => Option.Option<Archive>;
   start: (now: number) => Option.Option<Archive>;
@@ -139,7 +140,7 @@ type ArchiveLedger = Readonly<{
   finish: (name: string) => Option.Option<Archive>;
 }>;
 
-const archiveLedger = (db: DrizzleSqliteDODatabase): ArchiveLedger => ({
+export const archiveLedger = (db: DrizzleSqliteDODatabase): ArchiveLedger => ({
   live: () => liveArchive(db),
   building: () => buildingArchive(db),
   start: (now) => startArchive(db, now),
@@ -148,6 +149,3 @@ const archiveLedger = (db: DrizzleSqliteDODatabase): ArchiveLedger => ({
   },
   finish: (name) => finishArchive(db, name),
 });
-
-export { archiveLedger, liveArchive };
-export type { Archive, ArchiveLedger };

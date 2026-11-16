@@ -35,7 +35,7 @@ const Poll = Schema.Struct({
   answers: Schema.Array(Schema.Struct({ poll_media: PollMedia })),
 });
 
-const Author = Schema.Struct({
+export const Author = Schema.Struct({
   id: Schema.String,
   username: Schema.String,
   global_name: Schema.optional(Schema.NullOr(Schema.String)),
@@ -61,7 +61,7 @@ const MessageSnapshot = Schema.Struct({
   }),
 });
 
-const Message = Schema.Struct({
+export const Message = Schema.Struct({
   id: Schema.String,
   type: Schema.Finite,
   content: MessageText,
@@ -78,7 +78,4 @@ const Message = Schema.Struct({
   poll: Schema.optional(Poll),
 });
 
-type DiscordMessage = typeof Message.Type;
-
-export { Author, Message };
-export type { DiscordMessage };
+export type DiscordMessage = typeof Message.Type;

@@ -228,6 +228,7 @@ const web = Effect.gen(function* web() {
     main: "src/app/server/index.ts",
     compatibility: { date: "2026-08-25", flags: ["global_fetch_strictly_public"] },
     logpush: true,
+    limits: { cpuMs: 700 },
     env: {
       ...discord,
       ...operations,

@@ -88,8 +88,6 @@ allowBuilds:
   "@openrouter/sdk": false
 audit:
   ignorePrune: true
-  ignore:
-    - GHSA-gcqx-w48m-w2h4
 minimumReleaseAgeExclude:
   - "@r_masseater/msch@0.32.0"
   - "@r_masseater/oxlint-plugin-decision@0.8.0"

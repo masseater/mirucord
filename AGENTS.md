@@ -65,7 +65,7 @@ docs/ に新しいファイルを増やさない。既存のファイルを更�
 
 部品だけを先に入れず、使う側と同じ PR にする。
 
-`mirucord-ci` スタックの適用など、GitHub Actions の Secrets API と Cloudflare の Global API Key が要る作業は、ユーザーの Mac の Remote Control で行う。
+`mirucord-ci` スタックの適用など、GitHub Actions の Secrets API と Cloudflare の Global API Key が要る作業は、ユーザーの PC の Remote Control で行う。
 
 ## テンプレート
 

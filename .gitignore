@@ -29,9 +29,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# AI agent worktrees
-.claude/worktrees/
-
 # Agent skills restored from skills-lock.json
 .agents/skills/*
 !.agents/skills/.gitkeep

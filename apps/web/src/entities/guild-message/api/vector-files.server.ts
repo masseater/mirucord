@@ -55,9 +55,9 @@ export const openEntries = ({
 }: Readonly<{ keys: Keys; segment: Segment; stored: readonly StoredVector[] }>): Effect.Effect<
   readonly VectorEntry[]
 > =>
-  pipe(
+  Effect.forEach(
     sealedVectors(segment, stored),
-    Effect.forEach(({ ordinal, channelId, id, bytes }) =>
+    ({ ordinal, channelId, id, bytes }) =>
       openBytes({
         bytes,
         key: keys.key,
@@ -71,9 +71,8 @@ export const openEntries = ({
           })),
         ),
       ),
-    ),
-    Effect.map(Array.getSomes),
-  );
+    { concurrency: 1 },
+  ).pipe(Effect.map(Array.getSomes));
 
 const namedBlocks = (through: number, grouped: Grouped): readonly NamedBlock[] =>
   pipe(
@@ -92,13 +91,14 @@ export const sealFiles = ({
   through: number;
   grouped: Grouped;
 }>): Effect.Effect<readonly StoredFile[]> =>
-  pipe(
+  Effect.forEach(
     namedBlocks(through, grouped),
-    Effect.forEach(({ file, entries }) => {
+    ({ file, entries }) => {
       const key = vectorFileKey({ guildId: keys.guildId, segment: segment.name, file });
       return encodeBlock(blockOf(entries)).pipe(
         Effect.flatMap((bytes) => sealBytes({ bytes, key: keys.key, context: key })),
         Effect.map((sealed): StoredFile => ({ key, body: Uint8Array.from(sealed).buffer })),
       );
-    }),
+    },
+    { concurrency: 1 },
   );

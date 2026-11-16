@@ -73,11 +73,14 @@ const idsOf = (channels: readonly DiscordChannel[]): readonly string[] =>
 
 export const listChannelsOf = (view: BotView): Effect.Effect<ChannelListing, DiscordRequestError> =>
   Effect.gen(function* listChannels() {
-    const [channels, active, readableIn] = yield* Effect.all([
-      listGuildChannels(view.discordGuild.id),
-      listActiveThreads(view.discordGuild.id),
-      botReader(view),
-    ]);
+    const [channels, active, readableIn] = yield* Effect.all(
+      [
+        listGuildChannels(view.discordGuild.id),
+        listActiveThreads(view.discordGuild.id),
+        botReader(view),
+      ],
+      { concurrency: 1 },
+    );
     const readableParents = readableIn(channels).readable;
     const allParents = idsOf(
       pipe(
@@ -93,7 +96,7 @@ export const listChannelsOf = (view: BotView): Effect.Effect<ChannelListing, Dis
       allParents,
       Array.filter((id) => !readableParents.has(id)),
     );
-    const listings = yield* pipe(parents, Effect.forEach(listArchived));
+    const listings = yield* Effect.forEach(parents, listArchived, { concurrency: 1 });
     const archived = archivedThreadsOf(listings);
     const everything = [...channels, ...active, ...archived];
     const access = readableIn(everything);

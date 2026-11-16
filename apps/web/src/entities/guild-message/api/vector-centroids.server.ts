@@ -126,12 +126,14 @@ const mergedEntries = ({ db, keys }: CentroidTarget): Effect.Effect<readonly Vec
   )) {
     forgetCentroids(db, segment);
   }
-  return pipe(
-    rows,
-    Array.filter((row) => isLive(row)),
-    Effect.forEach((row) => openCentroids(keys)(row)),
-    Effect.map((lists) => Array.flatten(lists)),
-  );
+  return Effect.forEach(
+    pipe(
+      rows,
+      Array.filter((row) => isLive(row)),
+    ),
+    (row) => openCentroids(keys)(row),
+    { concurrency: 1 },
+  ).pipe(Effect.map((lists) => Array.flatten(lists)));
 };
 
 const fileKeys = ({ keys }: CentroidTarget, stamp: Option.Option<number>): readonly string[] =>

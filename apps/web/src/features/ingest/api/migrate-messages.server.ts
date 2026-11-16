@@ -61,10 +61,7 @@ const adoptGuild = (rows: Array.NonEmptyReadonlyArray<LegacyRow>): Effect.Effect
   const [{ guildId, wrappedKey }] = rows;
   return openGuildKeys(wrappedKey).pipe(
     Effect.flatMap((keys) =>
-      pipe(
-        rows,
-        Effect.forEach((row) => indexRow(keys, row)),
-      ),
+      Effect.forEach(rows, (row) => indexRow(keys, row), { concurrency: 1 }),
     ),
     Effect.flatMap((indexed) => Effect.promise(() => guildStore(guildId).write(indexed, "adopt"))),
   );
@@ -73,6 +70,7 @@ const adoptGuild = (rows: Array.NonEmptyReadonlyArray<LegacyRow>): Effect.Effect
 export const migrateMessages: Effect.Effect<void> = loadBatch.pipe(
   Effect.tap((rows) =>
     Effect.forEach(Record.values(Array.groupBy(rows, ({ guildId }) => guildId)), adoptGuild, {
+      concurrency: 1,
       discard: true,
     }),
   ),

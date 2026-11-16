@@ -187,7 +187,7 @@ export const deleteKeys = ({
   Effect.forEach(
     Array.chunksOf(keys, DELETE_BATCH),
     (batch) => Effect.promise(() => bucket.delete([...batch])),
-    { discard: true },
+    { concurrency: 1, discard: true },
   );
 
 const sweepFrom = (

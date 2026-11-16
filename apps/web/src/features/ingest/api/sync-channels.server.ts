@@ -61,10 +61,13 @@ const loadAccess = (guildId: string): Effect.Effect<ReadonlyMap<string, BotAcces
 const UPSERT_BATCH = 50;
 
 const upsertChannels = (sync: ChannelSync): Effect.Effect<void> =>
-  Effect.all({
-    previous: loadAccess(sync.discordGuild.id),
-    now: DateTime.now,
-  }).pipe(
+  Effect.all(
+    {
+      previous: loadAccess(sync.discordGuild.id),
+      now: DateTime.now,
+    },
+    { concurrency: 1 },
+  ).pipe(
     Effect.map(({ previous, now }) =>
       pipe(
         sync.stored,
@@ -99,7 +102,7 @@ const upsertChannels = (sync: ChannelSync): Effect.Effect<void> =>
       Effect.forEach(
         Array.chunksOf(statements, UPSERT_BATCH),
         (batch) => Effect.promise(() => db.batch(batch)),
-        { discard: true },
+        { concurrency: 1, discard: true },
       ),
     ),
   );

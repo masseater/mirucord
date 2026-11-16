@@ -123,10 +123,13 @@ export const openStored = ({
   if (Array.isReadonlyArrayEmpty(held)) {
     return Effect.succeed([]);
   }
-  return Effect.all({
-    key: openGuildKey(wrappedKey),
-    authors: authorsOf(guildId, held),
-  }).pipe(
+  return Effect.all(
+    {
+      key: openGuildKey(wrappedKey),
+      authors: authorsOf(guildId, held),
+    },
+    { concurrency: 1 },
+  ).pipe(
     Effect.flatMap(({ key, authors }) =>
       Effect.forEach(
         pipe(
@@ -139,6 +142,7 @@ export const openStored = ({
             channelId: row.channelId,
             messageId: row.id,
           }).pipe(Effect.map((body) => viewOf(guildId, { row, body, authorId }))),
+        { concurrency: 1 },
       ),
     ),
   );

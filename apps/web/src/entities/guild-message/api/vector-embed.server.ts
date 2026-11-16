@@ -75,9 +75,9 @@ const storeVector = (
 };
 
 const textsOf = (keys: Keys, rows: readonly PendingRow[]): Effect.Effect<readonly Embedding[]> =>
-  pipe(
+  Effect.forEach(
     rows,
-    Effect.forEach((row) =>
+    (row) =>
       openMessage(row.sealed, keys.key, {
         guildId: keys.guildId,
         channelId: row.channelId,
@@ -88,7 +88,7 @@ const textsOf = (keys: Keys, rows: readonly PendingRow[]): Effect.Effect<readonl
           text: pipe(searchableTexts(body), Array.join(TEXT_SEPARATOR)),
         })),
       ),
-    ),
+    { concurrency: 1 },
   );
 
 const sealVector = (keys: Keys, row: PendingRow, vector: Uint8Array): Effect.Effect<Uint8Array> =>
@@ -106,11 +106,11 @@ const storeVectors = Effect.fnUntraced(function* storeVectors(
   { db, keys }: Batch,
   { embedded, blank }: Readonly<{ embedded: readonly Embedded[]; blank: readonly Embedding[] }>,
 ) {
-  const sealed = yield* pipe(
+  const sealed = yield* Effect.forEach(
     embedded,
-    Effect.forEach(({ row, vector }) =>
+    ({ row, vector }) =>
       sealVector(keys, row, encodeVector(vector)).pipe(Effect.map((bytes) => ({ row, bytes }))),
-    ),
+    { concurrency: 1 },
   );
   const at = nextVectorAt(db);
   for (const { row } of blank) {

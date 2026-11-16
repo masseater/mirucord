@@ -53,7 +53,7 @@ const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult> =>
               ),
             ],
             (channelId) => purgeChannel({ guildId: request.guildId, channelId }),
-            { discard: true },
+            { concurrency: 1, discard: true },
           ),
         ),
         Effect.andThen(Effect.logInfo("Purged a paused channel on request")),

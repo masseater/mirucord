@@ -76,14 +76,17 @@ const guildsWithPhrases: Effect.Effect<number> = Effect.promise(() =>
 );
 
 const guildsUsing = (commons: readonly string[]): Effect.Effect<Readonly<Record<string, number>>> =>
-  Effect.forEach(Array.chunksOf(commons, BOUND_LIMIT), (chunk) =>
-    Effect.promise(() =>
-      db
-        .select({ phrase: commonPhrase.phrase, guilds: count() })
-        .from(commonPhrase)
-        .where(inArray(commonPhrase.phrase, [...chunk]))
-        .groupBy(commonPhrase.phrase),
-    ),
+  Effect.forEach(
+    Array.chunksOf(commons, BOUND_LIMIT),
+    (chunk) =>
+      Effect.promise(() =>
+        db
+          .select({ phrase: commonPhrase.phrase, guilds: count() })
+          .from(commonPhrase)
+          .where(inArray(commonPhrase.phrase, [...chunk]))
+          .groupBy(commonPhrase.phrase),
+      ),
+    { concurrency: 1 },
   ).pipe(
     Effect.map((rows) =>
       Record.fromEntries(

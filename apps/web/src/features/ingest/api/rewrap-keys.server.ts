@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Array, Effect, Option, pipe } from "effect";
+import { Array, Effect, Option } from "effect";
 
 import { isRotating, rewrapGuildKey } from "#/shared/crypto/index.server";
 import { db, guild } from "#/shared/db/index.server";
@@ -8,9 +8,9 @@ const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
   db.select({ id: guild.id, wrappedKey: guild.wrappedKey }).from(guild),
 ).pipe(
   Effect.flatMap((rows) =>
-    pipe(
+    Effect.forEach(
       rows,
-      Effect.forEach(({ id, wrappedKey }) =>
+      ({ id, wrappedKey }) =>
         rewrapGuildKey(wrappedKey).pipe(
           Effect.flatMap(
             Option.match({
@@ -22,7 +22,7 @@ const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
             }),
           ),
         ),
-      ),
+      { concurrency: 1 },
     ),
   ),
   Effect.flatMap((results) =>

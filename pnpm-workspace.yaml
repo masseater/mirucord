@@ -44,7 +44,7 @@ catalogs:
     "@r_masseater/workers-tracing": 0.3.0
     "@distilled.cloud/cloudflare": 1.0.0-rc.20
     "@effect/atom-react": 4.1.4
-    "@effect/tsgo": 0.68.1
+    "@effect/tsgo": 0.69.0
     "@effect/vitest": 4.1.4
     "@openfeature/server-sdk": 1.23.0
     "@tanstack/react-query": 5.107.1

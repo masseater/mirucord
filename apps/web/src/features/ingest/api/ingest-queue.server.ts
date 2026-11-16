@@ -93,4 +93,4 @@ const processDelivery = (delivery: QueueDelivery): Effect.Effect<void> =>
   );
 
 export const ingestDeliveries = (deliveries: readonly QueueDelivery[]): Effect.Effect<void> =>
-  Effect.forEach(deliveries, processDelivery, { discard: true });
+  Effect.forEach(deliveries, processDelivery, { concurrency: 1, discard: true });

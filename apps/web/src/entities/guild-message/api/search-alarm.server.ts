@@ -28,10 +28,13 @@ export type Published = Alarmed & Readonly<{ bucket: Readonly<R2Bucket>; guildId
 export type Flushing = Published & Readonly<{ flush: Flush }>;
 
 export const scheduleSearch = ({ alarms, delay }: Scheduled): Effect.Effect<void> =>
-  Effect.all({
-    now: Clock.currentTimeMillis,
-    current: Effect.promise(() => alarms.current()),
-  }).pipe(
+  Effect.all(
+    {
+      now: Clock.currentTimeMillis,
+      current: Effect.promise(() => alarms.current()),
+    },
+    { concurrency: 1 },
+  ).pipe(
     Effect.flatMap(({ now, current }) => {
       const wanted = now + delay;
       const later = Option.match(Option.fromNullOr(current), {

@@ -63,10 +63,13 @@ const seedGrant = ({ userId, clientId }: Grant): Effect.Effect<void> => {
   ).pipe(Effect.asVoid);
 };
 
-const tokenCount = Effect.all({
-  refresh: Effect.promise(() => db.select().from(oauthRefreshToken)),
-  access: Effect.promise(() => db.select().from(oauthAccessToken)),
-}).pipe(Effect.map(({ refresh, access }) => ({ refresh: refresh.length, access: access.length })));
+const tokenCount = Effect.all(
+  {
+    refresh: Effect.promise(() => db.select().from(oauthRefreshToken)),
+    access: Effect.promise(() => db.select().from(oauthAccessToken)),
+  },
+  { concurrency: 1 },
+).pipe(Effect.map(({ refresh, access }) => ({ refresh: refresh.length, access: access.length })));
 
 it.effect("lists the apps a user connected, named by the client", () =>
   Effect.gen(function* listed() {
@@ -84,11 +87,11 @@ it.effect("lists the apps a user connected, named by the client", () =>
 );
 
 const seedGrants = (grants: readonly Grant[]): Effect.Effect<void> =>
-  Effect.forEach(grants, seedGrant, { discard: true });
+  Effect.forEach(grants, seedGrant, { concurrency: 1, discard: true });
 
 it.effect("disconnects one app of one user and keeps every other grant", () =>
   Effect.gen(function* disconnected() {
-    yield* Effect.forEach(["u3", "u4"], seedUser, { discard: true });
+    yield* Effect.forEach(["u3", "u4"], seedUser, { concurrency: 1, discard: true });
     yield* seedClient("claude-2", Option.some("Claude"));
     yield* seedClient("other-2", Option.some("Other"));
     yield* seedGrants([
@@ -97,11 +100,14 @@ it.effect("disconnects one app of one user and keeps every other grant", () =>
       { userId: "u4", clientId: "claude-2" },
     ]);
     yield* disconnectApp({ userId: "u3", clientId: "claude-2" });
-    const remaining = yield* Effect.all({
-      u3: listConnectedApps("u3"),
-      u4: listConnectedApps("u4"),
-      tokens: tokenCount,
-    });
+    const remaining = yield* Effect.all(
+      {
+        u3: listConnectedApps("u3"),
+        u4: listConnectedApps("u4"),
+        tokens: tokenCount,
+      },
+      { concurrency: 1 },
+    );
     expect(remaining).toStrictEqual({
       u3: [{ clientId: "other-2", name: "Other", ...DATES }],
       u4: [{ clientId: "claude-2", name: "Claude", ...DATES }],

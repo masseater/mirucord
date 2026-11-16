@@ -137,7 +137,7 @@ const allowedOf = (
 const timed = <Value, Failure, Needs>(
   effect: Effect.Effect<Value, Failure, Needs>,
 ): Effect.Effect<readonly [Value, number], Failure, Needs> =>
-  Effect.all([Clock.currentTimeMillis, effect, Clock.currentTimeMillis]).pipe(
+  Effect.all([Clock.currentTimeMillis, effect, Clock.currentTimeMillis], { concurrency: 1 }).pipe(
     Effect.map(([started, value, finished]) => [value, finished - started] as const),
   );
 

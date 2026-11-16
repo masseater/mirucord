@@ -45,11 +45,14 @@ const storedSessions = (guildId: string): Effect.Effect<readonly (typeof Session
 
 beforeAll(() =>
   Effect.runPromise(
-    Effect.all([
-      seedMemberGuild({ id: MOVING_GUILD, noticeChannelId: NOTICE_CHANNEL }),
-      seedMemberGuild({ id: SNAPSHOT_GUILD, noticeChannelId: NOTICE_CHANNEL }),
-      seedMemberGuild({ id: QUIET_GUILD, noticeChannelId: NO_CONSENT }),
-    ]),
+    Effect.all(
+      [
+        seedMemberGuild({ id: MOVING_GUILD, noticeChannelId: NOTICE_CHANNEL }),
+        seedMemberGuild({ id: SNAPSHOT_GUILD, noticeChannelId: NOTICE_CHANNEL }),
+        seedMemberGuild({ id: QUIET_GUILD, noticeChannelId: NO_CONSENT }),
+      ],
+      { concurrency: 1 },
+    ),
   ),
 );
 

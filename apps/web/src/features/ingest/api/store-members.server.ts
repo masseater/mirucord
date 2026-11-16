@@ -1,5 +1,5 @@
 import type { DepartJob, MembersJob } from "@repo/ingest-util-gateway-contract";
-import { Clock, DateTime, Effect, Option, pipe } from "effect";
+import { Clock, DateTime, Effect, Option } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import type { MemberWrite } from "#/entities/guild-message/index.server";
@@ -46,7 +46,7 @@ const saveWith = (
 ): Effect.Effect<void> =>
   Effect.gen(function* save() {
     const key = yield* openGuildKey(wrappedKey);
-    const rows = yield* pipe(members, Effect.forEach(storedRowOf(guildId, key)));
+    const rows = yield* Effect.forEach(members, storedRowOf(guildId, key), { concurrency: 1 });
     const now = yield* Clock.currentTimeMillis;
     yield* Effect.promise(() => guildStore(guildId).saveMembers({ members: rows, now, coverage }));
     yield* Effect.logInfo("Members stored").pipe(

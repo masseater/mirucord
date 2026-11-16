@@ -133,10 +133,13 @@ export const findSimilar = (request: SimilarRequest): Effect.Effect<SimilarMessa
       Option.match({
         onNone: () => Effect.succeed<SimilarMessages>({ status: "overBudget" }),
         onSome: (query) =>
-          Effect.all({
-            key: openGuildKey(wrappedKey),
-            coverage: coverageOf(guildId),
-          }).pipe(
+          Effect.all(
+            {
+              key: openGuildKey(wrappedKey),
+              coverage: coverageOf(guildId),
+            },
+            { concurrency: 1 },
+          ).pipe(
             Effect.tap(({ coverage }) => kickVectors(guildId, coverage)),
             Effect.flatMap(({ key, coverage }) =>
               searchSimilar({

@@ -87,8 +87,10 @@ const seed = Effect.gen(function* seed() {
   });
 });
 
-const storedIds = Effect.forEach([CHANNEL, OTHER_CHANNEL], (channelId) =>
-  storedIdsIn({ guildId: GUILD, channelId }),
+const storedIds = Effect.forEach(
+  [CHANNEL, OTHER_CHANNEL],
+  (channelId) => storedIdsIn({ guildId: GUILD, channelId }),
+  { concurrency: 1 },
 ).pipe(Effect.map((channels) => new Set(channels.flat())));
 
 beforeAll(() => {

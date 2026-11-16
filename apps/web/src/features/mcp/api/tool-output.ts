@@ -1,13 +1,14 @@
 import { Schema } from "effect";
 
-import { INGEST_STATUSES } from "#/features/mcp/model/ingest-status";
+import { PRECISIONS } from "#/entities/guild-message/index.server";
+import { CONSENTS, INGEST_STATUSES } from "#/features/mcp/model/ingest-status";
 import { MessageAttachment, MessageEmbed, MessagePoll } from "#/shared/discord";
 
 const Ingest = Schema.Literals(INGEST_STATUSES).annotate({
   description:
     "Only empty means no messages in Discord. Otherwise not everything is stored yet, so say so instead of reporting no messages",
 });
-const Consent = Schema.Literals(["consented", "notConsented"]).annotate({
+const Consent = Schema.Literals(CONSENTS).annotate({
   description: "Nothing is stored before the admin allows it, so notConsented returns nothing",
 });
 const Mention = Schema.Struct({
@@ -35,7 +36,7 @@ const Message = Schema.Struct({
 const Server = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
-  ingest: Schema.Literals(["consented", "notConsented"]).annotate({
+  ingest: Schema.Literals(CONSENTS).annotate({
     description: "notConsented until the admin allows storing messages; every channel reads empty",
   }),
 });
@@ -124,7 +125,7 @@ export const ListMembersOutput = Schema.Struct({
 });
 const VoiceMoment = Schema.Struct({
   at: Schema.String,
-  precision: Schema.Literals(["exact", "noLaterThan"]).annotate({
+  precision: Schema.Literals(PRECISIONS).annotate({
     description: "noLaterThan: learned after reconnecting, so the real time is at or before at",
   }),
 });

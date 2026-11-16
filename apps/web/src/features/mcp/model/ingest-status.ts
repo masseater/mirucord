@@ -2,7 +2,9 @@ import { Array, Option, pipe } from "effect";
 
 import type { Backfill } from "#/shared/db";
 
-export type Consent = "consented" | "notConsented";
+export const CONSENTS = ["consented", "notConsented"] as const;
+
+export type Consent = (typeof CONSENTS)[number];
 
 export const INGEST_STATUSES = ["notConsented", "waiting", "backfilling", "done", "empty"] as const;
 

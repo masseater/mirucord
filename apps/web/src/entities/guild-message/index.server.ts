@@ -9,6 +9,7 @@ export { GuildStore } from "./api/guild-store.server";
 export { searchMessages } from "./api/search-messages.server";
 export type { MemberWrite, StoredMember } from "./api/member-types";
 export type { StoredVoiceSession } from "./api/voice-types";
+export { PRECISIONS } from "./model/voice-session.schema";
 export type { StoredReaction, StoredVote } from "./api/reaction-types";
 export type {
   IndexedMessage,

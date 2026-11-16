@@ -1,10 +1,9 @@
 import { Rules } from "@alchemy.run/cloudflare";
 import { Secret } from "@alchemy.run/fly";
 import { Secret as GitHubSecret, Variable as GitHubVariable } from "@alchemy.run/github";
+import { prefixesOf } from "@repo/shared-util-app-name/app-name";
 import { Stack, isResourceOfType } from "alchemy";
 import { Array as Arr, Effect, Match, Option, pipe, Record, Schema, String as Str } from "effect";
-
-import { prefixesOf } from "./app-name";
 
 type Prefixes = Readonly<{ name: string; prefix: string; envPrefix: string }>;
 

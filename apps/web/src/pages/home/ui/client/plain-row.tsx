@@ -12,8 +12,7 @@ const TONE: Readonly<Record<Activity["status"], string>> = {
   mention: "text-dc-bright",
 };
 
-const MARK: Readonly<Record<Activity["status"], string>> = {
-  read: "hidden",
+const MARK: Readonly<Record<Exclude<Activity["status"], "read">, string>> = {
   unread: "bg-dc-bright absolute -left-2 h-2 w-1 rounded-r-full",
   mention: "bg-dc-new text-dc-rail ml-auto rounded-full px-1.5 text-xs leading-5 font-black",
 };
@@ -66,9 +65,11 @@ export const PlainRow = ({
     )}
     {place.type === "channel" && <ChannelIcon kind={place.kind} size="md" />}
     <span className="truncate">{place.name}</span>
-    <span aria-hidden="true" className={MARK[activity.status]}>
-      {shown(activity)}
-    </span>
+    {activity.status !== "read" && (
+      <span aria-hidden="true" className={MARK[activity.status]}>
+        {shown(activity)}
+      </span>
+    )}
     <span className="sr-only">{spoken(activity)}</span>
     {children}
   </span>

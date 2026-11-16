@@ -1,6 +1,6 @@
 {
   "extends": "../tsconfig.base.json",
-  "include": ["hooks"],
+  "include": ["src"],
   "compilerOptions": {
     "plugins": [
       {

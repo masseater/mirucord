@@ -1,4 +1,4 @@
-import type { GatewayJob } from "./gateway-job-schema";
+import type { GatewayJob } from "./gateway-job-schema.ts";
 
 export type GuildJob = Extract<GatewayJob, Readonly<{ kind: "join" | "sync" | "leave" }>>;
 

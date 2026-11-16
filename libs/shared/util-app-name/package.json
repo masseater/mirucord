@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./app-name": "./src/app-name.ts",
-    "./run-tasks": "./src/run-tasks.ts"
+    ".": "./src/features/check-app-prefix/index.ts",
+    "./app-name": "./src/entities/app-name/index.ts",
+    "./run-tasks": "./src/app/run-tasks.ts"
   },
   "dependencies": {
     "@alchemy.run/cloudflare": "catalog:stack",

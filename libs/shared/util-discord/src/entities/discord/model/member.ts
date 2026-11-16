@@ -1,6 +1,6 @@
 import { Schema } from "effect";
 
-import { Author } from "./message";
+import { Author } from "./message.ts";
 
 export const Member = Schema.Struct({
   user: Author,

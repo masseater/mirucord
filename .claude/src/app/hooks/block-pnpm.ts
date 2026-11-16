@@ -9,7 +9,7 @@ import type {
 } from "@yarnpkg/parsers";
 import { Array as Arr, Effect, Match, Option, pipe, Schema, String as Str } from "effect";
 
-import { blockWhen, readHookInput, runHook } from "./env.ts";
+import { blockWhen, readHookInput, runHook } from "#/shared/lib/env.ts";
 
 type Frozen<Value> = { readonly [Key in keyof Value]: Frozen<Value[Key]> };
 type Line = Frozen<ShellLine>;

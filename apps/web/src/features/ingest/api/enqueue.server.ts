@@ -5,7 +5,7 @@ import type { QueueJob } from "#/features/ingest/model/ingest-job";
 
 const QUEUE_BATCH_LIMIT = 100;
 
-const enqueue = (jobs: readonly QueueJob[]): Effect.Effect<void> =>
+export const enqueue = (jobs: readonly QueueJob[]): Effect.Effect<void> =>
   Effect.forEach(
     Array.chunksOf(jobs, QUEUE_BATCH_LIMIT),
     (chunk) =>
@@ -20,7 +20,7 @@ const enqueue = (jobs: readonly QueueJob[]): Effect.Effect<void> =>
     { discard: true },
   );
 
-const enqueueCatchUps = (guildIds: readonly string[]): Effect.Effect<void> =>
+export const enqueueCatchUps = (guildIds: readonly string[]): Effect.Effect<void> =>
   enqueue(
     pipe(
       guildIds,
@@ -28,14 +28,12 @@ const enqueueCatchUps = (guildIds: readonly string[]): Effect.Effect<void> =>
     ),
   );
 
-const enqueueWithdrawal = (guildId: string): Effect.Effect<void> =>
+export const enqueueWithdrawal = (guildId: string): Effect.Effect<void> =>
   Effect.promise(() => env.INGEST.send({ kind: "withdraw", guildId }));
 
-const enqueueMembers = (guildId: string): Effect.Effect<void> =>
+export const enqueueMembers = (guildId: string): Effect.Effect<void> =>
   Effect.promise(() => env.INGEST.send({ kind: "members", guildId }));
 
-const enqueueMigration: Effect.Effect<void> = Effect.promise(() =>
+export const enqueueMigration: Effect.Effect<void> = Effect.promise(() =>
   env.INGEST.send({ kind: "migrate" }),
 );
-
-export { enqueue, enqueueCatchUps, enqueueMembers, enqueueMigration, enqueueWithdrawal };

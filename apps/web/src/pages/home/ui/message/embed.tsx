@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-const Embed = ({
+export const Embed = ({
   accent,
   children,
 }: Readonly<{ accent: string; children: ReactNode }>): ReactNode => (
@@ -12,5 +12,3 @@ const Embed = ({
     {children}
   </div>
 );
-
-export { Embed };

@@ -15,29 +15,29 @@ import type { IndexedMessage } from "#/entities/guild-message/index.server";
 import { createGuildKey, openGuildKeys, sealMessage } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent, role } from "#/shared/db/index.server";
 
-const USER = "900";
-const OWNER = "901";
-const GUILD_A = "100";
-const GUILD_B = "200";
-const GUILD_C = "300";
-const GUILD_D = "400";
-const MEMBER_ROLE = "150";
+export const USER = "900";
+export const OWNER = "901";
+export const GUILD_A = "100";
+export const GUILD_B = "200";
+export const GUILD_C = "300";
+export const GUILD_D = "400";
+export const MEMBER_ROLE = "150";
 const STAFF_ROLE = "160";
-const A_OPEN = "110";
-const A_STAFF = "120";
+export const A_OPEN = "110";
+export const A_STAFF = "120";
 const A_CATEGORY = "130";
-const A_STAFF_THREAD = "121";
-const A_PRIVATE_THREAD = "111";
-const B_OPEN = "210";
+export const A_STAFF_THREAD = "121";
+export const A_PRIVATE_THREAD = "111";
+export const B_OPEN = "210";
 const C_OPEN = "310";
-const D_OPEN = "410";
-const A_OPEN_MESSAGE = "1100";
-const SAME_WORDS = "来週のオフ会の集合場所";
+export const D_OPEN = "410";
+export const A_OPEN_MESSAGE = "1100";
+export const SAME_WORDS = "来週のオフ会の集合場所";
 const NOTHING = "0";
 const NOT_FOUND = 404;
 const VIEW = PermissionFlagsBits.ViewChannel.toString();
 const READ = (PermissionFlagsBits.ViewChannel + PermissionFlagsBits.ReadMessageHistory).toString();
-const SEEDED = DateTime.makeUnsafe("2026-10-01T00:00:00Z");
+export const SEEDED = DateTime.makeUnsafe("2026-10-01T00:00:00Z");
 const SEEDED_AT = DateTime.toDate(SEEDED);
 
 type Overwrite = (typeof channel.$inferInsert)["permissionOverwrites"][number];
@@ -127,7 +127,7 @@ const ROLES_BY_MEMBERSHIP: Readonly<Record<string, readonly string[]>> = {
   [`${GUILD_D}/${USER}`]: [],
 };
 
-const discordMembers = http.get<Readonly<{ guildId: string; userId: string }>>(
+export const discordMembers = http.get<Readonly<{ guildId: string; userId: string }>>(
   `${RouteBases.api}${decodeURIComponent(Routes.guildMember(":guildId", ":userId"))}`,
   ({ params: { guildId, userId } }) =>
     Option.match(Record.get(ROLES_BY_MEMBERSHIP, `${guildId}/${userId}`), {
@@ -261,7 +261,7 @@ const seedGuild = (seed: ScenarioGuild): Effect.Effect<void> =>
     yield* Effect.promise(() => guildStore(seed.id).publish());
   });
 
-const guildKeys = (
+export const guildKeys = (
   guildId: string,
 ): Effect.Effect<Effect.Success<ReturnType<typeof openGuildKeys>>> =>
   Effect.promise(() =>
@@ -271,26 +271,5 @@ const guildKeys = (
     Effect.flatMap(({ wrappedKey }) => openGuildKeys(wrappedKey)),
   );
 
-const seedScenario = (): Promise<void> => run(Effect.forEach(GUILDS, seedGuild, { discard: true }));
-
-export {
-  A_OPEN,
-  A_OPEN_MESSAGE,
-  A_PRIVATE_THREAD,
-  A_STAFF,
-  A_STAFF_THREAD,
-  B_OPEN,
-  discordMembers,
-  GUILD_A,
-  GUILD_B,
-  GUILD_C,
-  GUILD_D,
-  D_OPEN,
-  MEMBER_ROLE,
-  guildKeys,
-  OWNER,
-  SAME_WORDS,
-  SEEDED,
-  seedScenario,
-  USER,
-};
+export const seedScenario = (): Promise<void> =>
+  run(Effect.forEach(GUILDS, seedGuild, { discard: true }));

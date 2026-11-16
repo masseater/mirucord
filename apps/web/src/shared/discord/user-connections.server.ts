@@ -8,7 +8,7 @@ import type { HttpClientError } from "effect/http";
 import { requestErrorOf } from "./client.server";
 import type { DiscordRequestError } from "./client.server";
 
-type PublicConnection = Readonly<{ type: string; name: string; verified: boolean }>;
+export type PublicConnection = Readonly<{ type: string; name: string; verified: boolean }>;
 
 const Connection = Schema.Struct({
   type: Schema.String,
@@ -42,7 +42,7 @@ const withClient = <Value>(
     ),
   ).pipe(Effect.mapError((cause) => requestErrorOf({ response: cause.response })));
 
-const listPublicConnections = (
+export const listPublicConnections = (
   accessToken: string,
 ): Effect.Effect<readonly PublicConnection[], DiscordRequestError> => {
   const request = HttpClientRequest.get(`${RouteBases.api}${Routes.userConnections()}`).pipe(
@@ -59,7 +59,7 @@ const listPublicConnections = (
   );
 };
 
-const revokeUserToken = (accessToken: string): Effect.Effect<void, DiscordRequestError> => {
+export const revokeUserToken = (accessToken: string): Effect.Effect<void, DiscordRequestError> => {
   const form = new URLSearchParams({
     token: accessToken,
     token_type_hint: "access_token",
@@ -73,6 +73,3 @@ const revokeUserToken = (accessToken: string): Effect.Effect<void, DiscordReques
     HttpClient.execute(request).pipe(Effect.flatMap(HttpClientResponse.filterStatusOk)),
   ).pipe(Effect.asVoid, Effect.withSpan("revokeUserToken"));
 };
-
-export { listPublicConnections, revokeUserToken };
-export type { PublicConnection };

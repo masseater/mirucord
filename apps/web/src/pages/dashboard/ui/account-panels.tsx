@@ -6,7 +6,7 @@ import { AccountPanel } from "./account-panel";
 import { ConnectedAppPanel } from "./connected-app-panel";
 import { LinkedAccountPanel } from "./linked-account-panel";
 
-const AccountPanels = ({
+export const AccountPanels = ({
   apps,
   name,
 }: Readonly<{ apps: readonly ConnectedApp[]; name: string }>): ReactNode => (
@@ -16,5 +16,3 @@ const AccountPanels = ({
     <AccountPanel name={name} />
   </>
 );
-
-export { AccountPanels };

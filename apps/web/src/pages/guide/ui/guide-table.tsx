@@ -37,7 +37,10 @@ const tableHead = (head: Row): ReactNode => (
   </thead>
 );
 
-const GuideTable = ({ head, rows }: Readonly<{ head: Row; rows: readonly Row[] }>): ReactNode => (
+export const GuideTable = ({
+  head,
+  rows,
+}: Readonly<{ head: Row; rows: readonly Row[] }>): ReactNode => (
   <div className="overflow-x-auto">
     <table className="w-full min-w-md border-collapse text-left text-sm">
       {tableHead(head)}
@@ -50,5 +53,3 @@ const GuideTable = ({ head, rows }: Readonly<{ head: Row; rows: readonly Row[] }
     </table>
   </div>
 );
-
-export { GuideTable };

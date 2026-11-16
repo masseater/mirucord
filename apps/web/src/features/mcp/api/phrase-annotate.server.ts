@@ -30,17 +30,17 @@ const NUMBER_FROM = 1;
 const EMOJI_PREFIX = "emoji:";
 const JSON_OBJECT = /\{[\s\S]*\}/u;
 
-type NoteSubject = Readonly<{ phrase: string; label: Phrase; uses: number; people: number }>;
+export type NoteSubject = Readonly<{ phrase: string; label: Phrase; uses: number; people: number }>;
 
-type OpenedSample = Readonly<{
+export type OpenedSample = Readonly<{
   before: readonly MessageBody[];
   use: MessageBody;
   after: readonly MessageBody[];
 }>;
 
-type NoteInput = NoteSubject & Readonly<{ samples: readonly OpenedSample[] }>;
+export type NoteInput = NoteSubject & Readonly<{ samples: readonly OpenedSample[] }>;
 
-type Note =
+export type Note =
   | Readonly<{ status: "common" }>
   | Readonly<{ status: "server"; note: string | null }>
   | Readonly<{ status: "unknown" }>;
@@ -54,7 +54,7 @@ type Answered = typeof Answer.Type;
 
 type Image = Readonly<{ data: string; contentType: string }>;
 
-const excerptOf = ({ content, stickers }: MessageBody): string =>
+export const excerptOf = ({ content, stickers }: MessageBody): string =>
   pipe(
     [
       content,
@@ -226,7 +226,7 @@ const noteOf = (input: NoteInput, { type, note }: Answered): Note => {
   return { status: "server", note: Option.getOrNull(shown) };
 };
 
-const annotatePhrase = (input: NoteInput): Effect.Effect<Option.Option<Note>> =>
+export const annotatePhrase = (input: NoteInput): Effect.Effect<Option.Option<Note>> =>
   spendNeurons("live", RESERVED_NEURONS).pipe(
     Effect.flatMap((granted) =>
       Option.match(
@@ -254,6 +254,3 @@ const annotatePhrase = (input: NoteInput): Effect.Effect<Option.Option<Note>> =>
       Effect.logWarning("Could not annotate a phrase", cause).pipe(Effect.as(Option.none<Note>())),
     ),
   );
-
-export { annotatePhrase, excerptOf };
-export type { Note, NoteInput, NoteSubject, OpenedSample };

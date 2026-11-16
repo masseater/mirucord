@@ -6,7 +6,7 @@ import { BrandLink } from "./brand-link";
 
 const DASHBOARD = "管理画面";
 
-const AppHeader = (): ReactNode => (
+export const AppHeader = (): ReactNode => (
   <header className="bg-dc-rail">
     <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between px-5">
       <BrandLink />
@@ -19,5 +19,3 @@ const AppHeader = (): ReactNode => (
     </div>
   </header>
 );
-
-export { AppHeader };

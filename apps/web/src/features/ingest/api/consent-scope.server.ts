@@ -14,7 +14,7 @@ import type { ChannelRef } from "./message-rows.server";
 
 const CLEARED = Option.getOrNull(Option.none<string>());
 
-const loadScope = (guildId: string): Effect.Effect<ConsentScope> =>
+export const loadScope = (guildId: string): Effect.Effect<ConsentScope> =>
   Effect.promise(() =>
     db
       .select({ state: ingestConsent.state })
@@ -29,7 +29,7 @@ const loadScope = (guildId: string): Effect.Effect<ConsentScope> =>
     ),
   );
 
-const purgeChannel = (ref: ChannelRef): Effect.Effect<void> =>
+export const purgeChannel = (ref: ChannelRef): Effect.Effect<void> =>
   forgetChannelMessages(ref).pipe(
     Effect.andThen(
       Effect.promise(() =>
@@ -123,13 +123,11 @@ const refreshIngestOf = (refresh: IngestRefresh): Effect.Effect<void> =>
     Effect.flatMap((scope) => enqueueInScope(refresh, scope)),
   );
 
-const refreshIngest = (guildId: string): Effect.Effect<void> =>
+export const refreshIngest = (guildId: string): Effect.Effect<void> =>
   refreshIngestOf({ guildId, reach: "all" });
 
-const refreshConsented = (guildId: string): Effect.Effect<void> =>
+export const refreshConsented = (guildId: string): Effect.Effect<void> =>
   refreshIngest(guildId).pipe(Effect.andThen(enqueueMembers(guildId)));
 
-const refreshPendingIngest = (guildId: string): Effect.Effect<void> =>
+export const refreshPendingIngest = (guildId: string): Effect.Effect<void> =>
   refreshIngestOf({ guildId, reach: "pending" });
-
-export { loadScope, purgeChannel, refreshConsented, refreshIngest, refreshPendingIngest };

@@ -30,9 +30,7 @@ const listMembersAfter = (
     }),
   );
 
-const listGuildMembers = (
+export const listGuildMembers = (
   guildId: string,
 ): Effect.Effect<readonly DiscordMember[], DiscordRequestError> =>
   listMembersAfter(guildId, Option.none());
-
-export { listGuildMembers };

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { siDiscord } from "simple-icons";
 
-const DiscordMark = ({
+export const DiscordMark = ({
   className,
   left,
   top,
@@ -19,5 +19,3 @@ const DiscordMark = ({
     <path d={siDiscord.path} />
   </svg>
 );
-
-export { DiscordMark };

@@ -15,7 +15,7 @@ const CONCURRENCY = 16;
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
-type NotesRequest = Readonly<{
+export type NotesRequest = Readonly<{
   guildId: string;
   key: CryptoKey;
   channelIds: readonly string[];
@@ -117,7 +117,7 @@ const generateAll = Effect.fn("generatePhraseNotes")(function* generateAll(
   );
 });
 
-const phraseNotesOf = Effect.fn("phraseNotes")(function* phraseNotes(request: NotesRequest) {
+export const phraseNotesOf = Effect.fn("phraseNotes")(function* phraseNotes(request: NotesRequest) {
   const store = guildStore(request.guildId);
   const phrases = pipe(
     request.subjects,
@@ -154,6 +154,3 @@ const phraseNotesOf = Effect.fn("phraseNotes")(function* phraseNotes(request: No
   );
   return new Map<string, Note>([...opened, ...generated]);
 });
-
-export { phraseNotesOf };
-export type { NotesRequest };

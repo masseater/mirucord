@@ -13,6 +13,16 @@ export default defineConfig({
       overrides: [
         { files: ["src/**/*.{ts,tsx}"], use: ["decision"] },
         {
+          files: ["src/**/*.{ts,tsx}"],
+          excludeFiles: [
+            "src/shared/config/brand.ts",
+            "src/shared/config/site.ts",
+            "src/shared/crypto/keyring.server.ts",
+          ],
+          use: ["brand"],
+        },
+        { files: ["src/**/*.{ts,tsx}"], excludeFiles: ["**/*.test.ts"], use: ["traced"] },
+        {
           files: ["src/**/*.server.ts", "src/**/*.test.support.ts"],
           rules: {
             "stack/server-state-tanstack-query": "off",
@@ -39,6 +49,13 @@ export default defineConfig({
         `drizzle-kit generate --config drizzle.guild.config.ts --explain --output json | grep -q '"status":"no_changes"'`,
       ],
       ...alchemyTasks,
+      "deploy:production": {
+        command: [
+          "alchemy deploy --stage prod --yes --no-input",
+          `WORKERS_TRACES_SINK=masseater-dev-trace-sink workers-traces --request https://mirucord.masseater.dev/ --expect GET --expect "GET /" --expect d1_all --wait 300`,
+        ],
+        cache: false,
+      },
       "deploy:ci": {
         command: "alchemy deploy --config alchemy.ci.ts --stage prod --env-file alchemy.ci.env",
         cache: false,

@@ -7,7 +7,7 @@ const NEVER = 0;
 const NO_HITS = 0;
 const MS_PER_SECOND = 1000;
 
-class RequestCounter extends TracedDurableObject {
+export class RequestCounter extends TracedDurableObject {
   #windowStart = NEVER;
   #hits = NO_HITS;
 
@@ -26,5 +26,3 @@ class RequestCounter extends TracedDurableObject {
     );
   }
 }
-
-export { RequestCounter };

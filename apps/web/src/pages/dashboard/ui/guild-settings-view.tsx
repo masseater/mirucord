@@ -15,7 +15,9 @@ const TIP = {
   withdrawing: "削除中だよ！",
 } as const;
 
-const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => (
+export const GuildSettingsView = ({
+  settings,
+}: Readonly<{ settings: GuildSettings }>): ReactNode => (
   <>
     <MascotTip>{TIP[settings.ingest]}</MascotTip>
     <h1 className="text-dc-bright font-maru text-3xl font-black">{settings.name}</h1>
@@ -24,5 +26,3 @@ const GuildSettingsView = ({ settings }: Readonly<{ settings: GuildSettings }>):
     {settings.consent.status === "granted" && <GrantedPanels settings={settings} />}
   </>
 );
-
-export { GuildSettingsView };

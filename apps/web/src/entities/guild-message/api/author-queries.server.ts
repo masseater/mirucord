@@ -42,7 +42,7 @@ const authorPage = (
     .all();
 };
 
-const authorQueries =
+export const authorQueries =
   (db: DrizzleSqliteDODatabase) =>
   (request: AuthorPage): readonly SealedMessage[] => {
     const visible = new Set(request.channelIds);
@@ -75,5 +75,3 @@ const authorQueries =
       found: [],
     });
   };
-
-export { authorQueries };

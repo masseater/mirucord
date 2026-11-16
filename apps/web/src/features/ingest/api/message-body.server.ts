@@ -4,10 +4,10 @@ import type { MessageBody } from "#/shared/crypto/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
 type Forwarded = NonNullable<DiscordMessage["message_snapshots"]>[number]["message"];
-type DiscordAttachment = DiscordMessage["attachments"][number];
+export type DiscordAttachment = DiscordMessage["attachments"][number];
 type DiscordEmbed = DiscordMessage["embeds"][number];
 type StoredEmbed = MessageBody["embeds"][number];
-type MessageAuthor = Pick<MessageBody, "authorName" | "mentions" | "replyTo">;
+export type MessageAuthor = Pick<MessageBody, "authorName" | "mentions" | "replyTo">;
 
 const forwardsOf = ({ message_snapshots }: DiscordMessage): readonly Forwarded[] =>
   pipe(
@@ -28,7 +28,7 @@ const contentOf = (incoming: DiscordMessage): string =>
     Array.join("\n"),
   );
 
-const attachmentsOf = (incoming: DiscordMessage): readonly DiscordAttachment[] => [
+export const attachmentsOf = (incoming: DiscordMessage): readonly DiscordAttachment[] => [
   ...incoming.attachments,
   ...pipe(
     forwardsOf(incoming),
@@ -81,13 +81,13 @@ const pollOf = ({ poll }: DiscordMessage): Option.Option<NonNullable<MessageBody
     })),
   );
 
-const hasRichBody = (incoming: DiscordMessage): boolean =>
+export const hasRichBody = (incoming: DiscordMessage): boolean =>
   Array.isReadonlyArrayNonEmpty(forwardsOf(incoming)) ||
   Array.isReadonlyArrayNonEmpty(embedsOf(incoming)) ||
   Array.isReadonlyArrayNonEmpty(stickersOf(incoming)) ||
   Option.isSome(pollOf(incoming));
 
-const bodyOf = ({
+export const bodyOf = ({
   incoming,
   attachments,
 }: Readonly<{
@@ -100,6 +100,3 @@ const bodyOf = ({
   stickers: stickersOf(incoming),
   poll: Option.getOrUndefined(pollOf(incoming)),
 });
-
-export { attachmentsOf, bodyOf, hasRichBody };
-export type { DiscordAttachment, MessageAuthor };

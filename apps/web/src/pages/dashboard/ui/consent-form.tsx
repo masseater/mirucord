@@ -13,7 +13,7 @@ import { ReadableChannelList } from "./readable-channel-list";
 
 const SUBMIT = "取り込みに同意する";
 
-const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => {
+export const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): ReactNode => {
   const { noticeChannelId, canSubmit, pickNotice, submit, mutation } = useConsentForm(settings);
   return (
     <Panel>
@@ -33,5 +33,3 @@ const ConsentForm = ({ settings }: Readonly<{ settings: GuildSettings }>): React
     </Panel>
   );
 };
-
-export { ConsentForm };

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { Member } from "#/pages/home/ui/common/members";
 import { cn } from "#/shared/lib/utils";
 
-const FragmentCard = ({
+export const FragmentCard = ({
   member,
   text,
   className,
@@ -18,5 +18,3 @@ const FragmentCard = ({
     <span className="text-dc-text">{text}</span>
   </li>
 );
-
-export { FragmentCard };

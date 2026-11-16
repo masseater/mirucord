@@ -9,7 +9,9 @@ import { SignInAgain } from "./sign-in-again";
 
 const ICON = { error: "alert", busy: "busy", done: "done" } as const;
 
-const FeedbackLine = ({ feedback }: Readonly<{ feedback: Option.Option<Feedback> }>): ReactNode => {
+export const FeedbackLine = ({
+  feedback,
+}: Readonly<{ feedback: Option.Option<Feedback> }>): ReactNode => {
   const fix = Option.match(feedback, { onNone: () => "none", onSome: (shown) => shown.fix });
   const lines = pipe(
     Option.toArray(feedback),
@@ -27,5 +29,3 @@ const FeedbackLine = ({ feedback }: Readonly<{ feedback: Option.Option<Feedback>
     </output>
   );
 };
-
-export { FeedbackLine };

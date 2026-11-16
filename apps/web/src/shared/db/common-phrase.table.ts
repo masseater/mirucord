@@ -2,7 +2,7 @@ import { index, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { guild } from "./guild.table";
 
-const commonPhrase = sqliteTable(
+export const commonPhrase = sqliteTable(
   "common_phrase",
   {
     phrase: text().notNull(),
@@ -15,5 +15,3 @@ const commonPhrase = sqliteTable(
     index("common_phrase_guild_idx").on(table.guildId),
   ],
 );
-
-export { commonPhrase };

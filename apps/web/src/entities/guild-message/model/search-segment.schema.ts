@@ -2,7 +2,7 @@ import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 const NEVER_BUILT = 0;
 
-const searchSegment = sqliteTable("search_segment", {
+export const searchSegment = sqliteTable("search_segment", {
   name: text().primaryKey(),
   kind: text({ enum: ["sealed", "recent"] }).notNull(),
   fromCreatedAt: integer().notNull(),
@@ -16,7 +16,7 @@ const searchSegment = sqliteTable("search_segment", {
   vectorClusters: integer(),
 });
 
-const searchInvalid = sqliteTable(
+export const searchInvalid = sqliteTable(
   "search_invalid",
   {
     segment: text().notNull(),
@@ -26,14 +26,19 @@ const searchInvalid = sqliteTable(
   (table) => [primaryKey({ columns: [table.segment, table.ordinal] })],
 );
 
-const searchChannel = sqliteTable("search_channel", {
+export const searchChannel = sqliteTable("search_channel", {
   id: text().primaryKey(),
   position: integer().notNull().unique(),
 });
 
-type ArchivePiece = Readonly<{ name: string; offset: number; count: number; shards: number }>;
+export type ArchivePiece = Readonly<{
+  name: string;
+  offset: number;
+  count: number;
+  shards: number;
+}>;
 
-const searchArchive = sqliteTable("search_archive", {
+export const searchArchive = sqliteTable("search_archive", {
   name: text().primaryKey(),
   status: text({ enum: ["live", "building"] }).notNull(),
   shards: integer().notNull(),
@@ -42,6 +47,3 @@ const searchArchive = sqliteTable("search_archive", {
   sources: text({ mode: "json" }).$type<readonly string[]>().notNull(),
   nextShard: integer().notNull(),
 });
-
-export { searchArchive, searchChannel, searchInvalid, searchSegment };
-export type { ArchivePiece };

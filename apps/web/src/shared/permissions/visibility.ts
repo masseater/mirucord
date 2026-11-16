@@ -6,21 +6,21 @@ import { THREAD_TYPES } from "#/shared/discord";
 import { canReadHistory, canSendMessages } from "./permissions";
 import type { Overwrite, ReaderContext } from "./permissions";
 
-type GuildChannel = Readonly<{
+export type GuildChannel = Readonly<{
   id: string;
   parentId: Option.Option<string>;
   type: ChannelType;
   permissionOverwrites: readonly Overwrite[];
 }>;
 
-type GuildSnapshot = Readonly<{
+export type GuildSnapshot = Readonly<{
   guildId: string;
   ownerId: string;
   rolePermissions: Readonly<Record<string, string>>;
   channels: readonly GuildChannel[];
 }>;
 
-type Member = Readonly<{ userId: string; roleIds: readonly string[] }>;
+export type Member = Readonly<{ userId: string; roleIds: readonly string[] }>;
 
 const DATA_FIRST_ARITY = 2;
 
@@ -78,7 +78,7 @@ const visibleChannelIdsDataFirst = (
     },
   });
 
-const visibleChannelIds: {
+export const visibleChannelIds: {
   (member: Option.Option<Member>): (snapshot: GuildSnapshot) => ReadonlySet<string>;
   (snapshot: GuildSnapshot, member: Option.Option<Member>): ReadonlySet<string>;
 } = Function.dual(DATA_FIRST_ARITY, visibleChannelIdsDataFirst);
@@ -92,10 +92,7 @@ const postableChannelIdsDataFirst = (
     onSome: (present) => allowedChannels(snapshot, present, canSendMessages),
   });
 
-const postableChannelIds: {
+export const postableChannelIds: {
   (member: Option.Option<Member>): (snapshot: GuildSnapshot) => ReadonlySet<string>;
   (snapshot: GuildSnapshot, member: Option.Option<Member>): ReadonlySet<string>;
 } = Function.dual(DATA_FIRST_ARITY, postableChannelIdsDataFirst);
-
-export { postableChannelIds, visibleChannelIds };
-export type { GuildChannel, GuildSnapshot, Member };

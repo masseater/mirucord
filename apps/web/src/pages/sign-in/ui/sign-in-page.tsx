@@ -13,7 +13,7 @@ const TITLE = `${SERVICE_NAME} にログイン`;
 const callbackUrlOf = (search: string): string | undefined =>
   Option.getOrUndefined(Option.liftPredicate(SIGN_IN_LANDING, () => search === ""));
 
-const SignInPage = (): ReactNode => {
+export const SignInPage = (): ReactNode => {
   const search = useLocation({ select: ({ searchStr }) => searchStr });
   return (
     <AppFrame>
@@ -25,5 +25,3 @@ const SignInPage = (): ReactNode => {
     </AppFrame>
   );
 };
-
-export { SignInPage };

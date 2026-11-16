@@ -1,6 +1,6 @@
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-const guildMember = sqliteTable(
+export const guildMember = sqliteTable(
   "member",
   {
     userId: text().primaryKey(),
@@ -13,5 +13,3 @@ const guildMember = sqliteTable(
   },
   (table) => [index("member_joined_idx").on(table.joinedAt)],
 );
-
-export { guildMember };

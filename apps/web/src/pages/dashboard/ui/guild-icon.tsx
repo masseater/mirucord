@@ -7,7 +7,7 @@ const ICON_SIZE = 96;
 const iconUrl = (guildId: string, icon: string): string =>
   `${RouteBases.cdn}${CDNRoutes.guildIcon(guildId, icon, ImageFormat.WebP)}?size=${String(ICON_SIZE)}`;
 
-const GuildIcon = ({
+export const GuildIcon = ({
   guildId,
   name,
   icon,
@@ -32,5 +32,3 @@ const GuildIcon = ({
       />
     ),
   });
-
-export { GuildIcon };

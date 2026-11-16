@@ -15,15 +15,15 @@ const StoredRowSchema = Schema.Struct({
   leftAt: Schema.NullOr(Schema.Finite),
 });
 
-type StoredRow = typeof StoredRowSchema.Type;
+export type StoredRow = typeof StoredRowSchema.Type;
 
 const decodeRows = Schema.decodeUnknownEffect(Schema.Array(StoredRowSchema));
 
 const SELECT_MEMBERS = "SELECT userId, roles, joinedAt, leftAt FROM member";
 
-type SeededGuild = Readonly<{ id: string; noticeChannelId: string | null }>;
+export type SeededGuild = Readonly<{ id: string; noticeChannelId: string | null }>;
 
-const seedMemberGuild = ({ id, noticeChannelId }: SeededGuild): Effect.Effect<void> =>
+export const seedMemberGuild = ({ id, noticeChannelId }: SeededGuild): Effect.Effect<void> =>
   Effect.gen(function* seed() {
     const wrappedKey = yield* createGuildKey;
     yield* Effect.promise(() =>
@@ -38,7 +38,7 @@ const seedMemberGuild = ({ id, noticeChannelId }: SeededGuild): Effect.Effect<vo
     }
   });
 
-const storedMembers = ({
+export const storedMembers = ({
   guildId,
   includeLeft,
 }: Readonly<{ guildId: string; includeLeft: boolean }>): Effect.Effect<readonly StoredRow[]> =>
@@ -56,6 +56,3 @@ const storedMembers = ({
       ),
     ),
   );
-
-export { seedMemberGuild, storedMembers };
-export type { SeededGuild, StoredRow };

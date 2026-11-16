@@ -43,7 +43,7 @@ const CHATTER: readonly ChatLine[] = [
   },
 ];
 
-const Steps = (): ReactNode => (
+export const Steps = (): ReactNode => (
   <ChannelSection id="start">
     <ChannelHeader name={CHANNEL} />
     <Message author={BOT} time={TIME}>
@@ -54,5 +54,3 @@ const Steps = (): ReactNode => (
     <SystemMessage kind="join" actor={BOT} text={JOINED} time={TIME} />
   </ChannelSection>
 );
-
-export { Steps };

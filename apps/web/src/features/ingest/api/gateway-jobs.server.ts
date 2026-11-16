@@ -21,7 +21,8 @@ const forgetIn = (ref: ChannelRef, ids: readonly string[]): Effect.Effect<void> 
     Effect.flatMap((stored) => deleteMessages({ guildId: ref.guildId, ids: stored })),
   );
 
-const forgetMessages = (job: ForgetJob): Effect.Effect<void> => forgetIn(job, job.messageIds);
+export const forgetMessages = (job: ForgetJob): Effect.Effect<void> =>
+  forgetIn(job, job.messageIds);
 
 const lookUpEach = (
   channelId: string,
@@ -114,7 +115,7 @@ const withChannelKey = <Failure>(
     Effect.flatMap(Option.match({ onNone: () => Effect.void, onSome: use })),
   );
 
-const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
+export const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
   withChannelKey(job, (wrappedKey) => refreshWith(job, wrappedKey)).pipe(
     Effect.catchTag("DiscordRequestError", (failure) => {
       if (Option.contains(failure.status, FORBIDDEN)) {
@@ -124,7 +125,7 @@ const refreshMessages = (job: RefreshJob): Effect.Effect<void, IngestError> =>
     }),
   );
 
-const storeGatewayMessages = (job: StoreJob): Effect.Effect<void> =>
+export const storeGatewayMessages = (job: StoreJob): Effect.Effect<void> =>
   withChannelKey(job, (wrappedKey) =>
     openGuildKeys(wrappedKey).pipe(
       Effect.flatMap((keys) =>
@@ -136,5 +137,3 @@ const storeGatewayMessages = (job: StoreJob): Effect.Effect<void> =>
       ),
     ),
   );
-
-export { forgetMessages, refreshMessages, storeGatewayMessages };

@@ -5,7 +5,7 @@ import type { PublicConnection } from "#/shared/discord/index.server";
 
 import { LinkedAccountLine } from "./linked-account-line";
 
-const LinkedAccountList = ({
+export const LinkedAccountList = ({
   connections,
 }: Readonly<{ connections: readonly PublicConnection[] }>): ReactNode => (
   <ul className="flex flex-col gap-2">
@@ -19,5 +19,3 @@ const LinkedAccountList = ({
     )}
   </ul>
 );
-
-export { LinkedAccountList };

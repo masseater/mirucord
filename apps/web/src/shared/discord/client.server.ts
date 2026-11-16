@@ -7,7 +7,7 @@ import type { ReadonlyDeep } from "type-fest";
 
 const taggedError = Schema.TaggedError;
 
-class DiscordRequestError extends taggedError<
+export class DiscordRequestError extends taggedError<
   DiscordRequestError,
   { readonly brand: unique symbol }
 >()("DiscordRequestError", {
@@ -15,7 +15,7 @@ class DiscordRequestError extends taggedError<
   cause: Schema.Unknown,
 }) {}
 
-type DiscordFailure = Readonly<{ response?: Readonly<{ status: number }> | undefined }>;
+export type DiscordFailure = Readonly<{ response?: Readonly<{ status: number }> | undefined }>;
 
 const BotConfig = DiscordConfig.layer({ token: Redacted.make(env.DISCORD_BOT_TOKEN) });
 
@@ -29,21 +29,18 @@ const discordRest = Layer.buildWithMemoMap(DiscordLive, discordMemo, discordScop
   Effect.map((context) => Context.get(context, DiscordREST)),
 );
 
-const requestErrorOf = (cause: DiscordFailure): DiscordRequestError =>
+export const requestErrorOf = (cause: DiscordFailure): DiscordRequestError =>
   DiscordRequestError.make({
     status: Option.fromUndefinedOr(cause.response).pipe(Option.map(({ status }) => status)),
     cause,
   });
 
-const withDiscord = <Found>(
+export const withDiscord = <Found>(
   request: (rest: ReadonlyDeep<DiscordRestService>) => Effect.Effect<Found, DiscordFailure>,
 ): Effect.Effect<Found, DiscordRequestError> =>
   discordRest.pipe(Effect.flatMap(request), Effect.mapError(requestErrorOf));
 
-const decodeBody =
+export const decodeBody =
   <Body extends Schema.Top>(schema: Body) =>
   (raw: Body["Encoded"]): Effect.Effect<Body["Type"], never, Body["DecodingServices"]> =>
     Effect.orDie(Schema.decodeEffect(schema)(raw));
-
-export { decodeBody, DiscordRequestError, requestErrorOf, withDiscord };
-export type { DiscordFailure };

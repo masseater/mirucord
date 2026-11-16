@@ -24,19 +24,19 @@ import { disconnectApp, listConnectedApps, signedInUser } from "#/shared/auth/in
 import type { ConnectedApp, SignedInUser } from "#/shared/auth/index.server";
 import { botInviteUrl } from "#/shared/discord/index.server";
 
-type SignedOut = Readonly<{ status: "signedOut" }>;
+export type SignedOut = Readonly<{ status: "signedOut" }>;
 
-type ReadableGuild = Readonly<{
+export type ReadableGuild = Readonly<{
   id: string;
   name: string;
   icon: string | null;
 }>;
 
-type GuildListing =
+export type GuildListing =
   | Readonly<{ status: "ready"; guilds: readonly ReadableGuild[] }>
   | Readonly<{ status: "unavailable" }>;
 
-type Dashboard =
+export type Dashboard =
   | SignedOut
   | Readonly<{
       status: "ready";
@@ -47,23 +47,23 @@ type Dashboard =
       apps: readonly ConnectedApp[];
     }>;
 
-type DisconnectResult = SignedOut | Readonly<{ status: "disconnected" }>;
+export type DisconnectResult = SignedOut | Readonly<{ status: "disconnected" }>;
 
-type GuildPage =
+export type GuildPage =
   | SignedOut
   | Readonly<{ status: "notManaged" }>
   | Readonly<{ status: "ready"; settings: GuildSettings }>;
 
-type ConsentInput = Readonly<{
+export type ConsentInput = Readonly<{
   guildId: string;
   noticeChannelId: string;
 }>;
 
-type ChannelTarget = Readonly<{ guildId: string; channelId: string }>;
+export type ChannelTarget = Readonly<{ guildId: string; channelId: string }>;
 
 const SIGNED_OUT: SignedOut = { status: "signedOut" };
 
-const withSignedInAccount = <Value, Failure>(
+export const withSignedInAccount = <Value, Failure>(
   use: (user: SignedInUser) => Effect.Effect<Value, Failure>,
 ): Effect.Effect<Value | SignedOut, Failure> =>
   Effect.sync(getRequest).pipe(
@@ -103,7 +103,7 @@ const listReadable = (discordUserId: string): Effect.Effect<GuildListing> =>
     ),
   );
 
-const loadDashboard: Effect.Effect<Dashboard> = withSignedInAccount((user) =>
+export const loadDashboard: Effect.Effect<Dashboard> = withSignedInAccount((user) =>
   Effect.all(
     {
       guilds: listManagedGuilds(user.discordUserId),
@@ -121,17 +121,17 @@ const loadDashboard: Effect.Effect<Dashboard> = withSignedInAccount((user) =>
   ),
 );
 
-const disconnectFor = (clientId: string): Effect.Effect<DisconnectResult> =>
+export const disconnectFor = (clientId: string): Effect.Effect<DisconnectResult> =>
   withSignedInAccount(({ userId }) =>
     disconnectApp({ userId, clientId }).pipe(
       Effect.as<DisconnectResult>({ status: "disconnected" }),
     ),
   );
 
-const eraseMessagesFor = (guildId: string): Effect.Effect<EraseResult | SignedOut> =>
+export const eraseMessagesFor = (guildId: string): Effect.Effect<EraseResult | SignedOut> =>
   withSignedInUser((authorId) => eraseOwnMessages({ guildId, authorId }));
 
-const loadGuildPage = (guildId: string): Effect.Effect<GuildPage> =>
+export const loadGuildPage = (guildId: string): Effect.Effect<GuildPage> =>
   withSignedInUser((userId) =>
     guildSettings({ guildId, userId }).pipe(
       Effect.map(
@@ -144,37 +144,16 @@ const loadGuildPage = (guildId: string): Effect.Effect<GuildPage> =>
     ),
   );
 
-const consentTo = (input: ConsentInput): Effect.Effect<ConsentResult | SignedOut> =>
+export const consentTo = (input: ConsentInput): Effect.Effect<ConsentResult | SignedOut> =>
   withSignedInUser((userId) => grantConsent({ ...input, userId }).pipe(Effect.orDie));
 
-const revokeFor = (guildId: string): Effect.Effect<RevokeResult | SignedOut> =>
+export const revokeFor = (guildId: string): Effect.Effect<RevokeResult | SignedOut> =>
   withSignedInUser((userId) => revokeConsent({ guildId, userId }).pipe(Effect.orDie));
 
-const purgeFor = (input: ChannelTarget): Effect.Effect<PurgeResult | SignedOut> =>
+export const purgeFor = (input: ChannelTarget): Effect.Effect<PurgeResult | SignedOut> =>
   withSignedInUser((userId) => purgePausedChannel({ ...input, userId }).pipe(Effect.orDie));
 
-const loadForumPosts = (input: ChannelTarget): Effect.Effect<ForumPostsResult | SignedOut> =>
+export const loadForumPosts = (input: ChannelTarget): Effect.Effect<ForumPostsResult | SignedOut> =>
   withSignedInUser((userId) => forumPosts({ ...input, userId }).pipe(Effect.orDie));
 
-export {
-  consentTo,
-  disconnectFor,
-  eraseMessagesFor,
-  loadDashboard,
-  loadForumPosts,
-  loadGuildPage,
-  purgeFor,
-  revokeFor,
-  withSignedInAccount,
-};
-export type {
-  ChannelTarget,
-  ConsentInput,
-  Dashboard,
-  DisconnectResult,
-  GuildListing,
-  GuildPage,
-  ReadableGuild,
-  SignedOut,
-};
 export type { EraseResult } from "#/features/ingest/index.server";

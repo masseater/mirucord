@@ -6,7 +6,7 @@ import { MASCOT_NAME, SERVICE_NAME, SITE_ORIGIN } from "#/shared/config";
 const TITLE = `${SERVICE_NAME} | Discord の思い出を${MASCOT_NAME}と見つけよう`;
 const DESCRIPTION = `Discord サーバーの昔の会話や名場面を${MASCOT_NAME}がさがしてきます。${MASCOT_NAME}を招待するだけで使えます。`;
 
-const Route = createFileRoute("/")({
+export const Route = createFileRoute("/")({
   loader: ({ context }) => loadHomePage(context.queryClient),
   head: () => ({
     meta: [
@@ -20,5 +20,3 @@ const Route = createFileRoute("/")({
   }),
   component: HomePage,
 });
-
-export { Route };

@@ -16,7 +16,7 @@ const DETAIL = "元に戻せません";
 const CONFIRM = "アカウントを削除";
 const FAILED = fixable("signIn")("削除できませんでした");
 
-const DeleteAccount = (): ReactNode => {
+export const DeleteAccount = (): ReactNode => {
   const navigate = useNavigate();
   const { mutate, status } = useMutation({
     mutationFn: () => authClient.deleteUser({ fetchOptions: { throw: true } }),
@@ -49,5 +49,3 @@ const DeleteAccount = (): ReactNode => {
     </details>
   );
 };
-
-export { DeleteAccount };

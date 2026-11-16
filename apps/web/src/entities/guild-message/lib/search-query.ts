@@ -13,12 +13,12 @@ const BEFORE_EVERYTHING = -1;
 
 const decodeChunkJson = Schema.decodeEffect(Schema.fromJsonString(Schema.Array(SealedEntrySchema)));
 
-const readChunk = (text: string): Effect.Effect<readonly SealedEntry[]> =>
+export const readChunk = (text: string): Effect.Effect<readonly SealedEntry[]> =>
   decodeChunkJson(text).pipe(Effect.orDie);
 
-type RecentFile = Readonly<{ createdAt: Float64Array; index: ArrayBuffer }>;
+export type RecentFile = Readonly<{ createdAt: Float64Array; index: ArrayBuffer }>;
 
-const decodeRecent = (buffer: Readonly<ArrayBuffer>): RecentFile => {
+export const decodeRecent = (buffer: Readonly<ArrayBuffer>): RecentFile => {
   const count = new DataView(buffer).getUint32(FIRST, LITTLE_ENDIAN);
   const indexAt = STAMP_BYTES + count * STAMP_BYTES;
   return {
@@ -27,7 +27,7 @@ const decodeRecent = (buffer: Readonly<ArrayBuffer>): RecentFile => {
   };
 };
 
-type Filter = Readonly<{
+export type Filter = Readonly<{
   allowed: Option.Option<ReadonlySet<number>>;
   skipped: (ordinal: number) => boolean;
 }>;
@@ -79,9 +79,9 @@ const allowedIn = (view: PostingView, filter: Filter): readonly number[] => {
   return kept;
 };
 
-type Matching = Readonly<{ views: readonly PostingView[]; filter: Filter }>;
+export type Matching = Readonly<{ views: readonly PostingView[]; filter: Filter }>;
 
-const matchPostings = ({ views, filter }: Matching): readonly number[] => {
+export const matchPostings = ({ views, filter }: Matching): readonly number[] => {
   const [shortest, ...rest] = Array.sortWith(
     views,
     ({ ordinals }) => ordinals.length,
@@ -99,17 +99,17 @@ const matchPostings = ({ views, filter }: Matching): readonly number[] => {
   });
 };
 
-type Hit = Readonly<{ segment: string; ordinal: number }>;
+export type Hit = Readonly<{ segment: string; ordinal: number }>;
 
-type SealedHits = Readonly<{ segment: string; from: number; ordinals: readonly number[] }>;
+export type SealedHits = Readonly<{ segment: string; from: number; ordinals: readonly number[] }>;
 
-type RecentHits = Readonly<{
+export type RecentHits = Readonly<{
   segment: string;
   ordinals: readonly number[];
   createdAt: Float64Array;
 }>;
 
-type Ordering = Readonly<{
+export type Ordering = Readonly<{
   recent: Option.Option<RecentHits>;
   sealed: readonly SealedHits[];
   offset: number;
@@ -140,7 +140,7 @@ const recentFeeder = (recent: Option.Option<RecentHits>): RecentFeeder => {
   };
 };
 
-const orderedHits = ({ recent, sealed, offset, limit }: Ordering): readonly Hit[] => {
+export const orderedHits = ({ recent, sealed, offset, limit }: Ordering): readonly Hit[] => {
   const take = offset + limit;
   const picked: Hit[] = [];
   const nextRecent = recentFeeder(recent);
@@ -157,6 +157,3 @@ const orderedHits = ({ recent, sealed, offset, limit }: Ordering): readonly Hit[
   picked.push(...nextRecent(BEFORE_EVERYTHING, take - picked.length));
   return picked.slice(offset);
 };
-
-export { decodeRecent, matchPostings, orderedHits, readChunk };
-export type { Filter, Hit, Matching, Ordering, RecentFile, RecentHits, SealedHits };

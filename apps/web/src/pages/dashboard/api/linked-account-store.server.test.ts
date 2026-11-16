@@ -27,7 +27,7 @@ const network = setupNetwork();
 beforeAll(() => {
   network.enable();
   network.use(...discordConnections);
-  return Effect.runPromise(seedConnectionsAccount());
+  return Effect.runPromise(seedConnectionsAccount);
 });
 
 afterAll(() => {

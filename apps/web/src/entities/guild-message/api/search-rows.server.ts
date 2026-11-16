@@ -71,16 +71,13 @@ const changedSince = (
   );
 };
 
-type SearchRows = Readonly<{
+export type SearchRows = Readonly<{
   entries: (ids: readonly string[]) => readonly SealedEntry[];
   changedSince: (ids: readonly string[], built: number) => readonly number[];
 }>;
 
-const searchRows = (db: DrizzleSqliteDODatabase): SearchRows => ({
+export const searchRows = (db: DrizzleSqliteDODatabase): SearchRows => ({
   entries: (ids: readonly string[]): readonly SealedEntry[] => sealedEntries(db, ids),
   changedSince: (ids: readonly string[], built: number): readonly number[] =>
     changedSince(db, ids, built),
 });
-
-export { searchRows };
-export type { SearchRows };

@@ -12,7 +12,7 @@ const consentedKey = (guildId: string): Effect.Effect<Option.Option<string>> =>
       .where(and(eq(guild.id, guildId), eq(ingestConsent.state, "granted"))),
   ).pipe(Effect.map((rows) => Array.head(rows).pipe(Option.map(({ wrappedKey }) => wrappedKey))));
 
-const whenConsented =
+export const whenConsented =
   (guildId: string) =>
   <Failure>(
     use: (wrappedKey: string) => Effect.Effect<void, Failure>,
@@ -20,5 +20,3 @@ const whenConsented =
     consentedKey(guildId).pipe(
       Effect.flatMap(Option.match({ onNone: () => Effect.void, onSome: use })),
     );
-
-export { whenConsented };

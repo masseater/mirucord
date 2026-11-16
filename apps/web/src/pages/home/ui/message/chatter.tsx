@@ -7,7 +7,7 @@ import type { Reply } from "./message";
 import { Reactions } from "./reactions";
 import type { Reaction } from "./reactions";
 
-type ChatLine = Readonly<{
+export type ChatLine = Readonly<{
   author: Author;
   time: string;
   text: string;
@@ -15,7 +15,7 @@ type ChatLine = Readonly<{
   reactions: readonly Reaction[];
 }>;
 
-const Chatter = ({ lines }: Readonly<{ lines: readonly ChatLine[] }>): ReactNode => (
+export const Chatter = ({ lines }: Readonly<{ lines: readonly ChatLine[] }>): ReactNode => (
   <div>
     {pipe(
       lines,
@@ -28,6 +28,3 @@ const Chatter = ({ lines }: Readonly<{ lines: readonly ChatLine[] }>): ReactNode
     )}
   </div>
 );
-
-export { Chatter };
-export type { ChatLine };

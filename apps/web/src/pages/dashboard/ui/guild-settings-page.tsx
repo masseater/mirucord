@@ -14,7 +14,7 @@ import { SignInPanel } from "./sign-in-panel";
 const BACK = "サーバー一覧";
 const NOT_MANAGED = "このサーバーの設定は開けないよ";
 
-const GuildSettingsPage = (): ReactNode => {
+export const GuildSettingsPage = (): ReactNode => {
   const { guildId } = useParams({ from: "/dashboard/$guildId" });
   const { data } = useSuspenseQuery(guildPageQuery(guildId));
   return (
@@ -32,5 +32,3 @@ const GuildSettingsPage = (): ReactNode => {
     </AppFrame>
   );
 };
-
-export { GuildSettingsPage };

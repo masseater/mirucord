@@ -4,7 +4,7 @@ import { Mascot } from "#/shared/brand";
 import type { ChannelKind } from "#/shared/discord";
 import { ChannelIcon } from "#/shared/ui/channel-icon";
 
-const ChannelLink = ({
+export const ChannelLink = ({
   id,
   name,
   kind,
@@ -18,5 +18,3 @@ const ChannelLink = ({
     <Mascot className="ch-miru ml-auto size-6" />
   </a>
 );
-
-export { ChannelLink };

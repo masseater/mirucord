@@ -10,7 +10,7 @@ import { pollVote, reaction } from "#/entities/guild-message/model/reaction.sche
 import type { ReactionLookup, ReactionPage, StoredReaction, StoredVote } from "./reaction-types";
 import { unlessErased } from "./unless-erased";
 
-type ReactionLedger = Readonly<{
+export type ReactionLedger = Readonly<{
   change: (changes: readonly ReactionChange[], erased: readonly string[]) => void;
   read: (lookup: ReactionLookup, erased: readonly string[]) => ReactionPage;
   forget: (userId: string) => void;
@@ -210,7 +210,7 @@ const readOf = (
   };
 };
 
-const reactionLedger = (db: DrizzleSqliteDODatabase): ReactionLedger => ({
+export const reactionLedger = (db: DrizzleSqliteDODatabase): ReactionLedger => ({
   change: unlessErased((change: ReactionChange) => {
     changeOf(db, change);
   }),
@@ -239,6 +239,4 @@ const reactionLedger = (db: DrizzleSqliteDODatabase): ReactionLedger => ({
   },
 });
 
-export { reactionLedger };
-export type { ReactionLedger };
 export type { ReactionLookup, ReactionPage } from "./reaction-types";

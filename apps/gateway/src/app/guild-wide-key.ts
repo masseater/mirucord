@@ -5,7 +5,7 @@ import { memberJobKeyOf } from "./member-job";
 import { reactionJobKeyOf } from "./reaction-job";
 import { voiceJobKeyOf } from "./voice-job";
 
-const guildWideKeyOf = (job: GuildWideJob): string => {
+export const guildWideKeyOf = (job: GuildWideJob): string => {
   if (isMemberJob(job)) {
     return memberJobKeyOf(job);
   }
@@ -14,5 +14,3 @@ const guildWideKeyOf = (job: GuildWideJob): string => {
   }
   return reactionJobKeyOf(job);
 };
-
-export { guildWideKeyOf };

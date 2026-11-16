@@ -1,5 +1,4 @@
 {
-  "entry": ["apps/web/auth.config.ts", "apps/web/drizzle.guild.config.ts"],
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
   "production": true,
   "boundaries": {
@@ -18,7 +17,7 @@
   },
   "typeAware": { "enabled": true, "require": "complete" },
   "failOnParseError": true,
-  "ignoreDependencies": ["@effect/language-service", "@masseater.dev/textlint-rule-yomiyasu"],
+  "ignoreDependencies": ["@effect/language-service", "@r_masseater/textlint-rule-preset-ja"],
   "ignorePatterns": [".claude/**"],
   "audit": { "gate": "all" },
   "security": {
@@ -152,32 +151,32 @@
       "name": "cloudflare-vitest-plugin",
       "enablers": ["@cloudflare/vitest-plugin"],
       "entryPointRole": "test",
-      "entryPoints": ["test/worker.ts"],
+      "entryPoints": ["vitest.worker.ts"],
     },
     {
       "name": "vite-plus",
       "enablers": ["vite-plus"],
       "entryPoints": ["vite.config.ts"],
-      "toolingDependencies": ["@ast-grep/cli", "eslint-plugin-no-comments"],
-    },
-    {
-      "name": "oxlint-plugin-decision",
-      "enablers": ["@r_masseater/oxlint-plugin-decision"],
-      "entryPoints": ["decision-rules.ts"],
-    },
-    {
-      "name": "syncpack-ts",
-      "enablers": ["syncpack"],
-      "entryPoints": ["syncpack.config.ts"],
+      "toolingDependencies": ["@ast-grep/cli"],
     },
     {
       "name": "vite-plus-adopt",
-      "enablers": ["@r_masseater/vite-plus-adopt"],
+      "enablers": ["@r_masseater/msch"],
       "toolingDependencies": [
         "@commitlint/config-conventional",
         "@textlint-ja/textlint-rule-preset-ai-writing",
         "textlint-rule-preset-ja-technical-writing",
       ],
+    },
+    {
+      "name": "better-auth-cli",
+      "enablers": ["auth"],
+      "entryPoints": ["auth.config.ts"],
+    },
+    {
+      "name": "drizzle-kit-configs",
+      "enablers": ["drizzle-kit"],
+      "entryPoints": ["drizzle.*.config.ts"],
     },
     {
       "name": "skills",

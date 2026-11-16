@@ -14,7 +14,7 @@ import type {
   VoiceSnapshotWrite,
 } from "./voice-types";
 
-type VoiceLedger = Readonly<{
+export type VoiceLedger = Readonly<{
   change: (changes: readonly VoiceChangeWrite[], erased: readonly string[]) => void;
   snapshot: (snapshot: VoiceSnapshotWrite, erased: readonly string[]) => void;
   read: (lookup: VoiceLookup, erased: readonly string[]) => VoicePage;
@@ -173,7 +173,7 @@ const readOf = (
   };
 };
 
-const voiceLedger = (db: DrizzleSqliteDODatabase): VoiceLedger => ({
+export const voiceLedger = (db: DrizzleSqliteDODatabase): VoiceLedger => ({
   change: (changes, erased) => {
     for (const change of changes) {
       if (!erased.includes(change.userId)) {
@@ -189,6 +189,3 @@ const voiceLedger = (db: DrizzleSqliteDODatabase): VoiceLedger => ({
     db.delete(voiceSession).where(eq(voiceSession.userId, userId)).run();
   },
 });
-
-export { voiceLedger };
-export type { VoiceLedger };

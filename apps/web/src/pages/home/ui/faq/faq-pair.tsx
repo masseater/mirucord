@@ -5,7 +5,7 @@ import { Message } from "#/pages/home/ui/message/message";
 import { FaqReply } from "./faq-reply";
 import type { Question } from "./question";
 
-const FaqPair = ({ question }: Readonly<{ question: Question }>): ReactNode => (
+export const FaqPair = ({ question }: Readonly<{ question: Question }>): ReactNode => (
   <>
     <Message author={question.reply.author} time={question.time}>
       <h3>{question.reply.text}</h3>
@@ -13,5 +13,3 @@ const FaqPair = ({ question }: Readonly<{ question: Question }>): ReactNode => (
     <FaqReply question={question} />
   </>
 );
-
-export { FaqPair };

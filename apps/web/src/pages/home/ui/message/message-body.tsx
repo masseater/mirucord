@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { Author } from "./author";
 import { AuthorName } from "./author-name";
 
-const MessageBody = ({
+export const MessageBody = ({
   author,
   time,
   children,
@@ -16,5 +16,3 @@ const MessageBody = ({
     <div className="text-dc-text grid gap-1 leading-relaxed">{children}</div>
   </div>
 );
-
-export { MessageBody };

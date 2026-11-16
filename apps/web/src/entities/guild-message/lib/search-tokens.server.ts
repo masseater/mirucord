@@ -23,7 +23,7 @@ const tokensOf = (key: CryptoKey, grams: readonly string[]): Effect.Effect<reado
 
 const GRAM_SIZES = Array.range(SHORTEST_GRAM, LONGEST_GRAM);
 
-const indexTokens = ({
+export const indexTokens = ({
   key,
   texts,
 }: Readonly<{ key: CryptoKey; texts: readonly string[] }>): Effect.Effect<readonly number[]> =>
@@ -41,7 +41,7 @@ const indexTokens = ({
     ),
   );
 
-const queryTokens = ({
+export const queryTokens = ({
   key,
   query,
 }: Readonly<{ key: CryptoKey; query: string }>): Effect.Effect<readonly number[]> => {
@@ -67,7 +67,7 @@ const pollTexts = (poll: MessageBody["poll"]): readonly string[] =>
     Option.match({ onNone: () => [], onSome: ({ question, answers }) => [question, ...answers] }),
   );
 
-const searchableTexts = ({
+export const searchableTexts = ({
   content,
   attachments,
   embeds,
@@ -91,7 +91,7 @@ const searchableTexts = ({
     Array.filter((text) => String.isNonEmpty(text)),
   );
 
-const containsQuery = ({
+export const containsQuery = ({
   texts,
   query,
 }: Readonly<{ texts: readonly string[]; query: string }>): boolean => {
@@ -102,16 +102,17 @@ const containsQuery = ({
   );
 };
 
-type SealedText = Readonly<{
+export type SealedText = Readonly<{
   sealed: string;
   keys: Readonly<{ key: CryptoKey; searchKey: CryptoKey }>;
   address: MessageAddress;
 }>;
 
-const sealedTokens = ({ sealed, keys, address }: SealedText): Effect.Effect<readonly number[]> =>
+export const sealedTokens = ({
+  sealed,
+  keys,
+  address,
+}: SealedText): Effect.Effect<readonly number[]> =>
   openMessage(sealed, keys.key, address).pipe(
     Effect.flatMap((body) => indexTokens({ key: keys.searchKey, texts: searchableTexts(body) })),
   );
-
-export { containsQuery, indexTokens, queryTokens, sealedTokens, searchableTexts };
-export type { SealedText };

@@ -10,12 +10,10 @@ import { ProudMiru } from "./proud-miru";
 const GUIDE = `${MASCOT_NAME}におまかせ！`;
 const TIME = "今日 21:12";
 
-const Closing = (): ReactNode => (
+export const Closing = (): ReactNode => (
   <Message author={BOT} time={TIME}>
     <p>{GUIDE}</p>
     <ProudMiru />
     <ClosingActions />
   </Message>
 );
-
-export { Closing };

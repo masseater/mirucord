@@ -5,7 +5,7 @@ import type { ManagedGuild } from "#/features/ingest/index.server";
 
 import { WaitingGuildLink } from "./waiting-guild-link";
 
-const WaitingGuildLinks = ({
+export const WaitingGuildLinks = ({
   guilds,
 }: Readonly<{ guilds: readonly ManagedGuild[] }>): ReactNode => (
   <ul className="flex flex-wrap gap-2">
@@ -15,5 +15,3 @@ const WaitingGuildLinks = ({
     )}
   </ul>
 );
-
-export { WaitingGuildLinks };

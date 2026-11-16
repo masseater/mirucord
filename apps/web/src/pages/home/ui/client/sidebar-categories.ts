@@ -6,18 +6,18 @@ import { SERVICE_NAME } from "#/shared/config";
 
 import { GUIDE_CHANNELS } from "./guide-channels";
 
-type Activity =
+export type Activity =
   | Readonly<{ status: "read" }>
   | Readonly<{ status: "unread" }>
   | Readonly<{ status: "mention"; count: number }>;
 
-type SidebarRow =
+export type SidebarRow =
   | Readonly<{ type: "link"; channel: (typeof CHANNELS)[number] }>
   | Readonly<{ type: "page"; page: (typeof GUIDE_CHANNELS)[number] }>
   | Readonly<{ type: "peek"; id: PlaceId; activity: Activity }>
   | Readonly<{ type: "idle"; place: Place; activity: Activity }>;
 
-type SidebarCategory =
+export type SidebarCategory =
   | Readonly<{ state: "open"; name: string; rows: readonly SidebarRow[] }>
   | Readonly<{ state: "collapsed"; name: string }>;
 
@@ -26,7 +26,7 @@ const UNREAD: Activity = { status: "unread" };
 
 const [top, why, forum, how, features, start, safety, faq] = CHANNELS;
 
-const CATEGORIES: readonly SidebarCategory[] = [
+export const CATEGORIES: readonly SidebarCategory[] = [
   {
     state: "open",
     name: "はじめに",
@@ -90,6 +90,3 @@ const CATEGORIES: readonly SidebarCategory[] = [
     ],
   },
 ];
-
-export { CATEGORIES };
-export type { Activity, SidebarCategory, SidebarRow };

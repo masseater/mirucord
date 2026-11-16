@@ -9,12 +9,12 @@ import type { DiscordRequestError } from "#/shared/discord/index.server";
 
 import { forgetGuildMessages } from "./message-rows.server";
 
-const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =>
+export const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =>
   Effect.logWarning("Discord request failed").pipe(
     Effect.annotateLogs({ status: Option.getOrElse(status, () => "network") }),
   );
 
-const guildLimit: Effect.Effect<number> = Config.Int("MAX_GUILDS")
+export const guildLimit: Effect.Effect<number> = Config.Int("MAX_GUILDS")
   .pipe(Config.withDefault(FREE_GUILD_LIMIT))
   .parse(ConfigProvider.fromUnknown(env))
   .pipe(Effect.orDie);
@@ -49,7 +49,7 @@ const leaveOverLimit = (rejected: readonly string[]): Effect.Effect<void> =>
     { discard: true },
   );
 
-const forgetGuild = (guildId: string): Effect.Effect<void> =>
+export const forgetGuild = (guildId: string): Effect.Effect<void> =>
   forgetGuildMessages(guildId).pipe(
     Effect.andThen(Effect.promise(() => db.delete(guild).where(eq(guild.id, guildId)))),
   );
@@ -67,14 +67,14 @@ const removeDepartedGuilds = (
     { discard: true },
   );
 
-type Membership = Readonly<{
+export type Membership = Readonly<{
   botUserId: string;
   admitted: readonly string[];
   fresh: readonly string[];
   known: readonly string[];
 }>;
 
-const reconcileMembership: Effect.Effect<Membership, DiscordRequestError> = Effect.gen(
+export const reconcileMembership: Effect.Effect<Membership, DiscordRequestError> = Effect.gen(
   function* reconcileMembership() {
     const { botGuilds, stored, botUserId } = yield* Effect.all(
       { botGuilds: listBotGuilds, stored: listGuildIds, botUserId: getBotUserId },
@@ -106,6 +106,3 @@ const reconcileMembership: Effect.Effect<Membership, DiscordRequestError> = Effe
     };
   },
 );
-
-export { forgetGuild, guildLimit, logDiscordFailure, reconcileMembership };
-export type { Membership };

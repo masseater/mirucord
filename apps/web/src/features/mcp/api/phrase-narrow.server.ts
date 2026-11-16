@@ -16,7 +16,7 @@ const RESERVED_INPUT_TOKENS = 300;
 const RESERVED_NEURONS = gemmaNeurons({ input: RESERVED_INPUT_TOKENS, output: MAX_TOKENS });
 const HEDGE = "あるいは";
 
-type Hedged = Readonly<{ label: string; note: string }>;
+export type Hedged = Readonly<{ label: string; note: string }>;
 
 const promptOf = ({ label, note }: Hedged): string =>
   `次は用語集の「${label}」の説明です。「${HEDGE}」で二つの意味や場面を並べています。より多く当てはまりそうな一つに絞って、60字以内の1文に書き直してください。新しい情報は足さないでください。書き直した文だけを答えてください。
@@ -46,7 +46,7 @@ const rewrite = (hedged: Hedged): Effect.Effect<string> =>
     Effect.withSpan("narrowPhraseNote"),
   );
 
-const narrowNote = (hedged: Hedged): Effect.Effect<string> => {
+export const narrowNote = (hedged: Hedged): Effect.Effect<string> => {
   if (!pipe(hedged.note, String.includes(HEDGE))) {
     return Effect.succeed(hedged.note);
   }
@@ -59,6 +59,3 @@ const narrowNote = (hedged: Hedged): Effect.Effect<string> => {
     }),
   );
 };
-
-export { narrowNote };
-export type { Hedged };

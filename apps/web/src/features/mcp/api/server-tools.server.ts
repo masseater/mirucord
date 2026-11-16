@@ -22,10 +22,10 @@ import {
   withScope,
 } from "./tool-scope.server";
 
-const PHRASES_TOOL_NAME = "list_server_phrases";
-const PHRASES_HINT = `Before reading messages, call \`${PHRASES_TOOL_NAME}\` once for this server: it lists the phrases, custom emoji and stickers its members keep repeating, so you can read them as the server's own in-jokes and greetings instead of working out each one.`;
+export const PHRASES_TOOL_NAME = "list_server_phrases";
+export const PHRASES_HINT = `Before reading messages, call \`${PHRASES_TOOL_NAME}\` once for this server: it lists the phrases, custom emoji and stickers its members keep repeating, so you can read them as the server's own in-jokes and greetings instead of working out each one.`;
 
-const listServers = (discordUserId: string): Promise<CallToolResult> =>
+export const listServers = (discordUserId: string): Promise<CallToolResult> =>
   runTraced(
     readableGuilds(discordUserId).pipe(
       Effect.flatMap((guilds) =>
@@ -98,14 +98,14 @@ const visibleChannels = ({
   );
 };
 
-const listChannels =
+export const listChannels =
   (discordUserId: string) =>
   ({ serverId }: typeof ListChannelsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: serverId, discordUserId })((scope) =>
       visibleChannels({ scope, hint: PHRASES_HINT }),
     );
 
-const phrases =
+export const phrases =
   (discordUserId: string) =>
   ({ serverId }: typeof ListChannelsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: serverId, discordUserId })((scope) =>
@@ -121,5 +121,3 @@ const phrases =
         ),
       ),
     );
-
-export { listChannels, listServers, phrases, PHRASES_HINT, PHRASES_TOOL_NAME };

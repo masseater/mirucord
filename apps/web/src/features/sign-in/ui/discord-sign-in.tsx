@@ -9,7 +9,7 @@ import { PopButton } from "#/shared/ui/pop-button";
 const SIGN_IN = "Discord でログイン";
 const FAILED = "ログインできませんでした";
 
-const DiscordSignIn = ({
+export const DiscordSignIn = ({
   callbackURL,
 }: Readonly<{ callbackURL: string | undefined }>): ReactNode => {
   const { mutate, status } = useMutation({
@@ -36,5 +36,3 @@ const DiscordSignIn = ({
     </>
   );
 };
-
-export { DiscordSignIn };

@@ -106,7 +106,7 @@ const eachGuild = (
     { discard: true },
   );
 
-const syncOneGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+export const syncOneGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   whenIngestEnabled(
     Effect.gen(function* syncNamedGuild() {
       const botUserId = yield* getBotUserId;
@@ -127,7 +127,7 @@ const admitJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestEr
     ),
   );
 
-const syncJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+export const syncJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   whenIngestEnabled(
     listGuildIds.pipe(
       Effect.flatMap((stored) => {
@@ -139,7 +139,7 @@ const syncJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestErr
     ),
   );
 
-const syncKnownGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+export const syncKnownGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   listGuildIds.pipe(
     Effect.flatMap((stored) => {
       if (stored.includes(guildId)) {
@@ -148,5 +148,3 @@ const syncKnownGuild = (guildId: string): Effect.Effect<void, DiscordRequestErro
       return Effect.void;
     }),
   );
-
-export { syncJoinedGuild, syncKnownGuild, syncOneGuild };

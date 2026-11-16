@@ -16,7 +16,7 @@ import { allViews, invalidOf, matched, readShardSet } from "./search-shard-set.s
 const NONE = 0;
 const ONE_SHARD = 1;
 
-type SearchRequest = Readonly<{
+export type SearchRequest = Readonly<{
   guildId: string;
   tokens: readonly number[];
   channelIds: readonly string[];
@@ -24,7 +24,7 @@ type SearchRequest = Readonly<{
   limit: number;
 }>;
 
-type SearchStats = Readonly<{
+export type SearchStats = Readonly<{
   segments: number;
   filesRead: number;
   filesCached: number;
@@ -34,7 +34,7 @@ type SearchStats = Readonly<{
   bodyMs: number;
 }>;
 
-type SearchResult = Readonly<{
+export type SearchResult = Readonly<{
   total: number;
   entries: readonly SealedEntry[];
   stats: SearchStats;
@@ -254,7 +254,7 @@ const NO_STATS: SearchStats = {
   bodyMs: NONE,
 };
 
-const searchMessages = (request: SearchRequest): Effect.Effect<SearchResult> =>
+export const searchMessages = (request: SearchRequest): Effect.Effect<SearchResult> =>
   searchOnce(request).pipe(
     Effect.catchTag("MissingFile", () => searchOnce(request)),
     withFileGate,
@@ -276,6 +276,3 @@ const searchMessages = (request: SearchRequest): Effect.Effect<SearchResult> =>
     ),
     Effect.withSpan("search.messages", { attributes: { guildId: request.guildId } }),
   );
-
-export { searchMessages };
-export type { SearchRequest, SearchResult, SearchStats };

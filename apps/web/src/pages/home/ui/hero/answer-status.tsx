@@ -9,7 +9,7 @@ const SEARCHING = `${MASCOT_NAME}がさがしてるよ`;
 const DONE = `${MASCOT_NAME}が見つけてきたよ`;
 const DONE_MARK = "✓";
 
-const AnswerStatus = (): ReactNode => (
+export const AnswerStatus = (): ReactNode => (
   <p className="answer-status text-ink-soft grid text-xs font-bold">
     <span aria-hidden="true" className="answer-searching flex items-center gap-1.5">
       <Mascot className="motion-safe:animate-wiggle size-6" />
@@ -32,5 +32,3 @@ const AnswerStatus = (): ReactNode => (
     </span>
   </p>
 );
-
-export { AnswerStatus };

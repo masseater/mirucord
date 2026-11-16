@@ -1,8 +1,8 @@
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-const PRECISIONS = ["exact", "noLaterThan"] as const;
+export const PRECISIONS = ["exact", "noLaterThan"] as const;
 
-const voiceSession = sqliteTable(
+export const voiceSession = sqliteTable(
   "voice_session",
   {
     id: integer().primaryKey({ autoIncrement: true }),
@@ -18,5 +18,3 @@ const voiceSession = sqliteTable(
     index("voice_session_joined_idx").on(table.joinedAt),
   ],
 );
-
-export { PRECISIONS, voiceSession };

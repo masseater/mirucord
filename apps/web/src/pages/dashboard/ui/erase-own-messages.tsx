@@ -32,7 +32,7 @@ const eraseFeedback = mutationFeedback({
   result: (status: keyof typeof RESULTS) => RESULTS[status],
 });
 
-const EraseOwnMessages = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
+export const EraseOwnMessages = ({ guildId }: Readonly<{ guildId: string }>): ReactNode => {
   const { mutate, status, data } = useMutation({ mutationFn: eraseMyMessages });
   const erase = useCallback(() => {
     mutate(guildId);
@@ -60,5 +60,3 @@ const EraseOwnMessages = ({ guildId }: Readonly<{ guildId: string }>): ReactNode
     </details>
   );
 };
-
-export { EraseOwnMessages };

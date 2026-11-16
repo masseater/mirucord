@@ -164,8 +164,6 @@ const SECTIONS: readonly GuideSection[] = [
   },
 ];
 
-const SelfHostPage = (): ReactNode => (
+export const SelfHostPage = (): ReactNode => (
   <GuideDocument title={TITLE} tip={TIP} lead={LEAD} sections={SECTIONS} />
 );
-
-export { SelfHostPage };

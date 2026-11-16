@@ -12,7 +12,7 @@ import { LinkedAccountState } from "./linked-account-state";
 const TITLE = "連携アカウントの公開";
 const INTRO = `Discord のプロフィールで全員に公開している連携アカウントから選んだものを、${SERVICE_NAME} のどのサーバーでも見せます。読み込みに使った Discord の許可は、選び終えたら手放します。`;
 
-const LinkedAccountPanel = (): ReactNode => {
+export const LinkedAccountPanel = (): ReactNode => {
   const { status, data } = useQuery(linkedAccountsQuery);
   return (
     <Panel>
@@ -24,5 +24,3 @@ const LinkedAccountPanel = (): ReactNode => {
     </Panel>
   );
 };
-
-export { LinkedAccountPanel };

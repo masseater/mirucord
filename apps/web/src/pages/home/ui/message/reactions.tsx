@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-type Reaction = Readonly<{ emoji: string; count: number; by: "me" | "others" }>;
+export type Reaction = Readonly<{ emoji: string; count: number; by: "me" | "others" }>;
 
 const MINE = "、自分も押した";
 const MINE_MARK = "✓";
@@ -15,7 +15,7 @@ const reactionLabel = (item: Reaction): string =>
     Match.exhaustive,
   );
 
-const Reactions = ({ items }: Readonly<{ items: readonly Reaction[] }>): ReactNode => (
+export const Reactions = ({ items }: Readonly<{ items: readonly Reaction[] }>): ReactNode => (
   <ul className="mt-1 flex flex-wrap gap-1">
     {pipe(
       items,
@@ -43,6 +43,3 @@ const Reactions = ({ items }: Readonly<{ items: readonly Reaction[] }>): ReactNo
     )}
   </ul>
 );
-
-export { Reactions };
-export type { Reaction };

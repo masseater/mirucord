@@ -11,7 +11,7 @@ import { guildUpdateJob, joinJob, leaveJob, resyncJob, syncJob, syncJobOf } from
 import { guildWideKeyOf } from "./guild-wide-key";
 import { departJob, membersJob, mergeMemberJobs } from "./member-job";
 
-type GatewayPayload = Readonly<{ op: Discord.GatewayOpcodes }>;
+export type GatewayPayload = Readonly<{ op: Discord.GatewayOpcodes }>;
 
 type Change =
   | Readonly<{ kind: "refresh" }>
@@ -131,9 +131,9 @@ const jobOfDispatch = Match.type<Discord.GatewayDispatchPayload>().pipe(
   Match.orElse((): Option.Option<GatewayJob> => Option.none()),
 );
 
-type Received = Readonly<{ payload: GatewayPayload; now: number }>;
+export type Received = Readonly<{ payload: GatewayPayload; now: number }>;
 
-const toGatewayJobs = ({ payload, now }: Received): readonly GatewayJob[] =>
+export const toGatewayJobs = ({ payload, now }: Received): readonly GatewayJob[] =>
   Option.match(Option.liftPredicate(payload, isDispatch), {
     onNone: () => [],
     onSome: (dispatch) => [
@@ -147,7 +147,7 @@ const toGatewayJobs = ({ payload, now }: Received): readonly GatewayJob[] =>
 
 type Membership = Extract<GuildJob["kind"], "join" | "leave">;
 
-const jobKeyOf = (job: GatewayJob): string => {
+export const jobKeyOf = (job: GatewayJob): string => {
   if (job.kind === "resync") {
     return job.kind;
   }
@@ -242,7 +242,7 @@ const jobsOfGroup = (events: Array.NonEmptyReadonlyArray<MessageChange>): readon
   );
 };
 
-const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
+export const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
   const latest = new Map(
     pipe(
       jobs,
@@ -283,6 +283,3 @@ const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
     ),
   ];
 };
-
-export { jobKeyOf, mergeJobs, toGatewayJobs };
-export type { GatewayPayload, Received };

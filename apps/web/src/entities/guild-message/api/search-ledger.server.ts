@@ -8,27 +8,27 @@ import { searchInvalid, searchSegment } from "#/entities/guild-message/model/sea
 
 import type { TrackedRow } from "./store-types";
 
-const EARLIEST = 0;
+export const EARLIEST = 0;
 const NONE = 0;
 const NO_VERSION = 0;
 const NEXT_VERSION = 1;
 
-type Segment = typeof searchSegment.$inferSelect;
+export type Segment = typeof searchSegment.$inferSelect;
 
-type Position = Readonly<{ segment: string; ordinal: number }>;
+export type Position = Readonly<{ segment: string; ordinal: number }>;
 
-type Range = Readonly<{ from: number; to: Option.Option<number> }>;
+export type Range = Readonly<{ from: number; to: Option.Option<number> }>;
 
 const covers = ({ from, to }: Range, createdAt: number): boolean =>
   createdAt >= from &&
   Option.match(to, { onNone: () => true, onSome: (upper) => createdAt < upper });
 
-const rangeOf = (segment: Segment): Range => ({
+export const rangeOf = (segment: Segment): Range => ({
   from: segment.fromCreatedAt,
   to: Option.fromNullOr(segment.toCreatedAt),
 });
 
-const inRange = ({ from, to }: Range): SQL => {
+export const inRange = ({ from, to }: Range): SQL => {
   const lower = gte(guildMessage.createdAt, from);
   return Option.match(to, {
     onNone: () => lower,
@@ -39,13 +39,13 @@ const inRange = ({ from, to }: Range): SQL => {
 const segmentsOf = (db: DrizzleSqliteDODatabase): readonly Segment[] =>
   db.select().from(searchSegment).orderBy(asc(searchSegment.fromCreatedAt)).all();
 
-const sealedOf = (segments: readonly Segment[]): readonly Segment[] =>
+export const sealedOf = (segments: readonly Segment[]): readonly Segment[] =>
   pipe(
     segments,
     Array.filter(({ kind }) => kind === "sealed"),
   );
 
-const recentOf = (segments: readonly Segment[]): Option.Option<Segment> =>
+export const recentOf = (segments: readonly Segment[]): Option.Option<Segment> =>
   pipe(
     segments,
     Array.findFirst(({ kind }) => kind === "recent"),
@@ -54,20 +54,20 @@ const recentOf = (segments: readonly Segment[]): Option.Option<Segment> =>
 const coveredUpTo = (sealed: readonly Segment[]): Option.Option<Option.Option<number>> =>
   Option.map(Array.last(sealed), (segment) => rangeOf(segment).to);
 
-const uncoveredCondition = (sealed: readonly Segment[]): Option.Option<SQL> =>
+export const uncoveredCondition = (sealed: readonly Segment[]): Option.Option<SQL> =>
   Option.match(coveredUpTo(sealed), {
     onNone: () => Option.some(gte(guildMessage.createdAt, EARLIEST)),
     onSome: Option.map((bound) => gte(guildMessage.createdAt, bound)),
   });
 
-const uncoveredFrom = (sealed: readonly Segment[]): number =>
+export const uncoveredFrom = (sealed: readonly Segment[]): number =>
   Option.getOrElse(Option.flatten(coveredUpTo(sealed)), () => EARLIEST);
 
-const staleCondition = (segment: Segment): SQL =>
+export const staleCondition = (segment: Segment): SQL =>
   and(inRange(rangeOf(segment)), gt(guildMessage.version, segment.builtThrough)) ??
   inRange(rangeOf(segment));
 
-const pendingCondition = (sealed: readonly Segment[]): SQL => {
+export const pendingCondition = (sealed: readonly Segment[]): SQL => {
   const indexed = isNotNull(guildMessage.tokens);
   const stale = [
     ...pipe(
@@ -165,7 +165,7 @@ const dropSegments = (db: DrizzleSqliteDODatabase, segments: readonly Segment[])
   }
 };
 
-const segmentNames = (segments: readonly Segment[]): readonly string[] =>
+export const segmentNames = (segments: readonly Segment[]): readonly string[] =>
   pipe(
     segments,
     Array.map(({ name }) => name),
@@ -187,7 +187,7 @@ const invalidSince = (
   return Option.map(Option.fromUndefinedOr(oldest), ({ since }) => since);
 };
 
-type SearchLedger = Readonly<{
+export type SearchLedger = Readonly<{
   segments: () => readonly Segment[];
   count: (condition: SQL) => number;
   latestVersion: () => number;
@@ -199,7 +199,7 @@ type SearchLedger = Readonly<{
   drop: (segments: readonly Segment[]) => void;
 }>;
 
-const searchLedger = (db: DrizzleSqliteDODatabase): SearchLedger => ({
+export const searchLedger = (db: DrizzleSqliteDODatabase): SearchLedger => ({
   segments: (): readonly Segment[] => segmentsOf(db),
   count: (condition: SQL): number => countWhere(db, condition),
   latestVersion: (): number => latestVersionWhere(db, Option.none()),
@@ -214,18 +214,3 @@ const searchLedger = (db: DrizzleSqliteDODatabase): SearchLedger => ({
     dropSegments(db, segments);
   },
 });
-
-export {
-  EARLIEST,
-  inRange,
-  pendingCondition,
-  rangeOf,
-  recentOf,
-  sealedOf,
-  segmentNames,
-  searchLedger,
-  staleCondition,
-  uncoveredCondition,
-  uncoveredFrom,
-};
-export type { Position, Range, SearchLedger, Segment };

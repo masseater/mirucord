@@ -61,14 +61,19 @@ const groupByPiece = (
   );
 };
 
-type ArchiveScan = Readonly<{
+export type ArchiveScan = Readonly<{
   head: SearchHead;
   archive: ArchiveEntry;
   allowed: Option.Option<ReadonlySet<number>>;
   views: Option.Option<readonly PostingView[]>;
 }>;
 
-const archivedHits = ({ head, archive, allowed, views }: ArchiveScan): readonly SealedHits[] => {
+export const archivedHits = ({
+  head,
+  archive,
+  allowed,
+  views,
+}: ArchiveScan): readonly SealedHits[] => {
   const pieces = livePieces(head, archive);
   const invalid = new Map(
     pipe(
@@ -96,6 +101,3 @@ const archivedHits = ({ head, archive, allowed, views }: ArchiveScan): readonly 
       ),
   });
 };
-
-export { archivedHits };
-export type { ArchiveScan };

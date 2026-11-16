@@ -26,7 +26,7 @@ import {
   withScope,
 } from "./tool-scope.server";
 
-const find =
+export const find =
   (discordUserId: string) =>
   ({
     serverId,
@@ -58,7 +58,7 @@ const find =
 const SIMILAR_LIMIT = 10;
 const OVER_BUDGET = `${SERVICE_NAME} has used up today's allowance for meaning-based search; use find_messages, or try again after 00:00 UTC`;
 
-const findLike =
+export const findLike =
   (discordUserId: string) =>
   ({
     serverId,
@@ -126,7 +126,7 @@ const readAuthor = (
     ),
   );
 
-const readTool =
+export const readTool =
   (discordUserId: string) =>
   ({
     serverId,
@@ -151,5 +151,3 @@ const readTool =
           }),
       });
     });
-
-export { find, findLike, readTool };

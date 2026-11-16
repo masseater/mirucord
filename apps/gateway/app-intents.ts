@@ -81,8 +81,6 @@ const intentsProvider = succeedProvider(AppIntents, {
     ),
 });
 
-const appIntents = AppIntents("AppIntents", { intents: GATEWAY_INTENTS });
+export const appIntents = AppIntents("AppIntents", { intents: GATEWAY_INTENTS });
 
-const appIntentsProvider = intentsProvider.pipe(Layer.provide(FetchHttpClient.layer));
-
-export { appIntents, appIntentsProvider };
+export const appIntentsProvider = intentsProvider.pipe(Layer.provide(FetchHttpClient.layer));

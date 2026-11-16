@@ -3,16 +3,16 @@ import { Array, pipe } from "effect";
 import type { ManagedGuild } from "#/features/ingest/index.server";
 import type { Dashboard } from "#/pages/dashboard/api/dashboard.server";
 
-type ReadyDashboard = Extract<Dashboard, Readonly<{ status: "ready" }>>;
+export type ReadyDashboard = Extract<Dashboard, Readonly<{ status: "ready" }>>;
 
-type ConsentStep =
+export type ConsentStep =
   | Readonly<{ status: "awaiting"; guilds: readonly ManagedGuild[] }>
   | Readonly<{ status: "invite" }>
   | Readonly<{ status: "done" }>;
 
-type RegisterStep = Readonly<{ status: "todo" }> | Readonly<{ status: "done" }>;
+export type RegisterStep = Readonly<{ status: "todo" }> | Readonly<{ status: "done" }>;
 
-type NextSteps =
+export type NextSteps =
   | Readonly<{ status: "pending"; consent: ConsentStep; register: RegisterStep }>
   | Readonly<{ status: "finished" }>;
 
@@ -44,7 +44,7 @@ const registerStepOf = ({ apps }: ReadyDashboard): RegisterStep => {
   return { status: "todo" };
 };
 
-const nextStepsOf = (dashboard: ReadyDashboard): NextSteps => {
+export const nextStepsOf = (dashboard: ReadyDashboard): NextSteps => {
   const consent = consentStepOf(dashboard);
   const register = registerStepOf(dashboard);
   if (consent.status === "done" && register.status === "done") {
@@ -52,6 +52,3 @@ const nextStepsOf = (dashboard: ReadyDashboard): NextSteps => {
   }
   return { status: "pending", consent, register };
 };
-
-export { nextStepsOf };
-export type { ConsentStep, NextSteps, ReadyDashboard, RegisterStep };

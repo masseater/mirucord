@@ -26,7 +26,7 @@ import {
   verification,
 } from "./generated/auth.table";
 
-type AuthOptions = BetterAuthOptions & {
+export type AuthOptions = BetterAuthOptions & {
   plugins: [
     ReturnType<typeof tanstackStartCookies>,
     ReturnType<typeof jwt>,
@@ -98,7 +98,4 @@ const authFor = Function.memoize((bindings: AuthBindings): Auth<AuthOptions> =>
   }),
 );
 
-const getAuth = (): Auth<AuthOptions> => authFor(env);
-
-export { getAuth };
-export type { AuthOptions };
+export const getAuth = (): Auth<AuthOptions> => authFor(env);

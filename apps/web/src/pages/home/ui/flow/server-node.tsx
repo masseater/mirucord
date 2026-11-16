@@ -6,7 +6,7 @@ import { MASCOT_NAME } from "#/shared/config";
 const TITLE = "みんなのサーバー";
 const CAPTION = `${MASCOT_NAME}を招待するだけ`;
 
-const ServerNode = ({ left, top }: Readonly<{ left: string; top: string }>): ReactNode => (
+export const ServerNode = ({ left, top }: Readonly<{ left: string; top: string }>): ReactNode => (
   <g transform={`translate(${left} ${top})`}>
     <rect y="8" width="230" height="160" rx="40" className="fill-ink" />
     <rect width="230" height="160" rx="40" className="fill-lavender stroke-ink" strokeWidth="3" />
@@ -19,5 +19,3 @@ const ServerNode = ({ left, top }: Readonly<{ left: string; top: string }>): Rea
     </text>
   </g>
 );
-
-export { ServerNode };

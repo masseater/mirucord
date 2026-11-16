@@ -26,12 +26,10 @@ const IdleBody = ({ published }: Readonly<{ published: readonly PublicConnection
     ),
   });
 
-const LinkedAccountBody = ({ linked }: Readonly<{ linked: LinkedAccounts }>): ReactNode =>
+export const LinkedAccountBody = ({ linked }: Readonly<{ linked: LinkedAccounts }>): ReactNode =>
   Match.value(linked).pipe(
     Match.discriminatorsExhaustive("status")({
       idle: ({ published }) => <IdleBody published={published} />,
       choosing: ({ choices }) => <LinkedAccountChooser choices={choices} />,
     }),
   );
-
-export { LinkedAccountBody };

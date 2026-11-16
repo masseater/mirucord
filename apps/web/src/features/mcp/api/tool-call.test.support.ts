@@ -37,8 +37,12 @@ const decodeToolResponse = Schema.decodeEffect(ToolResponse);
 const decodeListing = Schema.decodeUnknownEffect(Listing);
 const decodeReadIngest = Schema.decodeUnknownEffect(ReadIngest);
 
-type ToolOutcome = Readonly<{ text: string; isError: boolean; structured: Option.Option<unknown> }>;
-type ListingKey = keyof typeof Listing.Type;
+export type ToolOutcome = Readonly<{
+  text: string;
+  isError: boolean;
+  structured: Option.Option<unknown>;
+}>;
+export type ListingKey = keyof typeof Listing.Type;
 
 const requestOf = (body: string): Request =>
   new Request(`${SITE_ORIGIN}/mcp`, {
@@ -56,7 +60,7 @@ const sseData = (body: string): string =>
     Array.join(""),
   );
 
-const callTool = ({
+export const callTool = ({
   name,
   args,
 }: Readonly<{
@@ -83,7 +87,7 @@ const callTool = ({
     return { text: answer, isError, structured: Option.fromUndefinedOr(structuredContent) };
   }).pipe(Effect.orDie);
 
-const idsOf =
+export const idsOf =
   (key: ListingKey) =>
   (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<readonly string[]> =>
     outcome.pipe(
@@ -98,12 +102,9 @@ const idsOf =
       Effect.orDie,
     );
 
-const readIngestOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<string> =>
+export const readIngestOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<string> =>
   outcome.pipe(
     Effect.flatMap(({ structured }) => decodeReadIngest(Option.getOrUndefined(structured))),
     Effect.map(({ ingest }) => ingest),
     Effect.orDie,
   );
-
-export { callTool, idsOf, readIngestOf };
-export type { ListingKey, ToolOutcome };

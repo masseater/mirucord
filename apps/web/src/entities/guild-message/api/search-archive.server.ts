@@ -15,7 +15,7 @@ const FIRST = 0;
 const NEXT = 1;
 const DROPPED = -1;
 
-type Merging = Readonly<{
+export type Merging = Readonly<{
   db: DrizzleSqliteDODatabase;
   bucket: Readonly<R2Bucket>;
   guildId: string;
@@ -27,7 +27,7 @@ type Remap = (ordinal: number) => number;
 
 type Source = Readonly<{ key: string; remap: Remap }>;
 
-type ArchiveStatus = "idle" | "more" | "finished";
+export type ArchiveStatus = "idle" | "more" | "finished";
 
 type ShardJob = Readonly<{
   merging: Merging;
@@ -223,7 +223,7 @@ const continueArchive = (merging: Merging, target: Archive): Effect.Effect<Archi
   );
 };
 
-const archiveStep = (merging: Merging): Effect.Effect<ArchiveStatus> => {
+export const archiveStep = (merging: Merging): Effect.Effect<ArchiveStatus> => {
   const ledger = archiveLedger(merging.db);
   const target = Option.orElse(ledger.building(), () =>
     Boolean.match(merging.mayStart, {
@@ -236,6 +236,3 @@ const archiveStep = (merging: Merging): Effect.Effect<ArchiveStatus> => {
     onSome: (found) => continueArchive(merging, found),
   });
 };
-
-export { archiveStep };
-export type { ArchiveStatus, Merging };

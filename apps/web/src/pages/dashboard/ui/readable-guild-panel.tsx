@@ -10,7 +10,7 @@ import { ReadableGuildSection } from "./readable-guild-section";
 
 const UNAVAILABLE = fixable("refresh")("サーバーを読み込めませんでした");
 
-const ReadableGuildPanel = ({ listing }: Readonly<{ listing: GuildListing }>): ReactNode =>
+export const ReadableGuildPanel = ({ listing }: Readonly<{ listing: GuildListing }>): ReactNode =>
   Match.value(listing).pipe(
     Match.discriminatorsExhaustive("status")({
       unavailable: () => (
@@ -26,5 +26,3 @@ const ReadableGuildPanel = ({ listing }: Readonly<{ listing: GuildListing }>): R
         ),
     }),
   );
-
-export { ReadableGuildPanel };

@@ -7,7 +7,7 @@ import { createGuildKey } from "#/shared/crypto/index.server";
 import { db, guild, ingestConsent } from "#/shared/db/index.server";
 
 const OWNER = "901";
-const TEXT_CHANNEL = ChannelType.GuildText;
+export const TEXT_CHANNEL = ChannelType.GuildText;
 const SEEDED = DateTime.makeUnsafe("2026-10-01T00:00:00Z");
 const SEEDED_AT = DateTime.toEpochMillis(SEEDED);
 const READ_LIMIT = 200;
@@ -15,9 +15,9 @@ const SEARCH_LIMIT = 200;
 const UNBOUNDED = Option.getOrNull(Option.none<number>());
 const NEWEST = Option.getOrNull(Option.none<string>());
 
-type GuildChannel = Readonly<{ guildId: string; channelId: string }>;
+export type GuildChannel = Readonly<{ guildId: string; channelId: string }>;
 
-const storedMessage = (
+export const storedMessage = (
   row: Pick<StoredRow, "id" | "channelId"> & Partial<StoredRow>,
 ): IndexedMessage => ({
   row: {
@@ -32,18 +32,21 @@ const storedMessage = (
   phrases: { status: "pending" },
 });
 
-const putMessages = ({
+export const putMessages = ({
   guildId,
   messages,
 }: Readonly<{ guildId: string; messages: readonly IndexedMessage[] }>): Effect.Effect<void> =>
   Effect.promise(() => guildStore(guildId).write(messages, "overwrite"));
 
-const storedIdsIn = ({ guildId, channelId }: GuildChannel): Effect.Effect<readonly string[]> =>
+export const storedIdsIn = ({
+  guildId,
+  channelId,
+}: GuildChannel): Effect.Effect<readonly string[]> =>
   Effect.promise(() =>
     guildStore(guildId).idsBetween(channelId, { from: UNBOUNDED, upTo: UNBOUNDED }),
   );
 
-const sealedIn = ({ guildId, channelId }: GuildChannel): Effect.Effect<readonly string[]> =>
+export const sealedIn = ({ guildId, channelId }: GuildChannel): Effect.Effect<readonly string[]> =>
   Effect.promise(() =>
     guildStore(guildId).read(channelId, { before: NEWEST, limit: READ_LIMIT }),
   ).pipe(
@@ -55,7 +58,7 @@ const sealedIn = ({ guildId, channelId }: GuildChannel): Effect.Effect<readonly 
     ),
   );
 
-const describedWithOf = ({
+export const describedWithOf = ({
   guildId,
   id,
 }: Readonly<{ guildId: string; id: string }>): Effect.Effect<readonly (string | null)[]> =>
@@ -68,7 +71,7 @@ const describedWithOf = ({
     ),
   );
 
-const candidateIds = ({
+export const candidateIds = ({
   guildId,
   channelId,
   searchKey,
@@ -89,7 +92,7 @@ const candidateIds = ({
     ),
   );
 
-const consentedGuild = ({ guildId, channelId }: GuildChannel): Effect.Effect<void> =>
+export const consentedGuild = ({ guildId, channelId }: GuildChannel): Effect.Effect<void> =>
   createGuildKey.pipe(
     Effect.flatMap((wrappedKey) =>
       Effect.promise(() =>
@@ -113,18 +116,5 @@ const consentedGuild = ({ guildId, channelId }: GuildChannel): Effect.Effect<voi
     Effect.asVoid,
   );
 
-const storedCount = (guildId: string): Effect.Effect<number> =>
+export const storedCount = (guildId: string): Effect.Effect<number> =>
   Effect.promise(() => guildStore(guildId).count());
-
-export {
-  candidateIds,
-  consentedGuild,
-  describedWithOf,
-  putMessages,
-  sealedIn,
-  storedCount,
-  storedIdsIn,
-  storedMessage,
-  TEXT_CHANNEL,
-};
-export type { GuildChannel };

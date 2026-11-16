@@ -4,7 +4,7 @@ const LABEL = "キャンプの思い出";
 const COUNT = "8";
 const UNIT = "件";
 
-const FinaleCount = (): ReactNode => (
+export const FinaleCount = (): ReactNode => (
   <p className="finale-count finale-part font-maru grid justify-items-start font-black">
     <span className="finale-label finale-part bg-milk text-ink">{LABEL}</span>
     <span className="finale-number finale-part text-butter-deep">
@@ -13,5 +13,3 @@ const FinaleCount = (): ReactNode => (
     </span>
   </p>
 );
-
-export { FinaleCount };

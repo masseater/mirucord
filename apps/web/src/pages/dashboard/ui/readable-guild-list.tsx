@@ -5,7 +5,7 @@ import type { ReadableGuild } from "#/pages/dashboard/api/dashboard.server";
 
 import { ReadableGuildRow } from "./readable-guild-row";
 
-const ReadableGuildList = ({
+export const ReadableGuildList = ({
   guilds,
 }: Readonly<{ guilds: readonly ReadableGuild[] }>): ReactNode => (
   <ul className="grid items-start gap-3 sm:grid-cols-2">
@@ -15,5 +15,3 @@ const ReadableGuildList = ({
     )}
   </ul>
 );
-
-export { ReadableGuildList };

@@ -57,7 +57,7 @@ const examplesOf = (examples: string): readonly string[] =>
 const settledOf = (status: NoteStatus): Option.Option<PhraseNote["status"]> =>
   Option.liftPredicate(status, (value): value is PhraseNote["status"] => value !== "pending");
 
-abstract class NoteStore extends PhraseStore {
+export abstract class NoteStore extends PhraseStore {
   protected notesOf(phrases: readonly string[]): readonly PhraseNote[] {
     return pipe(
       Array.chunksOf(phrases, BOUND_LIMIT),
@@ -238,5 +238,3 @@ abstract class NoteStore extends PhraseStore {
     }
   }
 }
-
-export { NoteStore };

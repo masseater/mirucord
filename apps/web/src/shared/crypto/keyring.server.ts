@@ -97,7 +97,7 @@ const wrapWithCurrent = (rawKey: Effect.Effect<Uint8Array>): Effect.Effect<strin
     ),
   );
 
-const createGuildKey: Effect.Effect<string> = wrapWithCurrent(
+export const createGuildKey: Effect.Effect<string> = wrapWithCurrent(
   Effect.sync(() => crypto.getRandomValues(new Uint8Array(KEY_BYTES))),
 );
 
@@ -134,7 +134,7 @@ const unwrapGuildKey = (wrappedKey: string): Effect.Effect<Uint8Array> =>
     Effect.catchTag("WrongMasterKey", () => unwrapWithPrevious(wrappedKey)),
   );
 
-const openGuildKey = (wrappedKey: string): Effect.Effect<CryptoKey> =>
+export const openGuildKey = (wrappedKey: string): Effect.Effect<CryptoKey> =>
   unwrapGuildKey(wrappedKey).pipe(
     Effect.flatMap((raw) =>
       Effect.promise(() =>
@@ -146,10 +146,10 @@ const openGuildKey = (wrappedKey: string): Effect.Effect<CryptoKey> =>
     ),
   );
 
-const openSearchKey = (wrappedKey: string): Effect.Effect<CryptoKey> =>
+export const openSearchKey = (wrappedKey: string): Effect.Effect<CryptoKey> =>
   deriveFrom(unwrapGuildKey(wrappedKey), "search");
 
-const openGuildKeys = (
+export const openGuildKeys = (
   wrappedKey: string,
 ): Effect.Effect<Readonly<{ key: CryptoKey; searchKey: CryptoKey; commonKey: CryptoKey }>> =>
   Effect.all({
@@ -158,7 +158,7 @@ const openGuildKeys = (
     commonKey: openCommonPhraseKey,
   });
 
-const rewrapGuildKey = (wrappedKey: string): Effect.Effect<Option.Option<string>> =>
+export const rewrapGuildKey = (wrappedKey: string): Effect.Effect<Option.Option<string>> =>
   unwrapWith(currentMasterKey, wrappedKey).pipe(
     Effect.as(Option.none<string>()),
     Effect.catchTag("WrongMasterKey", () =>
@@ -166,6 +166,4 @@ const rewrapGuildKey = (wrappedKey: string): Effect.Effect<Option.Option<string>
     ),
   );
 
-const isRotating: Effect.Effect<boolean> = previousMasterKey.pipe(Effect.map(Option.isSome));
-
-export { createGuildKey, isRotating, openGuildKey, openGuildKeys, openSearchKey, rewrapGuildKey };
+export const isRotating: Effect.Effect<boolean> = previousMasterKey.pipe(Effect.map(Option.isSome));

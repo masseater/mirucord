@@ -7,7 +7,7 @@ import { popButtonVariants } from "#/shared/ui/pop-variants";
 const NOTE = "管理者さんだけが招待できます";
 const INVITE = `${MASCOT_NAME}をサーバーに招待`;
 
-const InviteGuide = ({ inviteUrl }: Readonly<{ inviteUrl: string }>): ReactNode => (
+export const InviteGuide = ({ inviteUrl }: Readonly<{ inviteUrl: string }>): ReactNode => (
   <>
     <IconLine icon="admin" tone="muted" size="sm">
       {NOTE}
@@ -17,5 +17,3 @@ const InviteGuide = ({ inviteUrl }: Readonly<{ inviteUrl: string }>): ReactNode 
     </a>
   </>
 );
-
-export { InviteGuide };

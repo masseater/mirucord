@@ -23,7 +23,7 @@ const PATHS: Readonly<Record<Exclude<ChannelKind, "text">, readonly string[]>> =
   forum: ["M4 5h16v11H10l-5 4v-4H4z", "M9 9h6M9 12h4"],
 };
 
-const ChannelIcon = ({
+export const ChannelIcon = ({
   kind,
   size,
 }: Readonly<{ kind: ChannelKind; size: keyof typeof SIZE }>): ReactNode => {
@@ -52,5 +52,3 @@ const ChannelIcon = ({
     </svg>
   );
 };
-
-export { ChannelIcon };

@@ -22,10 +22,8 @@ const INGEST = {
   done: { label: "取り込み済み", tone: "bg-mint" },
 } as const;
 
-const IngestPill = ({
+export const IngestPill = ({
   ingest,
 }: Readonly<{ ingest: SettingsChannel["ingest"] | GuildIngest }>): ReactNode => (
   <Pill tone={INGEST[ingest].tone}>{INGEST[ingest].label}</Pill>
 );
-
-export { IngestPill };

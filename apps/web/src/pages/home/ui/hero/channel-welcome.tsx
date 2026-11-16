@@ -8,7 +8,7 @@ import { HeroActions } from "./hero-actions";
 const LEAD = "みんなの思い出を";
 const FOCUS = `${MASCOT_NAME}と見つけよう`;
 
-const ChannelWelcome = (): ReactNode => (
+export const ChannelWelcome = (): ReactNode => (
   <div className="flex flex-col items-start gap-4 px-4 pt-6 pb-2">
     <span className="bg-lavender grid size-20 place-items-center rounded-full">
       <Mascot className="motion-safe:animate-float size-16" />
@@ -20,5 +20,3 @@ const ChannelWelcome = (): ReactNode => (
     <HeroActions />
   </div>
 );
-
-export { ChannelWelcome };

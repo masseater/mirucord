@@ -8,9 +8,9 @@ import { purgeChannel } from "./consent-scope.server";
 import { whenManaged } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 
-type PurgeRequest = GuildMembership & Readonly<{ channelId: string }>;
+export type PurgeRequest = GuildMembership & Readonly<{ channelId: string }>;
 
-type PurgeResult =
+export type PurgeResult =
   | Readonly<{ status: "purged" }>
   | Readonly<{ status: "forbidden" }>
   | Readonly<{ status: "notPaused" }>;
@@ -63,7 +63,7 @@ const purgeIfHidden = (request: PurgeRequest): Effect.Effect<PurgeResult> =>
     }),
   );
 
-const purgePausedChannel = (
+export const purgePausedChannel = (
   request: PurgeRequest,
 ): Effect.Effect<PurgeResult, DiscordRequestError> =>
   whenManaged({
@@ -71,6 +71,3 @@ const purgePausedChannel = (
     denied: { status: "forbidden" },
     use: () => purgeIfHidden(request),
   });
-
-export { purgePausedChannel };
-export type { PurgeRequest, PurgeResult };

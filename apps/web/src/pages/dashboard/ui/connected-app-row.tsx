@@ -13,7 +13,7 @@ import { ConnectedAppDates } from "./connected-app-dates";
 const DISCONNECT = "接続を解除";
 const FAILED = "解除できませんでした";
 
-const ConnectedAppRow = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode => {
+export const ConnectedAppRow = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode => {
   const returnToDashboard = useReturnToDashboard();
   const { mutate, status } = useMutation({
     mutationFn: disconnectConnectedApp,
@@ -38,5 +38,3 @@ const ConnectedAppRow = ({ app }: Readonly<{ app: ConnectedApp }>): ReactNode =>
     </li>
   );
 };
-
-export { ConnectedAppRow };

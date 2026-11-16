@@ -21,7 +21,7 @@ const MAX_ALARMS = 30;
 
 type SimilarSeed = Readonly<{ id: string; channelId: string; content: string }>;
 
-const embeddedTexts: string[] = [];
+export const embeddedTexts: string[] = [];
 
 const axisOf = (text: string): number => {
   if (pipe(text, Str.includes("ラーメン")) || pipe(text, Str.includes("麺"))) {
@@ -48,7 +48,7 @@ const decodeTexts = Schema.decodeUnknownEffect(
   Schema.Struct({ text: Schema.Array(Schema.String) }),
 );
 
-const answerEmbedding = (inputs: unknown): Promise<Record<string, unknown>> =>
+export const answerEmbedding = (inputs: unknown): Promise<Record<string, unknown>> =>
   run(
     decodeTexts(inputs).pipe(
       Effect.tap(({ text }) =>
@@ -93,7 +93,7 @@ const indexedOf = ({ id, channelId, content }: SimilarSeed): Effect.Effect<Index
     };
   });
 
-const writeMessages = (
+export const writeMessages = (
   seeds: readonly Readonly<{ id: string; channelId: string; content: string }>[],
 ): Effect.Effect<void> =>
   pipe(
@@ -108,9 +108,7 @@ const runAlarms = Effect.promise(() => runDurableObjectAlarm(guildStore(GUILD_A)
   Effect.repeat({ while: (ran) => ran, times: MAX_ALARMS }),
 );
 
-const drainAlarms = Effect.promise(() => guildStore(GUILD_A).publish()).pipe(
+export const drainAlarms = Effect.promise(() => guildStore(GUILD_A).publish()).pipe(
   Effect.andThen(runAlarms),
   Effect.asVoid,
 );
-
-export { answerEmbedding, drainAlarms, embeddedTexts, writeMessages };

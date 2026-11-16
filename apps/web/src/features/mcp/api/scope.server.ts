@@ -10,9 +10,9 @@ import type { GuildChannel, GuildSnapshot } from "#/shared/permissions";
 
 const MEMBER_CONCURRENCY = 4;
 
-type StoredChannel = GuildChannel & ChannelProgress & Readonly<{ name: string }>;
+export type StoredChannel = GuildChannel & ChannelProgress & Readonly<{ name: string }>;
 
-type StoredGuild = Omit<GuildSnapshot, "channels"> &
+export type StoredGuild = Omit<GuildSnapshot, "channels"> &
   Readonly<{
     name: string;
     icon: string | null;
@@ -21,14 +21,14 @@ type StoredGuild = Omit<GuildSnapshot, "channels"> &
     channels: readonly StoredChannel[];
   }>;
 
-type ReadableGuild = Readonly<{
+export type ReadableGuild = Readonly<{
   guildId: string;
   name: string;
   icon: string | null;
   consent: Consent;
 }>;
 
-type GuildScope = Readonly<{
+export type GuildScope = Readonly<{
   guild: StoredGuild;
   visible: readonly string[];
 }>;
@@ -116,7 +116,7 @@ const scopeOf = (
     ),
   );
 
-const resolveScope = ({
+export const resolveScope = ({
   guildId,
   discordUserId,
 }: Readonly<{ guildId: string; discordUserId: string }>): Effect.Effect<
@@ -138,7 +138,7 @@ const consentOf = (granted: string | null): Consent =>
     onSome: () => "consented",
   });
 
-const readableGuilds = (
+export const readableGuilds = (
   discordUserId: string,
 ): Effect.Effect<readonly ReadableGuild[], DiscordRequestError> =>
   Effect.promise(() =>
@@ -167,6 +167,3 @@ const readableGuilds = (
     ),
     Effect.map(Array.getSomes),
   );
-
-export { readableGuilds, resolveScope };
-export type { GuildScope, ReadableGuild, StoredChannel, StoredGuild };

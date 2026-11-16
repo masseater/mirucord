@@ -11,12 +11,10 @@ const KIND_LABEL = {
   forum: "フォーラム",
 } as const;
 
-const ChannelLabel = ({ channel }: Readonly<{ channel: SettingsChannel }>): ReactNode => (
+export const ChannelLabel = ({ channel }: Readonly<{ channel: SettingsChannel }>): ReactNode => (
   <span className="inline-flex items-center gap-1">
     <ChannelIcon kind={channel.kind} size="sm" />
     {channel.kind !== "text" && <span className="sr-only">{KIND_LABEL[channel.kind]}</span>}
     {channel.name}
   </span>
 );
-
-export { ChannelLabel };

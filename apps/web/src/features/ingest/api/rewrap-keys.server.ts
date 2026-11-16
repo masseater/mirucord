@@ -32,7 +32,7 @@ const rewrapGuildKeys: Effect.Effect<void> = Effect.promise(() =>
   ),
 );
 
-const rewrapWhileRotating: Effect.Effect<void> = isRotating.pipe(
+export const rewrapWhileRotating: Effect.Effect<void> = isRotating.pipe(
   Effect.flatMap((rotating) => {
     if (rotating) {
       return rewrapGuildKeys;
@@ -40,5 +40,3 @@ const rewrapWhileRotating: Effect.Effect<void> = isRotating.pipe(
     return Effect.void;
   }),
 );
-
-export { rewrapWhileRotating };

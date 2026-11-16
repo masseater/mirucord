@@ -6,7 +6,7 @@ import { SERVICE_NAME } from "#/shared/config";
 const NAME = SERVICE_NAME;
 const CAPTION = "鍵をかけてしまっておく";
 
-const MiruNode = ({ left, top }: Readonly<{ left: string; top: string }>): ReactNode => (
+export const MiruNode = ({ left, top }: Readonly<{ left: string; top: string }>): ReactNode => (
   <g transform={`translate(${left} ${top})`}>
     <rect width="230" height="240" rx="48" className="fill-pink stroke-ink" strokeWidth="3" />
     <image
@@ -26,5 +26,3 @@ const MiruNode = ({ left, top }: Readonly<{ left: string; top: string }>): React
     </text>
   </g>
 );
-
-export { MiruNode };

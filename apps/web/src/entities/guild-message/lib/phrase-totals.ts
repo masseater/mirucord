@@ -3,7 +3,7 @@ import { Array, Number, Option, Order, pipe, Record } from "effect";
 const LONG_AGO = 0;
 const TOP_CHANNELS = 2;
 
-type TallyRow = Readonly<{
+export type TallyRow = Readonly<{
   phrase: string;
   common: string;
   channelId: string;
@@ -12,7 +12,7 @@ type TallyRow = Readonly<{
   lastUsedAt: number | null;
 }>;
 
-type PhraseTotal = Readonly<{
+export type PhraseTotal = Readonly<{
   phrase: string;
   common: string;
   uses: number;
@@ -62,11 +62,8 @@ const totalOf = (rows: Array.NonEmptyReadonlyArray<TallyRow>): PhraseTotal => {
   };
 };
 
-const phraseTotals = (rows: readonly TallyRow[]): readonly PhraseTotal[] =>
+export const phraseTotals = (rows: readonly TallyRow[]): readonly PhraseTotal[] =>
   pipe(
     Record.values(Array.groupBy(rows, ({ phrase }) => phrase)),
     Array.map((group) => totalOf(group)),
   );
-
-export { phraseTotals };
-export type { PhraseTotal, TallyRow };

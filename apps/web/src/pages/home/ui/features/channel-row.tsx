@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-const ChannelRow = ({
+export const ChannelRow = ({
   name,
   mark,
   visible,
@@ -18,5 +18,3 @@ const ChannelRow = ({
     <span>{mark}</span>
   </li>
 );
-
-export { ChannelRow };

@@ -4,9 +4,9 @@ import { Array, Effect } from "effect";
 import { guildStore } from "#/entities/guild-message/index.server";
 import { db, guild } from "#/shared/db/index.server";
 
-type EraseResult = Readonly<{ status: "erased" }> | Readonly<{ status: "notFound" }>;
+export type EraseResult = Readonly<{ status: "erased" }> | Readonly<{ status: "notFound" }>;
 
-const eraseOwnMessages = ({
+export const eraseOwnMessages = ({
   guildId,
   authorId,
 }: Readonly<{ guildId: string; authorId: string }>): Effect.Effect<EraseResult> =>
@@ -20,6 +20,3 @@ const eraseOwnMessages = ({
       );
     }),
   );
-
-export { eraseOwnMessages };
-export type { EraseResult };

@@ -9,7 +9,7 @@ import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
 
 const STILL_HERE = Option.getOrNull(Option.none<number>());
 
-type MemberLedger = Readonly<{
+export type MemberLedger = Readonly<{
   write: (request: MemberWrite, erased: readonly string[]) => void;
   depart: (userIds: readonly string[], now: number) => void;
   read: (lookup: MemberLookup, erased: readonly string[]) => readonly StoredMember[];
@@ -112,7 +112,7 @@ const readOf = (
     Array.filter(({ leftAt }) => includeLeft || Option.isNone(Option.fromNullOr(leftAt))),
   );
 
-const memberLedger = (db: DrizzleSqliteDODatabase): MemberLedger => ({
+export const memberLedger = (db: DrizzleSqliteDODatabase): MemberLedger => ({
   write: (request, erased) => {
     writeOf(db, request, erased);
   },
@@ -126,6 +126,3 @@ const memberLedger = (db: DrizzleSqliteDODatabase): MemberLedger => ({
       .run();
   },
 });
-
-export { memberLedger };
-export type { MemberLedger };

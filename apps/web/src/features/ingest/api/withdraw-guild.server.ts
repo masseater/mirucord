@@ -39,7 +39,7 @@ const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError>
     Effect.asVoid,
   );
 
-const withdrawGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError> =>
+export const withdrawGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError> =>
   purgeGuild(guildId).pipe(
     Effect.andThen(
       Effect.promise(() => db.delete(ingestConsent).where(eq(ingestConsent.guildId, guildId))),
@@ -52,11 +52,10 @@ const setConsentState = (guildId: string, state: "granted" | "withdrawing"): Eff
     db.update(ingestConsent).set({ state }).where(eq(ingestConsent.guildId, guildId)),
   ).pipe(Effect.asVoid);
 
-const requestWithdrawal = (guildId: string): Effect.Effect<void> =>
+export const requestWithdrawal = (guildId: string): Effect.Effect<void> =>
   enqueueWithdrawal(guildId).pipe(Effect.andThen(setConsentState(guildId, "withdrawing")));
 
-const abandonWithdrawal = (guildId: string): Effect.Effect<void> =>
+export const abandonWithdrawal = (guildId: string): Effect.Effect<void> =>
   setConsentState(guildId, "granted");
 
-export { abandonWithdrawal, requestWithdrawal, withdrawGuild };
 export type { GuildDataRemainsError };

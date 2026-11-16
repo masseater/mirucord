@@ -14,7 +14,7 @@ import { inDiscordOrder } from "./channel-order";
 
 const UNCATEGORIZED = "";
 
-type SettingsChannel =
+export type SettingsChannel =
   | Readonly<{
       kind: Exclude<ChannelKind, "forum">;
       id: string;
@@ -33,7 +33,7 @@ type SettingsChannel =
       posts: number;
     }>;
 
-type SettingsCategory = Readonly<{ id: string; name: string }>;
+export type SettingsCategory = Readonly<{ id: string; name: string }>;
 
 type StoredRow = IngestRow &
   Readonly<{
@@ -45,7 +45,7 @@ type StoredRow = IngestRow &
     botPost: (typeof channel.$inferSelect)["botPost"];
   }>;
 
-type SettingsChannels = Readonly<{
+export type SettingsChannels = Readonly<{
   categories: readonly SettingsCategory[];
   channels: readonly SettingsChannel[];
 }>;
@@ -77,7 +77,7 @@ const settingsChannelOf = (
   };
 };
 
-const loadChannels = ({
+export const loadChannels = ({
   guildId,
   scope,
 }: Readonly<{ guildId: string; scope: ConsentScope }>): Effect.Effect<SettingsChannels> =>
@@ -112,6 +112,3 @@ const loadChannels = ({
       ),
     })),
   );
-
-export { loadChannels };
-export type { SettingsCategory, SettingsChannel, SettingsChannels };

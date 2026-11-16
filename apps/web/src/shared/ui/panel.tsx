@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-const Panel = ({
+export const Panel = ({
   accent,
   children,
 }: Readonly<{ accent?: string; children: ReactNode }>): ReactNode => (
@@ -15,5 +15,3 @@ const Panel = ({
     {children}
   </section>
 );
-
-export { Panel };

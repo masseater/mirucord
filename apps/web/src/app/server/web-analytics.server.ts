@@ -42,11 +42,9 @@ const withBeacon = (response: Response): Effect.Effect<Response> =>
     Effect.orElseSucceed(() => response),
   );
 
-const withWebAnalytics = (response: Response): Effect.Effect<Response> =>
+export const withWebAnalytics = (response: Response): Effect.Effect<Response> =>
   pipe(
     Option.fromNullishOr(response.headers.get("Content-Type")),
     Option.filter(Str.startsWith("text/html")),
     Option.match({ onNone: () => Effect.succeed(response), onSome: () => withBeacon(response) }),
   );
-
-export { withWebAnalytics };

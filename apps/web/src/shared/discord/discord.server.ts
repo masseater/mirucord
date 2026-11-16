@@ -9,9 +9,9 @@ import type { DiscordRequestError } from "./client.server";
 
 const DATA_FIRST_ARITY = 2;
 
-const PAGE_SIZE = 100;
-const NOT_FOUND = 404;
-const FORBIDDEN = 403;
+export const PAGE_SIZE = 100;
+export const NOT_FOUND = 404;
+export const FORBIDDEN = 403;
 
 const PermissionOverwrite = Schema.Struct({
   id: Schema.String,
@@ -60,9 +60,9 @@ const ArchivedThreadList = Schema.Struct({
 
 const Member = Schema.Struct({ roles: Schema.Array(Schema.String) });
 
-type DiscordGuild = typeof Guild.Type;
-type DiscordChannel = typeof Channel.Type;
-type DiscordMember = typeof Member.Type;
+export type DiscordGuild = typeof Guild.Type;
+export type DiscordChannel = typeof Channel.Type;
+export type DiscordMember = typeof Member.Type;
 
 const decodeList = <Item extends Schema.Top>(item: Item) => {
   const decode = decodeBody(Schema.NullOr(Schema.Array(item)));
@@ -90,28 +90,30 @@ const decodeMember = decodeBody(Member);
 
 const decodeMessage = decodeBody(DiscordMessageSchema);
 
-const listBotGuilds: Effect.Effect<readonly Readonly<{ id: string }>[], DiscordRequestError> =
-  withDiscord((rest) => rest.listMyGuilds().pipe(Effect.flatMap(decodeGuilds)));
+export const listBotGuilds: Effect.Effect<
+  readonly Readonly<{ id: string }>[],
+  DiscordRequestError
+> = withDiscord((rest) => rest.listMyGuilds().pipe(Effect.flatMap(decodeGuilds)));
 
-const getBotUserId: Effect.Effect<string, DiscordRequestError> = withDiscord((rest) =>
+export const getBotUserId: Effect.Effect<string, DiscordRequestError> = withDiscord((rest) =>
   rest.getMyUser().pipe(
     Effect.flatMap(decodeUser),
     Effect.map(({ id }) => id),
   ),
 );
 
-const leaveGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+export const leaveGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   withDiscord((rest) => rest.leaveGuild(guildId));
 
-const getGuild = (guildId: string): Effect.Effect<DiscordGuild, DiscordRequestError> =>
+export const getGuild = (guildId: string): Effect.Effect<DiscordGuild, DiscordRequestError> =>
   withDiscord((rest) => rest.getGuild(guildId).pipe(Effect.flatMap(decodeGuild)));
 
-const listGuildChannels = (
+export const listGuildChannels = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
   withDiscord((rest) => rest.listGuildChannels(guildId).pipe(Effect.flatMap(decodeChannels)));
 
-const listActiveThreads = (
+export const listActiveThreads = (
   guildId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
   withDiscord((rest) =>
@@ -148,14 +150,14 @@ const listArchivedThreadsBefore = (
     }),
   );
 
-const listArchivedThreads = (
+export const listArchivedThreads = (
   channelId: string,
 ): Effect.Effect<readonly DiscordChannel[], DiscordRequestError> =>
   listArchivedThreadsBefore(channelId, Option.none());
 
-type MessageSide = "after" | "before";
+export type MessageSide = "after" | "before";
 
-type MessagePage =
+export type MessagePage =
   | Readonly<{ direction: "latest" }>
   | Readonly<{ direction: MessageSide; cursor: string }>;
 
@@ -176,7 +178,7 @@ const listMessagesDataFirst = (
     rest.listMessages(channelId, pageParams(page)).pipe(Effect.flatMap(decodeMessages)),
   );
 
-const listMessages: {
+export const listMessages: {
   (
     page: MessagePage,
   ): (channelId: string) => Effect.Effect<readonly DiscordMessage[], DiscordRequestError>;
@@ -205,7 +207,7 @@ const findMemberDataFirst = (
     withDiscord((rest) => rest.getGuildMember(guildId, userId).pipe(Effect.flatMap(decodeMember))),
   );
 
-const findMember: {
+export const findMember: {
   (
     userId: string,
   ): (guildId: string) => Effect.Effect<Option.Option<DiscordMember>, DiscordRequestError>;
@@ -225,7 +227,7 @@ const findMessageDataFirst = (
     ),
   );
 
-const findMessage: {
+export const findMessage: {
   (
     messageId: string,
   ): (channelId: string) => Effect.Effect<Option.Option<DiscordMessage>, DiscordRequestError>;
@@ -234,20 +236,3 @@ const findMessage: {
     messageId: string,
   ): Effect.Effect<Option.Option<DiscordMessage>, DiscordRequestError>;
 } = Function.dual(DATA_FIRST_ARITY, findMessageDataFirst);
-
-export {
-  FORBIDDEN,
-  findMember,
-  findMessage,
-  getBotUserId,
-  getGuild,
-  leaveGuild,
-  listActiveThreads,
-  listArchivedThreads,
-  listBotGuilds,
-  listGuildChannels,
-  listMessages,
-  NOT_FOUND,
-  PAGE_SIZE,
-};
-export type { DiscordChannel, DiscordGuild, DiscordMember, MessagePage, MessageSide };

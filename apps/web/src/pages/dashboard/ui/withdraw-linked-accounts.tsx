@@ -10,7 +10,7 @@ import { PopButton } from "#/shared/ui/pop-button";
 const WITHDRAW = "公開をやめる";
 const FAILED = "やめられませんでした";
 
-const WithdrawLinkedAccounts = (): ReactNode => {
+export const WithdrawLinkedAccounts = (): ReactNode => {
   const refresh = useInvalidateLinkedAccounts();
   const { mutate, status } = useMutation({
     mutationFn: withdrawPublishedAccounts,
@@ -32,5 +32,3 @@ const WithdrawLinkedAccounts = (): ReactNode => {
     </div>
   );
 };
-
-export { WithdrawLinkedAccounts };

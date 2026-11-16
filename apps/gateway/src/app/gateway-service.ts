@@ -10,10 +10,10 @@ import { FetchHttpClient } from "effect/http";
 import { makeDeliver } from "./deliver";
 import { mergeJobs, toGatewayJobs } from "./gateway-job";
 
-const GatewayApp = App("MirucordGatewayApp", { name: `${PREFIX}gateway-app` });
+export const GatewayApp = App("MirucordGatewayApp", { name: `${PREFIX}gateway-app` });
 
-const BOT_TOKEN_ENV = "DISCORD_BOT_TOKEN";
-const BOT_TOKEN_SECRET = `${ENV_PREFIX}${BOT_TOKEN_ENV}`;
+export const BOT_TOKEN_ENV = "DISCORD_BOT_TOKEN";
+export const BOT_TOKEN_SECRET = `${ENV_PREFIX}${BOT_TOKEN_ENV}`;
 const FLUSH_EVENTS = 1000;
 const FLUSH_INTERVAL = "5 seconds";
 const INTENTS =
@@ -68,7 +68,7 @@ const runGateway = (botToken: string): Effect.Effect<never> =>
     Layer.launch,
   );
 
-class Gateway extends Service<Gateway>()(
+export class Gateway extends Service<Gateway>()(
   "MirucordGateway",
   {
     app: GatewayApp,
@@ -90,5 +90,3 @@ class Gateway extends Service<Gateway>()(
     return {};
   }),
 ) {}
-
-export { BOT_TOKEN_ENV, BOT_TOKEN_SECRET, Gateway, GatewayApp };

@@ -30,17 +30,15 @@ const postDiscardDraft = createServerFn({ method: "POST" }).handler(() => run(di
 
 const postWithdraw = createServerFn({ method: "POST" }).handler(() => run(withdrawFor));
 
-const linkedAccountsQuery = queryOptions({
+export const linkedAccountsQuery = queryOptions({
   queryKey: ["dashboard", "linked-accounts"],
   queryFn: () => getLinkedAccounts(),
 });
 
-const publishChosenAccounts = (
+export const publishChosenAccounts = (
   selected: typeof PublishInput.Type.selected,
 ): Promise<PublishResult | SignedOut> => postPublish({ data: { selected } });
 
-const discardChoosing = (): Promise<DoneResult> => postDiscardDraft();
+export const discardChoosing = (): Promise<DoneResult> => postDiscardDraft();
 
-const withdrawPublishedAccounts = (): Promise<DoneResult> => postWithdraw();
-
-export { discardChoosing, linkedAccountsQuery, publishChosenAccounts, withdrawPublishedAccounts };
+export const withdrawPublishedAccounts = (): Promise<DoneResult> => postWithdraw();

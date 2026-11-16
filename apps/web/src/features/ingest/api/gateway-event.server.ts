@@ -58,7 +58,7 @@ const processEvent = (body: string): Effect.Effect<Response> =>
       ),
   });
 
-const receiveGatewayEvent = ({
+export const receiveGatewayEvent = ({
   body,
   headers,
 }: Readonly<{
@@ -76,5 +76,3 @@ const receiveGatewayEvent = ({
   }
   return processEvent(body);
 };
-
-export { receiveGatewayEvent };

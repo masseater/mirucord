@@ -24,7 +24,7 @@ const purgeFeedback = mutationFeedback({
   result: (status: keyof typeof RESULTS) => RESULTS[status],
 });
 
-const PurgeChannelButton = ({
+export const PurgeChannelButton = ({
   guildId,
   channelId,
   channelName,
@@ -47,5 +47,3 @@ const PurgeChannelButton = ({
     </>
   );
 };
-
-export { PurgeChannelButton };

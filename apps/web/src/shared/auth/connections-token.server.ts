@@ -14,7 +14,7 @@ const SIGN_IN_SCOPE = "identify";
 const NO_TOKEN = Option.getOrNull(Option.none<string>());
 const NO_EXPIRY = Option.getOrNull(Option.none<Date>());
 
-type TokenOwner = Pick<SignedInUser, "userId" | "discordUserId">;
+export type TokenOwner = Pick<SignedInUser, "userId" | "discordUserId">;
 
 const ownAccount = ({ userId, discordUserId }: TokenOwner): SQL | undefined =>
   and(
@@ -48,7 +48,7 @@ const accessTokenOf =
       Effect.map(({ accessToken }) => Option.fromUndefinedOr(accessToken)),
     );
 
-const connectionsTokenOf = (owner: TokenOwner): Effect.Effect<Option.Option<string>> =>
+export const connectionsTokenOf = (owner: TokenOwner): Effect.Effect<Option.Option<string>> =>
   dropOtherDiscordAccounts(owner).pipe(
     Effect.andThen(
       Effect.promise(() =>
@@ -68,7 +68,7 @@ const connectionsTokenOf = (owner: TokenOwner): Effect.Effect<Option.Option<stri
     Effect.orElseSucceed(() => Option.none<string>()),
   );
 
-const forgetConnectionsToken = (owner: TokenOwner): Effect.Effect<void> =>
+export const forgetConnectionsToken = (owner: TokenOwner): Effect.Effect<void> =>
   Effect.promise(() =>
     db
       .update(account)
@@ -80,6 +80,3 @@ const forgetConnectionsToken = (owner: TokenOwner): Effect.Effect<void> =>
       })
       .where(ownAccount(owner)),
   ).pipe(Effect.asVoid);
-
-export { connectionsTokenOf, forgetConnectionsToken };
-export type { TokenOwner };

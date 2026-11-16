@@ -12,11 +12,11 @@ const ONE_SHARD = 1;
 const DOUBLE = 2;
 const LAST = -1;
 
-type Postings = Readonly<{ ordinals: readonly number[]; channels: readonly number[] }>;
+export type Postings = Readonly<{ ordinals: readonly number[]; channels: readonly number[] }>;
 
-type TokenPostings = Readonly<{ token: number } & Postings>;
+export type TokenPostings = Readonly<{ token: number } & Postings>;
 
-type PostingView = Readonly<{ ordinals: Uint32Array; channels: Uint16Array }>;
+export type PostingView = Readonly<{ ordinals: Uint32Array; channels: Uint16Array }>;
 
 type ShardLayout = Readonly<{
   count: number;
@@ -28,7 +28,7 @@ type ShardLayout = Readonly<{
 
 const POSTING_BYTES = ORDINAL_BYTES + CHANNEL_BYTES;
 
-const shardCountOf = (postings: number): number => {
+export const shardCountOf = (postings: number): number => {
   const wanted = Math.ceil((postings * POSTING_BYTES) / SHARD_TARGET_BYTES);
   let shards = ONE_SHARD;
   while (shards < wanted) {
@@ -37,7 +37,7 @@ const shardCountOf = (postings: number): number => {
   return shards;
 };
 
-const shardOf = ({ token, shards }: Readonly<{ token: number; shards: number }>): number =>
+export const shardOf = ({ token, shards }: Readonly<{ token: number; shards: number }>): number =>
   token % shards;
 
 const concatBytes = (parts: readonly Readonly<ArrayBuffer>[]): ArrayBuffer => {
@@ -64,7 +64,7 @@ const startsOf = (sorted: readonly TokenPostings[]): readonly number[] => {
   return starts;
 };
 
-const encodeShard = (entries: readonly TokenPostings[]): ArrayBuffer => {
+export const encodeShard = (entries: readonly TokenPostings[]): ArrayBuffer => {
   const sorted = Array.sortWith(entries, ({ token }) => token, Number.Order);
   const header = Uint32Array.from([
     sorted.length,
@@ -133,7 +133,7 @@ const findToken = (search: Search): Option.Option<number> => {
 const indexOfToken = (layout: ShardLayout, token: number): Option.Option<number> =>
   findToken({ layout, token, low: FIRST, high: layout.count - NEXT });
 
-const postingsIn = ({
+export const postingsIn = ({
   shard,
   token,
 }: Readonly<{ shard: Readonly<ArrayBuffer>; token: number }>): Option.Option<PostingView> => {
@@ -141,7 +141,7 @@ const postingsIn = ({
   return Option.map(indexOfToken(layout, token), (index) => viewAt(layout, index));
 };
 
-const tokensIn = (
+export const tokensIn = (
   shard: Readonly<ArrayBuffer>,
 ): readonly Readonly<{ token: number; view: PostingView }>[] => {
   const layout = layoutOf(shard);
@@ -151,7 +151,7 @@ const tokensIn = (
   }));
 };
 
-type Placed = Readonly<{ offset: number; count: number }>;
+export type Placed = Readonly<{ offset: number; count: number }>;
 
 type RangeSearch<Piece extends Placed> = Readonly<{
   pieces: readonly Piece[];
@@ -177,11 +177,8 @@ const findRange = <Piece extends Placed>(search: RangeSearch<Piece>): Option.Opt
   );
 };
 
-const rangeAt = <Piece extends Placed>({
+export const rangeAt = <Piece extends Placed>({
   pieces,
   ordinal,
 }: Readonly<{ pieces: readonly Piece[]; ordinal: number }>): Option.Option<Piece> =>
   findRange({ pieces, ordinal, low: FIRST, high: pieces.length - NEXT });
-
-export { encodeShard, postingsIn, rangeAt, shardCountOf, shardOf, tokensIn };
-export type { Placed, PostingView, Postings, TokenPostings };

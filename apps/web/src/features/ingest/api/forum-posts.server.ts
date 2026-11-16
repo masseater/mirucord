@@ -13,11 +13,16 @@ import type { GuildMembership } from "./managed-guild.server";
 
 const NO_MESSAGES = 0;
 
-type ForumPost = Readonly<{ id: string; name: string; ingest: ChannelIngest; messages: number }>;
+export type ForumPost = Readonly<{
+  id: string;
+  name: string;
+  ingest: ChannelIngest;
+  messages: number;
+}>;
 
-type ForumPostsRequest = GuildMembership & Readonly<{ channelId: string }>;
+export type ForumPostsRequest = GuildMembership & Readonly<{ channelId: string }>;
 
-type ForumPostsResult =
+export type ForumPostsResult =
   | Readonly<{ status: "forbidden" }>
   | Readonly<{ status: "ready"; posts: readonly ForumPost[] }>;
 
@@ -75,7 +80,7 @@ const loadForumPosts = ({
     }),
   );
 
-const forumPosts = (
+export const forumPosts = (
   request: ForumPostsRequest,
 ): Effect.Effect<ForumPostsResult, DiscordRequestError> =>
   whenManaged({
@@ -86,6 +91,3 @@ const forumPosts = (
         Effect.map((posts): ForumPostsResult => ({ status: "ready", posts })),
       ),
   });
-
-export { forumPosts };
-export type { ForumPost, ForumPostsRequest, ForumPostsResult };

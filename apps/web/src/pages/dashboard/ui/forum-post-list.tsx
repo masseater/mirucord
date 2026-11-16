@@ -7,7 +7,7 @@ import { forumPostsQuery } from "#/pages/dashboard/api/dashboard";
 import { ForumPostRow } from "./forum-post-row";
 import { forumPostsNote, forumPostsViewOf } from "./forum-posts-view";
 
-const ForumPostList = ({
+export const ForumPostList = ({
   guildId,
   channelId,
 }: Readonly<{ guildId: string; channelId: string }>): ReactNode => {
@@ -28,5 +28,3 @@ const ForumPostList = ({
     </ul>
   );
 };
-
-export { ForumPostList };

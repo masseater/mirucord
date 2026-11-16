@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { popButtonVariants } from "#/shared/ui/pop-variants";
 
-const DcLink = ({
+export const DcLink = ({
   href,
   tone,
   size = "sm",
@@ -17,5 +17,3 @@ const DcLink = ({
     {children}
   </a>
 );
-
-export { DcLink };

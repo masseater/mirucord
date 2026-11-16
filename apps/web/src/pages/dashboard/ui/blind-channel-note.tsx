@@ -7,7 +7,7 @@ import { IconLine } from "#/shared/ui/icon-line";
 
 const EMPTY = `${MASCOT_NAME}が見られるチャンネルがありません`;
 
-const BlindChannelNote = ({
+export const BlindChannelNote = ({
   channels,
 }: Readonly<{ channels: readonly SettingsChannel[] }>): ReactNode =>
   Array.isReadonlyArrayEmpty(channels) && (
@@ -15,5 +15,3 @@ const BlindChannelNote = ({
       {EMPTY}
     </IconLine>
   );
-
-export { BlindChannelNote };

@@ -1,8 +1,8 @@
 import { Array, Match, pipe } from "effect";
 
-type FlowEdge = Readonly<{ from: string; label: string; to: string }>;
+export type FlowEdge = Readonly<{ from: string; label: string; to: string }>;
 
-type GuideBlock =
+export type GuideBlock =
   | Readonly<{ type: "text"; text: string }>
   | Readonly<{ type: "list"; items: readonly string[] }>
   | Readonly<{ type: "steps"; items: readonly string[] }>
@@ -10,7 +10,7 @@ type GuideBlock =
   | Readonly<{ type: "table"; head: readonly string[]; rows: readonly (readonly string[])[] }>
   | Readonly<{ type: "flow"; edges: readonly FlowEdge[] }>;
 
-type GuideSection = Readonly<{ heading: string; blocks: readonly GuideBlock[] }>;
+export type GuideSection = Readonly<{ heading: string; blocks: readonly GuideBlock[] }>;
 
 const rowsKey = (rows: readonly (readonly string[])[]): string =>
   pipe(
@@ -19,7 +19,7 @@ const rowsKey = (rows: readonly (readonly string[])[]): string =>
     Array.join("/"),
   );
 
-const blockKey: (block: GuideBlock) => string = Match.type<GuideBlock>().pipe(
+export const blockKey: (block: GuideBlock) => string = Match.type<GuideBlock>().pipe(
   Match.discriminatorsExhaustive("type")({
     text: ({ text }) => text,
     list: ({ items }) => pipe(items, Array.join("|")),
@@ -34,6 +34,3 @@ const blockKey: (block: GuideBlock) => string = Match.type<GuideBlock>().pipe(
       ),
   }),
 );
-
-export { blockKey };
-export type { FlowEdge, GuideBlock, GuideSection };

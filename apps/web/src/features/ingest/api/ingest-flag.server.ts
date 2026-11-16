@@ -17,7 +17,7 @@ const ingestEnabled: Effect.Effect<boolean> = Effect.promise(() =>
   Effect.andThen(Effect.promise(() => OpenFeature.getClient().getBooleanValue(INGEST_FLAG, false))),
 );
 
-const whenIngestEnabled = <Failure>(
+export const whenIngestEnabled = <Failure>(
   work: Effect.Effect<void, Failure>,
 ): Effect.Effect<void, Failure> =>
   ingestEnabled.pipe(
@@ -25,5 +25,3 @@ const whenIngestEnabled = <Failure>(
       Boolean.match(enabled, { onTrue: () => work, onFalse: () => Effect.void }),
     ),
   );
-
-export { whenIngestEnabled };

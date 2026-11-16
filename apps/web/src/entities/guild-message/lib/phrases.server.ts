@@ -5,27 +5,27 @@ import type { MessageBody } from "#/shared/crypto/index.server";
 import { hmacToken } from "./hmac.server";
 
 const LONGEST_PHRASE = 15;
-const PHRASE_WINDOW_DAYS = 30;
+export const PHRASE_WINDOW_DAYS = 30;
 const CUSTOM_EMOJI = /<a?:(?<name>\w+):(?<id>\d+)>/gu;
 const NOT_PLAIN_TEXT = /<a?:\w+:\d+>|<[@#]|https?:\/\//u;
 const WHITESPACE = /\s+/gu;
 const WORDLIKE = /[\p{L}\p{Extended_Pictographic}]/u;
 
-type PhraseKind = "text" | "emoji" | "sticker";
+export type PhraseKind = "text" | "emoji" | "sticker";
 
-type Phrase = Readonly<{ kind: PhraseKind; key: string; label: string }>;
+export type Phrase = Readonly<{ kind: PhraseKind; key: string; label: string }>;
 
-type PhraseHash = Readonly<{ phrase: string; common: string }>;
+export type PhraseHash = Readonly<{ phrase: string; common: string }>;
 
-type PhraseSource = Pick<MessageBody, "content" | "stickers">;
+export type PhraseSource = Pick<MessageBody, "content" | "stickers">;
 
-type HashRequest = Readonly<{
+export type HashRequest = Readonly<{
   searchKey: CryptoKey;
   commonKey: CryptoKey;
   source: PhraseSource;
 }>;
 
-type LabelRequest = Readonly<{ searchKey: CryptoKey; source: PhraseSource; phrase: string }>;
+export type LabelRequest = Readonly<{ searchKey: CryptoKey; source: PhraseSource; phrase: string }>;
 
 const normalize = (text: string): string =>
   pipe(
@@ -80,7 +80,7 @@ const phrasesOf = ({ content, stickers }: PhraseSource): readonly Phrase[] =>
     (left, right) => left.key === right.key,
   );
 
-const phraseHashes = ({
+export const phraseHashes = ({
   searchKey,
   commonKey,
   source,
@@ -92,7 +92,7 @@ const phraseHashes = ({
     }),
   );
 
-const labelOf = ({
+export const labelOf = ({
   searchKey,
   source,
   phrase,
@@ -102,6 +102,3 @@ const labelOf = ({
       Effect.map((token) => token === phrase),
     ),
   );
-
-export { labelOf, PHRASE_WINDOW_DAYS, phraseHashes };
-export type { HashRequest, LabelRequest, Phrase, PhraseHash, PhraseKind, PhraseSource };

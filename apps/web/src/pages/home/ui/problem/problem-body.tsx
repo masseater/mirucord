@@ -27,7 +27,7 @@ const CHATTER: readonly ChatLine[] = [
   },
 ];
 
-const ProblemBody = (): ReactNode => (
+export const ProblemBody = (): ReactNode => (
   <>
     <Message author={ASKER} time={TIME}>
       <PostHeading guide={GUIDE} lead={LEAD} tail={TAIL} />
@@ -37,5 +37,3 @@ const ProblemBody = (): ReactNode => (
     <ScatterScene />
   </>
 );
-
-export { ProblemBody };

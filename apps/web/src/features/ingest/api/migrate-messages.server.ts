@@ -70,7 +70,7 @@ const adoptGuild = (rows: Array.NonEmptyReadonlyArray<LegacyRow>): Effect.Effect
   );
 };
 
-const migrateMessages: Effect.Effect<void> = loadBatch.pipe(
+export const migrateMessages: Effect.Effect<void> = loadBatch.pipe(
   Effect.tap((rows) =>
     Effect.forEach(Record.values(Array.groupBy(rows, ({ guildId }) => guildId)), adoptGuild, {
       discard: true,
@@ -93,7 +93,7 @@ const migrateMessages: Effect.Effect<void> = loadBatch.pipe(
   }),
 );
 
-const startMigration: Effect.Effect<void> = Effect.promise(() =>
+export const startMigration: Effect.Effect<void> = Effect.promise(() =>
   db.select({ id: message.id }).from(message).limit(ANY_ROW),
 ).pipe(
   Effect.flatMap((rows) => {
@@ -103,5 +103,3 @@ const startMigration: Effect.Effect<void> = Effect.promise(() =>
     return enqueueMigration;
   }),
 );
-
-export { migrateMessages, startMigration };

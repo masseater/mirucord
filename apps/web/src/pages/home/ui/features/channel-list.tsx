@@ -9,7 +9,7 @@ const CHANNELS = [
   { name: "# 運営だけ", mark: "×", visible: false },
 ] as const;
 
-const ChannelList = (): ReactNode => (
+export const ChannelList = (): ReactNode => (
   <ul className="grid gap-1 text-sm">
     {pipe(
       CHANNELS,
@@ -24,5 +24,3 @@ const ChannelList = (): ReactNode => (
     )}
   </ul>
 );
-
-export { ChannelList };

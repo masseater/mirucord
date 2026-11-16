@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { ChannelKind } from "#/shared/discord";
 import { ChannelIcon } from "#/shared/ui/channel-icon";
 
-const PageLink = ({
+export const PageLink = ({
   href,
   name,
   kind,
@@ -16,5 +16,3 @@ const PageLink = ({
     {name}
   </a>
 );
-
-export { PageLink };

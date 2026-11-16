@@ -16,7 +16,7 @@ const DepartEvent = Schema.Struct({
 const decodeMember = Schema.decodeOption(MemberEvent);
 const decodeDepart = Schema.decodeOption(DepartEvent);
 
-const membersJob = (data: typeof MemberEvent.Encoded): Option.Option<GatewayJob> =>
+export const membersJob = (data: typeof MemberEvent.Encoded): Option.Option<GatewayJob> =>
   decodeMember(data).pipe(
     Option.map(({ guild_id, ...member }) => ({
       kind: "members",
@@ -25,12 +25,12 @@ const membersJob = (data: typeof MemberEvent.Encoded): Option.Option<GatewayJob>
     })),
   );
 
-const departJob = (data: typeof DepartEvent.Encoded): Option.Option<GatewayJob> =>
+export const departJob = (data: typeof DepartEvent.Encoded): Option.Option<GatewayJob> =>
   decodeDepart(data).pipe(
     Option.map(({ guild_id, user }) => ({ kind: "depart", guildId: guild_id, userIds: [user.id] })),
   );
 
-const memberJobKeyOf = (job: MemberJob): string => {
+export const memberJobKeyOf = (job: MemberJob): string => {
   if (job.kind === "members") {
     return `${job.guildId}-${Array.headNonEmpty(job.members).user.id}`;
   }
@@ -83,7 +83,7 @@ const jobsOfGuild = (changes: Array.NonEmptyReadonlyArray<MemberChange>): readon
   ];
 };
 
-const mergeMemberJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
+export const mergeMemberJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
   const latest = new Map(
     pipe(
       jobs,
@@ -95,5 +95,3 @@ const mergeMemberJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => 
   const byGuild = Array.groupBy([...latest.values()], ({ guildId }) => guildId);
   return pipe(Record.values(byGuild), Array.flatMap(jobsOfGuild));
 };
-
-export { departJob, memberJobKeyOf, membersJob, mergeMemberJobs };

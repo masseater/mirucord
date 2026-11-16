@@ -150,7 +150,7 @@ const authorsOf = (
     ),
   );
 
-type MessageQueries = Readonly<{
+export type MessageQueries = Readonly<{
   tracked: (ids: readonly string[]) => readonly TrackedRow[];
   stored: (ids: readonly string[]) => readonly StoredState[];
   idsInChannel: (channelId: string, ids: readonly string[]) => readonly string[];
@@ -161,7 +161,7 @@ type MessageQueries = Readonly<{
   byAuthor: (page: AuthorPage) => readonly SealedMessage[];
 }>;
 
-const messageQueries = (db: DrizzleSqliteDODatabase): MessageQueries => ({
+export const messageQueries = (db: DrizzleSqliteDODatabase): MessageQueries => ({
   tracked: (ids) => trackedRows(db, ids),
   stored: (ids) => storedStates(db, ids),
   idsInChannel: (channelId, ids) => idsInChannelOf(db, channelId, ids),
@@ -171,6 +171,3 @@ const messageQueries = (db: DrizzleSqliteDODatabase): MessageQueries => ({
   authors: (ids) => authorsOf(db, ids),
   byAuthor: authorQueries(db),
 });
-
-export { messageQueries };
-export type { MessageQueries };

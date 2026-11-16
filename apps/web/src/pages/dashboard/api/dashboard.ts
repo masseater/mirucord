@@ -86,13 +86,13 @@ const postPurge = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(ChannelInput))
   .handler(({ data }) => run(purgeFor(data)));
 
-const dashboardQuery = queryOptions({
+export const dashboardQuery = queryOptions({
   queryKey: ["dashboard"],
   queryFn: () => getDashboard(),
   refetchInterval: ({ state }) => pollWhileBusy(Option.fromUndefinedOr(state.data)),
 });
 
-const guildPageQuery = (
+export const guildPageQuery = (
   guildId: string,
 ): UnusedSkipTokenOptions<GuildPage, Error, GuildPage, GuildPageKey> &
   Readonly<{ queryKey: DataTag<GuildPageKey, GuildPage, Error> }> =>
@@ -101,9 +101,9 @@ const guildPageQuery = (
     queryFn: () => getGuildPage({ data: { guildId } }),
   });
 
-type ForumPostsOutcome = ForumPostsResult | SignedOut;
+export type ForumPostsOutcome = ForumPostsResult | SignedOut;
 
-const forumPostsQuery = ({
+export const forumPostsQuery = ({
   guildId,
   channelId,
 }: ChannelTarget): UnusedSkipTokenOptions<
@@ -118,37 +118,26 @@ const forumPostsQuery = ({
     queryFn: () => getForumPosts({ data: { guildId, channelId } }),
   });
 
-const saveConsent = (input: ConsentInput): Promise<ConsentResult | SignedOut> =>
+export const saveConsent = (input: ConsentInput): Promise<ConsentResult | SignedOut> =>
   postConsent({ data: input });
 
-const withdrawConsent = (guildId: string): Promise<RevokeResult | SignedOut> =>
+export const withdrawConsent = (guildId: string): Promise<RevokeResult | SignedOut> =>
   postRevoke({ data: { guildId } });
 
 const postDisconnect = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(AppInput))
   .handler(({ data }) => run(disconnectFor(data.clientId)));
 
-const disconnectConnectedApp = (clientId: string): Promise<DisconnectResult> =>
+export const disconnectConnectedApp = (clientId: string): Promise<DisconnectResult> =>
   postDisconnect({ data: { clientId } });
 
 const postEraseMessages = createServerFn({ method: "POST" })
   .validator(Schema.toStandardSchemaV1(GuildInput))
   .handler(({ data }) => run(eraseMessagesFor(data.guildId)));
 
-const eraseMyMessages = (guildId: string): Promise<EraseResult | SignedOut> =>
+export const eraseMyMessages = (guildId: string): Promise<EraseResult | SignedOut> =>
   postEraseMessages({ data: { guildId } });
 
-const purgeStoredChannel = (input: typeof ChannelInput.Type): Promise<PurgeResult | SignedOut> =>
-  postPurge({ data: input });
-
-export type { ForumPostsOutcome };
-export {
-  dashboardQuery,
-  disconnectConnectedApp,
-  eraseMyMessages,
-  forumPostsQuery,
-  guildPageQuery,
-  purgeStoredChannel,
-  saveConsent,
-  withdrawConsent,
-};
+export const purgeStoredChannel = (
+  input: typeof ChannelInput.Type,
+): Promise<PurgeResult | SignedOut> => postPurge({ data: input });

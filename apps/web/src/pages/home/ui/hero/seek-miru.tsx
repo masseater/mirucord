@@ -5,7 +5,7 @@ import { SpeechBubble } from "#/shared/ui/speech-bubble";
 
 const FOUND = "みっけ！";
 
-const SeekMiru = ({
+export const SeekMiru = ({
   kind,
   step,
 }: Readonly<{ kind: "pass" | "found"; step: "0" | "1" | "2" }>): ReactNode => (
@@ -17,5 +17,3 @@ const SeekMiru = ({
     </span>
   </span>
 );
-
-export { SeekMiru };

@@ -7,11 +7,11 @@ import { AuthorAvatar } from "./author-avatar";
 import { AuthorName } from "./author-name";
 import { MessageBody } from "./message-body";
 
-type Reply = Readonly<{ author: Author; text: string }>;
+export type Reply = Readonly<{ author: Author; text: string }>;
 
 const MENTION = "@";
 
-const Message = ({
+export const Message = ({
   id,
   author,
   time,
@@ -50,6 +50,3 @@ const Message = ({
     </div>
   </div>
 );
-
-export { Message };
-export type { Reply };

@@ -1,3 +1,1 @@
-const FREE_GUILD_LIMIT = 80;
-
-export { FREE_GUILD_LIMIT };
+export const FREE_GUILD_LIMIT = 80;

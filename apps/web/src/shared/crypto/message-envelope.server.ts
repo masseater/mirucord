@@ -17,7 +17,7 @@ const sealDataFirst = (plaintext: string, key: CryptoKey, context: string): Effe
       .encrypt(key),
   );
 
-const seal: {
+export const seal: {
   (key: CryptoKey, context: string): (plaintext: string) => Effect.Effect<string>;
   (plaintext: string, key: CryptoKey, context: string): Effect.Effect<string>;
 } = Function.dual(DATA_FIRST_ARITY, sealDataFirst);
@@ -37,7 +37,7 @@ const unsealDataFirst = (sealed: string, key: CryptoKey, context: string): Effec
     Effect.map(({ plaintext }) => textDecoder.decode(plaintext)),
   );
 
-const unseal: {
+export const unseal: {
   (key: CryptoKey, context: string): (sealed: string) => Effect.Effect<string>;
   (sealed: string, key: CryptoKey, context: string): Effect.Effect<string>;
 } = Function.dual(DATA_FIRST_ARITY, unsealDataFirst);
@@ -63,13 +63,13 @@ const MessageBodySchema = Schema.Struct({
   poll: Schema.optional(MessagePoll),
 });
 
-type MessageBody = typeof MessageBodySchema.Type;
+export type MessageBody = typeof MessageBodySchema.Type;
 
 const MessageBodyJson = Schema.fromJsonString(MessageBodySchema);
 const encodeBody = Schema.encodeEffect(MessageBodyJson);
 const decodeBody = Schema.decodeEffect(MessageBodyJson);
 
-type MessageAddress = Readonly<{ guildId: string; channelId: string; messageId: string }>;
+export type MessageAddress = Readonly<{ guildId: string; channelId: string; messageId: string }>;
 
 const contextOf = ({ guildId, channelId, messageId }: MessageAddress): string =>
   `${guildId}/${channelId}/${messageId}`;
@@ -83,7 +83,7 @@ const sealMessageDataFirst = (
   return encodeBody(body).pipe(Effect.orDie, Effect.flatMap(sealWithKey));
 };
 
-const sealMessage: {
+export const sealMessage: {
   (key: CryptoKey, address: MessageAddress): (body: MessageBody) => Effect.Effect<string>;
   (body: MessageBody, key: CryptoKey, address: MessageAddress): Effect.Effect<string>;
 } = Function.dual(DATA_FIRST_ARITY, sealMessageDataFirst);
@@ -95,10 +95,7 @@ const openMessageDataFirst = (
 ): Effect.Effect<MessageBody> =>
   unseal(sealed, key, contextOf(address)).pipe(Effect.flatMap(decodeBody), Effect.orDie);
 
-const openMessage: {
+export const openMessage: {
   (key: CryptoKey, address: MessageAddress): (sealed: string) => Effect.Effect<MessageBody>;
   (sealed: string, key: CryptoKey, address: MessageAddress): Effect.Effect<MessageBody>;
 } = Function.dual(DATA_FIRST_ARITY, openMessageDataFirst);
-
-export { openMessage, seal, sealMessage, unseal };
-export type { MessageAddress, MessageBody };

@@ -57,7 +57,7 @@ const vectorsWithKey = (published: Published, key: CryptoKey): Effect.Effect<voi
   );
 };
 
-const publishGuildVectors = (published: Published): Effect.Effect<void> =>
+export const publishGuildVectors = (published: Published): Effect.Effect<void> =>
   wrappedKeyOf(published.guildId).pipe(
     Effect.flatMap(
       Option.match({
@@ -68,5 +68,3 @@ const publishGuildVectors = (published: Published): Effect.Effect<void> =>
     ),
     Effect.withSpan("vectors.alarm", { attributes: { guildId: published.guildId } }),
   );
-
-export { publishGuildVectors };

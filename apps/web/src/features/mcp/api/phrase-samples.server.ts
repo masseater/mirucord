@@ -7,9 +7,9 @@ import type { MessageBody } from "#/shared/crypto/index.server";
 
 import type { NoteInput, NoteSubject, OpenedSample } from "./phrase-annotate.server";
 
-type Prepared = Readonly<{ input: NoteInput; examples: readonly string[] }>;
+export type Prepared = Readonly<{ input: NoteInput; examples: readonly string[] }>;
 
-type SamplesRequest = Readonly<{
+export type SamplesRequest = Readonly<{
   guildId: string;
   key: CryptoKey;
   channelIds: readonly string[];
@@ -22,7 +22,7 @@ const idsOf = ({ before, use, after }: NoteSample): readonly string[] =>
     Array.map(({ id }) => id),
   );
 
-const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
+export const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
   guildId,
   key,
   channelIds,
@@ -71,6 +71,3 @@ const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
     }),
   );
 });
-
-export { preparedOf };
-export type { Prepared, SamplesRequest };

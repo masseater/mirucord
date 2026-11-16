@@ -43,7 +43,7 @@ const sessionsOf = (request: VoiceRequest): Effect.Effect<typeof ListVoiceSessio
   );
 };
 
-const listVoiceSessions =
+export const listVoiceSessions =
   (discordUserId: string) =>
   (input: typeof ListVoiceSessionsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: input.serverId, discordUserId })((scope) => {
@@ -56,5 +56,3 @@ const listVoiceSessions =
       }
       return sessionsOf({ scope, input }).pipe(Effect.flatMap(structuredResult));
     });
-
-export { listVoiceSessions };

@@ -8,9 +8,9 @@ import { account } from "./generated/auth.table";
 
 const DISCORD_PROVIDER = "discord";
 
-type SignedInUser = Readonly<{ userId: string; name: string; discordUserId: string }>;
+export type SignedInUser = Readonly<{ userId: string; name: string; discordUserId: string }>;
 
-const discordUserIdOf = (userId: string): Effect.Effect<Option.Option<string>> =>
+export const discordUserIdOf = (userId: string): Effect.Effect<Option.Option<string>> =>
   Effect.promise(() =>
     db
       .select({ accountId: account.accountId })
@@ -19,7 +19,7 @@ const discordUserIdOf = (userId: string): Effect.Effect<Option.Option<string>> =
       .orderBy(account.createdAt),
   ).pipe(Effect.map((rows) => Option.map(Array.head(rows), ({ accountId }) => accountId)));
 
-const signedInUser = (request: Request): Effect.Effect<Option.Option<SignedInUser>> =>
+export const signedInUser = (request: Request): Effect.Effect<Option.Option<SignedInUser>> =>
   Effect.promise(() => getAuth().api.getSession({ headers: request.headers })).pipe(
     Effect.flatMap((session) =>
       Option.match(Option.fromNullOr(session), {
@@ -33,6 +33,3 @@ const signedInUser = (request: Request): Effect.Effect<Option.Option<SignedInUse
       }),
     ),
   );
-
-export { discordUserIdOf, signedInUser };
-export type { SignedInUser };

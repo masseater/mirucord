@@ -32,7 +32,7 @@ const CHATTER: readonly ChatLine[] = [
   },
 ];
 
-const SafetyBody = (): ReactNode => (
+export const SafetyBody = (): ReactNode => (
   <>
     <Message author={BOT} time={TIME}>
       <PostHeading guide={GUIDE} lead={LEAD} tail={TAIL} />
@@ -42,5 +42,3 @@ const SafetyBody = (): ReactNode => (
     <SystemMessage kind="pin" actor={memberAuthor(MEMBERS.miho)} text={PINNED} time={TIME} />
   </>
 );
-
-export { SafetyBody };

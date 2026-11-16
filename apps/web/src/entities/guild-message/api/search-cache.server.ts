@@ -16,7 +16,7 @@ class FileGate extends Context.Service<
   Readonly<{ reads: Semaphore.Semaphore; writes: Semaphore.Semaphore }>
 >()("web/entities/guild-message/api/search-cache.server/FileGate") {}
 
-const withFileGate = <Value, Failure, Needs>(
+export const withFileGate = <Value, Failure, Needs>(
   effect: Effect.Effect<Value, Failure, Needs>,
 ): Effect.Effect<Value, Failure, Exclude<Needs, FileGate>> =>
   Effect.provideServiceEffect(
@@ -66,7 +66,11 @@ const remember = (
     ),
   );
 
-type FileRead = Readonly<{ key: string; bytes: Option.Option<ArrayBuffer>; cached: boolean }>;
+export type FileRead = Readonly<{
+  key: string;
+  bytes: Option.Option<ArrayBuffer>;
+  cached: boolean;
+}>;
 
 const fromBucket = (key: string): Effect.Effect<FileRead, never, FileGate> =>
   objectBytes(key).pipe(
@@ -120,7 +124,7 @@ const matchOnce = (
     }),
   );
 
-const cachedBytes = (key: string): Effect.Effect<FileRead, never, FileGate> =>
+export const cachedBytes = (key: string): Effect.Effect<FileRead, never, FileGate> =>
   Effect.all([Effect.service(FileGate), searchCache]).pipe(
     Effect.flatMap(([{ reads }, cache]) =>
       matchOnce(cache, key).pipe(
@@ -135,5 +139,4 @@ const cachedBytes = (key: string): Effect.Effect<FileRead, never, FileGate> =>
     ),
   );
 
-export { cachedBytes, withFileGate };
-export type { FileGate, FileRead };
+export type { FileGate };

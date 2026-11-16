@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { Embed } from "./embed";
 
-const TitledEmbed = ({
+export const TitledEmbed = ({
   accent,
   title,
   children,
@@ -12,5 +12,3 @@ const TitledEmbed = ({
     {children}
   </Embed>
 );
-
-export { TitledEmbed };

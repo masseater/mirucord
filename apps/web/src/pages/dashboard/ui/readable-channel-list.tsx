@@ -10,12 +10,10 @@ const TITLE = `${MASCOT_NAME}が見られるチャンネル`;
 
 type Props = Readonly<{ settings: GuildSettings; channels: readonly SettingsChannel[] }>;
 
-const ReadableChannelList = ({ settings, channels }: Props): ReactNode => (
+export const ReadableChannelList = ({ settings, channels }: Props): ReactNode => (
   <>
     <h2 className="text-dc-bright font-maru text-xl font-black">{TITLE}</h2>
     <ChannelGroups settings={settings} channels={channels} />
     <BlindChannelNote channels={channels} />
   </>
 );
-
-export { ReadableChannelList };

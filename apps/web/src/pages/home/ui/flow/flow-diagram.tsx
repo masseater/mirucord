@@ -36,7 +36,7 @@ const LAYOUTS = {
   },
 } as const;
 
-const FlowDiagram = ({ layout }: Readonly<{ layout: keyof typeof LAYOUTS }>): ReactNode => {
+export const FlowDiagram = ({ layout }: Readonly<{ layout: keyof typeof LAYOUTS }>): ReactNode => {
   const titleId = useId();
   const { viewBox, className, server, miru, ai, links, protocol, carry } = LAYOUTS[layout];
   return (
@@ -70,5 +70,3 @@ const FlowDiagram = ({ layout }: Readonly<{ layout: keyof typeof LAYOUTS }>): Re
     </svg>
   );
 };
-
-export { FlowDiagram };

@@ -17,7 +17,7 @@ const flowRow = (edge: FlowEdge): ReactNode => (
   </li>
 );
 
-const GuideFlow = ({ edges }: Readonly<{ edges: readonly FlowEdge[] }>): ReactNode => (
+export const GuideFlow = ({ edges }: Readonly<{ edges: readonly FlowEdge[] }>): ReactNode => (
   <ul className="grid gap-3">
     {pipe(
       edges,
@@ -25,5 +25,3 @@ const GuideFlow = ({ edges }: Readonly<{ edges: readonly FlowEdge[] }>): ReactNo
     )}
   </ul>
 );
-
-export { GuideFlow };

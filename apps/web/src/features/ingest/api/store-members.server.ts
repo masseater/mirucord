@@ -54,19 +54,19 @@ const saveWith = (
     );
   });
 
-const syncMembers = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+export const syncMembers = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
   whenConsented(guildId)((wrappedKey) =>
     listGuildMembers(guildId).pipe(
       Effect.flatMap((members) => saveWith({ guildId, members, coverage: "complete" }, wrappedKey)),
     ),
   ).pipe(Effect.withSpan("syncMembers", { attributes: { guildId } }));
 
-const storeGatewayMembers = ({ guildId, members }: MembersJob): Effect.Effect<void> =>
+export const storeGatewayMembers = ({ guildId, members }: MembersJob): Effect.Effect<void> =>
   whenConsented(guildId)((wrappedKey) =>
     saveWith({ guildId, members, coverage: "partial" }, wrappedKey),
   );
 
-const departGatewayMembers = ({ guildId, userIds }: DepartJob): Effect.Effect<void> =>
+export const departGatewayMembers = ({ guildId, userIds }: DepartJob): Effect.Effect<void> =>
   whenConsented(guildId)(() =>
     Clock.currentTimeMillis.pipe(
       Effect.flatMap((now) =>
@@ -74,5 +74,3 @@ const departGatewayMembers = ({ guildId, userIds }: DepartJob): Effect.Effect<vo
       ),
     ),
   );
-
-export { departGatewayMembers, storeGatewayMembers, syncMembers };

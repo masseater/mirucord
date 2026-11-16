@@ -3,7 +3,7 @@ import { siClaude } from "simple-icons";
 
 const AI_LABEL = "AI";
 
-const AiNode = ({
+export const AiNode = ({
   left,
   top,
   caption,
@@ -30,5 +30,3 @@ const AiNode = ({
     </text>
   </g>
 );
-
-export { AiNode };

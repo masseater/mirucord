@@ -4,7 +4,7 @@ import { forumPostsId, useForumDisclosure } from "#/pages/dashboard/model/forum-
 
 import { ForumPostList } from "./forum-post-list";
 
-const ForumPostPanel = ({
+export const ForumPostPanel = ({
   guildId,
   channelId,
 }: Readonly<{ guildId: string; channelId: string }>): ReactNode => {
@@ -19,5 +19,3 @@ const ForumPostPanel = ({
     </div>
   );
 };
-
-export { ForumPostPanel };

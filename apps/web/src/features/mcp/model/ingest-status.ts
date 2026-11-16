@@ -2,18 +2,18 @@ import { Array, Option, pipe } from "effect";
 
 import type { Backfill } from "#/shared/db";
 
-type Consent = "consented" | "notConsented";
+export type Consent = "consented" | "notConsented";
 
-const INGEST_STATUSES = ["notConsented", "waiting", "backfilling", "done", "empty"] as const;
+export const INGEST_STATUSES = ["notConsented", "waiting", "backfilling", "done", "empty"] as const;
 
-type IngestStatus = (typeof INGEST_STATUSES)[number];
+export type IngestStatus = (typeof INGEST_STATUSES)[number];
 
-type ChannelProgress = Readonly<{
+export type ChannelProgress = Readonly<{
   newest: Option.Option<string>;
   backfill: Backfill;
 }>;
 
-const READY: ReadonlySet<IngestStatus> = new Set(["done", "empty"]);
+export const READY: ReadonlySet<IngestStatus> = new Set(["done", "empty"]);
 
 const PROGRESS_STATUS = {
   pending: { stored: "backfilling", none: "waiting" },
@@ -70,11 +70,11 @@ const postsStatus = (posts: readonly ChannelProgress[]): IngestStatus => {
   );
 };
 
-type StatusRequest =
+export type StatusRequest =
   | Readonly<{ consent: Consent; kind: "channel"; progress: ChannelProgress }>
   | Readonly<{ consent: Consent; kind: "forum"; posts: readonly ChannelProgress[] }>;
 
-const ingestStatus = (request: StatusRequest): IngestStatus => {
+export const ingestStatus = (request: StatusRequest): IngestStatus => {
   if (request.consent === "notConsented") {
     return "notConsented";
   }
@@ -83,6 +83,3 @@ const ingestStatus = (request: StatusRequest): IngestStatus => {
   }
   return progressStatus(request.progress);
 };
-
-export { INGEST_STATUSES, READY, ingestStatus };
-export type { ChannelProgress, Consent, IngestStatus, StatusRequest };

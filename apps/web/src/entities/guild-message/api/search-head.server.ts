@@ -82,16 +82,13 @@ const headOf = (db: DrizzleSqliteDODatabase): SearchHead => {
   };
 };
 
-type HeadTarget = Readonly<{
+export type HeadTarget = Readonly<{
   db: DrizzleSqliteDODatabase;
   bucket: Readonly<R2Bucket>;
   guildId: string;
 }>;
 
-const writeSearchHead = ({ db, bucket, guildId }: HeadTarget): Effect.Effect<void> =>
+export const writeSearchHead = ({ db, bucket, guildId }: HeadTarget): Effect.Effect<void> =>
   Effect.suspend(() => writeHead({ bucket, guildId, head: headOf(db) }));
 
-const deletedEntry = (segment: Segment): SegmentEntry => entryOf(segment, () => false);
-
-export { deletedEntry, writeSearchHead };
-export type { HeadTarget };
+export const deletedEntry = (segment: Segment): SegmentEntry => entryOf(segment, () => false);

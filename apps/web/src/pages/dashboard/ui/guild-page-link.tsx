@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import type { ReactNode } from "react";
 
-const GuildPageLink = ({
+export const GuildPageLink = ({
   guildId,
   className,
   children,
@@ -14,5 +14,3 @@ const GuildPageLink = ({
     </Link>
   );
 };
-
-export { GuildPageLink };

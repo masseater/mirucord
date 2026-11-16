@@ -13,7 +13,7 @@ import { vectorLedger } from "./vector-ledger.server";
 
 const ONE_SEGMENT = 1;
 
-type VectorPublisher = Readonly<{
+export type VectorPublisher = Readonly<{
   db: DrizzleSqliteDODatabase;
   bucket: Readonly<R2Bucket>;
   keys: Keys;
@@ -47,7 +47,7 @@ const rebuildSegment = Effect.fn("vectors.rebuildSegment")(function* rebuildSegm
   });
 });
 
-const publishVectors = Effect.fn("vectors.publish")(function* publishVectors(
+export const publishVectors = Effect.fn("vectors.publish")(function* publishVectors(
   publisher: VectorPublisher,
 ) {
   const stale = vectorLedger(publisher.db).staleSegments();
@@ -61,6 +61,3 @@ const publishVectors = Effect.fn("vectors.publish")(function* publishVectors(
   }
   return { status: "idle" } satisfies Outcome;
 });
-
-export { publishVectors };
-export type { VectorPublisher };

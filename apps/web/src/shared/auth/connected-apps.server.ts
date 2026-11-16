@@ -10,16 +10,16 @@ import {
   oauthRefreshToken,
 } from "./generated/auth.table";
 
-type ConnectedApp = Readonly<{
+export type ConnectedApp = Readonly<{
   clientId: string;
   name: string;
   connectedAt: number | null;
   updatedAt: number | null;
 }>;
 
-type AppGrant = Readonly<{ userId: string; clientId: string }>;
+export type AppGrant = Readonly<{ userId: string; clientId: string }>;
 
-const listConnectedApps = (userId: string): Effect.Effect<readonly ConnectedApp[]> => {
+export const listConnectedApps = (userId: string): Effect.Effect<readonly ConnectedApp[]> => {
   const latestRefresh = db
     .select({
       clientId: oauthRefreshToken.clientId,
@@ -63,7 +63,7 @@ const listConnectedApps = (userId: string): Effect.Effect<readonly ConnectedApp[
   );
 };
 
-const disconnectApp = ({ userId, clientId }: AppGrant): Effect.Effect<void> => {
+export const disconnectApp = ({ userId, clientId }: AppGrant): Effect.Effect<void> => {
   const refreshTokens = and(
     eq(oauthRefreshToken.userId, userId),
     eq(oauthRefreshToken.clientId, clientId),
@@ -81,6 +81,3 @@ const disconnectApp = ({ userId, clientId }: AppGrant): Effect.Effect<void> => {
     ]),
   ).pipe(Effect.asVoid);
 };
-
-export { disconnectApp, listConnectedApps };
-export type { AppGrant, ConnectedApp };

@@ -12,9 +12,9 @@ const forumDisclosureAtom = Atom.family((channelId: string) =>
   Atom.make<ForumDisclosure>(CLOSED).pipe(Atom.withLabel(`forum-disclosure:${channelId}`)),
 );
 
-const forumPostsId = (channelId: string): string => `forum-posts-${channelId}`;
+export const forumPostsId = (channelId: string): string => `forum-posts-${channelId}`;
 
-const useForumDisclosure = (
+export const useForumDisclosure = (
   channelId: string,
 ): Readonly<{ disclosure: ForumDisclosure; toggle: () => void }> => {
   const [disclosure, setDisclosure] = useAtom(forumDisclosureAtom(channelId));
@@ -23,5 +23,3 @@ const useForumDisclosure = (
   }, [setDisclosure]);
   return { disclosure, toggle };
 };
-
-export { forumPostsId, useForumDisclosure };

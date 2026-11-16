@@ -5,7 +5,7 @@ import type { Overwrite } from "#/shared/permissions";
 
 import { BACKFILLS, BOT_ACCESSES } from "./channel-state";
 
-const guild = sqliteTable("guild", {
+export const guild = sqliteTable("guild", {
   id: text().primaryKey(),
   name: text().notNull(),
   icon: text(),
@@ -14,7 +14,7 @@ const guild = sqliteTable("guild", {
   joinedAt: integer({ mode: "timestamp_ms" }).notNull(),
 });
 
-const role = sqliteTable(
+export const role = sqliteTable(
   "role",
   {
     id: text().primaryKey(),
@@ -29,7 +29,7 @@ const role = sqliteTable(
 
 const FIRST_POSITION = 0;
 
-const channel = sqliteTable(
+export const channel = sqliteTable(
   "channel",
   {
     id: text().primaryKey(),
@@ -56,7 +56,7 @@ const channel = sqliteTable(
   (table) => [index("channel_guild_id_idx").on(table.guildId)],
 );
 
-const ingestConsent = sqliteTable("ingest_consent", {
+export const ingestConsent = sqliteTable("ingest_consent", {
   guildId: text()
     .primaryKey()
     .references(() => guild.id, { onDelete: "cascade" }),
@@ -67,5 +67,3 @@ const ingestConsent = sqliteTable("ingest_consent", {
     .notNull()
     .default("granted"),
 });
-
-export { channel, guild, ingestConsent, role };

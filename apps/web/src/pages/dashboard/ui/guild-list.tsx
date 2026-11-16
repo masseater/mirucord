@@ -11,7 +11,7 @@ import { GuildCard } from "./guild-card";
 const TITLE = "あなたが管理しているサーバー";
 const INVITE = `${MASCOT_NAME}をサーバーに招待`;
 
-const GuildList = ({
+export const GuildList = ({
   guilds,
   inviteUrl,
 }: Readonly<{ guilds: readonly ManagedGuild[]; inviteUrl: string }>): ReactNode => (
@@ -28,5 +28,3 @@ const GuildList = ({
     </a>
   </Panel>
 );
-
-export { GuildList };

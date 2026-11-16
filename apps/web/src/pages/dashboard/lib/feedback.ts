@@ -3,26 +3,26 @@ import { Option } from "effect";
 
 type Fix = "none" | "signIn" | "refresh";
 
-type Feedback = Readonly<{ tone: "error" | "busy" | "done"; text: string; fix: Fix }>;
+export type Feedback = Readonly<{ tone: "error" | "busy" | "done"; text: string; fix: Fix }>;
 
-const fixable =
+export const fixable =
   (fix: Fix) =>
   (text: string): Option.Option<Feedback> =>
     Option.some({ tone: "error", text, fix });
 
-const failure = fixable("none");
+export const failure = fixable("none");
 
-const progress = (text: string): Option.Option<Feedback> =>
+export const progress = (text: string): Option.Option<Feedback> =>
   Option.some({ tone: "busy", text, fix: "none" });
 
-const success = (text: string): Option.Option<Feedback> =>
+export const success = (text: string): Option.Option<Feedback> =>
   Option.some({ tone: "done", text, fix: "none" });
 
-const SIGNED_OUT = fixable("signIn")("ログインの期限が切れました");
+export const SIGNED_OUT = fixable("signIn")("ログインの期限が切れました");
 
-const FORBIDDEN = failure("サーバー管理の権限がありません");
+export const FORBIDDEN = failure("サーバー管理の権限がありません");
 
-const mutationFeedback =
+export const mutationFeedback =
   <Result extends string>({
     pending,
     failed,
@@ -47,6 +47,3 @@ const mutationFeedback =
       Option.flatMap((answered) => result(answered.status)),
     );
   };
-
-export { failure, fixable, FORBIDDEN, mutationFeedback, progress, SIGNED_OUT, success };
-export type { Feedback };

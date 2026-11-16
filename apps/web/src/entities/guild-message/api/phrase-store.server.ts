@@ -21,7 +21,7 @@ import type {
   UnphrasedMessage,
 } from "./store-types";
 
-type Ledger = Readonly<{
+export type Ledger = Readonly<{
   guildId: string | null;
   written: number;
   generation: number;
@@ -59,7 +59,7 @@ const EMPTY_LEDGER: Ledger = {
 
 const inWindow = (now: number): SQL => gte(guildMessage.createdAt, now - PHRASE_WINDOW_MS);
 
-abstract class PhraseStore extends MessageStore {
+export abstract class PhraseStore extends MessageStore {
   protected ledgerOf(): Ledger {
     const found = this.db
       .select({
@@ -284,6 +284,3 @@ abstract class PhraseStore extends MessageStore {
     );
   }
 }
-
-export { PhraseStore };
-export type { Ledger };

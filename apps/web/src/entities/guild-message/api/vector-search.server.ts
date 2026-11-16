@@ -19,7 +19,7 @@ const SINGLE_CLUSTER = 1;
 const FIRST_CLUSTER = 0;
 const ONE_FILE = 1;
 
-type SimilarRequest = Readonly<{
+export type SimilarRequest = Readonly<{
   guildId: string;
   key: CryptoKey;
   query: Quantized;
@@ -27,9 +27,9 @@ type SimilarRequest = Readonly<{
   limit: number;
 }>;
 
-type SimilarEntry = SealedEntry & Readonly<{ score: number }>;
+export type SimilarEntry = SealedEntry & Readonly<{ score: number }>;
 
-type SimilarResult = Readonly<{
+export type SimilarResult = Readonly<{
   entries: readonly SimilarEntry[];
   stats: Readonly<{ segments: number; files: number; vectors: number }>;
 }>;
@@ -233,7 +233,7 @@ const statsOf = (scans: readonly Scanned[], segments: number): SimilarResult["st
   ),
 });
 
-const searchSimilar = (request: SimilarRequest): Effect.Effect<SimilarResult> =>
+export const searchSimilar = (request: SimilarRequest): Effect.Effect<SimilarResult> =>
   readHead(request.guildId).pipe(
     Effect.flatMap((head) => {
       const segments = vectorSegments(head);
@@ -275,6 +275,3 @@ const searchSimilar = (request: SimilarRequest): Effect.Effect<SimilarResult> =>
     ),
     Effect.withSpan("search.similar", { attributes: { guildId: request.guildId } }),
   );
-
-export { searchSimilar };
-export type { SimilarEntry, SimilarRequest, SimilarResult };

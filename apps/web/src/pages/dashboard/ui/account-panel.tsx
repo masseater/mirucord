@@ -14,7 +14,7 @@ const TITLE = "アカウント";
 const SIGN_OUT = "ログアウト";
 const FAILED = "ログアウトできませんでした";
 
-const AccountPanel = ({ name }: Readonly<{ name: string }>): ReactNode => {
+export const AccountPanel = ({ name }: Readonly<{ name: string }>): ReactNode => {
   const navigate = useNavigate();
   const { mutate, status } = useMutation({
     mutationFn: () => authClient.signOut({ fetchOptions: { throw: true } }),
@@ -44,5 +44,3 @@ const AccountPanel = ({ name }: Readonly<{ name: string }>): ReactNode => {
     </Panel>
   );
 };
-
-export { AccountPanel };

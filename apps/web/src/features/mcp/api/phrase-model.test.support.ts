@@ -8,13 +8,16 @@ import { ListServerPhrasesOutput } from "#/features/mcp/api/tool-output";
 import { GUILD_A } from "./scenario.test.support";
 import { callTool } from "./tool-call.test.support";
 
-type ModelAnswers = Readonly<{ common: string; note: string }>;
+export type ModelAnswers = Readonly<{ common: string; note: string }>;
 
-const prompts: string[] = [];
+export const prompts: string[] = [];
 
 const decodePhrases = Schema.decodeUnknownEffect(ListServerPhrasesOutput);
 
-const listPhrases = callTool({ name: "list_server_phrases", args: { serverId: GUILD_A } }).pipe(
+export const listPhrases = callTool({
+  name: "list_server_phrases",
+  args: { serverId: GUILD_A },
+}).pipe(
   Effect.flatMap(({ structured }) => decodePhrases(Option.getOrUndefined(structured))),
   Effect.map(({ phrases }) => phrases),
   Effect.orDie,
@@ -43,9 +46,6 @@ const answerModel = (answers: ModelAnswers, inputs: unknown): Effect.Effect<Mode
     return { choices: [{ message: { content } }] };
   }).pipe(Effect.orDie);
 
-const mockPhraseModel = (answers: ModelAnswers): void => {
+export const mockPhraseModel = (answers: ModelAnswers): void => {
   vi.spyOn(env.AI, "run").mockImplementation((_model, inputs) => run(answerModel(answers, inputs)));
 };
-
-export { listPhrases, mockPhraseModel, prompts };
-export type { ModelAnswers };

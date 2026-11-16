@@ -16,7 +16,7 @@ import type {
 import { botReader } from "./bot-readable.server";
 import type { BotView } from "./bot-readable.server";
 
-type ChannelListing = Readonly<{
+export type ChannelListing = Readonly<{
   stored: readonly DiscordChannel[];
   readable: readonly string[];
   postable: readonly string[];
@@ -24,7 +24,7 @@ type ChannelListing = Readonly<{
   unlisted: readonly string[];
 }>;
 
-type ChannelSync = ChannelListing & Readonly<{ discordGuild: DiscordGuild }>;
+export type ChannelSync = ChannelListing & Readonly<{ discordGuild: DiscordGuild }>;
 
 type ArchivedListing =
   | Readonly<{ status: "listed"; threads: readonly DiscordChannel[] }>
@@ -71,7 +71,7 @@ const idsOf = (channels: readonly DiscordChannel[]): readonly string[] =>
     Array.map(({ id }) => id),
   );
 
-const listChannelsOf = (view: BotView): Effect.Effect<ChannelListing, DiscordRequestError> =>
+export const listChannelsOf = (view: BotView): Effect.Effect<ChannelListing, DiscordRequestError> =>
   Effect.gen(function* listChannels() {
     const [channels, active, readableIn] = yield* Effect.all([
       listGuildChannels(view.discordGuild.id),
@@ -108,6 +108,3 @@ const listChannelsOf = (view: BotView): Effect.Effect<ChannelListing, DiscordReq
       unlisted: [...hiddenParents, ...unlistedParentsOf(listings)],
     };
   });
-
-export { listChannelsOf };
-export type { ChannelListing, ChannelSync };

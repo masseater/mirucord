@@ -135,7 +135,7 @@ const isHidden = ({ scope, input }: ReactionRequest): boolean =>
     ({ channelId }) => !scope.visible.includes(channelId),
   );
 
-const listReactions =
+export const listReactions =
   (discordUserId: string) =>
   (input: typeof ListReactionsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: input.serverId, discordUserId })((scope) => {
@@ -147,5 +147,3 @@ const listReactions =
       }
       return reactionsOf({ scope, input });
     });
-
-export { listReactions };

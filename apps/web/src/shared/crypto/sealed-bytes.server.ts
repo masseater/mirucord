@@ -6,7 +6,7 @@ const ALGORITHM = "AES-GCM";
 
 const textEncoder = new TextEncoder();
 
-type SealRequest = Readonly<{ bytes: Uint8Array; key: CryptoKey; context: string }>;
+export type SealRequest = Readonly<{ bytes: Uint8Array; key: CryptoKey; context: string }>;
 
 const joinSealed = (iv: Uint8Array, sealed: Readonly<ArrayBuffer>): Uint8Array => {
   const joined = new Uint8Array(IV_BYTES + sealed.byteLength);
@@ -15,7 +15,7 @@ const joinSealed = (iv: Uint8Array, sealed: Readonly<ArrayBuffer>): Uint8Array =
   return joined;
 };
 
-const sealBytes = ({ bytes, key, context }: SealRequest): Effect.Effect<Uint8Array> => {
+export const sealBytes = ({ bytes, key, context }: SealRequest): Effect.Effect<Uint8Array> => {
   const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
   return Effect.promise(() =>
     crypto.subtle.encrypt(
@@ -26,7 +26,7 @@ const sealBytes = ({ bytes, key, context }: SealRequest): Effect.Effect<Uint8Arr
   ).pipe(Effect.map((sealed) => joinSealed(iv, sealed)));
 };
 
-const openBytes = ({ bytes, key, context }: SealRequest): Effect.Effect<Uint8Array> =>
+export const openBytes = ({ bytes, key, context }: SealRequest): Effect.Effect<Uint8Array> =>
   Effect.promise(() =>
     crypto.subtle.decrypt(
       {
@@ -38,6 +38,3 @@ const openBytes = ({ bytes, key, context }: SealRequest): Effect.Effect<Uint8Arr
       bytes.slice(IV_BYTES),
     ),
   ).pipe(Effect.map((opened) => new Uint8Array(opened)));
-
-export { openBytes, sealBytes };
-export type { SealRequest };

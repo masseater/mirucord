@@ -43,7 +43,7 @@ const CHATTER: readonly ChatLine[] = [
   },
 ];
 
-const FeaturesBody = (): ReactNode => (
+export const FeaturesBody = (): ReactNode => (
   <>
     <Message author={BOT} time={TIME}>
       <PostHeading lead={LEAD} />
@@ -53,5 +53,3 @@ const FeaturesBody = (): ReactNode => (
     <Chatter lines={CHATTER} />
   </>
 );
-
-export { FeaturesBody };

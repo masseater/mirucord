@@ -1,6 +1,6 @@
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-const phraseUse = sqliteTable(
+export const phraseUse = sqliteTable(
   "phrase_use",
   {
     messageId: text().notNull(),
@@ -18,5 +18,3 @@ const phraseUse = sqliteTable(
     index("phrase_use_channel_idx").on(table.channelId),
   ],
 );
-
-export { phraseUse };

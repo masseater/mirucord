@@ -1,6 +1,6 @@
 import type { PhraseHash } from "#/entities/guild-message/lib/phrases.server";
 
-type StoredRow = Readonly<{
+export type StoredRow = Readonly<{
   id: string;
   channelId: string;
   authorId: string;
@@ -10,38 +10,42 @@ type StoredRow = Readonly<{
   describedWith: string | null;
 }>;
 
-type PhraseState =
+export type PhraseState =
   | Readonly<{ status: "pending" }>
   | Readonly<{ status: "extracted"; hashes: readonly PhraseHash[] }>;
 
-type ExtractedHashes = Extract<PhraseState, Readonly<{ status: "extracted" }>>["hashes"];
+export type ExtractedHashes = Extract<PhraseState, Readonly<{ status: "extracted" }>>["hashes"];
 
-type PhraseColumn = "messageId" | "authorId" | "channelId";
+export type PhraseColumn = "messageId" | "authorId" | "channelId";
 
-type NoteStatus = "pending" | "common" | "server";
+export type NoteStatus = "pending" | "common" | "server";
 
-type PhraseNote = Readonly<{
+export type PhraseNote = Readonly<{
   phrase: string;
   status: Exclude<NoteStatus, "pending">;
   sealed: string | null;
   examples: readonly string[];
 }>;
 
-type NoteClaim = Readonly<{ phrases: readonly string[]; now: number }>;
+export type NoteClaim = Readonly<{ phrases: readonly string[]; now: number }>;
 
-type IndexedMessage = Readonly<{
+export type IndexedMessage = Readonly<{
   row: StoredRow;
   tokens: readonly number[];
   phrases: PhraseState;
 }>;
 
-type TrackedRow = Readonly<{ id: string; createdAt: number; version: number }>;
+export type TrackedRow = Readonly<{ id: string; createdAt: number; version: number }>;
 
-type WriteMode = "overwrite" | "adopt";
+export type WriteMode = "overwrite" | "adopt";
 
-type StoredState = Readonly<{ id: string; editedAt: number | null; describedWith: string | null }>;
+export type StoredState = Readonly<{
+  id: string;
+  editedAt: number | null;
+  describedWith: string | null;
+}>;
 
-type SealedMessage = Readonly<{
+export type SealedMessage = Readonly<{
   id: string;
   channelId: string;
   sealed: string;
@@ -49,26 +53,26 @@ type SealedMessage = Readonly<{
   editedAt: number | null;
 }>;
 
-type ChannelCount = Readonly<{ channelId: string; messages: number }>;
+export type ChannelCount = Readonly<{ channelId: string; messages: number }>;
 
-type ChannelOldest = Readonly<{ channelId: string; oldest: number }>;
+export type ChannelOldest = Readonly<{ channelId: string; oldest: number }>;
 
-type AuthoredMessage = Readonly<{ id: string; authorId: string }>;
+export type AuthoredMessage = Readonly<{ id: string; authorId: string }>;
 
-type AuthorPage = Readonly<{
+export type AuthorPage = Readonly<{
   authorId: string;
   channelIds: readonly string[];
   before: string | null;
   limit: number;
 }>;
 
-type CreatedRange = Readonly<{ from: number | null; upTo: number | null }>;
+export type CreatedRange = Readonly<{ from: number | null; upTo: number | null }>;
 
-type ReadPage = Readonly<{ before: string | null; limit: number }>;
+export type ReadPage = Readonly<{ before: string | null; limit: number }>;
 
-type PhraseChannel = Readonly<{ channelId: string; uses: number }>;
+export type PhraseChannel = Readonly<{ channelId: string; uses: number }>;
 
-type PhraseCandidate = Readonly<{
+export type PhraseCandidate = Readonly<{
   phrase: string;
   common: string;
   uses: number;
@@ -77,74 +81,43 @@ type PhraseCandidate = Readonly<{
   channels: readonly PhraseChannel[];
 }>;
 
-type PhraseTally = Readonly<{
+export type PhraseTally = Readonly<{
   written: number;
   generation: number;
   candidates: readonly PhraseCandidate[];
   presence: readonly string[];
 }>;
 
-type PhraseStatsLookup =
+export type PhraseStatsLookup =
   | Readonly<{ status: "fresh"; body: string }>
   | Readonly<{ status: "stale" }>;
 
-type PhraseRequest = Readonly<{ guildId: string; visibility: string; now: number }>;
+export type PhraseRequest = Readonly<{ guildId: string; visibility: string; now: number }>;
 
-type SavedStats = Readonly<{
+export type SavedStats = Readonly<{
   body: string;
   written: number;
   generation: number;
   computedAt: number;
 }>;
 
-type PhraseExample = Readonly<{ phrase: string; messageIds: readonly string[] }>;
+export type PhraseExample = Readonly<{ phrase: string; messageIds: readonly string[] }>;
 
-type PhraseContext = Readonly<{ messageId: string; messages: readonly SealedMessage[] }>;
+export type PhraseContext = Readonly<{ messageId: string; messages: readonly SealedMessage[] }>;
 
-type NoteSample = Readonly<{
+export type NoteSample = Readonly<{
   before: readonly SealedMessage[];
   use: SealedMessage;
   after: readonly SealedMessage[];
 }>;
 
-type PhraseSamples = Readonly<{ phrase: string; samples: readonly NoteSample[] }>;
+export type PhraseSamples = Readonly<{ phrase: string; samples: readonly NoteSample[] }>;
 
-type SampleRequest = Readonly<{ phrases: readonly string[]; channelIds: readonly string[] }>;
+export type SampleRequest = Readonly<{ phrases: readonly string[]; channelIds: readonly string[] }>;
 
-type UnphrasedMessage = SealedMessage & Readonly<{ authorId: string }>;
+export type UnphrasedMessage = SealedMessage & Readonly<{ authorId: string }>;
 
-type ExtractedPhrases = Readonly<{ message: UnphrasedMessage; hashes: readonly PhraseHash[] }>;
-
-export type {
-  AuthoredMessage,
-  AuthorPage,
-  ChannelCount,
-  ChannelOldest,
-  CreatedRange,
-  ExtractedHashes,
-  ExtractedPhrases,
-  IndexedMessage,
-  NoteClaim,
-  NoteSample,
-  NoteStatus,
-  PhraseCandidate,
-  PhraseChannel,
-  PhraseColumn,
-  PhraseContext,
-  PhraseExample,
-  PhraseNote,
-  PhraseRequest,
-  PhraseSamples,
-  PhraseState,
-  PhraseStatsLookup,
-  PhraseTally,
-  ReadPage,
-  SampleRequest,
-  SavedStats,
-  SealedMessage,
-  StoredRow,
-  StoredState,
-  TrackedRow,
-  UnphrasedMessage,
-  WriteMode,
-};
+export type ExtractedPhrases = Readonly<{
+  message: UnphrasedMessage;
+  hashes: readonly PhraseHash[];
+}>;

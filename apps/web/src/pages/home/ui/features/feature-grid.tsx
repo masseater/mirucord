@@ -10,7 +10,7 @@ const WRITE = "書きこまない";
 const SCOPE = "あなたが読めるチャンネルだけ";
 const CIPHER = "本文は暗号化";
 
-const FeatureGrid = (): ReactNode => (
+export const FeatureGrid = (): ReactNode => (
   <div className="grid gap-2">
     <TitledEmbed accent="border-lavender-deep" title={WRITE}>
       <OperationChips />
@@ -23,5 +23,3 @@ const FeatureGrid = (): ReactNode => (
     </TitledEmbed>
   </div>
 );
-
-export { FeatureGrid };

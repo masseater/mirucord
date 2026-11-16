@@ -9,7 +9,7 @@ const ALLOW = "つなぐ";
 const DENY = "やめる";
 const FAILED = "つなげませんでした";
 
-const ConsentActions = ({
+export const ConsentActions = ({
   status,
   onAllow,
   onDeny,
@@ -40,5 +40,3 @@ const ConsentActions = ({
     </>
   );
 };
-
-export { ConsentActions };

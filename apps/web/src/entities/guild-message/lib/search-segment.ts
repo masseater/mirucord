@@ -4,17 +4,17 @@ import { STAMP_BYTES } from "./search-layout";
 import { encodeShard, shardCountOf, shardOf } from "./search-shard";
 import type { Postings, TokenPostings } from "./search-shard";
 
-const CHUNK_SIZE = 128;
+export const CHUNK_SIZE = 128;
 const FIRST = 0;
 const ONE_SHARD = 1;
 
-type IndexRow = Readonly<{
+export type IndexRow = Readonly<{
   channel: number;
   createdAt: number;
   tokens: readonly number[];
 }>;
 
-const SealedEntrySchema = Schema.Struct({
+export const SealedEntrySchema = Schema.Struct({
   id: Schema.String,
   channelId: Schema.String,
   sealed: Schema.String,
@@ -22,15 +22,15 @@ const SealedEntrySchema = Schema.Struct({
   editedAt: Schema.NullOr(Schema.Finite),
 });
 
-type SealedEntry = typeof SealedEntrySchema.Type;
+export type SealedEntry = typeof SealedEntrySchema.Type;
 
 const encodeChunkJson = Schema.encodeEffect(Schema.fromJsonString(Schema.Array(SealedEntrySchema)));
 
-type BuiltIndex = Readonly<{ count: number; shards: readonly ArrayBuffer[] }>;
+export type BuiltIndex = Readonly<{ count: number; shards: readonly ArrayBuffer[] }>;
 
-const chunkOf = (ordinal: number): number => Math.floor(ordinal / CHUNK_SIZE);
+export const chunkOf = (ordinal: number): number => Math.floor(ordinal / CHUNK_SIZE);
 
-const chunkCountOf = (rows: number): number => Math.ceil(rows / CHUNK_SIZE);
+export const chunkCountOf = (rows: number): number => Math.ceil(rows / CHUNK_SIZE);
 
 interface Collecting {
   ordinals: number[];
@@ -89,12 +89,12 @@ const postingsOf = (rows: readonly IndexRow[]): number =>
     ),
   );
 
-const buildIndex = (rows: readonly IndexRow[]): BuiltIndex => ({
+export const buildIndex = (rows: readonly IndexRow[]): BuiltIndex => ({
   count: rows.length,
   shards: encodeShards(rows, shardCountOf(postingsOf(rows))),
 });
 
-const encodeRecent = (rows: readonly IndexRow[]): ArrayBuffer => {
+export const encodeRecent = (rows: readonly IndexRow[]): ArrayBuffer => {
   const [index] = encodeShards(rows, ONE_SHARD);
   const indexBytes = Option.getOrElse(Option.fromUndefinedOr(index), () => new ArrayBuffer(FIRST));
   const stampsAt = STAMP_BYTES;
@@ -111,16 +111,5 @@ const encodeRecent = (rows: readonly IndexRow[]): ArrayBuffer => {
   return buffer;
 };
 
-const encodeChunk = (entries: readonly SealedEntry[]): Effect.Effect<string> =>
+export const encodeChunk = (entries: readonly SealedEntry[]): Effect.Effect<string> =>
   encodeChunkJson(entries).pipe(Effect.orDie);
-
-export {
-  buildIndex,
-  chunkCountOf,
-  chunkOf,
-  CHUNK_SIZE,
-  encodeChunk,
-  encodeRecent,
-  SealedEntrySchema,
-};
-export type { BuiltIndex, IndexRow, SealedEntry };

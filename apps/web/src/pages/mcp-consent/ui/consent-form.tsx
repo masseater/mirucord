@@ -17,7 +17,7 @@ const TIP = `${MASCOT_NAME}とつなぐよ`;
 const answerConsent = (accept: boolean): Promise<unknown> =>
   authClient.oauth2.consent({ accept, fetchOptions: { throw: true } });
 
-const ConsentForm = ({ clientId }: Readonly<{ clientId: string }>): ReactNode => {
+export const ConsentForm = ({ clientId }: Readonly<{ clientId: string }>): ReactNode => {
   const client = useQuery(clientNameQuery(clientId));
   const clientName = Option.getOrElse(Option.fromUndefinedOr(client.data), () => clientId);
   const { mutate, status } = useMutation({ mutationFn: answerConsent });
@@ -37,5 +37,3 @@ const ConsentForm = ({ clientId }: Readonly<{ clientId: string }>): ReactNode =>
     </AppFrame>
   );
 };
-
-export { ConsentForm };

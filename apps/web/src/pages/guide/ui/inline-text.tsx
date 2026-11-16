@@ -17,12 +17,10 @@ const segment = (part: string): ReactNode =>
     Match.orElse(() => <span key={part}>{part}</span>),
   );
 
-const InlineText = ({ text }: Readonly<{ text: string }>): ReactNode =>
+export const InlineText = ({ text }: Readonly<{ text: string }>): ReactNode =>
   pipe(
     text,
     Str.split(CODE_PATTERN),
     Array.filter((part) => part !== ""),
     Array.map((part) => segment(part)),
   );
-
-export { InlineText };

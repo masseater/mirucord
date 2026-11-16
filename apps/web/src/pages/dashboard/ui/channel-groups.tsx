@@ -12,7 +12,7 @@ import { Pill } from "./pill";
 
 type Props = Readonly<{ settings: GuildSettings; channels: readonly SettingsChannel[] }>;
 
-const ChannelGroups = ({ settings, channels }: Props): ReactNode =>
+export const ChannelGroups = ({ settings, channels }: Props): ReactNode =>
   pipe(
     groupByCategory(settings, channels),
     Array.map((group) => {
@@ -45,5 +45,3 @@ const ChannelGroups = ({ settings, channels }: Props): ReactNode =>
       );
     }),
   );
-
-export { ChannelGroups };

@@ -18,13 +18,13 @@ const BlockHeaderJson = Schema.fromJsonString(BlockHeader);
 const encodeHeader = Schema.encodeEffect(BlockHeaderJson);
 const decodeHeader = Schema.decodeEffect(BlockHeaderJson);
 
-type VectorEntry = Readonly<{
+export type VectorEntry = Readonly<{
   ordinal: number;
   channelId: string;
   vector: Quantized;
 }>;
 
-type VectorBlock = typeof BlockHeader.Type &
+export type VectorBlock = typeof BlockHeader.Type &
   Readonly<{
     scales: Float32Array;
     values: Int8Array;
@@ -36,7 +36,7 @@ const textDecoder = new TextDecoder();
 const alignedTo = (bytes: number, alignment: number): number =>
   Math.ceil(bytes / alignment) * alignment;
 
-const blockOf = (entries: readonly VectorEntry[]): VectorBlock => {
+export const blockOf = (entries: readonly VectorEntry[]): VectorBlock => {
   const values = new Int8Array(entries.length * DIMENSIONS);
   for (const [row, { vector }] of entries.entries()) {
     values.set(vector.values, row * DIMENSIONS);
@@ -55,7 +55,7 @@ const blockOf = (entries: readonly VectorEntry[]): VectorBlock => {
   };
 };
 
-const entriesOf = (block: VectorBlock): readonly VectorEntry[] =>
+export const entriesOf = (block: VectorBlock): readonly VectorEntry[] =>
   pipe(
     block.ordinals,
     Array.map((ordinal, row) => ({
@@ -82,13 +82,13 @@ const layOut = (block: VectorBlock, header: Uint8Array): Uint8Array => {
   return bytes;
 };
 
-const encodeBlock = (block: VectorBlock): Effect.Effect<Uint8Array> =>
+export const encodeBlock = (block: VectorBlock): Effect.Effect<Uint8Array> =>
   encodeHeader({ ordinals: block.ordinals, channelIds: block.channelIds }).pipe(
     Effect.orDie,
     Effect.map((header) => layOut(block, textEncoder.encode(header))),
   );
 
-const decodeBlock = (bytes: Uint8Array): Effect.Effect<VectorBlock> => {
+export const decodeBlock = (bytes: Uint8Array): Effect.Effect<VectorBlock> => {
   const copy = Uint8Array.from(bytes);
   const headerLength = new DataView(copy.buffer).getUint32(START, LITTLE_ENDIAN);
   return decodeHeader(
@@ -107,6 +107,3 @@ const decodeBlock = (bytes: Uint8Array): Effect.Effect<VectorBlock> => {
     }),
   );
 };
-
-export { blockOf, decodeBlock, encodeBlock, entriesOf };
-export type { VectorBlock, VectorEntry };

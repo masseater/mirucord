@@ -10,7 +10,7 @@ const ROWS = [
   { before: `${MASCOT_NAME}を外す`, after: "ぜんぶ削除" },
 ] as const;
 
-const CipherList = (): ReactNode => (
+export const CipherList = (): ReactNode => (
   <ul className="grid gap-2.5 text-sm font-bold">
     {pipe(
       ROWS,
@@ -18,5 +18,3 @@ const CipherList = (): ReactNode => (
     )}
   </ul>
 );
-
-export { CipherList };

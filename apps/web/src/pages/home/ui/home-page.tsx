@@ -10,7 +10,7 @@ import { Problem } from "./problem/problem";
 import { Safety } from "./safety/safety";
 import { Steps } from "./steps/steps";
 
-const HomePage = (): ReactNode => (
+export const HomePage = (): ReactNode => (
   <ClientFrame>
     <Hero />
     <Problem />
@@ -22,5 +22,3 @@ const HomePage = (): ReactNode => (
     <Faq />
   </ClientFrame>
 );
-
-export { HomePage };

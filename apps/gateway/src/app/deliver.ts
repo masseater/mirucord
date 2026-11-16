@@ -55,7 +55,7 @@ const deliverWithRetry = (
     ),
   );
 
-const makeDeliver = (
+export const makeDeliver = (
   botToken: string,
 ): Effect.Effect<(job: GatewayJob) => Effect.Effect<void>, never, Scope.Scope> =>
   Layer.build(FetchHttpClient.layer).pipe(
@@ -65,5 +65,3 @@ const makeDeliver = (
           deliverWithRetry(botToken, job).pipe(Effect.provideContext(context)),
     ),
   );
-
-export { makeDeliver };

@@ -99,9 +99,12 @@ const generateAll = Effect.fn("generatePhraseNotes")(function* generateAll(
       ),
     ),
   );
-  const stored = yield* pipe(
+  const stored = yield* Effect.forEach(
     settled,
-    Effect.forEach(({ sample, note }) => storedOf(request, sample, note)),
+    ({ sample, note }) => storedOf(request, sample, note),
+    {
+      concurrency: 1,
+    },
   );
   const failed = pipe(
     generated,
@@ -124,10 +127,9 @@ export const phraseNotesOf = Effect.fn("phraseNotes")(function* phraseNotes(requ
     Array.map(({ phrase }) => phrase),
   );
   const existing = yield* Effect.promise(() => store.phraseNotes(phrases));
-  const opened = yield* pipe(
-    existing,
-    Effect.forEach((note) => openNote(request, note)),
-  );
+  const opened = yield* Effect.forEach(existing, (note) => openNote(request, note), {
+    concurrency: 1,
+  });
   const known = new Set(
     pipe(
       existing,

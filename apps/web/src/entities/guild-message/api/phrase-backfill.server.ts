@@ -1,4 +1,4 @@
-import { DateTime, Effect, Option, pipe } from "effect";
+import { DateTime, Effect, Option } from "effect";
 
 import { phraseHashes } from "#/entities/guild-message/lib/phrases.server";
 import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
@@ -21,9 +21,9 @@ const extractPhrases = (
   { guildId, keys }: Readonly<{ guildId: string; keys: GuildKeys }>,
   pending: readonly UnphrasedMessage[],
 ): Effect.Effect<readonly ExtractedPhrases[]> =>
-  pipe(
+  Effect.forEach(
     pending,
-    Effect.forEach((message) =>
+    (message) =>
       openMessage(message.sealed, keys.key, {
         guildId,
         channelId: message.channelId,
@@ -34,7 +34,7 @@ const extractPhrases = (
         ),
         Effect.map((hashes) => ({ message, hashes })),
       ),
-    ),
+    { concurrency: 1 },
   );
 
 export const backfillPhrases = Effect.fn("backfillPhrases")(function* backfill(

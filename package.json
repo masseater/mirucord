@@ -8,28 +8,24 @@
     "prepare": "vp config && effect-tsgo patch --typescript --oxlint && skills experimental_install --force"
   },
   "devDependencies": {
-    "@ast-grep/cli": "catalog:",
-    "@commitlint/config-conventional": "catalog:",
     "@distilled.cloud/cloudflare": "catalog:stack",
     "@effect/platform-node": "catalog:",
     "@effect/tsgo": "catalog:stack",
     "@r_masseater/msch": "catalog:",
     "@r_masseater/workers-tracing": "catalog:stack",
     "@tanstack/intent": "catalog:",
-    "@textlint-ja/textlint-rule-preset-ai-writing": "1.7.0",
     "@types/node": "catalog:",
     "effect": "catalog:stack",
     "fallow": "catalog:stack",
     "renovate": "catalog:stack",
     "skills": "catalog:",
-    "textlint-rule-preset-ja-technical-writing": "12.0.2",
     "typescript": "catalog:stack",
     "vite-plus": "catalog:stack"
   },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.20.0",
+      "version": "12.21.0",
       "onFail": "download"
     }
   },

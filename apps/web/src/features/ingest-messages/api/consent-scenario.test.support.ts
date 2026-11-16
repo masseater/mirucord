@@ -94,6 +94,7 @@ const seedConsents = (): Promise<unknown> =>
     ),
   );
 
-export const seedScenario = Effect.forEach(GUILDS, seedGuild, { discard: true }).pipe(
-  Effect.andThen(Effect.promise(seedConsents)),
-);
+export const seedScenario = Effect.forEach(GUILDS, seedGuild, {
+  concurrency: 1,
+  discard: true,
+}).pipe(Effect.andThen(Effect.promise(seedConsents)));

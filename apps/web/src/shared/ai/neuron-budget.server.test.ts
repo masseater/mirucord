@@ -17,12 +17,15 @@ const IMAGE = 500;
 describe("neuron budget", () => {
   it.effect("lets queries use what backfill and images may not, and starts over each day", () =>
     Effect.gen(function* capped() {
-      const firstDay = yield* Effect.all({
-        backfill: spendNeurons("background", BACKFILL),
-        overflow: spendNeurons("background", OVERFLOW),
-        query: spendNeurons("query", QUERY),
-        live: spendNeurons("live", ONE),
-      });
+      const firstDay = yield* Effect.all(
+        {
+          backfill: spendNeurons("background", BACKFILL),
+          overflow: spendNeurons("background", OVERFLOW),
+          query: spendNeurons("query", QUERY),
+          live: spendNeurons("live", ONE),
+        },
+        { concurrency: 1 },
+      );
       expect(firstDay).toStrictEqual({ backfill: true, overflow: false, query: true, live: false });
       yield* TestClock.adjust("1 day");
       const nextDay = yield* spendNeurons("background", WHOLE_BACKFILL);

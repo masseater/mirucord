@@ -8,13 +8,11 @@ packages:
 catalogMode: prefer
 
 catalog:
-  "@r_masseater/msch": 0.31.0
-  "@ast-grep/cli": 0.51.2
+  "@r_masseater/msch": 0.32.0
   "@cloudflare/workers-types": 5.20261113.1
   "@effect/platform-node": 4.1.4
   "@types/node": 26.6.6
   vite: npm:@voidzero-dev/vite-plus-core@1.6.0
-  "@commitlint/config-conventional": 21.2.4
   "@tanstack/react-query-devtools": 5.107.1
   "@vitejs/plugin-react": 6.3.0
   "@vitejs/plugin-rsc": 0.5.39
@@ -46,7 +44,7 @@ catalogs:
     "@r_masseater/workers-tracing": 0.3.0
     "@distilled.cloud/cloudflare": 1.0.0-rc.20
     "@effect/atom-react": 4.1.4
-    "@effect/tsgo": 0.68.1
+    "@effect/tsgo": 0.69.0
     "@effect/vitest": 4.1.4
     "@openfeature/server-sdk": 1.23.0
     "@tanstack/react-query": 5.107.1
@@ -78,7 +76,6 @@ peerDependencyRules:
     - vite
 allowBuilds:
   "@r_masseater/vite-plus-adopt": true
-  "@ast-grep/cli": true
   esbuild: true
   workerd: true
   protobufjs: false
@@ -88,11 +85,9 @@ allowBuilds:
   "@openrouter/sdk": false
 audit:
   ignorePrune: true
-  ignore:
-    - GHSA-gcqx-w48m-w2h4
 minimumReleaseAgeExclude:
-  - "@r_masseater/msch@0.31.0"
-  - "@r_masseater/oxlint-plugin-decision@0.7.0"
+  - "@r_masseater/msch@0.32.0"
+  - "@r_masseater/oxlint-plugin-decision@0.8.0"
   - "@r_masseater/vite-plus-adopt@0.6.0 || 0.8.1"
   - "@r_masseater/workers-tracing@0.3.0"
   - "@r_masseater/textlint-rule-preset-ja@0.1.1"

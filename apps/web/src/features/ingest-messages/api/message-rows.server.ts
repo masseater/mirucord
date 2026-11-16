@@ -62,7 +62,7 @@ export const forgetChannelMessages = ({ guildId, channelId }: ChannelRef): Effec
       Effect.promise(() => guildStore(guildId).removeChannel(channelId)),
       Effect.promise(() => db.delete(message).where(eq(message.channelId, channelId))),
     ],
-    { discard: true },
+    { concurrency: 1, discard: true },
   );
 
 export const deleteMessages = ({ guildId, ids }: GuildMessages): Effect.Effect<void> =>
@@ -74,5 +74,5 @@ export const deleteMessages = ({ guildId, ids }: GuildMessages): Effect.Effect<v
         run: (chunk) => db.delete(message).where(inArray(message.id, [...chunk])),
       }),
     ],
-    { discard: true },
+    { concurrency: 1, discard: true },
   );

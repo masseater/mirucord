@@ -83,7 +83,7 @@ it.effect("queues only the readable channels of the consenting server", () =>
 it.effect("never fetches a channel outside consent, bot access, or its own server", () =>
   Effect.gen(function* outsideScope() {
     const paths = yield* discordPathsDuring(
-      Effect.forEach(JOBS_OUTSIDE_SCOPE, ingestChannel, { discard: true }),
+      Effect.forEach(JOBS_OUTSIDE_SCOPE, ingestChannel, { concurrency: 1, discard: true }),
     );
     expect(paths).toStrictEqual([]);
   }),

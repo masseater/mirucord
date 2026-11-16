@@ -57,12 +57,15 @@ const seedGuild = (guildId: string): Effect.Effect<void> =>
   });
 
 const rowsOf = (guildId: string): Effect.Effect<Readonly<{ consents: number; messages: number }>> =>
-  Effect.all({
-    consents: Effect.promise(() =>
-      db.select().from(ingestConsent).where(eq(ingestConsent.guildId, guildId)),
-    ),
-    messages: storedCount(guildId),
-  }).pipe(
+  Effect.all(
+    {
+      consents: Effect.promise(() =>
+        db.select().from(ingestConsent).where(eq(ingestConsent.guildId, guildId)),
+      ),
+      messages: storedCount(guildId),
+    },
+    { concurrency: 1 },
+  ).pipe(
     Effect.map(({ consents, messages }) => ({
       consents: consents.length,
       messages,
@@ -167,7 +170,10 @@ it.effect("gives the consent back when the queued withdrawal keeps failing", () 
     yield* deliverWithdrawal(guildId, LAST_ATTEMPT);
     vi.restoreAllMocks();
     expect(handled).toStrictEqual({ acked: NEVER, retried: ONCE });
-    const restored = yield* Effect.all({ state: stateOf(guildId), rows: rowsOf(guildId) });
+    const restored = yield* Effect.all(
+      { state: stateOf(guildId), rows: rowsOf(guildId) },
+      { concurrency: 1 },
+    );
     expect(restored).toStrictEqual({
       state: ["granted"],
       rows: { consents: 1, messages: STORED },

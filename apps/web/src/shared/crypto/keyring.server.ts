@@ -89,7 +89,7 @@ const openCommonPhraseKey: Effect.Effect<CryptoKey> = deriveFrom(
 );
 
 const wrapWithCurrent = (rawKey: Effect.Effect<Uint8Array>): Effect.Effect<string> =>
-  Effect.all([rawKey, wrappingKeyOf(currentMasterKey)]).pipe(
+  Effect.all([rawKey, wrappingKeyOf(currentMasterKey)], { concurrency: 1 }).pipe(
     Effect.flatMap(([key, kek]) =>
       Effect.promise(() =>
         new CompactEncrypt(key).setProtectedHeader(GUILD_KEY_ALGORITHMS).encrypt(kek),
@@ -152,11 +152,14 @@ export const openSearchKey = (wrappedKey: string): Effect.Effect<CryptoKey> =>
 export const openGuildKeys = (
   wrappedKey: string,
 ): Effect.Effect<Readonly<{ key: CryptoKey; searchKey: CryptoKey; commonKey: CryptoKey }>> =>
-  Effect.all({
-    key: openGuildKey(wrappedKey),
-    searchKey: openSearchKey(wrappedKey),
-    commonKey: openCommonPhraseKey,
-  });
+  Effect.all(
+    {
+      key: openGuildKey(wrappedKey),
+      searchKey: openSearchKey(wrappedKey),
+      commonKey: openCommonPhraseKey,
+    },
+    { concurrency: 1 },
+  );
 
 export const rewrapGuildKey = (wrappedKey: string): Effect.Effect<Option.Option<string>> =>
   unwrapWith(currentMasterKey, wrappedKey).pipe(

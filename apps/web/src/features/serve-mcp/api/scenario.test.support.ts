@@ -143,25 +143,28 @@ const sealedRows = (
   Effect.forEach(
     seed.messages,
     ({ id, channelId }) =>
-      Effect.all({
-        sealed: sealMessage(
-          {
-            authorName: "someone",
-            mentions: [],
-            content: SAME_WORDS,
-            attachments: [],
-            embeds: [],
-            stickers: [],
-          },
-          key,
-          {
-            guildId: seed.id,
-            channelId,
-            messageId: id,
-          },
-        ),
-        tokens: indexTokens({ key: searchKey, texts: [SAME_WORDS] }),
-      }).pipe(
+      Effect.all(
+        {
+          sealed: sealMessage(
+            {
+              authorName: "someone",
+              mentions: [],
+              content: SAME_WORDS,
+              attachments: [],
+              embeds: [],
+              stickers: [],
+            },
+            key,
+            {
+              guildId: seed.id,
+              channelId,
+              messageId: id,
+            },
+          ),
+          tokens: indexTokens({ key: searchKey, texts: [SAME_WORDS] }),
+        },
+        { concurrency: 1 },
+      ).pipe(
         Effect.map(({ sealed, tokens }) => ({
           row: {
             id,
@@ -272,4 +275,4 @@ export const guildKeys = (
   );
 
 export const seedScenario = (): Promise<void> =>
-  run(Effect.forEach(GUILDS, seedGuild, { discard: true }));
+  run(Effect.forEach(GUILDS, seedGuild, { concurrency: 1, discard: true }));

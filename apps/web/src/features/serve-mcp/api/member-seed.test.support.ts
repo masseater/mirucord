@@ -1,6 +1,6 @@
 import { runInDurableObject } from "cloudflare:test";
 import { eq } from "drizzle-orm";
-import { Effect, Option, pipe, Record, Schema } from "effect";
+import { Effect, Option, Record, Schema } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import { sealMember } from "#/shared/crypto/index.server";
@@ -43,13 +43,16 @@ export const seedMembers = ({
       nick,
       ...member
     }: SeedMember): Effect.Effect<readonly (string | number | null)[]> =>
-      Effect.all({
-        sealed: sealMember({ username, globalName: NO_GLOBAL_NAME, nick }, key, {
-          guildId,
-          userId: member.userId,
-        }),
-        roles: encodeRoles(member.roles).pipe(Effect.orDie),
-      }).pipe(
+      Effect.all(
+        {
+          sealed: sealMember({ username, globalName: NO_GLOBAL_NAME, nick }, key, {
+            guildId,
+            userId: member.userId,
+          }),
+          roles: encodeRoles(member.roles).pipe(Effect.orDie),
+        },
+        { concurrency: 1 },
+      ).pipe(
         Effect.map(({ sealed, roles }) => [
           member.userId,
           sealed,
@@ -60,7 +63,7 @@ export const seedMembers = ({
           updatedAt,
         ]),
       );
-    const rows = yield* pipe(members, Effect.forEach(sealRow));
+    const rows = yield* Effect.forEach(members, sealRow, { concurrency: 1 });
     yield* Effect.promise(() =>
       runInDurableObject(guildStore(guildId), (_store, state) => {
         for (const row of rows) {

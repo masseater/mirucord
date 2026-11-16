@@ -131,10 +131,17 @@ export const liveReactionsOf = (
     rest.getMessage(ref.channelId, ref.messageId).pipe(Effect.flatMap(decodeMessage)),
   ).pipe(
     Effect.flatMap((found) =>
-      Effect.all({
-        reactions: Effect.forEach(reactedOf(found), (reacted) => reactorsOf(ref, reacted)),
-        votes: Effect.forEach(answersOf(found), (answer) => votersOf(ref, answer)),
-      }).pipe(Effect.map((live) => Option.some({ authorId: found.author.id, ...live }))),
+      Effect.all(
+        {
+          reactions: Effect.forEach(reactedOf(found), (reacted) => reactorsOf(ref, reacted), {
+            concurrency: 1,
+          }),
+          votes: Effect.forEach(answersOf(found), (answer) => votersOf(ref, answer), {
+            concurrency: 1,
+          }),
+        },
+        { concurrency: 1 },
+      ).pipe(Effect.map((live) => Option.some({ authorId: found.author.id, ...live }))),
     ),
     Effect.catchIf(
       (error) => Option.contains(error.status, NOT_FOUND),

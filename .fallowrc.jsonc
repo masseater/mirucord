@@ -150,16 +150,7 @@
       "name": "vite-plus",
       "enablers": ["vite-plus"],
       "entryPoints": ["vite.config.ts"],
-      "toolingDependencies": ["@ast-grep/cli"],
-    },
-    {
-      "name": "vite-plus-adopt",
-      "enablers": ["@r_masseater/msch"],
-      "toolingDependencies": [
-        "@commitlint/config-conventional",
-        "@textlint-ja/textlint-rule-preset-ai-writing",
-        "textlint-rule-preset-ja-technical-writing",
-      ],
+      "toolingDependencies": ["renovate"],
     },
     {
       "name": "better-auth-cli",

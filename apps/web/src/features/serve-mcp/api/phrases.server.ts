@@ -45,18 +45,19 @@ const openExamples = Effect.fn("openPhraseExamples")(function* open(
       ),
     ),
   );
-  const opened = yield* pipe(
+  const opened = yield* Effect.forEach(
     contexts,
-    Effect.forEach(({ messageId, messages }) =>
-      pipe(
+    ({ messageId, messages }) =>
+      Effect.forEach(
         messages,
-        Effect.forEach((message) =>
+        (message) =>
           openMessage(message.sealed, key, {
             guildId,
             channelId: message.channelId,
             messageId: message.id,
           }),
-        ),
+        { concurrency: 1 },
+      ).pipe(
         Effect.map((bodies) =>
           Array.matchRight(bodies, {
             onEmpty: () => [],
@@ -66,7 +67,7 @@ const openExamples = Effect.fn("openPhraseExamples")(function* open(
           }),
         ),
       ),
-    ),
+    { concurrency: 1 },
   );
   return Record.fromEntries(opened.flat());
 });
@@ -155,7 +156,9 @@ const viewsOf = Effect.fn("phraseViews")(function* views(
 ) {
   const searchKey = yield* openSearchKey(scope.guild.wrappedKey);
   const examples = yield* openExamples(scope, stats);
-  const found = yield* pipe(stats.phrases, Effect.forEach(viewOf(scope, searchKey, examples)));
+  const found = yield* Effect.forEach(stats.phrases, viewOf(scope, searchKey, examples), {
+    concurrency: 1,
+  });
   const labelled = Array.getSomes(found);
   const notes = yield* phraseNotesOf({
     guildId: scope.guild.guildId,

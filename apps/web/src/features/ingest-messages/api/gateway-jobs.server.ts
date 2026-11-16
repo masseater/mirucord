@@ -28,9 +28,10 @@ const lookUpEach = (
   channelId: string,
   ids: readonly string[],
 ): Effect.Effect<readonly Lookup[], IngestError> =>
-  pipe(
+  Effect.forEach(
     ids,
-    Effect.forEach((id) => findMessage(channelId, id).pipe(Effect.map((found) => ({ id, found })))),
+    (id) => findMessage(channelId, id).pipe(Effect.map((found) => ({ id, found }))),
+    { concurrency: 1 },
   );
 
 const pageFrom = (

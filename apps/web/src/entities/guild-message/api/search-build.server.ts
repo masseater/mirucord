@@ -114,8 +114,10 @@ export const buildPiece = ({
     Array.map(({ id }) => id),
   );
   const index = indexFiles(kind, indexRowsOf(publisher.db, rows));
-  return Effect.forEach(Array.chunksOf(ids, CHUNK_SIZE), (chunk) =>
-    encodeChunk(searchRows(publisher.db).entries(chunk)),
+  return Effect.forEach(
+    Array.chunksOf(ids, CHUNK_SIZE),
+    (chunk) => encodeChunk(searchRows(publisher.db).entries(chunk)),
+    { concurrency: 1 },
   ).pipe(
     Effect.map((chunks) => ({
       entry: { name, count: rows.length, shards: index.length },

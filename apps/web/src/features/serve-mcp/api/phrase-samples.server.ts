@@ -22,12 +22,12 @@ const idsOf = ({ before, use, after }: NoteSample): readonly string[] =>
     Array.map(({ id }) => id),
   );
 
-export const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
+const sampleOpener = ({
   guildId,
   key,
-  channelIds,
-  claimed,
-}: SamplesRequest) {
+}: Readonly<Pick<SamplesRequest, "guildId" | "key">>): ((
+  sample: NoteSample,
+) => Effect.Effect<OpenedSample>) => {
   const open = (message: SealedMessage): Effect.Effect<MessageBody> =>
     openMessage(message.sealed, key, {
       guildId,
@@ -35,9 +35,21 @@ export const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
       messageId: message.id,
     });
   const openAll = (messages: readonly SealedMessage[]): Effect.Effect<readonly MessageBody[]> =>
-    pipe(messages, Effect.forEach(open));
-  const openSample = ({ before, use, after }: NoteSample): Effect.Effect<OpenedSample> =>
-    Effect.all({ before: openAll(before), use: open(use), after: openAll(after) });
+    Effect.forEach(messages, open, { concurrency: 1 });
+  return ({ before, use, after }) =>
+    Effect.all(
+      { before: openAll(before), use: open(use), after: openAll(after) },
+      { concurrency: 1 },
+    );
+};
+
+export const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
+  guildId,
+  key,
+  channelIds,
+  claimed,
+}: SamplesRequest) {
+  const openSample = sampleOpener({ guildId, key });
   const found = yield* Effect.promise(() =>
     guildStore(guildId).phraseSamples({
       phrases: pipe(
@@ -53,13 +65,11 @@ export const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
       Array.map(({ phrase, samples }) => [phrase, samples]),
     ),
   );
-  return yield* pipe(
+  return yield* Effect.forEach(
     claimed,
-    Effect.forEach((subject) => {
+    (subject) => {
       const samples = samplesOf.get(subject.phrase) ?? [];
-      return pipe(
-        samples,
-        Effect.forEach(openSample),
+      return Effect.forEach(samples, openSample, { concurrency: 1 }).pipe(
         Effect.map((opened): Prepared => ({
           input: { ...subject, samples: opened },
           examples: pipe(
@@ -68,6 +78,7 @@ export const preparedOf = Effect.fn("preparePhraseSamples")(function* prepare({
           ),
         })),
       );
-    }),
+    },
+    { concurrency: 1 },
   );
 });

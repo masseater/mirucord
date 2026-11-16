@@ -7,19 +7,22 @@ import { guildStore } from "#/entities/guild-message/index.server";
 import type { IndexedMessage } from "#/entities/guild-message/index.server";
 
 import { readHead } from "./search-files.server";
-import { searchMessages } from "./search-messages.server";
+import {
+  BATCH,
+  CHANNEL,
+  FIRST,
+  FIRST_AT,
+  PAGE,
+  WORD,
+  find,
+  idOf,
+  messageAt,
+  totalOf,
+} from "./search-publish.test.support";
 
-const CHANNEL = "600";
 const OTHER_CHANNEL = "601";
-const AUTHOR = "701";
-const FIRST_AT = 1_790_000_000_000;
-const WORD = 7;
 const OTHER_WORD = 8;
-const BATCH = 500;
-const FIRST_PAGE = 0;
-const PAGE = 5;
 const BIG_TIMEOUT = 120_000;
-const FIRST = 1;
 const SECOND = 2;
 const THIRD = 3;
 const OLDEST = 0;
@@ -40,27 +43,11 @@ const MANY_PIECES_ROWS = 50_000;
 const MANY_PUBLISHES = 7;
 const ARCHIVED_REMOVAL = 200;
 
-type Seed = Readonly<{ index: number; tokens: readonly number[]; channelId?: string }>;
-
-const messageAt = ({ index, tokens, channelId = CHANNEL }: Seed): IndexedMessage => ({
-  row: {
-    id: `${FIRST_AT + index}`,
-    channelId,
-    authorId: AUTHOR,
-    sealed: `sealed-${index}`,
-    createdAt: FIRST_AT + index,
-    editedAt: Option.getOrNull(Option.none<number>()),
-    describedWith: Option.getOrNull(Option.none<string>()),
-  },
-  tokens,
-  phrases: { status: "pending" },
-});
-
 const write = (guildId: string, messages: readonly IndexedMessage[]): Effect.Effect<void> =>
   Effect.forEach(
     Array.chunksOf(messages, BATCH),
     (batch) => Effect.promise(() => guildStore(guildId).write(batch, "overwrite")),
-    { discard: true },
+    { concurrency: 1, discard: true },
   );
 
 type SeedRange = Readonly<{ guildId: string; from: number; upTo: number }>;
@@ -78,43 +65,11 @@ const publish = (guildId: string, times = FIRST): Effect.Effect<void> =>
   Effect.forEach(
     Array.makeBy(times, () => guildId),
     (id) => Effect.promise(() => guildStore(id).publish()),
-    { discard: true },
+    { concurrency: 1, discard: true },
   );
 
 const remove = (guildId: string, index: number): Effect.Effect<void> =>
   Effect.promise(() => guildStore(guildId).remove([`${FIRST_AT + index}`]));
-
-type Found = Readonly<{ total: number; ids: readonly string[] }>;
-
-type Query = Readonly<{
-  guildId: string;
-  tokens: readonly number[];
-  offset?: number;
-  limit?: number;
-  channelIds?: readonly string[];
-}>;
-
-const find = ({
-  guildId,
-  tokens,
-  offset = FIRST_PAGE,
-  limit = PAGE,
-  channelIds = [CHANNEL],
-}: Query): Effect.Effect<Found> =>
-  searchMessages({ guildId, tokens, channelIds, offset, limit }).pipe(
-    Effect.map(({ total, entries }) => ({
-      total,
-      ids: pipe(
-        entries,
-        Array.map(({ id }) => id),
-      ),
-    })),
-  );
-
-const totalOf = (query: Query): Effect.Effect<number> =>
-  find(query).pipe(Effect.map(({ total }) => total));
-
-const idOf = (index: number): string => `${FIRST_AT + index}`;
 
 it.effect("finds published messages newest first and only in the asked channels", () =>
   Effect.gen(function* small() {
@@ -126,11 +81,18 @@ it.effect("finds published messages newest first and only in the asked channels"
     const beforePublish = yield* find({ guildId: "910", tokens: [WORD] });
     expect(beforePublish).toStrictEqual({ total: 0, ids: [] });
     yield* publish("910");
-    const published = yield* Effect.all({
-      word: find({ guildId: "910", tokens: [WORD] }),
-      bothWords: find({ guildId: "910", tokens: [WORD, OTHER_WORD] }),
-      bothChannels: find({ guildId: "910", tokens: [WORD], channelIds: [CHANNEL, OTHER_CHANNEL] }),
-    });
+    const published = yield* Effect.all(
+      {
+        word: find({ guildId: "910", tokens: [WORD] }),
+        bothWords: find({ guildId: "910", tokens: [WORD, OTHER_WORD] }),
+        bothChannels: find({
+          guildId: "910",
+          tokens: [WORD],
+          channelIds: [CHANNEL, OTHER_CHANNEL],
+        }),
+      },
+      { concurrency: 1 },
+    );
     expect(published).toStrictEqual({
       word: { total: 2, ids: [idOf(SECOND), idOf(FIRST)] },
       bothWords: { total: 1, ids: [idOf(SECOND)] },
@@ -154,10 +116,13 @@ it.effect("drops edited and removed messages at once and finds new text once pub
     const beforePublish = yield* find({ guildId: "920", tokens: [WORD] });
     expect(beforePublish).toStrictEqual({ total: 1, ids: [idOf(FIRST)] });
     yield* publish("920");
-    const published = yield* Effect.all({
-      word: find({ guildId: "920", tokens: [WORD] }),
-      editedText: find({ guildId: "920", tokens: [OTHER_WORD] }),
-    });
+    const published = yield* Effect.all(
+      {
+        word: find({ guildId: "920", tokens: [WORD] }),
+        editedText: find({ guildId: "920", tokens: [OTHER_WORD] }),
+      },
+      { concurrency: 1 },
+    );
     expect(published).toStrictEqual({
       word: { total: 1, ids: [idOf(FIRST)] },
       editedText: { total: 1, ids: [idOf(SECOND)] },
@@ -168,10 +133,13 @@ it.effect("drops edited and removed messages at once and finds new text once pub
 const sealHistory = Effect.gen(function* sealed() {
   yield* seedRange({ guildId: "930", from: OLDEST, upTo: SEALED_ROWS });
   yield* publish("930");
-  const history = yield* Effect.all({
-    total: totalOf({ guildId: "930", tokens: [WORD] }),
-    edgePage: find({ guildId: "930", tokens: [WORD], offset: EDGE_OFFSET, limit: EDGE_PAGE }),
-  });
+  const history = yield* Effect.all(
+    {
+      total: totalOf({ guildId: "930", tokens: [WORD] }),
+      edgePage: find({ guildId: "930", tokens: [WORD], offset: EDGE_OFFSET, limit: EDGE_PAGE }),
+    },
+    { concurrency: 1 },
+  );
   expect(history).toStrictEqual({
     total: SEALED_ROWS,
     edgePage: {
@@ -189,10 +157,13 @@ const editSealed = Effect.gen(function* edited() {
   yield* write("930", [messageAt({ index: EDITED, tokens: [OTHER_WORD] })]);
   yield* remove("930", REMOVED);
   yield* publish("930");
-  const published = yield* Effect.all({
-    keptTotal: totalOf({ guildId: "930", tokens: [WORD] }),
-    editedText: find({ guildId: "930", tokens: [OTHER_WORD] }),
-  });
+  const published = yield* Effect.all(
+    {
+      keptTotal: totalOf({ guildId: "930", tokens: [WORD] }),
+      editedText: find({ guildId: "930", tokens: [OTHER_WORD] }),
+    },
+    { concurrency: 1 },
+  );
   expect(published).toStrictEqual({
     keptTotal: SEALED_ROWS - LOST_ROWS,
     editedText: { total: 1, ids: [idOf(EDITED)] },
@@ -230,11 +201,14 @@ const archiveHistory = Effect.gen(function* archived() {
   yield* remove("930", ARCHIVED_REMOVAL);
   yield* publish("930");
   const total = SPLIT_ROWS - LOST_ROWS - LOST_ROWS;
-  const published = yield* Effect.all({
-    oldestPage: find({ guildId: "930", tokens: [WORD], offset: total - SECOND }),
-    editedText: find({ guildId: "930", tokens: [OTHER_WORD] }),
-    otherChannelTotal: totalOf({ guildId: "930", tokens: [WORD], channelIds: [OTHER_CHANNEL] }),
-  });
+  const published = yield* Effect.all(
+    {
+      oldestPage: find({ guildId: "930", tokens: [WORD], offset: total - SECOND }),
+      editedText: find({ guildId: "930", tokens: [OTHER_WORD] }),
+      otherChannelTotal: totalOf({ guildId: "930", tokens: [WORD], channelIds: [OTHER_CHANNEL] }),
+    },
+    { concurrency: 1 },
+  );
   expect(published).toStrictEqual({
     oldestPage: { total, ids: [idOf(FIRST), idOf(OLDEST)] },
     editedText: { total: 2, ids: [idOf(ARCHIVED_EDIT), idOf(EDITED)] },
@@ -246,6 +220,7 @@ it.effect(
   "seals large histories into segments and keeps edits and pages consistent",
   () =>
     Effect.all([sealHistory, editSealed, growHistory, splitHistory, archiveHistory], {
+      concurrency: 1,
       discard: true,
     }),
   BIG_TIMEOUT,

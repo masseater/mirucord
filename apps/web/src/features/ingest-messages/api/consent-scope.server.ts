@@ -74,6 +74,7 @@ const purgeOutOfScope = (guildId: string, scope: ConsentScope): Effect.Effect<vo
     }),
     Effect.flatMap((outOfScope) =>
       Effect.forEach(outOfScope, (channelId) => purgeChannel({ guildId, channelId }), {
+        concurrency: 1,
         discard: true,
       }),
     ),

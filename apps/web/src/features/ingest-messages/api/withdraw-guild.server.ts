@@ -28,6 +28,7 @@ const purgeGuild = (guildId: string): Effect.Effect<void, GuildDataRemainsError>
   ).pipe(
     Effect.flatMap((rows) =>
       Effect.forEach(rows, ({ id }) => purgeChannel({ guildId, channelId: id }), {
+        concurrency: 1,
         discard: true,
       }),
     ),

@@ -57,6 +57,7 @@ const loadStored = (guildId: string): Effect.Effect<readonly StoredRow[]> =>
 
 const removeChannels = (guildId: string, ids: readonly string[]): Effect.Effect<void> =>
   Effect.forEach(ids, (channelId) => forgetChannelMessages({ guildId, channelId }), {
+    concurrency: 1,
     discard: true,
   }).pipe(
     Effect.andThen(

@@ -132,6 +132,7 @@ it.effect("refuses to search an unreadable channel, its threads or one from anot
         })),
       ),
       callTool,
+      { concurrency: 1 },
     );
     expect(outcomes).toStrictEqual(Array.replicate(REFUSED, outcomes.length));
   }),
@@ -151,12 +152,15 @@ it.effect("searches a readable channel without its private threads", () =>
 
 it.effect("counts keyword matches only in the channels the user can read", () =>
   Effect.gen(function* find() {
-    const found = yield* Effect.all([
-      foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "オフ会" } })),
-      foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "飲み会" } })),
-      foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "週" } })),
-      foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "所の" } })),
-    ]);
+    const found = yield* Effect.all(
+      [
+        foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "オフ会" } })),
+        foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "飲み会" } })),
+        foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "週" } })),
+        foundOf(callTool({ name: "find_messages", args: { serverId: GUILD_A, query: "所の" } })),
+      ],
+      { concurrency: 1 },
+    );
     expect(found).toStrictEqual([
       { total: 1, ids: [A_OPEN_MESSAGE] },
       { total: 0, ids: [] },
@@ -171,6 +175,7 @@ it.effect("refuses to read an unreadable channel, its threads or one from anothe
     const outcomes = yield* Effect.forEach(
       [A_STAFF, A_STAFF_THREAD, A_PRIVATE_THREAD, B_OPEN],
       (channelId) => callTool({ name: "read_messages", args: { serverId: GUILD_A, channelId } }),
+      { concurrency: 1 },
     );
     expect(outcomes).toStrictEqual([REFUSED, REFUSED, REFUSED, REFUSED]);
   }),
@@ -184,9 +189,13 @@ it.effect("returns no messages from a server whose admin has not consented or wi
         { serverId: GUILD_D, channelId: D_OPEN },
       ],
       (args) => idsOf("messages")(callTool({ name: "read_messages", args })),
+      { concurrency: 1 },
     );
-    const counted = yield* Effect.forEach([GUILD_B, GUILD_D], (serverId) =>
-      foundOf(callTool({ name: "find_messages", args: { serverId, query: "オフ会" } })),
+    const counted = yield* Effect.forEach(
+      [GUILD_B, GUILD_D],
+      (serverId) =>
+        foundOf(callTool({ name: "find_messages", args: { serverId, query: "オフ会" } })),
+      { concurrency: 1 },
     );
     expect(read).toStrictEqual([[], []]);
     expect(counted).toStrictEqual([
@@ -207,31 +216,37 @@ it.effect("reads a readable channel of the requested server", () =>
 
 it.effect("tells a channel without consent apart from one that has no messages", () =>
   Effect.gen(function* readIngest() {
-    const ingests = yield* Effect.all([
-      readIngestOf(
-        callTool({ name: "read_messages", args: { serverId: GUILD_A, channelId: A_OPEN } }),
-      ),
-      readIngestOf(
-        callTool({ name: "read_messages", args: { serverId: GUILD_B, channelId: B_OPEN } }),
-      ),
-      readIngestOf(
-        callTool({ name: "read_messages", args: { serverId: GUILD_D, channelId: D_OPEN } }),
-      ),
-    ]);
+    const ingests = yield* Effect.all(
+      [
+        readIngestOf(
+          callTool({ name: "read_messages", args: { serverId: GUILD_A, channelId: A_OPEN } }),
+        ),
+        readIngestOf(
+          callTool({ name: "read_messages", args: { serverId: GUILD_B, channelId: B_OPEN } }),
+        ),
+        readIngestOf(
+          callTool({ name: "read_messages", args: { serverId: GUILD_D, channelId: D_OPEN } }),
+        ),
+      ],
+      { concurrency: 1 },
+    );
     expect(ingests).toStrictEqual(["done", "notConsented", "notConsented"]);
   }),
 );
 
 it.effect("keeps unreadable and foreign messages out of a read past the channel check", () =>
   Effect.gen(function* readPastCheck() {
-    const reads = yield* Effect.all([
-      readPastChannelCheck(A_OPEN),
-      readPastChannelCheck(A_STAFF),
-      readPastChannelCheck(A_STAFF_THREAD),
-      readPastChannelCheck(A_PRIVATE_THREAD),
-      readPastChannelCheck(B_OPEN),
-      readPastChannelCheck(B_OPEN, GUILD_B),
-    ]);
+    const reads = yield* Effect.all(
+      [
+        readPastChannelCheck(A_OPEN),
+        readPastChannelCheck(A_STAFF),
+        readPastChannelCheck(A_STAFF_THREAD),
+        readPastChannelCheck(A_PRIVATE_THREAD),
+        readPastChannelCheck(B_OPEN),
+        readPastChannelCheck(B_OPEN, GUILD_B),
+      ],
+      { concurrency: 1 },
+    );
     expect(reads).toStrictEqual([[A_OPEN_MESSAGE], [], [], [], [], []]);
   }),
 );

@@ -46,7 +46,7 @@ const leaveOverLimit = (rejected: readonly string[]): Effect.Effect<void> =>
         Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),
         Effect.annotateLogs({ guildId }),
       ),
-    { discard: true },
+    { concurrency: 1, discard: true },
   );
 
 export const forgetGuild = (guildId: string): Effect.Effect<void> =>
@@ -64,7 +64,7 @@ const removeDepartedGuilds = (
       Array.filter((id) => !current.includes(id)),
     ),
     forgetGuild,
-    { discard: true },
+    { concurrency: 1, discard: true },
   );
 
 export type Membership = Readonly<{

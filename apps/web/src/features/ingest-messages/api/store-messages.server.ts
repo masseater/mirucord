@@ -147,9 +147,13 @@ const describedModelOf = (incoming: DiscordMessage): string =>
   });
 
 const describeMessage = (incoming: DiscordMessage): Effect.Effect<DescribedMessage> =>
-  pipe(
+  Effect.forEach(
     attachmentsOf(incoming),
-    Effect.forEach((attachment, index) => describeAttachment(attachment, index)),
+    (attachment, index) => describeAttachment(attachment, index),
+    {
+      concurrency: 1,
+    },
+  ).pipe(
     Effect.map((results) => ({
       incoming,
       attachments: pipe(
@@ -172,10 +176,7 @@ const describeMessage = (incoming: DiscordMessage): Effect.Effect<DescribedMessa
 const describeAll = (
   stale: readonly DiscordMessage[],
 ): Effect.Effect<readonly DescribedMessage[]> =>
-  pipe(
-    stale,
-    Effect.forEach((incoming) => describeMessage(incoming)),
-  );
+  Effect.forEach(stale, (incoming) => describeMessage(incoming), { concurrency: 1 });
 
 const toIndexed = (
   target: StoreTarget,
@@ -183,11 +184,14 @@ const toIndexed = (
 ): Effect.Effect<IndexedMessage> => {
   const { key, searchKey, job } = target;
   const body = { ...authorOf(incoming), ...bodyOf({ incoming, attachments }) };
-  return Effect.all({
-    sealed: sealMessage(body, key, { ...job, messageId: incoming.id }),
-    tokens: indexTokens({ key: searchKey, texts: searchableTexts(body) }),
-    phrases: phrasesOf(target, incoming, body),
-  }).pipe(
+  return Effect.all(
+    {
+      sealed: sealMessage(body, key, { ...job, messageId: incoming.id }),
+      tokens: indexTokens({ key: searchKey, texts: searchableTexts(body) }),
+      phrases: phrasesOf(target, incoming, body),
+    },
+    { concurrency: 1 },
+  ).pipe(
     Effect.map(({ sealed, tokens, phrases }) => ({
       row: {
         id: incoming.id,
@@ -208,9 +212,7 @@ const writeMessages = (
   target: StoreTarget,
   changed: readonly DescribedMessage[],
 ): Effect.Effect<void> =>
-  pipe(
-    changed,
-    Effect.forEach((described) => toIndexed(target, described)),
+  Effect.forEach(changed, (described) => toIndexed(target, described), { concurrency: 1 }).pipe(
     Effect.flatMap((messages) =>
       Array.match(messages, {
         onEmpty: () => Effect.void,

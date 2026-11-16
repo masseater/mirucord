@@ -29,7 +29,7 @@ const NOTHING = 0;
 const spendWholeAllowance = Effect.forEach(
   Array.makeBy(ALLOWANCE_BITS, (step) => BINARY ** (HIGHEST_BIT - step)),
   (neurons) => spendNeurons("query", neurons),
-  { discard: true },
+  { concurrency: 1, discard: true },
 );
 
 const decodeSimilar = Schema.decodeUnknownEffect(FindSimilarMessagesOutput);

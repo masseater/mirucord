@@ -27,6 +27,7 @@ const FIRST = 0;
 const SAMPLES_PER_PHRASE = 6;
 const SAMPLE_SCAN = 60;
 const AROUND = 2;
+const SETTLED_NOTES = ["common", "server"] as const satisfies readonly NoteStatus[];
 
 type Use = Readonly<{ messageId: string; channelId: string; authorId: string }>;
 
@@ -87,7 +88,7 @@ export abstract class NoteStore extends PhraseStore {
 
   protected claimNotes({ phrases, now }: NoteClaim): readonly string[] {
     const taken = or(
-      inArray(phraseNote.status, ["common", "server"]),
+      inArray(phraseNote.status, SETTLED_NOTES),
       gte(phraseNote.updatedAt, now - CLAIM_MS),
     );
     const settled = new Set(

@@ -7,6 +7,7 @@ import {
   removalPolicySyntax,
   requiredStack,
   steigerRules,
+  textlintPresets,
   tracedRules,
 } from "@r_masseater/msch/lint";
 import type { ToolSections } from "@r_masseater/msch/vite";
@@ -86,7 +87,7 @@ const overrides = [
     rules: { "react/jsx-props-no-spreading": "off" },
   },
   {
-    files: [...workspace.lint.publicEntries, "**/src/app/server/index.ts"],
+    files: [...workspace.lint.publicEntries, ...workspace.lint.deployEntries],
     rules: { "import/no-default-export": "off" },
   },
   ...workspace.lint.overrides,
@@ -123,6 +124,7 @@ const checks: ToolSections = {
   },
   textlint: {
     ignores: MARKDOWN_IGNORES,
+    presets: textlintPresets,
     rules: {
       "@textlint-ja/preset-ai-writing": true,
       "@r_masseater/preset-ja": { "no-taigendome": false },

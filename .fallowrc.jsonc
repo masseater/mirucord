@@ -17,7 +17,7 @@
   },
   "typeAware": { "enabled": true, "require": "complete" },
   "failOnParseError": true,
-  "ignoreDependencies": ["@effect/language-service", "@r_masseater/textlint-rule-preset-ja"],
+  "ignoreDependencies": ["@effect/language-service"],
   "ignorePatterns": [".claude/**"],
   "audit": { "gate": "all" },
   "security": {
@@ -93,7 +93,6 @@
       "entryPointRole": "runtime",
       "entryPoints": [
         "src/app/{router,start,client,server}.{ts,tsx}",
-        "src/app/server/index.{ts,tsx}",
         "src/app/routes/**/*.{ts,tsx}",
       ],
       "alwaysUsed": ["src/app/routeTree.gen.ts"],
@@ -146,12 +145,6 @@
           ],
         },
       ],
-    },
-    {
-      "name": "cloudflare-vitest-plugin",
-      "enablers": ["@cloudflare/vitest-plugin"],
-      "entryPointRole": "test",
-      "entryPoints": ["vitest.worker.ts"],
     },
     {
       "name": "vite-plus",

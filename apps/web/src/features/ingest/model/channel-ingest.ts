@@ -93,7 +93,7 @@ export type GuildConsent = "awaiting" | "granted" | "withdrawing";
 
 export const INGESTING = ["waiting", "backfilling"] as const satisfies readonly GuildIngest[];
 const IN_PROGRESS: ReadonlySet<ChannelIngest> = new Set(INGESTING);
-const COUNTED: ReadonlySet<ChannelIngest> = new Set(["waiting", "backfilling", "done"]);
+const COUNTED: ReadonlySet<ChannelIngest> = new Set([...INGESTING, "done"]);
 
 const grantedIngest = (channels: readonly ChannelIngest[]): GuildIngest => {
   const counted = pipe(

@@ -26,4 +26,4 @@ export class HookPlatform extends Context.Service<
     readonly relative: (from: string, to: string) => string;
     readonly sep: string;
   }
->()("claude-harness/hooks/platform/HookPlatform") {}
+>()("claude-harness/shared/lib/platform/HookPlatform") {}

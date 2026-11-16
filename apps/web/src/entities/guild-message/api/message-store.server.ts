@@ -186,7 +186,7 @@ export abstract class MessageStore extends TracedDurableObject {
     return this.#removeWhere(this.#tracked(ids), listed);
   }
 
-  #removeMatching(column: "authorId" | "channelId", value: string): Promise<void> {
+  #removeMatching(column: Exclude<PhraseColumn, "messageId">, value: string): Promise<void> {
     this.forgetPhrases(column, [value]);
     const matching = eq(guildMessage[column], value);
     const rows = this.db.select(TRACKED_COLUMNS).from(guildMessage).where(matching).all();

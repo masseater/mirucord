@@ -8,9 +8,9 @@ import {
   runCommand,
   runHook,
   writeJson,
-} from "./env.ts";
-import { HookPlatform } from "./platform.ts";
-import type { CommandResult } from "./platform.ts";
+} from "#/shared/lib/env.ts";
+import { HookPlatform } from "#/shared/lib/platform.ts";
+import type { CommandResult } from "#/shared/lib/platform.ts";
 
 const PostToolUseInput = Schema.Struct({
   tool_input: Schema.Struct({ file_path: Schema.optional(Schema.String) }),

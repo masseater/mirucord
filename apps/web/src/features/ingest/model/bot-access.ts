@@ -1,12 +1,14 @@
 import { DateTime, Duration, Function } from "effect";
 
+import type { BotAccessStatus } from "#/shared/db/index";
+
 const DATA_FIRST_ARITY = 2;
 const RETENTION_DAYS = 30;
 const HIDDEN_RETENTION = Duration.days(RETENTION_DAYS);
 
 export type BotAccess =
-  | Readonly<{ status: "readable" }>
-  | Readonly<{ status: "hidden"; since: DateTime.Utc }>;
+  | Readonly<{ status: Extract<BotAccessStatus, "readable"> }>
+  | Readonly<{ status: Extract<BotAccessStatus, "hidden">; since: DateTime.Utc }>;
 
 export const observeAccess = ({
   readable,

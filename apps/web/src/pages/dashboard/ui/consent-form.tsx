@@ -1,7 +1,7 @@
 import { Option } from "effect";
 import type { ReactNode } from "react";
 
-import type { GuildSettings } from "#/features/ingest/index.server";
+import type { GuildSettings } from "#/features/ingest-messages/index.server";
 import { noticeChannels, readableChannels } from "#/pages/dashboard/model/consent-draft";
 import { useConsentForm } from "#/pages/dashboard/model/use-consent-form";
 import { Panel } from "#/shared/ui/panel";

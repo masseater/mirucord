@@ -1,7 +1,7 @@
 import { Array, pipe } from "effect";
 
-import { INGESTING } from "#/features/ingest";
-import type { GuildIngest } from "#/features/ingest/index.server";
+import { INGESTING } from "#/features/ingest-messages";
+import type { GuildIngest } from "#/features/ingest-messages/index.server";
 import type { ReadyDashboard } from "#/pages/dashboard/model/next-steps";
 
 const WITHDRAWING_TIP = "削除中だよ！";

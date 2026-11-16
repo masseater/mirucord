@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { SettingsChannel } from "#/features/ingest/index.server";
+import type { SettingsChannel } from "#/features/ingest-messages/index.server";
 import { forumPostsId, useForumDisclosure } from "#/pages/dashboard/model/forum-disclosure";
 
 import { ChannelLabel } from "./channel-label";

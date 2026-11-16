@@ -1,0 +1,155 @@
+import { Array, DateTime, Effect, Option, pipe } from "effect";
+
+import { isNoticeCandidate } from "#/features/ingest-messages/model/channel-ingest";
+import type { ConsentScope } from "#/features/ingest-messages/model/consent-scope";
+import { MASCOT_NAME, MCP_URL, PRIVACY_PATH, SITE_ORIGIN } from "#/shared/config";
+import { db, ingestConsent } from "#/shared/db/index.server";
+import { FORBIDDEN, NOT_FOUND, postChannelMessage } from "#/shared/discord/index.server";
+import type { DiscordRequestError, OutgoingMessage } from "#/shared/discord/index.server";
+
+import { refreshConsented } from "./consent-scope.server";
+import { loadConsentedChannels } from "./guild-settings.server";
+import type { SettingsChannel } from "./guild-settings.server";
+import { whenManaged } from "./managed-guild.server";
+import type { GuildMembership } from "./managed-guild.server";
+import { requestWithdrawal } from "./withdraw-guild.server";
+
+export type ConsentRequest = Readonly<{
+  guildId: string;
+  userId: string;
+  noticeChannelId: string;
+}>;
+
+export type ConsentResult =
+  | Readonly<{ status: "saved" }>
+  | Readonly<{ status: "forbidden" }>
+  | Readonly<{ status: "invalid" }>
+  | Readonly<{ status: "withdrawing" }>
+  | Readonly<{ status: "noticeForbidden" }>
+  | Readonly<{ status: "noticeMissing" }>
+  | Readonly<{ status: "noticeFailed" }>;
+
+export type RevokeResult = Readonly<{ status: "withdrawing" }> | Readonly<{ status: "forbidden" }>;
+
+const NOTICE: OutgoingMessage = {
+  content: pipe(
+    [
+      `はじめまして、${MASCOT_NAME}だよ！`,
+      `このサーバーの過去ログを読ませてもらうね。読むのは **${MASCOT_NAME}が見られるチャンネル** だけだよ。`,
+      "",
+      "アプリに登録する URL",
+      MCP_URL,
+    ],
+    Array.join("\n"),
+  ),
+  links: [
+    { label: "使い方", url: `${SITE_ORIGIN}/#start` },
+    { label: "プライバシーポリシー", url: `${SITE_ORIGIN}${PRIVACY_PATH}` },
+  ],
+};
+
+const isValidRequest = (request: ConsentRequest, channels: readonly SettingsChannel[]): boolean =>
+  pipe(
+    channels,
+    Array.some((channel) => isNoticeCandidate(channel) && channel.id === request.noticeChannelId),
+  );
+
+type NoticePost = "posted" | "noticeForbidden" | "noticeMissing" | "noticeFailed";
+
+const NOTICE_FAILURES: ReadonlyMap<number, NoticePost> = new Map([
+  [FORBIDDEN, "noticeForbidden"],
+  [NOT_FOUND, "noticeMissing"],
+]);
+
+const noticeFailureOf = (status: Option.Option<number>): NoticePost =>
+  status.pipe(
+    Option.flatMap((code) => Option.fromUndefinedOr(NOTICE_FAILURES.get(code))),
+    Option.getOrElse((): NoticePost => "noticeFailed"),
+  );
+
+const postNoticeOnce = (
+  request: ConsentRequest,
+  scope: ConsentScope,
+): Effect.Effect<NoticePost> => {
+  if (scope.status === "granted") {
+    return Effect.succeed("posted");
+  }
+  return postChannelMessage({ channelId: request.noticeChannelId, ...NOTICE }).pipe(
+    Effect.as<NoticePost>("posted"),
+    Effect.catchTag("DiscordRequestError", ({ status }) =>
+      Effect.logWarning("Could not post the ingest notice").pipe(
+        Effect.annotateLogs({
+          guildId: request.guildId,
+          status: Option.getOrElse(status, () => "network"),
+        }),
+        Effect.as(noticeFailureOf(status)),
+      ),
+    ),
+  );
+};
+
+const saveConsent = (request: ConsentRequest): Effect.Effect<void> =>
+  DateTime.now.pipe(
+    Effect.flatMap((now) => {
+      const values = {
+        grantedBy: request.userId,
+        grantedAt: DateTime.toDate(now),
+        noticeChannelId: request.noticeChannelId,
+      };
+      return Effect.promise(() =>
+        db
+          .insert(ingestConsent)
+          .values({ ...values, guildId: request.guildId })
+          .onConflictDoUpdate({ target: ingestConsent.guildId, set: values }),
+      );
+    }),
+    Effect.asVoid,
+  );
+
+const applyConsent = (
+  request: ConsentRequest,
+  scope: ConsentScope,
+  channels: readonly SettingsChannel[],
+): Effect.Effect<ConsentResult> => {
+  if (!isValidRequest(request, channels)) {
+    return Effect.succeed({ status: "invalid" });
+  }
+  return postNoticeOnce(request, scope).pipe(
+    Effect.flatMap((posted) => {
+      if (posted !== "posted") {
+        return Effect.succeed<ConsentResult>({ status: posted });
+      }
+      return saveConsent(request).pipe(
+        Effect.andThen(refreshConsented(request.guildId)),
+        Effect.as<ConsentResult>({ status: "saved" }),
+      );
+    }),
+  );
+};
+
+export const grantConsent = (
+  request: ConsentRequest,
+): Effect.Effect<ConsentResult, DiscordRequestError> =>
+  whenManaged({
+    membership: request,
+    denied: { status: "forbidden" },
+    use: () =>
+      loadConsentedChannels(request.guildId).pipe(
+        Effect.flatMap(({ consent, channels }) => {
+          if (consent.status === "withdrawing") {
+            return Effect.succeed<ConsentResult>({ status: "withdrawing" });
+          }
+          return applyConsent(request, consent, channels);
+        }),
+      ),
+  });
+
+export const revokeConsent = (
+  membership: GuildMembership,
+): Effect.Effect<RevokeResult, DiscordRequestError> =>
+  whenManaged({
+    membership,
+    denied: { status: "forbidden" },
+    use: () =>
+      requestWithdrawal(membership.guildId).pipe(Effect.as({ status: "withdrawing" } as const)),
+  });

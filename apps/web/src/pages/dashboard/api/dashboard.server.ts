@@ -9,7 +9,7 @@ import {
   listManagedGuilds,
   purgePausedChannel,
   revokeConsent,
-} from "#/features/ingest/index.server";
+} from "#/features/ingest-messages/index.server";
 import type {
   ConsentResult,
   EraseResult,
@@ -18,8 +18,8 @@ import type {
   ManagedGuild,
   PurgeResult,
   RevokeResult,
-} from "#/features/ingest/index.server";
-import { readableGuilds } from "#/features/mcp/index.server";
+} from "#/features/ingest-messages/index.server";
+import { readableGuilds } from "#/features/serve-mcp/index.server";
 import { disconnectApp, listConnectedApps, signedInUser } from "#/shared/auth/index.server";
 import type { ConnectedApp, SignedInUser } from "#/shared/auth/index.server";
 import { botInviteUrl } from "#/shared/discord/index.server";
@@ -156,4 +156,4 @@ export const purgeFor = (input: ChannelTarget): Effect.Effect<PurgeResult | Sign
 export const loadForumPosts = (input: ChannelTarget): Effect.Effect<ForumPostsResult | SignedOut> =>
   withSignedInUser((userId) => forumPosts({ ...input, userId }).pipe(Effect.orDie));
 
-export type { EraseResult } from "#/features/ingest/index.server";
+export type { EraseResult } from "#/features/ingest-messages/index.server";

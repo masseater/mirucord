@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { ForumPost } from "#/features/ingest/index.server";
+import type { ForumPost } from "#/features/ingest-messages/index.server";
 import { countFormat } from "#/pages/dashboard/model/format";
 
 import { IngestPill } from "./ingest-pill";

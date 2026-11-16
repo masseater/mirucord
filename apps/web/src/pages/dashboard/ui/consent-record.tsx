@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { Consent } from "#/features/ingest/index.server";
+import type { Consent } from "#/features/ingest-messages/index.server";
 import { dateFormat } from "#/pages/dashboard/model/format";
 import { Panel } from "#/shared/ui/panel";
 

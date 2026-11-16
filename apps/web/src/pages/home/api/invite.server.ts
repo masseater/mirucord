@@ -1,6 +1,6 @@
 import { Effect, Option } from "effect";
 
-import { guildLimit } from "#/features/ingest/index.server";
+import { guildLimit } from "#/features/ingest-messages/index.server";
 import { db, guild } from "#/shared/db/index.server";
 import { botInviteUrl } from "#/shared/discord/index.server";
 

@@ -21,7 +21,7 @@ import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
 import type { GuildStore, NeuronBudget, RequestCounter } from "./src/app/server/index.ts";
-import { INGEST_MAX_RETRIES } from "./src/features/ingest/index.ts";
+import { INGEST_MAX_RETRIES } from "./src/features/ingest-messages/index.ts";
 import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
 
 const PRODUCTION_STAGE = "prod";

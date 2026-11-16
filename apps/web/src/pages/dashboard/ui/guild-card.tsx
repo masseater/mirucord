@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { ManagedGuild } from "#/features/ingest/index.server";
+import type { ManagedGuild } from "#/features/ingest-messages/index.server";
 
 import { GuildIcon } from "./guild-icon";
 import { GuildPageLink } from "./guild-page-link";

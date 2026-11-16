@@ -4,7 +4,7 @@ import { ChildProcess, ChildProcessSpawner } from "effect/process";
 
 import { blockWhen, projectRoot, runHookWith } from "#/shared/lib/env.ts";
 
-const WORKTREES = "/.claude/worktrees/";
+const TEMP_PREFIX = "claude-simplify-";
 const NO_COMMITS = "0";
 
 type Worktree = Readonly<{ root: string; sha: string; name: string; directory: string }>;
@@ -24,10 +24,12 @@ const run = Effect.fn("run")(function* run(cwd: string, command: string, args: r
 }, Effect.scoped);
 
 const openWorktree = Effect.fn("openWorktree")(function* openWorktree(root: string) {
+  const fileSystem = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const { stdout: sha } = yield* run(root, "git", ["rev-parse", "--short", "HEAD"]);
   const name = `simplify-${sha}`;
-  const directory = path.join(root, ".claude", "worktrees", name);
+  const parent = yield* fileSystem.makeTempDirectory({ prefix: TEMP_PREFIX });
+  const directory = path.join(parent, name);
   yield* run(root, "git", ["worktree", "add", "--quiet", "-b", name, directory, "HEAD"]);
   return { root, sha, name, directory } satisfies Worktree;
 });
@@ -51,21 +53,19 @@ const review = Effect.fn("review")(function* review({ root, sha, directory }: Wo
 });
 
 const report = Effect.fn("report")(function* report({ root, sha, name, directory }: Worktree) {
-  const path = yield* Path.Path;
   const { stdout: commits } = yield* run(root, "git", ["rev-list", "--count", `${sha}..${name}`]);
   if (commits === NO_COMMITS) {
     yield* run(root, "git", ["branch", "--quiet", "-D", name]);
     return;
   }
-  const log = path.relative(root, `${directory}.log`);
   yield* blockWhen([
-    `コミット ${sha} を /simplify した結果がブランチ ${name} にある。差分を確認し、取り込むか判断すること。ログは ${log} にある。`,
+    `コミット ${sha} を /simplify した結果がブランチ ${name} にある。差分を確認し、取り込むか判断すること。ログは ${directory}.log にある。`,
   ]);
 });
 
 const simplify = Effect.gen(function* simplify() {
   const root = yield* projectRoot;
-  if (Str.includes(WORKTREES)(root)) {
+  if (Str.includes(TEMP_PREFIX)(root)) {
     return;
   }
   const worktree = yield* openWorktree(root);

@@ -53,17 +53,20 @@ const seedMessages = ({ prefix, channelId, content, phrases }: Seed): Effect.Eff
       stickers: [],
     };
     const hashes = yield* phraseHashes({ ...keys, source: body });
-    const messages = yield* pipe(
+    const messages = yield* Effect.forEach(
       PEOPLE,
-      Effect.forEach((authorId, index): Effect.Effect<IndexedMessage> =>
-        Effect.all({
-          sealed: sealMessage(body, keys.key, {
-            guildId: GUILD_A,
-            channelId,
-            messageId: `${prefix}${index}`,
-          }),
-          tokens: indexTokens({ key: keys.searchKey, texts: [content] }),
-        }).pipe(
+      (authorId, index): Effect.Effect<IndexedMessage> =>
+        Effect.all(
+          {
+            sealed: sealMessage(body, keys.key, {
+              guildId: GUILD_A,
+              channelId,
+              messageId: `${prefix}${index}`,
+            }),
+            tokens: indexTokens({ key: keys.searchKey, texts: [content] }),
+          },
+          { concurrency: 1 },
+        ).pipe(
           Effect.map(({ sealed, tokens }) => ({
             row: {
               id: `${prefix}${index}`,
@@ -78,7 +81,7 @@ const seedMessages = ({ prefix, channelId, content, phrases }: Seed): Effect.Eff
             phrases: phrases(hashes),
           })),
         ),
-      ),
+      { concurrency: 1 },
     );
     yield* Effect.promise(() => guildStore(GUILD_A).write(messages, "overwrite"));
   });
@@ -97,10 +100,7 @@ const network = setupNetwork();
 beforeAll(() => {
   network.enable();
   network.use(discordMembers);
-  const seedAll = pipe(
-    SEEDS,
-    Effect.forEach((seed) => seedMessages(seed)),
-  );
+  const seedAll = Effect.forEach(SEEDS, (seed) => seedMessages(seed), { concurrency: 1 });
   return Effect.runPromise(
     Effect.promise(seedScenario).pipe(Effect.andThen(seedAll), Effect.andThen(publishAll)),
   );

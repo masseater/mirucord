@@ -38,10 +38,13 @@ beforeAll(() => {
     ),
   );
   return Effect.runPromise(
-    Effect.all([
-      seedMemberGuild({ id: GUILD, noticeChannelId: NOTICE_CHANNEL }),
-      seedMemberGuild({ id: QUIET_GUILD, noticeChannelId: NO_CONSENT }),
-    ]),
+    Effect.all(
+      [
+        seedMemberGuild({ id: GUILD, noticeChannelId: NOTICE_CHANNEL }),
+        seedMemberGuild({ id: QUIET_GUILD, noticeChannelId: NO_CONSENT }),
+      ],
+      { concurrency: 1 },
+    ),
   );
 });
 

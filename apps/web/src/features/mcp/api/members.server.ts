@@ -72,9 +72,9 @@ const viewsOf = (
       });
     const rolesOf = (ids: readonly string[]): MemberView["roles"] =>
       pipe(ids, Array.flatMap(roleOf));
-    return yield* pipe(
+    return yield* Effect.forEach(
       stored,
-      Effect.forEach((member) =>
+      (member) =>
         openMember(member.sealed, key, { guildId, userId: member.userId }).pipe(
           Effect.map((profile): MemberView => ({
             id: member.userId,
@@ -87,7 +87,7 @@ const viewsOf = (
             leftAt: isoOf(member.leftAt),
           })),
         ),
-      ),
+      { concurrency: 1 },
     );
   });
 

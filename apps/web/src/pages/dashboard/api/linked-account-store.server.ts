@@ -89,7 +89,7 @@ const choosingOf =
     );
 
 export const loadLinkedAccounts = (owner: TokenOwner): Effect.Effect<LinkedAccounts> =>
-  Effect.all([readPublished(owner.userId), connectionsTokenOf(owner)]).pipe(
+  Effect.all([readPublished(owner.userId), connectionsTokenOf(owner)], { concurrency: 1 }).pipe(
     Effect.flatMap(([published, token]) =>
       Option.match(token, {
         onNone: () => Effect.succeed<LinkedAccounts>({ status: "idle", published }),

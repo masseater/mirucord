@@ -40,7 +40,9 @@ const seedGuild = (id: string): Effect.Effect<void> =>
 
 beforeAll(() => {
   network.enable();
-  return Effect.runPromise(Effect.forEach([KEPT, DEPARTED], seedGuild, { discard: true }));
+  return Effect.runPromise(
+    Effect.forEach([KEPT, DEPARTED], seedGuild, { concurrency: 1, discard: true }),
+  );
 });
 
 beforeEach(() => {

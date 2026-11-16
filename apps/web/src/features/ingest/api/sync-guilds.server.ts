@@ -32,7 +32,7 @@ const updateGuild = (discordGuild: DiscordGuild): Effect.Effect<void> =>
 type GuildArrival = "joined" | "known";
 
 const insertGuild = (discordGuild: DiscordGuild): Effect.Effect<GuildArrival> =>
-  Effect.all({ wrappedKey: createGuildKey, now: DateTime.now }).pipe(
+  Effect.all({ wrappedKey: createGuildKey, now: DateTime.now }, { concurrency: 1 }).pipe(
     Effect.flatMap(({ wrappedKey, now }) =>
       Effect.promise(() =>
         db
@@ -103,7 +103,7 @@ const eachGuild = (
         Effect.catchTag("DiscordRequestError", ({ status }) => logDiscordFailure(status)),
         Effect.annotateLogs({ guildId }),
       ),
-    { discard: true },
+    { concurrency: 1, discard: true },
   );
 
 export const syncOneGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>

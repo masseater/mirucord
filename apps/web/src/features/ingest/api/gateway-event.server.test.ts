@@ -104,12 +104,15 @@ it.live("forgets a server as soon as the bot is removed from it", () =>
     const event = yield* signedRequest(body, now, env.DISCORD_BOT_TOKEN);
     const status = yield* statusOf(event);
     expect(status).toBe(PROCESSED);
-    const remaining = yield* Effect.all({
-      stored: storedCount(target.guildId),
-      rows: Effect.promise(() =>
-        db.select({ id: guild.id }).from(guild).where(eq(guild.id, target.guildId)),
-      ),
-    });
+    const remaining = yield* Effect.all(
+      {
+        stored: storedCount(target.guildId),
+        rows: Effect.promise(() =>
+          db.select({ id: guild.id }).from(guild).where(eq(guild.id, target.guildId)),
+        ),
+      },
+      { concurrency: 1 },
+    );
     expect(remaining).toStrictEqual({ stored: NOTHING_STORED, rows: [] });
   }),
 );

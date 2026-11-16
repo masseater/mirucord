@@ -85,11 +85,17 @@ export const phraseHashes = ({
   commonKey,
   source,
 }: HashRequest): Effect.Effect<readonly PhraseHash[]> =>
-  Effect.forEach(phrasesOf(source), ({ key }) =>
-    Effect.all({
-      phrase: hmacToken({ key: searchKey, text: key }),
-      common: hmacToken({ key: commonKey, text: key }),
-    }),
+  Effect.forEach(
+    phrasesOf(source),
+    ({ key }) =>
+      Effect.all(
+        {
+          phrase: hmacToken({ key: searchKey, text: key }),
+          common: hmacToken({ key: commonKey, text: key }),
+        },
+        { concurrency: 1 },
+      ),
+    { concurrency: 1 },
   );
 
 export const labelOf = ({

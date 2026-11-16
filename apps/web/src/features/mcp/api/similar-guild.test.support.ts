@@ -96,9 +96,7 @@ const indexedOf = ({ id, channelId, content }: SimilarSeed): Effect.Effect<Index
 export const writeMessages = (
   seeds: readonly Readonly<{ id: string; channelId: string; content: string }>[],
 ): Effect.Effect<void> =>
-  pipe(
-    seeds,
-    Effect.forEach((seed) => indexedOf(seed)),
+  Effect.forEach(seeds, (seed) => indexedOf(seed), { concurrency: 1 }).pipe(
     Effect.flatMap((messages) =>
       Effect.promise(() => guildStore(GUILD_A).write(messages, "overwrite")),
     ),

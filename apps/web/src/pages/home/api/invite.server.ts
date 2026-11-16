@@ -12,10 +12,13 @@ export type Invite =
 
 const registeredGuilds: Effect.Effect<number> = Effect.promise(() => db.$count(guild));
 
-export const invite: Effect.Effect<Invite> = Effect.all({
-  limit: guildLimit,
-  registered: registeredGuilds,
-}).pipe(
+export const invite: Effect.Effect<Invite> = Effect.all(
+  {
+    limit: guildLimit,
+    registered: registeredGuilds,
+  },
+  { concurrency: 1 },
+).pipe(
   Effect.map(({ limit, registered }): Invite => {
     const remaining = limit - registered;
     return Option.match(

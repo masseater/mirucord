@@ -22,7 +22,10 @@ export const withFileGate = <Value, Failure, Needs>(
   Effect.provideServiceEffect(
     effect,
     FileGate,
-    Effect.all({ reads: Semaphore.make(READ_PERMITS), writes: Semaphore.make(WRITE_PERMITS) }),
+    Effect.all(
+      { reads: Semaphore.make(READ_PERMITS), writes: Semaphore.make(WRITE_PERMITS) },
+      { concurrency: 1 },
+    ),
   );
 
 const cacheUrl = (key: string): string => `${SITE_ORIGIN}/search-files/${key}`;
@@ -125,7 +128,7 @@ const matchOnce = (
   );
 
 export const cachedBytes = (key: string): Effect.Effect<FileRead, never, FileGate> =>
-  Effect.all([Effect.service(FileGate), searchCache]).pipe(
+  Effect.all([Effect.service(FileGate), searchCache], { concurrency: 1 }).pipe(
     Effect.flatMap(([{ reads }, cache]) =>
       matchOnce(cache, key).pipe(
         Effect.flatMap(

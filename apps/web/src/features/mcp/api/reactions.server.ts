@@ -124,7 +124,7 @@ const liveOf = ({
 };
 
 const reactionsOf = (request: ReactionRequest): Effect.Effect<CallToolResult> =>
-  Effect.all({ stored: storedOf(request), live: liveOf(request) }).pipe(
+  Effect.all({ stored: storedOf(request), live: liveOf(request) }, { concurrency: 1 }).pipe(
     Effect.flatMap(({ stored, live }) => structuredResult({ ...stored, live } satisfies Output)),
     Effect.orElseSucceed(() => errorResult(DISCORD_UNAVAILABLE)),
   );

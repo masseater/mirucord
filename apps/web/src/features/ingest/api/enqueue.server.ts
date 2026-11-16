@@ -17,7 +17,7 @@ export const enqueue = (jobs: readonly QueueJob[]): Effect.Effect<void> =>
           ),
         ),
       ),
-    { discard: true },
+    { concurrency: 1, discard: true },
   );
 
 export const enqueueCatchUps = (guildIds: readonly string[]): Effect.Effect<void> =>

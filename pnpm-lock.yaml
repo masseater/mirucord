@@ -237,8 +237,8 @@ catalogs:
       specifier: 3.9.6
       version: 3.9.6
     lucide-react:
-      specifier: 1.72.0
-      version: 1.72.0
+      specifier: 1.73.0
+      version: 1.73.0
     ml-kmeans:
       specifier: ^7.0.1
       version: 7.0.1
@@ -545,7 +545,7 @@ importers:
         version: 3.9.6
       lucide-react:
         specifier: 'catalog:'
-        version: 1.72.0(@types/react@19.3.0)(react@19.3.1)
+        version: 1.73.0(@types/react@19.3.0)(react@19.3.1)
       ml-kmeans:
         specifier: 'catalog:'
         version: 7.0.1
@@ -7251,8 +7251,8 @@ packages:
   lru_map@0.4.1:
     resolution: {integrity: sha512-I+lBvqMMFfqaV8CJCISjI3wbjmwVu/VyOoU7+qtu9d7ioW5klMgsTTiUOUp+DJvfTTzKXoPbyC6YfgkNcyPSOg==}
 
-  lucide-react@1.72.0:
-    resolution: {integrity: sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg==}
+  lucide-react@1.73.0:
+    resolution: {integrity: sha512-fVOzGviL9mTfHenG1PbCfIceavyGlnpYNSYr+aGZHLRymAJ7DTP6KHuqt0uBkCKAoenr1UVkwSbDIYt2xIesEQ==}
     peerDependencies:
       '@types/react': '*'
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -16040,7 +16040,7 @@ snapshots:
 
   lru_map@0.4.1: {}
 
-  lucide-react@1.72.0(@types/react@19.3.0)(react@19.3.1):
+  lucide-react@1.73.0(@types/react@19.3.0)(react@19.3.1):
     dependencies:
       react: 19.3.1
     optionalDependencies:

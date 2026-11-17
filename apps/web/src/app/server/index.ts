@@ -1,11 +1,11 @@
 import { Effect, Option, pipe, String as Str } from "effect";
 
 import { ingestDeliveries } from "#/features/ingest-messages/index.server";
-import { serveMcp } from "#/features/serve-mcp/index.server";
 import { MCP_URL } from "#/shared/config";
 import { runTraced } from "#/shared/observability/index.server";
 
 import { api } from "./api.server";
+import { serveMcp } from "./mcp.server";
 import { authRejection, mcpRejection } from "./throttle.server";
 import { withWebAnalytics } from "./web-analytics.server";
 

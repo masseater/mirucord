@@ -1,10 +1,7 @@
-import { env } from "cloudflare:workers";
-
-import type { GuildStore } from "./api/guild-store.server";
-
-export const guildStore = (guildId: string): DurableObjectStub<GuildStore> =>
-  env.GUILD_STORE.getByName(guildId);
-
+export { guildStore } from "./api/store-stub.server";
+export { openStored } from "./api/message-view.server";
+export type { MessageScope, MessageView } from "./api/message-view.server";
+export { MessageOutput } from "./model/message-output.schema";
 export { GuildStore } from "./api/guild-store.server";
 export { searchMessages } from "./api/search-messages.server";
 export type { MemberWrite, StoredMember } from "./api/member-types";

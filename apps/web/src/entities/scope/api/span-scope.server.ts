@@ -1,0 +1,35 @@
+import { Array, Option, pipe, Record } from "effect";
+
+import { spanLookupOf } from "#/entities/scope/model/span-input";
+import type { SpanInput, SpanLookup } from "#/entities/scope/model/span-input";
+
+import type { GuildScope } from "./scope.server";
+
+export type SpanRequest = Readonly<{
+  scope: GuildScope;
+  input: SpanInput & Readonly<{ channelIds?: readonly string[] }>;
+}>;
+
+export type SpanScope = Readonly<{
+  names: Record.ReadonlyRecord<string, string>;
+  lookup: SpanLookup & Readonly<{ channelIds: readonly string[] }>;
+}>;
+
+const channelNamesOf = (scope: GuildScope): Record.ReadonlyRecord<string, string> =>
+  Record.fromEntries(
+    pipe(
+      scope.guild.channels,
+      Array.map(({ id, name }) => [id, name] as const),
+    ),
+  );
+
+export const spanScopeOf = ({ scope, input }: SpanRequest): SpanScope => ({
+  names: channelNamesOf(scope),
+  lookup: {
+    ...spanLookupOf(input),
+    channelIds: Option.match(Option.fromUndefinedOr(input.channelIds), {
+      onNone: () => scope.visible,
+      onSome: (wanted) => Array.intersection(scope.visible, wanted),
+    }),
+  },
+});

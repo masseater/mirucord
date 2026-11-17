@@ -1,6 +1,7 @@
 import { getRequest } from "@tanstack/react-start/server";
 import { Array, Cause, Effect, Option, pipe } from "effect";
 
+import { readableGuilds } from "#/entities/scope/index.server";
 import {
   eraseOwnMessages,
   forumPosts,
@@ -19,7 +20,6 @@ import type {
   PurgeResult,
   RevokeResult,
 } from "#/features/ingest-messages/index.server";
-import { readableGuilds } from "#/features/serve-mcp/index.server";
 import { disconnectApp, listConnectedApps, signedInUser } from "#/shared/auth/index.server";
 import type { ConnectedApp, SignedInUser } from "#/shared/auth/index.server";
 import { botInviteUrl } from "#/shared/discord/index.server";

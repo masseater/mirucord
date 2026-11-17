@@ -12,6 +12,7 @@ import {
   spendNeurons,
 } from "#/shared/ai/index.server";
 import type { GemmaOutput } from "#/shared/ai/index.server";
+import { SERVICE_NAME } from "#/shared/config";
 
 export const DESCRIBE_MODEL = GEMMA_MODEL;
 const OK_STATUS = 200;
@@ -77,20 +78,25 @@ const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, De
     operation: "chat",
     model: DESCRIBE_MODEL,
     prompt: "image-description",
-    call: (): Promise<GemmaOutput> =>
-      env.AI.run(DESCRIBE_MODEL, {
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: PROMPT },
-              { type: "image_url", image_url: { url: `data:${contentType};base64,${data}` } },
-            ],
-          },
-        ],
-        max_tokens: MAX_TOKENS,
-        chat_template_kwargs: { enable_thinking: false },
-      }),
+    caller: SERVICE_NAME,
+    call: (options): Promise<GemmaOutput> =>
+      env.AI.run(
+        DESCRIBE_MODEL,
+        {
+          messages: [
+            {
+              role: "user",
+              content: [
+                { type: "text", text: PROMPT },
+                { type: "image_url", image_url: { url: `data:${contentType};base64,${data}` } },
+              ],
+            },
+          ],
+          max_tokens: MAX_TOKENS,
+          chat_template_kwargs: { enable_thinking: false },
+        },
+        options,
+      ),
   }).pipe(
     Effect.mapError(({ cause, outOfCapacity }) => {
       if (outOfCapacity) {

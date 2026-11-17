@@ -289,8 +289,8 @@ catalogs:
       specifier: 1.23.0
       version: 1.23.0
     '@r_masseater/workers-tracing':
-      specifier: 0.3.0
-      version: 0.3.0
+      specifier: 0.5.0
+      version: 0.5.0
     '@tanstack/react-query':
       specifier: 5.107.1
       version: 5.107.1
@@ -360,7 +360,7 @@ importers:
         version: 0.38.1(@effect/tsgo@0.69.0)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(oxlint@1.93.0(oxlint-tsgolint@7.0.2006)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1)))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
-        version: 0.3.0(@distilled.cloud/cloudflare@1.0.0-rc.20(effect@4.1.4))(@effect/platform-node@4.1.4(effect@4.1.4)(redis@6.2.1(@opentelemetry/api@1.10.0)))(effect@4.1.4)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@0.2.9(@sinclair/typebox@0.34.52))(file-type@22.1.1(supports-color@7.2.0))(openapi-types@12.1.3)(typescript@7.1.0-beta))
+        version: 0.5.0(@distilled.cloud/cloudflare@1.0.0-rc.20(effect@4.1.4))(@effect/platform-node@4.1.4(effect@4.1.4)(redis@6.2.1(@opentelemetry/api@1.10.0)))(effect@4.1.4)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@0.2.9(@sinclair/typebox@0.34.52))(file-type@22.1.1(supports-color@7.2.0))(openapi-types@12.1.3)(typescript@7.1.0-beta))
       '@tanstack/intent':
         specifier: 'catalog:'
         version: 0.5.6
@@ -479,7 +479,7 @@ importers:
         version: 1.23.0(@openfeature/core@1.12.0)
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
-        version: 0.3.0(e8312cc8657e5051236004730319639b)
+        version: 0.5.0(e8312cc8657e5051236004730319639b)
       '@repo/ingest-util-gateway-contract':
         specifier: workspace:*
         version: link:../../libs/ingest/util-gateway-contract
@@ -3437,10 +3437,9 @@ packages:
       vite: '*'
       vite-plus: '>=1.5.0'
 
-  '@r_masseater/workers-tracing@0.3.0':
-    resolution: {integrity: sha512-9eNVlub/wQth+nQO8Tq5SSNkF6zi+YnriyoQO40YMLvuvLazCFFnCSR1aVz7Pb0pepFtD/8s3bDJywEWCBZcvw==}
+  '@r_masseater/workers-tracing@0.5.0':
+    resolution: {integrity: sha512-zWD0w0oDTX2acsPugg4TBEKdyUcte9Uac11eGh/4SIg+DoanEitv/Ka2ZH/unC34AWaldbAd+6knvJgrOWlsiQ==}
     engines: {node: '>=26'}
-    deprecated: Outdated. Upgrade to 0.5.0 or later.
     hasBin: true
     peerDependencies:
       '@alchemy.run/cloudflare': ^2.0.0-beta.85
@@ -12176,7 +12175,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@r_masseater/workers-tracing@0.3.0(@distilled.cloud/cloudflare@1.0.0-rc.20(effect@4.1.4))(@effect/platform-node@4.1.4(effect@4.1.4)(redis@6.2.1(@opentelemetry/api@1.10.0)))(effect@4.1.4)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@0.2.9(@sinclair/typebox@0.34.52))(file-type@22.1.1(supports-color@7.2.0))(openapi-types@12.1.3)(typescript@7.1.0-beta))':
+  '@r_masseater/workers-tracing@0.5.0(@distilled.cloud/cloudflare@1.0.0-rc.20(effect@4.1.4))(@effect/platform-node@4.1.4(effect@4.1.4)(redis@6.2.1(@opentelemetry/api@1.10.0)))(effect@4.1.4)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@0.2.9(@sinclair/typebox@0.34.52))(file-type@22.1.1(supports-color@7.2.0))(openapi-types@12.1.3)(typescript@7.1.0-beta))':
     dependencies:
       effect: 4.1.4
     optionalDependencies:
@@ -12184,7 +12183,7 @@ snapshots:
       '@effect/platform-node': 4.1.4(effect@4.1.4)(redis@6.2.1(@opentelemetry/api@1.10.0))
       elysia: 1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@0.2.9(@sinclair/typebox@0.34.52))(file-type@22.1.1(supports-color@7.2.0))(openapi-types@12.1.3)(typescript@7.1.0-beta)
 
-  '@r_masseater/workers-tracing@0.3.0(e8312cc8657e5051236004730319639b)':
+  '@r_masseater/workers-tracing@0.5.0(e8312cc8657e5051236004730319639b)':
     dependencies:
       effect: 4.1.4
     optionalDependencies:

@@ -13,6 +13,7 @@ import {
   spendNeurons,
 } from "#/shared/ai/index.server";
 import type { GemmaOutput } from "#/shared/ai/index.server";
+import { SERVICE_NAME } from "#/shared/config";
 import type { MessageBody } from "#/shared/crypto/index.server";
 
 import { narrowNote } from "./phrase-narrow.server";
@@ -196,12 +197,17 @@ const askModel = (input: NoteInput, image: Option.Option<Image>): Effect.Effect<
     operation: "chat",
     model: GEMMA_MODEL,
     prompt: "phrase-note",
-    call: (): Promise<GemmaOutput> =>
-      env.AI.run(GEMMA_MODEL, {
-        messages: [{ role: "user", content: [...contentOf(promptOf(input), image)] }],
-        max_tokens: MAX_TOKENS,
-        chat_template_kwargs: { enable_thinking: false },
-      }),
+    caller: SERVICE_NAME,
+    call: (options): Promise<GemmaOutput> =>
+      env.AI.run(
+        GEMMA_MODEL,
+        {
+          messages: [{ role: "user", content: [...contentOf(promptOf(input), image)] }],
+          max_tokens: MAX_TOKENS,
+          chat_template_kwargs: { enable_thinking: false },
+        },
+        options,
+      ),
   }).pipe(Effect.orDie, Effect.withSpan("annotatePhrase"));
 
 const namesIn = (input: NoteInput): readonly string[] =>

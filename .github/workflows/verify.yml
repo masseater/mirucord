@@ -81,6 +81,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      id-token: write
     concurrency:
       group: release
     steps:
@@ -90,11 +91,20 @@ jobs:
           manifest-file: .github/release-please/manifest.json
           skip-github-pull-request: true
       - if: github.event_name == 'workflow_dispatch'
+        uses: masseater/typescript-template/.github/actions/credentials@d79be66b83e21575c7f40a75453fea5a51aaff8c
+      - if: github.event_name == 'workflow_dispatch'
+        id: release-pr
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
+          token: ${{ env.GITHUB_APP_TOKEN }}
           config-file: .github/release-please/config.json
           manifest-file: .github/release-please/manifest.json
           skip-github-release: true
+      - if: steps.release-pr.outputs.pr
+        env:
+          GH_TOKEN: ${{ env.GITHUB_APP_TOKEN }}
+          PR: ${{ steps.release-pr.outputs.pr }}
+        run: gh pr merge "$(jq -r .number <<<"$PR")" --repo "$GITHUB_REPOSITORY" --squash --auto
 
   ci-telemetry:
     needs: [verify, autofix, deploy, release]

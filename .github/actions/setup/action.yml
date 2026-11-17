@@ -17,3 +17,5 @@ runs:
         cache: ${{ inputs.cache }}
         run-install: |
           - args: ['--frozen-lockfile']
+    - shell: bash
+      run: vp exec pnpm store prune

@@ -2,6 +2,8 @@ import { runWorkersAi, WorkersAiError } from "@r_masseater/workers-tracing/worke
 import { env } from "cloudflare:workers";
 import { Array, Effect, Option, pipe, Schedule, Schema, String as Str } from "effect";
 
+import { SERVICE_NAME } from "#/shared/config";
+
 import { settleNeurons, spendNeurons } from "./budget.server";
 import type { Priority } from "./budget.server";
 import { DIMENSIONS, quantize } from "./vector";
@@ -53,14 +55,13 @@ const runModel = (
   runWorkersAi({
     operation: "embeddings",
     model: EMBED_MODEL,
-    call: () =>
-      env.AI.run(EMBED_MODEL, {
-        text: pipe(
-          texts,
-          Array.map((text) => clip(text)),
-        ),
-        truncate_inputs: true,
-      }),
+    caller: SERVICE_NAME,
+    call: (options) =>
+      env.AI.run(
+        EMBED_MODEL,
+        { text: pipe(texts, Array.map(clip)), truncate_inputs: true },
+        options,
+      ),
   }).pipe(
     Effect.flatMap((output) =>
       Effect.fromOption(

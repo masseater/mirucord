@@ -10,6 +10,7 @@ import {
   spendNeurons,
 } from "#/shared/ai/index.server";
 import type { GemmaOutput } from "#/shared/ai/index.server";
+import { SERVICE_NAME } from "#/shared/config";
 
 const MAX_TOKENS = 120;
 const RESERVED_INPUT_TOKENS = 300;
@@ -27,12 +28,17 @@ const rewrite = (hedged: Hedged): Effect.Effect<string> =>
     operation: "chat",
     model: GEMMA_MODEL,
     prompt: "phrase-note-narrowing",
-    call: (): Promise<GemmaOutput> =>
-      env.AI.run(GEMMA_MODEL, {
-        messages: [{ role: "user", content: promptOf(hedged) }],
-        max_tokens: MAX_TOKENS,
-        chat_template_kwargs: { enable_thinking: false },
-      }),
+    caller: SERVICE_NAME,
+    call: (options): Promise<GemmaOutput> =>
+      env.AI.run(
+        GEMMA_MODEL,
+        {
+          messages: [{ role: "user", content: promptOf(hedged) }],
+          max_tokens: MAX_TOKENS,
+          chat_template_kwargs: { enable_thinking: false },
+        },
+        options,
+      ),
   }).pipe(
     Effect.orDie,
     Effect.tap((output) => settleGemma({ output, reserved: RESERVED_NEURONS })),

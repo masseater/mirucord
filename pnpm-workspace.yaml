@@ -22,9 +22,9 @@ catalog:
   "@modelcontextprotocol/server": 2.4.0
   "@sapphire/bitfield": 1.2.4
   discord-api-types: 0.38.59
-  "@better-auth/mcp": 1.7.23
+  "@better-auth/mcp": 1.7.25
   jose: 6.2.17
-  "@better-auth/oauth-provider": 1.7.23
+  "@better-auth/oauth-provider": 1.7.25
   simple-icons: 16.37.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
@@ -54,7 +54,7 @@ catalogs:
     "@alchemy.run/fly": 2.0.0-beta.87
     "@alchemy.run/github": 2.0.0-beta.87
     alchemy: 2.0.0-beta.87
-    better-auth: 1.7.23
+    better-auth: 1.7.25
     drizzle-kit: 1.0.0-rc.5-ab785fc
     drizzle-orm: 1.0.0-rc.5-ab785fc
     effect: 4.1.4

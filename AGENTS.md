@@ -1,59 +1,59 @@
 # mirucord
 
-`masseater-ecosystem` に従うこと。これは masseater/skills のスキルで、状況ごとに読み込むスキルを指定する。`vp install` はスキルを `.agents/skills/` に配置する。
+Follow `masseater-ecosystem`, a skill in masseater/skills that says which skills to load in each situation. `vp install` puts the skills in `.agents/skills/`.
 
-mirucord は、Discord のサーバーを読むだけの MCP サーバーをホスティングで提供するサービスである。本番は `https://mirucord.masseater.dev` で動いている。
+mirucord is a hosted service providing read-only MCP servers for Discord servers. Production runs at `https://mirucord.masseater.dev`.
 
-## テックスタック
+## Tech stack
 
-ベーススタックは TypeScript 7、Effect、Alchemy、Cloudflare である。
+The base stack is TypeScript 7, Effect, Alchemy and Cloudflare.
 
-## コマンド
+## Commands
 
-- 1 つのテストだけを流すときは、そのワークスペースで `vp exec vp test run <ファイル>` を実行する。
+- To run one test, run `vp exec vp test run <file>` in that workspace.
 
-## ルール
+## Rules
 
-### 進め方
+### Way of working
 
-- これからやることと未決の検討事項は docs/roadmap.md に書く。画面と文言は DESIGN.md に従う。
-- 本運用も本リリースもしていない（2026-10-12 時点）。データベースの破壊やアーキテクチャの再構築は好きなだけやってよい。
-- ユーザーへの報告は、結果と、ユーザーにしかできない操作が要るときだけにする。
-- ユーザーに手元での作業を頼まない。クラウドのセッションだけで終わらせる。
-- 文言やデザインの指摘を1件受けたら、同じ基準でアプリの全画面を見直す。
-- ワークスペースを変更する前に、そのワークスペースの AGENTS.md を読む。
-- Discord Gateway の接続と Web の Worker は別のワークスペースにあり、main の CI は両方をデプロイする。
-- 部品だけを先に入れず、使う側と同じ PR にする。
+- Write upcoming work and open questions in docs/roadmap.md. Screens and wording follow DESIGN.md.
+- Nothing is in real operation or released yet (as of 2026-10-12). Destroying the database or rebuilding the architecture is fine.
+- Report to the user only results, and operations only the user can do.
+- Do not ask the user to do anything on their own machine. Finish everything in the cloud session.
+- When you get one comment on wording or design, review every screen of the app by the same standard.
+- Read a workspace's AGENTS.md before changing that workspace.
+- The Discord Gateway connection and the web Worker are separate workspaces, and main's CI deploys both.
+- Do not land parts ahead of their users; put them in the same PR as the code that uses them.
 
-### 想定規模と性能要件
+### Expected scale and performance requirements
 
-設計・負荷試算・費用試算は、今の規模ではなく次の規模を前提にする。
+Base designs, load estimates and cost estimates on the next scale, not the current one.
 
-| 項目 | 前提 |
+| Item | Assumption |
 | --- | --- |
-| サーバー数 | 500 鯖 |
-| 1 鯖の人数 | 平均 200 人、最大 1,000 人 |
-| 日常的に使う人 | 各鯖の参加者の半数 |
+| Servers | 500 |
+| Members per server | 200 on average, 1,000 at most |
+| Daily users | Half the members of each server |
 
-| 項目 | 要件 |
+| Item | Requirement |
 | --- | --- |
-| 1 鯖の同時リクエスト | 1,000 件 |
-| 全体のリクエスト | 毎秒 1,000 件 |
-| 取り込むメッセージ | 1 鯖 1 日 2,000 件 |
-| 応答時間 | 上の負荷を並列にさばき、各リクエストは Worker が受けてから 3 分以内に返す。その範囲で、応答時間も費用も小さいほどよい。MCP の tasks 拡張は前提にしない |
+| Concurrent requests per server | 1,000 |
+| Total requests | 1,000 per second |
+| Ingested messages | 2,000 per server per day |
+| Response time | Handle the load above in parallel and answer each request within 3 minutes of the Worker receiving it. Within that, lower response time and cost are better. Do not rely on the MCP tasks extension |
 
-- 試算に使う鯖の人数・投稿数・リクエスト数・DO の行数や容量や実時間は、Cloudflare の GraphQL Analytics API と Discord API で本番の値を取り、取った値と日付を試算に書く。
-- 「作業配信」はサーバー名であり、配信者の鯖ではない。
+- Take the per-server member counts, post counts, request counts, and DO row counts, sizes and wall time used in estimates from production through the Cloudflare GraphQL Analytics API and the Discord API, and write the values and the date into the estimate.
+- `作業配信` is the name of a server, not a streamer's server.
 
-### Cloudflare と Alchemy
+### Cloudflare and Alchemy
 
-- Paid に含まれる D1・Queues・Workers AI・Durable Objects などの無料枠は使ってよい。Free プランの上限は持ち出さない。
-- ドメイン、リポジトリ名、鍵の導出に使う文字列は定数に寄せない。
-- `APP_NAME` は `SERVICE_NAME` と別に持つ。
-- `APP_NAME` やスタック名を変えると、Random の値も含めてリソースは作り直される。スタック名を変えるときは、先に state を新しいスタック名へ写す。
-- `mirucord-ci` スタックの適用など、GitHub Actions の Secrets API と Cloudflare の Global API Key が要る作業は、ユーザーの PC の Remote Control で行う。
+- The free allowances included in Paid, such as D1, Queues, Workers AI and Durable Objects, may be used. Do not bring up the Free plan's limits.
+- Do not pull domains, repository names or strings used to derive keys into constants.
+- Keep `APP_NAME` separate from `SERVICE_NAME`.
+- Changing `APP_NAME` or a stack name recreates the resources, including Random values. Before renaming a stack, copy its state to the new stack name.
+- Work that needs the GitHub Actions Secrets API and the Cloudflare Global API Key, such as applying the `mirucord-ci` stack, is done through Remote Control on the user's PC.
 
-### 文書とテンプレート
+### Docs and template
 
-- docs/ に新しいファイルを増やさない。既存のファイルを更新し、終わった計画や経緯は消す。
-- フック・lint・CI など足場を変えたら、masseater/typescript-template にも同じ変更を入れ、release-please でリリースを出す。
+- Do not add new files under docs/. Update existing files and remove finished plans and history.
+- When you change the scaffolding (hooks, lint, CI), make the same change in masseater/typescript-template and release it with release-please.

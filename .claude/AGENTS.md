@@ -1,3 +1,3 @@
 # claude-harness
 
-リポジトリで管理するスキルは、このワークスペースの `skills/` に置く。
+Skills managed in the repository go in this workspace's `skills/`.

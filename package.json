@@ -5,7 +5,7 @@
   "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
-    "prepare": "vp config && effect-tsgo patch --typescript --oxlint && skills experimental_install --force"
+    "prepare": "vp config && effect-tsgo patch --typescript --oxlint && msch --prepare"
   },
   "devDependencies": {
     "@distilled.cloud/cloudflare": "catalog:stack",
@@ -19,7 +19,6 @@
     "fallow": "catalog:stack",
     "fallow-type-aware": "catalog:stack",
     "renovate": "catalog:stack",
-    "skills": "catalog:",
     "typescript": "catalog:stack",
     "vite-plus": "catalog:stack"
   },

@@ -195,8 +195,8 @@ catalogs:
       specifier: 0.2.0
       version: 0.2.0
     '@r_masseater/msch':
-      specifier: 0.32.0
-      version: 0.32.0
+      specifier: 0.34.0
+      version: 0.34.0
     '@sapphire/bitfield':
       specifier: 1.2.4
       version: 1.2.4
@@ -248,9 +248,6 @@ catalogs:
     simple-icons:
       specifier: 16.37.0
       version: 16.37.0
-    skills:
-      specifier: 1.8.1
-      version: 1.8.1
     standardwebhooks:
       specifier: 1.1.1
       version: 1.1.1
@@ -361,7 +358,7 @@ importers:
         version: 0.69.0
       '@r_masseater/msch':
         specifier: 'catalog:'
-        version: 0.32.0(@effect/tsgo@0.69.0)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(oxlint@1.93.0(oxlint-tsgolint@7.0.2006)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1)))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))
+        version: 0.34.0(@effect/tsgo@0.69.0)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(oxlint@1.93.0(oxlint-tsgolint@7.0.2006)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1)))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
         version: 0.3.0(@distilled.cloud/cloudflare@1.0.0-rc.20(effect@4.1.4))(@effect/platform-node@4.1.4(effect@4.1.4)(redis@6.2.1(@opentelemetry/api@1.10.0)))(effect@4.1.4)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@0.2.9(@sinclair/typebox@0.34.52))(file-type@22.1.1(supports-color@7.2.0))(openapi-types@12.1.3)(typescript@7.1.0-beta))
@@ -383,9 +380,6 @@ importers:
       renovate:
         specifier: catalog:stack
         version: 44.239.1(supports-color@7.2.0)(typanion@3.14.0)
-      skills:
-        specifier: 'catalog:'
-        version: 1.8.1
       typescript:
         specifier: catalog:stack
         version: 7.1.0-beta
@@ -3408,8 +3402,8 @@ packages:
   '@qnighy/marshal@0.1.3':
     resolution: {integrity: sha512-uaDZTJYtD2UgQTGemmgWeth+e2WapZm+GkAq8UU8AJ55PKRFaf1GkH7X/uzA+Ygu8iInzIlM2FGyCUnruyMKMg==}
 
-  '@r_masseater/msch@0.32.0':
-    resolution: {integrity: sha512-FdR9VbeIW9yPG9Kb9Ed95KJjsIjyP3Xx3KLr+M4ambguaE2dSEs+zrE3G2Qt1kP0uRFa08RUcU2bH8GXAzXc3A==}
+  '@r_masseater/msch@0.34.0':
+    resolution: {integrity: sha512-tt7p7zZXiT3Q2V8xm0Vr1zZl6VhmVfYpr/rt8Dv9KYNsZhrXgiDTvglg51zgY2c+X2i2Na03YICzb7N9ovFtGg==}
     engines: {node: '>=26'}
     hasBin: true
     peerDependencies:
@@ -3440,8 +3434,8 @@ packages:
     peerDependencies:
       effect: ^4.0.0
 
-  '@r_masseater/vite-plus-adopt@0.8.1':
-    resolution: {integrity: sha512-t/vPs9shFwnWozjo3WkH6V/h2Vbtkn5OeaBBzy04pD3JG7bt+QMK24C8531q18eWB/wDDjTen8BOffCBaNE3SA==}
+  '@r_masseater/vite-plus-adopt@0.9.0':
+    resolution: {integrity: sha512-Obkt3cKZouM8eHD8B8vMko0BJzp/9/hEgu/q0gNkF/LtIXUXNvPGWELPC4PvTGUhbjGmsd+XzqP0trkhupbfvg==}
     engines: {node: '>=26'}
     hasBin: true
     peerDependencies:
@@ -7826,9 +7820,6 @@ packages:
     resolution: {integrity: sha512-JYc0DPlpGWB40kH5g07gGTrYuMqV653k3uBKY6uITPWds3M0ov3GaWGp9lbE3Bzngx8+XkfzgvASb9vk9JDFXQ==}
     engines: {node: '>=14.16'}
 
-  nostics@1.3.0:
-    resolution: {integrity: sha512-wzRsrJwNlFbqIRQt8aCeL2WE8USip/uuvGSOZV1D02CxX8ABTMbw8IywKjH7yWHETMXbWJI4OBpihg9rmz2Vyg==}
-
   npm-run-path@6.0.0:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
     engines: {node: '>=18'}
@@ -8531,11 +8522,6 @@ packages:
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
-
-  skills@1.8.1:
-    resolution: {integrity: sha512-QK3wlZ5j8wcpLPUOXt7+1Gu1f9JKpv7lBpO0zmqKa5VBrt45/woVo8Max1x4wha3pCNafNHiiodYK6Xi/0alQQ==}
-    engines: {node: '>=22.20.0'}
-    hasBin: true
 
   slash@5.1.0:
     resolution: {integrity: sha512-ZA6oR3T/pEyuqwMgAKT0/hAv8oAXckzbkmR0UkUosQ+Mc4RxGoJkRmwHgHufaenlyAgE1Mxgpdcrf75y6XcnDg==}
@@ -12127,7 +12113,7 @@ snapshots:
     dependencies:
       '@babel/runtime-corejs3': 7.29.7
 
-  '@r_masseater/msch@0.32.0(@effect/tsgo@0.69.0)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(oxlint@1.93.0(oxlint-tsgolint@7.0.2006)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1)))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))':
+  '@r_masseater/msch@0.34.0(@effect/tsgo@0.69.0)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(oxlint@1.93.0(oxlint-tsgolint@7.0.2006)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1)))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))':
     dependencies:
       '@commitlint/config-conventional': 21.2.4
       '@effect/platform-node-shared': 4.1.4(effect@4.1.4)
@@ -12141,7 +12127,7 @@ snapshots:
       '@r_masseater/oxlint-plugin-decision': 0.8.0(@effect/platform-node-shared@4.1.4(effect@4.1.4))(effect@4.1.4)(oxlint@1.93.0(oxlint-tsgolint@7.0.2006)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1)))
       '@r_masseater/oxlint-typed-rules': 0.4.1(effect@4.1.4)(typescript@7.1.0-beta)
       '@r_masseater/textlint-rule-preset-ja': 0.1.1(effect@4.1.4)
-      '@r_masseater/vite-plus-adopt': 0.8.1(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))
+      '@r_masseater/vite-plus-adopt': 0.9.0(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))
       '@shadcn/lint': 0.2.5(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))
       '@tanstack/intent': 0.5.6
       '@textlint-ja/textlint-rule-preset-ai-writing': 1.7.0
@@ -12154,6 +12140,7 @@ snapshots:
       eslint-plugin-react-hooks: 7.1.1(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)
       htmlparser2: 12.0.0
       oxlint-plugin-eslint: 1.93.0
+      semver: 7.8.6
       sql-parser-cst: 0.44.1
       textlint-rule-preset-ja-technical-writing: 12.0.2(supports-color@7.2.0)
       toml-eslint-parser: 1.0.3
@@ -12187,7 +12174,7 @@ snapshots:
       kuromojin: 3.0.1
       sentence-splitter: 5.0.3
 
-  '@r_masseater/vite-plus-adopt@0.8.1(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))':
+  '@r_masseater/vite-plus-adopt@0.9.0(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))':
     dependencies:
       '@andrewbranch/untar.js': 1.0.4
       '@commitlint/format': 21.2.3
@@ -12196,6 +12183,9 @@ snapshots:
       '@commitlint/types': 21.2.3
       '@effect/platform-node-shared': 4.1.4(effect@4.1.4)
       '@loaderkit/resolve': 1.0.6
+      '@pnpm/logger': 1100.0.0
+      '@pnpm/workspace.projects-reader': 1101.1.7(@pnpm/logger@1100.0.0)
+      '@pnpm/workspace.workspace-manifest-reader': 1100.3.2
       '@textlint/config-loader': 15.8.0(supports-color@7.2.0)
       '@textlint/kernel': 15.8.0(supports-color@7.2.0)
       '@textlint/utils': 15.8.0
@@ -16877,8 +16867,6 @@ snapshots:
 
   normalize-url@8.1.1: {}
 
-  nostics@1.3.0: {}
-
   npm-run-path@6.0.0:
     dependencies:
       path-key: 4.0.0
@@ -17935,12 +17923,6 @@ snapshots:
       totalist: 3.0.1
 
   sisteransi@1.0.5: {}
-
-  skills@1.8.1:
-    dependencies:
-      nostics: 1.3.0
-      tar: 7.5.22
-      yaml: 2.9.1
 
   slash@5.1.0: {}
 

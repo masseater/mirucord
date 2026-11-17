@@ -16,7 +16,7 @@ import type { GuildScope } from "#/entities/scope/index.server";
 import { openSearchKey } from "#/shared/crypto/index.server";
 import { FIRST_OFFSET, Limit, limitOf, Offset, structuredResult, TOOL_BASE } from "#/shared/mcp";
 
-export const FindMessagesInput = Schema.Struct({
+const FindMessagesInput = Schema.Struct({
   serverId: Schema.String,
   query: Schema.NonEmptyString.annotate({
     description:
@@ -27,7 +27,7 @@ export const FindMessagesInput = Schema.Struct({
   offset: Offset,
 });
 
-export const FindMessagesOutput = Schema.Struct({
+const FindMessagesOutput = Schema.Struct({
   total: Schema.Int.annotate({
     description:
       "Matches in the searched channels. Queries over three characters may count a few partial matches",

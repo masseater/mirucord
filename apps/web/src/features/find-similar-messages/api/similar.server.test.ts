@@ -11,13 +11,11 @@ import {
   GUILD_A,
   seedScenario,
   userToolCaller,
-} from "#/entities/scope/index.test.support";
+} from "#/entities/guild-message/index.test.support";
+import { FindSimilarMessagesOutput } from "#/features/find-similar-messages/model/similar-messages-output";
 import { spendNeurons } from "#/shared/ai/index.server";
 
-import {
-  FindSimilarMessagesOutput,
-  registerFindSimilarMessages,
-} from "./find-similar-messages.server";
+import { registerFindSimilarMessages } from "./find-similar-messages.server";
 import {
   answerEmbedding,
   drainAlarms,

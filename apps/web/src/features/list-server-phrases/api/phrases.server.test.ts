@@ -13,7 +13,7 @@ import {
   GUILD_A,
   guildKeys,
   seedScenario,
-} from "#/entities/scope/index.test.support";
+} from "#/entities/guild-message/index.test.support";
 import { sealMessage } from "#/shared/crypto/index.server";
 
 import { listPhrases, mockPhraseModel, prompts } from "./phrase-model.test.support";

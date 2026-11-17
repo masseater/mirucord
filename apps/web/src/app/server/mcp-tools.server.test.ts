@@ -19,7 +19,7 @@ import {
   SAME_WORDS,
   seedScenario,
   USER,
-} from "#/entities/scope/index.test.support";
+} from "#/entities/guild-message/index.test.support";
 import { idsOf, readIngestOf, toolCaller } from "#/shared/mcp/index.test.support";
 import type { ToolOutcome } from "#/shared/mcp/index.test.support";
 

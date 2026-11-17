@@ -3,9 +3,10 @@ import { env } from "cloudflare:workers";
 import { Array, Effect, Option, pipe, Schema, String as Str } from "effect";
 import { vi } from "vite-plus/test";
 
-import { GUILD_A, userToolCaller } from "#/entities/scope/index.test.support";
+import { GUILD_A, userToolCaller } from "#/entities/guild-message/index.test.support";
+import { ListServerPhrasesOutput } from "#/features/list-server-phrases/model/server-phrases-output";
 
-import { ListServerPhrasesOutput, registerListServerPhrases } from "./list-server-phrases.server";
+import { registerListServerPhrases } from "./list-server-phrases.server";
 
 const callTool = userToolCaller([registerListServerPhrases]);
 

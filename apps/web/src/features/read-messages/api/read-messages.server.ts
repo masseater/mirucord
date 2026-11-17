@@ -1,8 +1,7 @@
 import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
 import { Effect, Option, Schema } from "effect";
 
-import { guildStore, MessageOutput, openStored } from "#/entities/guild-message/index.server";
-import type { MessageView } from "#/entities/guild-message/index.server";
+import { MessageOutput } from "#/entities/guild-message/index.server";
 import { IngestOutput, PendingChannelOutput } from "#/entities/scope";
 import {
   ingestById,
@@ -13,7 +12,9 @@ import {
 import type { GuildScope } from "#/entities/scope/index.server";
 import { errorResult, Limit, limitOf, structuredResult, TOOL_BASE } from "#/shared/mcp";
 
-export const ReadMessagesInput = Schema.Struct({
+import { readAuthorMessages, readMessages } from "./stored-messages.server";
+
+const ReadMessagesInput = Schema.Struct({
   serverId: Schema.String,
   channelId: Schema.optionalKey(
     Schema.String.annotate({ description: "With authorId, this channel and its threads" }),
@@ -29,7 +30,7 @@ export const ReadMessagesInput = Schema.Struct({
   limit: Limit,
 });
 
-export const ReadMessagesOutput = Schema.Struct({
+const ReadMessagesOutput = Schema.Struct({
   ingest: Schema.optionalKey(IngestOutput),
   notFullyIngested: Schema.optionalKey(Schema.Array(PendingChannelOutput)),
   messages: Schema.Array(MessageOutput),
@@ -42,39 +43,6 @@ const READ_MESSAGES_TOOL = {
   outputSchema: ReadMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: ReadMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
-
-type ReadRequest = Readonly<{
-  scope: GuildScope;
-  channelId: string;
-  before: Option.Option<string>;
-  limit: number;
-}>;
-
-export const readMessages = (request: ReadRequest): Effect.Effect<readonly MessageView[]> =>
-  Effect.promise(() =>
-    guildStore(request.scope.guild.guildId).read(request.channelId, {
-      before: Option.getOrNull(request.before),
-      limit: request.limit,
-    }),
-  ).pipe(Effect.flatMap((stored) => openStored({ scope: request.scope, stored })));
-
-type AuthorReadRequest = Readonly<{
-  scope: GuildScope;
-  authorId: string;
-  channelIds: readonly string[];
-  before: Option.Option<string>;
-  limit: number;
-}>;
-
-const readAuthorMessages = (request: AuthorReadRequest): Effect.Effect<readonly MessageView[]> =>
-  Effect.promise(() =>
-    guildStore(request.scope.guild.guildId).readByAuthor({
-      authorId: request.authorId,
-      channelIds: request.channelIds,
-      before: Option.getOrNull(request.before),
-      limit: request.limit,
-    }),
-  ).pipe(Effect.flatMap((stored) => openStored({ scope: request.scope, stored })));
 
 const NEEDS_CHANNEL_OR_AUTHOR = "Pass channelId, authorId or both";
 

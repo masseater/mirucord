@@ -4,7 +4,7 @@ import { Array, DateTime, Effect, Option, pipe, Schema, String as Str } from "ef
 
 import { guildStore, indexTokens } from "#/entities/guild-message/index.server";
 import type { IndexedMessage } from "#/entities/guild-message/index.server";
-import { GUILD_A, guildKeys } from "#/entities/scope/index.test.support";
+import { GUILD_A, guildKeys } from "#/entities/guild-message/index.test.support";
 import { DIMENSIONS } from "#/shared/ai";
 import { sealMessage } from "#/shared/crypto/index.server";
 

@@ -15,7 +15,7 @@ import {
   GUILD_B,
   seedScenario,
   userToolCaller,
-} from "#/entities/scope/index.test.support";
+} from "#/entities/guild-message/index.test.support";
 
 import { registerListReactions } from "./list-reactions.server";
 

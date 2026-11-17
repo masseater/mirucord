@@ -9,15 +9,13 @@ import {
   seedMembers,
   seedScenario,
   userToolCaller,
-} from "#/entities/scope/index.test.support";
-import type { SeedMember } from "#/entities/scope/index.test.support";
+} from "#/entities/guild-message/index.test.support";
+import type { SeedMember } from "#/entities/guild-message/index.test.support";
+import { ListLinkedAccountsOutput } from "#/features/list-linked-accounts/model/linked-accounts-output";
 
 import { seedLinkedAccounts } from "./linked-seed.test.support";
 import type { SeedLink } from "./linked-seed.test.support";
-import {
-  ListLinkedAccountsOutput,
-  registerListLinkedAccounts,
-} from "./list-linked-accounts.server";
+import { registerListLinkedAccounts } from "./list-linked-accounts.server";
 
 const callTool = userToolCaller([registerListLinkedAccounts]);
 

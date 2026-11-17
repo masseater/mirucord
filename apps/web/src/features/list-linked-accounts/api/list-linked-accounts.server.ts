@@ -3,35 +3,16 @@ import { asc, inArray } from "drizzle-orm";
 import { Array, DateTime, Effect, pipe, Record, Schema } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
-import { ConsentOutput } from "#/entities/scope";
 import { withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
+import { ListLinkedAccountsOutput } from "#/features/list-linked-accounts/model/linked-accounts-output";
 import { SERVICE_NAME } from "#/shared/config";
 import { db, linkedAccount } from "#/shared/db/index.server";
 import { Ids, structuredResult, TOOL_BASE } from "#/shared/mcp";
 
-export const ListLinkedAccountsInput = Schema.Struct({
+const ListLinkedAccountsInput = Schema.Struct({
   serverId: Schema.String,
   userIds: Ids.annotate({ description: "From a message's authorId or list_members" }),
-});
-
-const LinkedAccount = Schema.Struct({
-  type: Schema.String,
-  name: Schema.String,
-  verified: Schema.Boolean.annotate({ description: "Discord checked they own it" }),
-  publishedAt: Schema.String,
-});
-
-const LinkedPerson = Schema.Struct({
-  userId: Schema.String,
-  accounts: Schema.Array(LinkedAccount),
-});
-
-export const ListLinkedAccountsOutput = Schema.Struct({
-  ingest: ConsentOutput,
-  people: Schema.Array(LinkedPerson).annotate({
-    description: "Current members who published accounts in the dashboard",
-  }),
 });
 
 const LIST_LINKED_ACCOUNTS_TOOL = {

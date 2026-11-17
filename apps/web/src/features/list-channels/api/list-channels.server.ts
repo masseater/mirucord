@@ -7,7 +7,7 @@ import { ingestOf, readableChannels, withScope } from "#/entities/scope/index.se
 import type { GuildScope } from "#/entities/scope/index.server";
 import { structuredResult, TOOL_BASE } from "#/shared/mcp";
 
-export const ListChannelsInput = Schema.Struct({ serverId: Schema.String });
+const ListChannelsInput = Schema.Struct({ serverId: Schema.String });
 
 const Channel = Schema.Struct({
   id: Schema.String,
@@ -21,7 +21,7 @@ const Channel = Schema.Struct({
   }),
 });
 
-export const ListChannelsOutput = Schema.Struct({
+const ListChannelsOutput = Schema.Struct({
   channels: Schema.Array(Channel),
   hint: Schema.String,
 });

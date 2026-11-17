@@ -2,11 +2,11 @@ import { runInDurableObject } from "cloudflare:test";
 import { eq } from "drizzle-orm";
 import { Effect, Option, Record, Schema } from "effect";
 
-import { guildStore } from "#/entities/guild-message/@x/scope";
 import { sealMember } from "#/shared/crypto/index.server";
 import { db, role } from "#/shared/db/index.server";
 
 import { guildKeys } from "./scenario.test.support";
+import { guildStore } from "./store-stub.server";
 
 export type SeedMember = Readonly<{
   userId: string;

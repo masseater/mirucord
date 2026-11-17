@@ -8,7 +8,7 @@ import { spanScopeOf, withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
 import { structuredResult, TOOL_BASE } from "#/shared/mcp";
 
-export const ListVoiceSessionsInput = Schema.Struct(SpanFilter);
+const ListVoiceSessionsInput = Schema.Struct(SpanFilter);
 
 const VoiceMoment = Schema.Struct({
   at: Schema.String,
@@ -25,7 +25,7 @@ const VoiceSession = Schema.Struct({
   left: Schema.NullOr(VoiceMoment).annotate({ description: "null while still there" }),
 });
 
-export const ListVoiceSessionsOutput = Schema.Struct({
+const ListVoiceSessionsOutput = Schema.Struct({
   ingest: ConsentOutput,
   total: Schema.Int,
   sessions: Schema.Array(VoiceSession).annotate({

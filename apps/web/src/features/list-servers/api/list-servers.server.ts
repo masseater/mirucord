@@ -15,7 +15,7 @@ const Server = Schema.Struct({
   }),
 });
 
-export const ListServersOutput = Schema.Struct({ servers: Schema.Array(Server) });
+const ListServersOutput = Schema.Struct({ servers: Schema.Array(Server) });
 
 const LIST_SERVERS_TOOL = {
   title: "List servers",

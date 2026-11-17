@@ -10,10 +10,12 @@ import { eq } from "drizzle-orm";
 import { Array, DateTime, Effect, Option, pipe, Record } from "effect";
 import { http, HttpResponse } from "msw";
 
-import { guildStore, indexTokens } from "#/entities/guild-message/@x/scope";
-import type { IndexedMessage } from "#/entities/guild-message/@x/scope";
+import { indexTokens } from "#/entities/guild-message/lib/search-tokens.server";
 import { createGuildKey, openGuildKeys, sealMessage } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent, role } from "#/shared/db/index.server";
+
+import { guildStore } from "./store-stub.server";
+import type { IndexedMessage } from "./store-types";
 
 export const USER = "900";
 export const OWNER = "901";

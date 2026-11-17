@@ -11,7 +11,7 @@ import {
   seedMembers,
   seedScenario,
   userToolCaller,
-} from "#/entities/scope/index.test.support";
+} from "#/entities/guild-message/index.test.support";
 
 import { registerListMembers } from "./list-members.server";
 

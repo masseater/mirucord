@@ -10,7 +10,7 @@ import {
   seedScenario,
   SEEDED,
   userToolCaller,
-} from "#/entities/scope/index.test.support";
+} from "#/entities/guild-message/index.test.support";
 
 import { registerListChannels } from "./list-channels.server";
 

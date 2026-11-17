@@ -1,39 +1,20 @@
 import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
 import { Effect, Option, Schema } from "effect";
 
-import { MessageOutput } from "#/entities/guild-message/index.server";
-import { NotFullyIngestedOutput } from "#/entities/scope";
 import { notFullyIngested, withChannel, withScope } from "#/entities/scope/index.server";
+import { FindSimilarMessagesOutput } from "#/features/find-similar-messages/model/similar-messages-output";
 import { SERVICE_NAME } from "#/shared/config";
 import { errorResult, Limit, structuredResult, TOOL_BASE } from "#/shared/mcp";
 
 import { findSimilar } from "./similar.server";
 
-export const FindSimilarMessagesInput = Schema.Struct({
+const FindSimilarMessagesInput = Schema.Struct({
   serverId: Schema.String,
   query: Schema.NonEmptyString.annotate({
     description: "A sentence or a few words describing what you look for",
   }),
   channelId: Schema.optionalKey(Schema.String),
   limit: Limit,
-});
-
-const SimilarMessage = Schema.Struct({
-  ...MessageOutput.fields,
-  score: Schema.Finite.annotate({ description: "Cosine similarity" }),
-});
-
-export const FindSimilarMessagesOutput = Schema.Struct({
-  messages: Schema.Array(SimilarMessage).annotate({
-    description:
-      "The closest messages, even when none is about query. Read them before treating them as matches",
-  }),
-  embedded: Schema.Int.annotate({
-    description:
-      "Messages searchable by meaning so far. Older ones are added daily, so say so when below stored",
-  }),
-  stored: Schema.Int,
-  notFullyIngested: NotFullyIngestedOutput,
 });
 
 const FIND_SIMILAR_MESSAGES_TOOL = {

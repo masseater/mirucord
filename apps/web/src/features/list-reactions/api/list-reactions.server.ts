@@ -14,7 +14,7 @@ import { keptUserIdsOf } from "./kept-users.server";
 
 const MessageRef = Schema.Struct({ channelId: Schema.String, messageId: Schema.String });
 
-export const ListReactionsInput = Schema.Struct({
+const ListReactionsInput = Schema.Struct({
   ...SpanFilter,
   message: Schema.optionalKey(
     MessageRef.annotate({
@@ -63,7 +63,7 @@ const LiveMessage = Schema.Struct({
   votes: Schema.Array(LiveAnswer),
 });
 
-export const ListReactionsOutput = Schema.Struct({
+const ListReactionsOutput = Schema.Struct({
   ingest: ConsentOutput,
   reactionTotal: Schema.Int,
   reactions: Schema.Array(Reaction),

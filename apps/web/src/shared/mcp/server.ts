@@ -16,12 +16,10 @@ export const TOOL_BASE = {
   annotations: { readOnlyHint: true, openWorldHint: false },
 };
 
-export const newServer = (): McpServer => new McpServer(SERVER_INFO, SERVER_OPTIONS);
-
-export type ToolRegistration = (discordUserId: string) => (server: McpServer) => void;
+const newServer = (): McpServer => new McpServer(SERVER_INFO, SERVER_OPTIONS);
 
 export const serverWith =
-  (registrations: readonly ToolRegistration[]) =>
+  (registrations: readonly ((discordUserId: string) => (server: McpServer) => void)[]) =>
   (discordUserId: string): McpServer => {
     const server = newServer();
     for (const register of registrations) {

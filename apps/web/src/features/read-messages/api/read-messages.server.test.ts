@@ -3,7 +3,6 @@ import { setupNetwork } from "@msw/cloudflare";
 import { Array, Effect, Option, pipe, Schema } from "effect";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
-import { resolveScope } from "#/entities/scope/index.server";
 import {
   A_OPEN,
   A_OPEN_MESSAGE,
@@ -18,10 +17,12 @@ import {
   seedScenario,
   USER,
   userToolCaller,
-} from "#/entities/scope/index.test.support";
+} from "#/entities/guild-message/index.test.support";
+import { resolveScope } from "#/entities/scope/index.test.support";
 import type { ToolOutcome } from "#/shared/mcp/index.test.support";
 
-import { readMessages, registerReadMessages } from "./read-messages.server";
+import { registerReadMessages } from "./read-messages.server";
+import { readMessages } from "./stored-messages.server";
 
 const callTool = userToolCaller([registerReadMessages]);
 const READ_LIMIT = 50;

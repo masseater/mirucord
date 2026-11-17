@@ -19,7 +19,7 @@ import {
   TOOL_BASE,
 } from "#/shared/mcp";
 
-export const ListMembersInput = Schema.Struct({
+const ListMembersInput = Schema.Struct({
   serverId: Schema.String,
   userIds: Schema.optionalKey(
     Ids.annotate({
@@ -48,7 +48,7 @@ const Member = Schema.Struct({
   leftAt: Schema.NullOr(Schema.String),
 });
 
-export const ListMembersOutput = Schema.Struct({
+const ListMembersOutput = Schema.Struct({
   ingest: ConsentOutput,
   total: Schema.Int,
   members: Schema.Array(Member),

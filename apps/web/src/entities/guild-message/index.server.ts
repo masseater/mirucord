@@ -1,6 +1,6 @@
 export { guildStore } from "./api/store-stub.server";
 export { openStored } from "./api/message-view.server";
-export type { MessageScope, MessageView } from "./api/message-view.server";
+export type { MessageView } from "./api/message-view.server";
 export { MessageOutput } from "./model/message-output.schema";
 export { GuildStore } from "./api/guild-store.server";
 export { searchMessages } from "./api/search-messages.server";

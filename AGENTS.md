@@ -1,30 +1,31 @@
+# mirucord
+
 `masseater-ecosystem` に従うこと。これは masseater/skills のスキルで、状況ごとに読み込むスキルを指定する。`vp install` はスキルを `.agents/skills/` に配置する。
 
-## このリポジトリ
-
 mirucord は、Discord のサーバーを読むだけの MCP サーバーをホスティングで提供するサービスである。本番は `https://mirucord.masseater.dev` で動いている。
-これからやることと未決の検討事項は docs/roadmap.md に書く。画面と文言は DESIGN.md に従う。
 
-## 運用の段階
+## テックスタック
 
-本運用も本リリースもしていない（2026-10-12 時点）。データベースの破壊やアーキテクチャの再構築は好きなだけやってよい。
-
-## 進め方
-
-ユーザーへの報告は、結果と、ユーザーにしかできない操作が要るときだけにする。
-ユーザーに手元での作業を頼まない。クラウドのセッションだけで終わらせる。
-文言やデザインの指摘を1件受けたら、同じ基準でアプリの全画面を見直す。
-
-## 構成
-
-- Discord Gateway の接続と Web の Worker は別のワークスペースにあり、main の CI は両方をデプロイする。
-- ワークスペースを変更する前に、そのワークスペースの AGENTS.md を読む。
+ベーススタックは TypeScript 7、Effect、Alchemy、Cloudflare である。
 
 ## コマンド
 
 - 1 つのテストだけを流すときは、そのワークスペースで `vp exec vp test run <ファイル>` を実行する。
 
-## 想定規模と性能要件
+## ルール
+
+### 進め方
+
+- これからやることと未決の検討事項は docs/roadmap.md に書く。画面と文言は DESIGN.md に従う。
+- 本運用も本リリースもしていない（2026-10-12 時点）。データベースの破壊やアーキテクチャの再構築は好きなだけやってよい。
+- ユーザーへの報告は、結果と、ユーザーにしかできない操作が要るときだけにする。
+- ユーザーに手元での作業を頼まない。クラウドのセッションだけで終わらせる。
+- 文言やデザインの指摘を1件受けたら、同じ基準でアプリの全画面を見直す。
+- ワークスペースを変更する前に、そのワークスペースの AGENTS.md を読む。
+- Discord Gateway の接続と Web の Worker は別のワークスペースにあり、main の CI は両方をデプロイする。
+- 部品だけを先に入れず、使う側と同じ PR にする。
+
+### 想定規模と性能要件
 
 設計・負荷試算・費用試算は、今の規模ではなく次の規模を前提にする。
 
@@ -44,29 +45,15 @@ mirucord は、Discord のサーバーを読むだけの MCP サーバーをホ�
 - 試算に使う鯖の人数・投稿数・リクエスト数・DO の行数や容量や実時間は、Cloudflare の GraphQL Analytics API と Discord API で本番の値を取り、取った値と日付を試算に書く。
 - 「作業配信」はサーバー名であり、配信者の鯖ではない。
 
-## Cloudflare
+### Cloudflare と Alchemy
 
 - Paid に含まれる D1・Queues・Workers AI・Durable Objects などの無料枠は使ってよい。Free プランの上限は持ち出さない。
+- ドメイン、リポジトリ名、鍵の導出に使う文字列は定数に寄せない。
+- `APP_NAME` は `SERVICE_NAME` と別に持つ。
+- `APP_NAME` やスタック名を変えると、Random の値も含めてリソースは作り直される。スタック名を変えるときは、先に state を新しいスタック名へ写す。
+- `mirucord-ci` スタックの適用など、GitHub Actions の Secrets API と Cloudflare の Global API Key が要る作業は、ユーザーの PC の Remote Control で行う。
 
-## 文書
+### 文書とテンプレート
 
-docs/ に新しいファイルを増やさない。既存のファイルを更新し、終わった計画や経緯は消す。
-
-## 配置
-
-ドメイン、リポジトリ名、鍵の導出に使う文字列は定数に寄せない。
-
-## Alchemy
-
-`APP_NAME` は `SERVICE_NAME` と別に持つ。
-`APP_NAME` やスタック名を変えると、Random の値も含めてリソースは作り直される。スタック名を変えるときは、先に state を新しいスタック名へ写す。
-
-## その他
-
-部品だけを先に入れず、使う側と同じ PR にする。
-
-`mirucord-ci` スタックの適用など、GitHub Actions の Secrets API と Cloudflare の Global API Key が要る作業は、ユーザーの PC の Remote Control で行う。
-
-## テンプレート
-
-フック・lint・CI など足場を変えたら、masseater/typescript-template にも同じ変更を入れ、release-please でリリースを出す。
+- docs/ に新しいファイルを増やさない。既存のファイルを更新し、終わった計画や経緯は消す。
+- フック・lint・CI など足場を変えたら、masseater/typescript-template にも同じ変更を入れ、release-please でリリースを出す。

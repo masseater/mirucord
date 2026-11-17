@@ -22,7 +22,7 @@ The base stack is TypeScript 7, Effect, Alchemy and Cloudflare.
 - Do not ask the user to do anything on their own machine. Finish everything in the cloud session.
 - When you get one comment on wording or design, review every screen of the app by the same standard.
 - Read a workspace's AGENTS.md before changing that workspace.
-- The Discord Gateway connection and the web Worker are separate workspaces, and main's CI deploys both.
+- The Discord Gateway connection and the HTTP Worker are separate workspaces, and main's CI deploys both.
 - Do not land parts ahead of their users; put them in the same PR as the code that uses them.
 
 ### Expected scale and performance requirements

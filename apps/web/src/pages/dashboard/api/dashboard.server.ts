@@ -2,8 +2,9 @@ import { getRequest } from "@tanstack/react-start/server";
 import { Array, Cause, Effect, Option, pipe } from "effect";
 
 import { readableGuilds } from "#/entities/scope/index.server";
+import { eraseOwnMessages } from "#/features/erase-own-messages/index.server";
+import type { EraseResult } from "#/features/erase-own-messages/index.server";
 import {
-  eraseOwnMessages,
   forumPosts,
   grantConsent,
   guildSettings,
@@ -13,7 +14,6 @@ import {
 } from "#/features/ingest-messages/index.server";
 import type {
   ConsentResult,
-  EraseResult,
   ForumPostsResult,
   GuildSettings,
   ManagedGuild,
@@ -156,4 +156,4 @@ export const purgeFor = (input: ChannelTarget): Effect.Effect<PurgeResult | Sign
 export const loadForumPosts = (input: ChannelTarget): Effect.Effect<ForumPostsResult | SignedOut> =>
   withSignedInUser((userId) => forumPosts({ ...input, userId }).pipe(Effect.orDie));
 
-export type { EraseResult } from "#/features/ingest-messages/index.server";
+export type { EraseResult } from "#/features/erase-own-messages/index.server";

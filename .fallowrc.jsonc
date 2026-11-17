@@ -163,12 +163,6 @@
       "entryPoints": ["drizzle.*.config.ts"],
     },
     {
-      "name": "skills",
-      "enablers": ["skills"],
-      "configPatterns": ["skills-lock.json"],
-      "toolingDependencies": ["skills"],
-    },
-    {
       "name": "tanstack-intent",
       "enablers": ["@tanstack/intent"],
       "configPatterns": [".intent/hooks/*.mjs"],

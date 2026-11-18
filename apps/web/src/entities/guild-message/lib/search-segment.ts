@@ -58,10 +58,9 @@ const collect = (
     for (const bucket of Option.toArray(
       Option.fromUndefinedOr(buckets[shardOf({ token, shards })]),
     )) {
-      const found = bucket.get(token) ?? { ordinals: [], channels: [] };
+      const found = bucket.getOrInsertComputed(token, () => ({ ordinals: [], channels: [] }));
       found.ordinals.push(ordinal);
       found.channels.push(channel);
-      bucket.set(token, found);
     }
   };
   for (const [ordinal, row] of rows.entries()) {

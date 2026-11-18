@@ -46,9 +46,9 @@ const groupByPiece = (
   const grouped = new Map<string, Readonly<{ piece: LivePiece; ordinals: number[] }>>();
   for (const ordinal of ordinals) {
     for (const piece of Option.toArray(rangeAt({ pieces, ordinal }))) {
-      const found = grouped.get(piece.name) ?? { piece, ordinals: [] };
-      found.ordinals.push(ordinal - piece.offset);
-      grouped.set(piece.name, found);
+      grouped
+        .getOrInsertComputed(piece.name, () => ({ piece, ordinals: [] }))
+        .ordinals.push(ordinal - piece.offset);
     }
   }
   return pipe(

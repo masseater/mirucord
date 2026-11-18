@@ -198,8 +198,8 @@ catalogs:
       specifier: 0.38.1
       version: 0.38.1
     '@sapphire/bitfield':
-      specifier: 1.2.4
-      version: 1.2.4
+      specifier: 2.0.0
+      version: 2.0.0
     '@tanstack/intent':
       specifier: 0.5.6
       version: 0.5.6
@@ -491,7 +491,7 @@ importers:
         version: link:../../libs/shared/util-discord
       '@sapphire/bitfield':
         specifier: 'catalog:'
-        version: 1.2.4
+        version: 2.0.0
       '@tanstack/react-devtools':
         specifier: 0.10.14
         version: 0.10.14(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(csstype@3.2.3)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(solid-js@1.9.15)
@@ -3647,9 +3647,9 @@ packages:
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
 
-  '@sapphire/bitfield@1.2.4':
-    resolution: {integrity: sha512-x0Zvb5jbn8A9fOdWksvxPuXdHGzk6v0Z5ogcYKKg06Az/Ih2WupKZ88CIX1/pZWk6vBWqH5LAU0lOVtEaw7D/A==}
-    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+  '@sapphire/bitfield@2.0.0':
+    resolution: {integrity: sha512-0P7S6NuIZ2KQYdXzzE6oJMeumdGc2e/LrbdiUblEMPnjrpKaDAM4vdaiWlyM4Xg20MoNzE8YiNhBKSnoDcyE4g==}
+    engines: {node: '>=v24.0.0', npm: '>=11.0.0'}
 
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
@@ -12313,7 +12313,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
-  '@sapphire/bitfield@1.2.4': {}
+  '@sapphire/bitfield@2.0.0': {}
 
   '@sec-ant/readable-stream@0.4.1': {}
 

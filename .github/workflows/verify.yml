@@ -21,7 +21,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: $/.github/actions/setup
-      - uses: masseater/typescript-template/.github/actions/verify@d79be66b83e21575c7f40a75453fea5a51aaff8c
+      - uses: masseater/typescript-template/.github/actions/verify@c116d175574f2f6917e2aa39caf83a141ef4bd94
         with:
           github-token: ${{ github.token }}
 
@@ -56,7 +56,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - id: head
-        uses: masseater/typescript-template/.github/actions/latest-verified@d79be66b83e21575c7f40a75453fea5a51aaff8c
+        uses: masseater/typescript-template/.github/actions/latest-verified@c116d175574f2f6917e2aa39caf83a141ef4bd94
         with:
           github-token: ${{ github.token }}
       - if: steps.head.outputs.latest == 'true'
@@ -66,7 +66,7 @@ jobs:
       - if: steps.head.outputs.latest == 'true'
         uses: $/.github/actions/setup
       - if: steps.head.outputs.latest == 'true'
-        uses: masseater/typescript-template/.github/actions/credentials@d79be66b83e21575c7f40a75453fea5a51aaff8c
+        uses: masseater/typescript-template/.github/actions/credentials@c116d175574f2f6917e2aa39caf83a141ef4bd94
       - if: steps.head.outputs.latest == 'true'
         run: vp run -r --log labeled deploy:production
         env:
@@ -94,7 +94,7 @@ jobs:
           manifest-file: .github/release-please/manifest.json
           skip-github-pull-request: true
       - if: github.event_name == 'workflow_dispatch'
-        uses: masseater/typescript-template/.github/actions/credentials@d79be66b83e21575c7f40a75453fea5a51aaff8c
+        uses: masseater/typescript-template/.github/actions/credentials@c116d175574f2f6917e2aa39caf83a141ef4bd94
       - if: github.event_name == 'workflow_dispatch'
         id: release-pr
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
@@ -118,6 +118,6 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: masseater/typescript-template/.github/actions/ci-telemetry@d79be66b83e21575c7f40a75453fea5a51aaff8c
+      - uses: masseater/typescript-template/.github/actions/ci-telemetry@c116d175574f2f6917e2aa39caf83a141ef4bd94
         with:
           github-token: ${{ github.token }}

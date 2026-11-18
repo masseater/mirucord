@@ -240,7 +240,7 @@ catalogs:
       specifier: 1.73.0
       version: 1.73.0
     ml-kmeans:
-      specifier: ^7.0.1
+      specifier: 7.0.1
       version: 7.0.1
     msw:
       specifier: 3.0.5
@@ -258,7 +258,7 @@ catalogs:
       specifier: 5.10.0
       version: 5.10.0
     usehooks-ts:
-      specifier: ^3.1.1
+      specifier: 3.1.1
       version: 3.1.1
     vite:
       specifier: npm:@voidzero-dev/vite-plus-core@1.6.0

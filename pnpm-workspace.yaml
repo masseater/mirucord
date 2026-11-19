@@ -11,7 +11,7 @@ catalogMode: prefer
 
 catalog:
   "@r_masseater/msch": 0.38.1
-  "@cloudflare/workers-types": 5.20261115.1
+  "@cloudflare/workers-types": 5.20261116.1
   "@effect/platform-node": 4.1.4
   "@types/node": 26.6.6
   vite: npm:@voidzero-dev/vite-plus-core@1.6.0
@@ -61,7 +61,7 @@ catalogs:
     elysia: 1.4.32
     fallow: 3.43.1
     fallow-type-aware: 3.43.1
-    renovate: 44.239.1
+    renovate: 44.240.0
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
     vite-plus: 1.6.0

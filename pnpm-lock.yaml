@@ -255,8 +255,8 @@ catalogs:
       specifier: 3.7.0
       version: 3.7.0
     type-fest:
-      specifier: 5.10.0
-      version: 5.10.0
+      specifier: 6.0.1
+      version: 6.0.1
     usehooks-ts:
       specifier: 3.1.1
       version: 3.1.1
@@ -624,7 +624,7 @@ importers:
         version: 3.0.6(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta)
       type-fest:
         specifier: 'catalog:'
-        version: 5.10.0
+        version: 6.0.1
       typescript:
         specifier: catalog:stack
         version: 7.1.0-beta
@@ -8913,6 +8913,10 @@ packages:
   type-fest@5.10.0:
     resolution: {integrity: sha512-NoSdpq/WEiAg5sjmBkmV/hfxv6HJH4NqPNrqjtSO5CwRmpsDfaf4begxW34KdJykH/l1yHtwBWQkCRdoXO8mPA==}
     engines: {node: '>=20'}
+
+  type-fest@6.0.1:
+    resolution: {integrity: sha512-nnRRKEpyNxX4XkeR6dpMy27ZNT5/nE3D73fs5FcKW/+OtqwSmdshWUw5azvpsMzjst5rAUe61ZxilQ70YFS9yA==}
+    engines: {node: '>=22'}
 
   typed-array-buffer@1.0.3:
     resolution: {integrity: sha512-nAYYwfY3qnzX30IkA6AQZjVbtK6duGontcQm1WSG1MD94YLqK0515GNApXkoxKOWMusVssAHWLh9SeaoefYFGw==}
@@ -18400,6 +18404,10 @@ snapshots:
   type-fest@4.41.0: {}
 
   type-fest@5.10.0:
+    dependencies:
+      tagged-tag: 1.0.0
+
+  type-fest@6.0.1:
     dependencies:
       tagged-tag: 1.0.0
 

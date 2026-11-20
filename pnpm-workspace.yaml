@@ -11,7 +11,7 @@ catalogMode: prefer
 
 catalog:
   "@r_masseater/msch": 0.38.1
-  "@cloudflare/workers-types": 5.20261116.1
+  "@cloudflare/workers-types": 5.20261117.1
   "@effect/platform-node": 4.1.4
   "@types/node": 26.6.6
   vite: npm:@voidzero-dev/vite-plus-core@1.6.0
@@ -28,7 +28,7 @@ catalog:
   simple-icons: 16.38.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
-  "@cloudflare/vitest-plugin": 1.8.2
+  "@cloudflare/vitest-plugin": 1.8.3
   msw: 3.0.6
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
@@ -38,14 +38,14 @@ catalog:
   type-fest: 5.10.0
   "@yarnpkg/parsers": 3.1.0
   dfx: 1.1.1
-  lucide-react: 1.73.0
+  lucide-react: 1.74.0
   ml-kmeans: 7.0.1
 catalogs:
   stack:
     "@r_masseater/workers-tracing": 0.5.0
     "@distilled.cloud/cloudflare": 1.0.0-rc.20
     "@effect/atom-react": 4.1.4
-    "@effect/tsgo": 0.69.0
+    "@effect/tsgo": 0.70.0
     "@effect/vitest": 4.1.4
     "@openfeature/server-sdk": 1.23.0
     "@tanstack/react-query": 5.107.1
@@ -59,12 +59,12 @@ catalogs:
     drizzle-orm: 1.0.0-rc.5-ab785fc
     effect: 4.1.4
     elysia: 1.4.32
-    fallow: 3.43.1
-    fallow-type-aware: 3.43.1
-    renovate: 44.242.0
+    fallow: 3.43.2
+    fallow-type-aware: 3.43.2
+    renovate: 44.247.2
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
-    vite-plus: 1.6.0
+    vite-plus: 1.7.0
 overrides:
   "capnp-es>typescript": "-"
   vite@*: "catalog:"

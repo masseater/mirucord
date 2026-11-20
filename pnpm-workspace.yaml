@@ -35,7 +35,7 @@ catalog:
   usehooks-ts: 3.1.1
   standardwebhooks: 1.1.1
   js-base64: 3.9.6
-  type-fest: 5.10.0
+  type-fest: 6.0.1
   "@yarnpkg/parsers": 3.1.0
   dfx: 1.1.1
   lucide-react: 1.74.0

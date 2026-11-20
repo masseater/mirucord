@@ -10,7 +10,7 @@ registry: https://npm.flatt.tech/
 catalogMode: prefer
 
 catalog:
-  "@r_masseater/msch": 0.38.1
+  "@r_masseater/msch": 0.40.0
   "@cloudflare/workers-types": 5.20261117.1
   "@effect/platform-node": 4.1.4
   "@types/node": 26.6.6
@@ -61,7 +61,7 @@ catalogs:
     elysia: 1.4.32
     fallow: 3.43.2
     fallow-type-aware: 3.43.2
-    renovate: 44.247.2
+    renovate: 44.249.1
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
     vite-plus: 1.7.0

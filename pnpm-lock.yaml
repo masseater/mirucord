@@ -195,8 +195,8 @@ catalogs:
       specifier: 0.2.0
       version: 0.2.0
     '@r_masseater/msch':
-      specifier: 0.38.1
-      version: 0.38.1
+      specifier: 0.40.0
+      version: 0.40.0
     '@sapphire/bitfield':
       specifier: 2.0.0
       version: 2.0.0
@@ -322,8 +322,8 @@ catalogs:
       specifier: 3.43.2
       version: 3.43.2
     renovate:
-      specifier: 44.247.2
-      version: 44.247.2
+      specifier: 44.249.1
+      version: 44.249.1
     tailwindcss:
       specifier: 4.3.5
       version: 4.3.5
@@ -357,7 +357,7 @@ importers:
         version: 0.70.0
       '@r_masseater/msch':
         specifier: 'catalog:'
-        version: 0.38.1(@effect/tsgo@0.70.0)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(oxlint@1.94.0(vite-plus@1.7.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1)))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.7.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))
+        version: 0.40.0(dc430078018f52c992928c36977afaab)
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
         version: 0.5.0(@distilled.cloud/cloudflare@1.0.0-rc.20(effect@4.1.4))(@effect/platform-node@4.1.4(effect@4.1.4)(redis@6.2.1(@opentelemetry/api@1.10.0)))(effect@4.1.4)(elysia@1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@0.2.9(@sinclair/typebox@0.34.52))(file-type@22.1.1(supports-color@7.2.0))(openapi-types@12.1.3)(typescript@7.1.0-beta))
@@ -378,7 +378,7 @@ importers:
         version: 3.43.2
       renovate:
         specifier: catalog:stack
-        version: 44.247.2(supports-color@7.2.0)(typanion@3.14.0)
+        version: 44.249.1(supports-color@7.2.0)(typanion@3.14.0)
       typescript:
         specifier: catalog:stack
         version: 7.1.0-beta
@@ -1355,15 +1355,6 @@ packages:
   '@commitlint/types@21.2.3':
     resolution: {integrity: sha512-sGEA473TlCvhCGNoTBY9OXZVWdscIXdGt0dm8EpB+2MRfmt8LNh/X56P/T3nCtEB+eH5qGEa3odphSAoUxSfSQ==}
     engines: {node: '>=22.12.0'}
-
-  '@containerbase/base@14.66.25':
-    resolution: {integrity: sha512-UcvT+lvEWtbiDHvo4Hhhw1kqtflRTBXmBSn4YumHZ1ghgV1HImHpDl7a6QL+3c/TWDR4O+jO1n0UO771LZighg==}
-    engines: {node: '>=24.10.0'}
-    peerDependencies:
-      zod: ^4.0.0
-    peerDependenciesMeta:
-      zod:
-        optional: true
 
   '@containerbase/base@14.67.1':
     resolution: {integrity: sha512-2/tCZBeQgL5humCCEmxfXPc9ixK//80BSKl9548J0GH/3X2JTUs8bfzzvxAtCx/oGIHYDSOUyUii3Am64hwXUg==}
@@ -3381,8 +3372,8 @@ packages:
   '@qnighy/marshal@0.1.3':
     resolution: {integrity: sha512-uaDZTJYtD2UgQTGemmgWeth+e2WapZm+GkAq8UU8AJ55PKRFaf1GkH7X/uzA+Ygu8iInzIlM2FGyCUnruyMKMg==}
 
-  '@r_masseater/msch@0.38.1':
-    resolution: {integrity: sha512-iKDlitEYGdjI73SN6JemyTc0AAATGnxcwaX9zC3Lcfp5FQCuo3EeEztHkFxi08VTEjQNcxly8IofBGqXXfIY+A==}
+  '@r_masseater/msch@0.40.0':
+    resolution: {integrity: sha512-DqW0dvWiwDJWqBWzAisREZqZvJF99ueefvmoxsjfLwmc5e7za6lRcFTf2ScdNUqKPD8nW/U552LPBhrBykksTA==}
     engines: {node: '>=26'}
     hasBin: true
     peerDependencies:
@@ -3449,6 +3440,36 @@ packages:
       elysia:
         optional: true
 
+  '@r_masseater/y8-linux-x64-gnu@0.1.0':
+    resolution: {integrity: sha512-2I8pqY0XSPLuLTVL3h+a00bnwEO2OaYe0ZlP9pljoryYpUyqLwA3j/kXOHUf6WCVSjlmfMq4CuW7kx1kYII8qQ==}
+    engines: {node: '>=26'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@r_masseater/y8-win32-x64-msvc@0.1.0':
+    resolution: {integrity: sha512-BKNjw2oR8zxf7ldJtz4kmprrrP5W4VIVtpjK1F6WmCy/voPSgg+1K66/ZuPhU6okIS4OM9KDzfKRfhfhNpE2MA==}
+    engines: {node: '>=26'}
+    cpu: [x64]
+    os: [win32]
+
+  '@r_masseater/y8@0.1.0':
+    resolution: {integrity: sha512-uyuIicvDLidWSoiyaq7HUxRYaMhcpvlCZG78cC8KROrlV5h3e/Jnv3OsFwFVjNaqtleFYwQ9VmRyvf1frg2O7g==}
+    engines: {node: '>=26'}
+    hasBin: true
+    peerDependencies:
+      effect: ^4.1.2
+      markdownlint: '>=0.42.0'
+      vite: '*'
+      vite-plus: '>=1.5.0'
+    peerDependenciesMeta:
+      markdownlint:
+        optional: true
+      vite:
+        optional: true
+      vite-plus:
+        optional: true
+
   '@redis/bloom@6.2.1':
     resolution: {integrity: sha512-huQgNLaCIZfQ9SeLn4q9124uOUd8HbZDYHwwUzNcRgHqCHiHKl2dDxMqJCeWh8cMqZAoWuHR8XnWbDMIf+o7ag==}
     engines: {node: '>= 20.0.0'}
@@ -3497,8 +3518,8 @@ packages:
     peerDependencies:
       '@redis/client': ^6.2.1
 
-  '@renovatebot/base-image@13.171.2':
-    resolution: {integrity: sha512-N0bAuS89ksbZfh2NmYuGIF5vt84UhUEfoNvuUY1SrKr20r56n2ObRlsPdlMKJ73ftIumakb3J3mBxl+dRF6FFQ==}
+  '@renovatebot/base-image@13.172.0':
+    resolution: {integrity: sha512-VhyO6G30tjeDr9bef4b38K7tsEc1aDyAsN4kil6j+uhLWIzRzeDxpVUaFFN+1IBW5TpjU7ll5p9jATxQIDVuBQ==}
     engines: {node: '>=24.10.0'}
     peerDependencies:
       zod: ^4.0.0
@@ -8411,8 +8432,8 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
-  renovate@44.247.2:
-    resolution: {integrity: sha512-/StcRC36vUsgJvHTsgd6Y6xBCgNE8HLYVUjpS6HettOssReEV6+HWmkPlg863DrB7pOvcFOtY/3ycJhiMqe4qQ==}
+  renovate@44.249.1:
+    resolution: {integrity: sha512-PAwXKUyFutNGTkQs7y4Z5jvh3K8qi5tt87HM5MNW+w8t4tf8Ck3KaqdUBazHlYWbLSD3PeCukwpvgbcfIKLPjw==}
     engines: {node: ^24.11.0 || ^26.13.0, pnpm: ^11.0.0}
     hasBin: true
 
@@ -10543,12 +10564,6 @@ snapshots:
       conventional-commits-parser: 7.1.2
       picocolors: 1.1.1
 
-  '@containerbase/base@14.66.25(zod@4.6.7)':
-    dependencies:
-      semver: 7.8.6
-    optionalDependencies:
-      zod: 4.6.7
-
   '@containerbase/base@14.67.1(zod@4.6.7)':
     dependencies:
       semver: 7.8.6
@@ -12227,7 +12242,7 @@ snapshots:
     dependencies:
       '@babel/runtime-corejs3': 7.29.7
 
-  '@r_masseater/msch@0.38.1(@effect/tsgo@0.70.0)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(oxlint@1.94.0(vite-plus@1.7.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1)))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.7.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))':
+  '@r_masseater/msch@0.40.0(dc430078018f52c992928c36977afaab)':
     dependencies:
       '@commitlint/config-conventional': 21.2.4
       '@effect/platform-node-shared': 4.1.4(effect@4.1.4)
@@ -12243,6 +12258,7 @@ snapshots:
       '@r_masseater/oxlint-typed-rules': 0.4.1(effect@4.1.4)(typescript@7.1.0-beta)
       '@r_masseater/textlint-rule-preset-ja': 0.1.1(effect@4.1.4)
       '@r_masseater/vite-plus-adopt': 0.10.2(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.7.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))
+      '@r_masseater/y8': 0.1.0(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(markdownlint@0.42.1(supports-color@7.2.0))(redis@6.2.1(@opentelemetry/api@1.10.0))(vite-plus@1.7.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))
       '@shadcn/lint': 0.2.5(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))
       '@tanstack/intent': 0.5.6
       '@textlint-ja/textlint-rule-preset-ai-writing': 1.7.0
@@ -12267,7 +12283,9 @@ snapshots:
       - '@typescript-eslint/parser'
       - bufferutil
       - eslint
+      - markdownlint
       - oxlint
+      - redis
       - supports-color
       - utf-8-validate
 
@@ -12352,6 +12370,29 @@ snapshots:
       alchemy: 2.0.0-beta.87(@effect/platform-node@4.1.4(effect@4.1.4)(redis@6.2.1(@opentelemetry/api@1.10.0)))(@types/react@19.3.0)(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(ws@8.22.0)
       elysia: 1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@0.2.9(@sinclair/typebox@0.34.52))(file-type@22.1.1(supports-color@7.2.0))(openapi-types@12.1.3)(typescript@7.1.0-beta)
 
+  '@r_masseater/y8-linux-x64-gnu@0.1.0':
+    optional: true
+
+  '@r_masseater/y8-win32-x64-msvc@0.1.0':
+    optional: true
+
+  '@r_masseater/y8@0.1.0(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.4)(markdownlint@0.42.1(supports-color@7.2.0))(redis@6.2.1(@opentelemetry/api@1.10.0))(vite-plus@1.7.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1))':
+    dependencies:
+      '@effect/platform-node': 4.1.4(effect@4.1.4)(redis@6.2.1(@opentelemetry/api@1.10.0))
+      effect: 4.1.4
+      minimatch: 11.0.8
+      yaml: 2.9.1
+    optionalDependencies:
+      '@r_masseater/y8-linux-x64-gnu': 0.1.0
+      '@r_masseater/y8-win32-x64-msvc': 0.1.0
+      markdownlint: 0.42.1(supports-color@7.2.0)
+      vite: '@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1)'
+      vite-plus: 1.7.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.0)(@vitest/ui@5.1.0)(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(vitest@5.1.0)(yaml@2.9.1)
+    transitivePeerDependencies:
+      - bufferutil
+      - redis
+      - utf-8-validate
+
   '@redis/bloom@6.2.1(@redis/client@6.2.1(@opentelemetry/api@1.10.0))':
     dependencies:
       '@redis/client': 6.2.1(@opentelemetry/api@1.10.0)
@@ -12378,7 +12419,7 @@ snapshots:
     dependencies:
       '@redis/client': 6.2.1(@opentelemetry/api@1.10.0)
 
-  '@renovatebot/base-image@13.171.2(zod@4.6.7)':
+  '@renovatebot/base-image@13.172.0(zod@4.6.7)':
     dependencies:
       '@containerbase/base': 14.67.1(zod@4.6.7)
     optionalDependencies:
@@ -12400,7 +12441,7 @@ snapshots:
 
   '@renovatebot/osv-offline-db@4.5.10(supports-color@7.2.0)(zod@4.6.7)':
     dependencies:
-      '@containerbase/base': 14.66.25(zod@4.6.7)
+      '@containerbase/base': 14.67.1(zod@4.6.7)
       debug: 4.4.3(supports-color@7.2.0)
     transitivePeerDependencies:
       - supports-color
@@ -17782,7 +17823,7 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
-  renovate@44.247.2(supports-color@7.2.0)(typanion@3.14.0):
+  renovate@44.249.1(supports-color@7.2.0)(typanion@3.14.0):
     dependencies:
       '@aws-sdk/client-codecommit': 3.1139.0
       '@aws-sdk/client-ec2': 3.1139.0
@@ -17815,7 +17856,7 @@ snapshots:
       '@pnpm/parse-overrides': 1001.0.4
       '@qnighy/marshal': 0.1.3
       '@redis/client': 6.3.1(@opentelemetry/api@1.10.0)
-      '@renovatebot/base-image': 13.171.2(zod@4.6.7)
+      '@renovatebot/base-image': 13.172.0(zod@4.6.7)
       '@renovatebot/detect-tools': 5.0.0
       '@renovatebot/good-enough-parser': 4.0.3
       '@renovatebot/osv-offline': 4.5.10(supports-color@7.2.0)(zod@4.6.7)

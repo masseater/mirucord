@@ -11,7 +11,7 @@ catalogMode: prefer
 
 catalog:
   "@r_masseater/msch": 0.42.0
-  "@cloudflare/workers-types": 5.20261117.1
+  "@cloudflare/workers-types": 5.20261118.1
   "@effect/platform-node": 4.1.4
   "@types/node": 26.6.6
   vite: npm:@voidzero-dev/vite-plus-core@8.3.8000
@@ -29,7 +29,7 @@ catalog:
   class-variance-authority: 0.7.1
   clsx: 2.1.1
   "@cloudflare/vitest-plugin": 1.8.4
-  msw: 3.0.6
+  msw: 3.0.7
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
   usehooks-ts: 3.1.1

@@ -11,7 +11,7 @@ catalogMode: prefer
 
 catalog:
   "@r_masseater/msch": 0.50.0
-  "@cloudflare/workers-types": 5.20261118.1
+  "@cloudflare/workers-types": 5.20261119.1
   "@effect/platform-node": 4.1.4
   "@types/node": 26.6.6
   vite: npm:@voidzero-dev/vite-plus-core@8.3.8000
@@ -23,12 +23,12 @@ catalog:
   "@sapphire/bitfield": 2.0.0
   discord-api-types: 0.38.59
   "@better-auth/mcp": 1.7.26
-  jose: 6.2.17
+  jose: 6.2.18
   "@better-auth/oauth-provider": 1.7.26
   simple-icons: 16.38.0
   class-variance-authority: 0.7.1
   clsx: 2.1.1
-  "@cloudflare/vitest-plugin": 1.8.4
+  "@cloudflare/vitest-plugin": 1.8.5
   msw: 3.0.7
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.0
@@ -61,7 +61,7 @@ catalogs:
     elysia: 1.4.32
     fallow: 3.43.2
     fallow-type-aware: 3.43.2
-    renovate: 44.252.6
+    renovate: 44.252.7
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
     vite-plus: 1.7.0

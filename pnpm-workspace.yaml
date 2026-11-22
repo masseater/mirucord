@@ -15,7 +15,7 @@ catalog:
   "@effect/platform-node": 4.1.4
   "@types/node": 26.6.6
   vite: npm:@voidzero-dev/vite-plus-core@8.3.8000
-  "@tanstack/react-query-devtools": 5.108.0
+  "@tanstack/react-query-devtools": 5.108.1
   "@vitejs/plugin-react": 6.3.0
   "@vitejs/plugin-rsc": 0.5.39
   "@tanstack/intent": 0.5.6
@@ -45,10 +45,10 @@ catalogs:
     "@r_masseater/workers-tracing": 0.5.0
     "@distilled.cloud/cloudflare": 1.0.0-rc.20
     "@effect/atom-react": 4.1.4
-    "@effect/tsgo": 0.70.0
+    "@effect/tsgo": 0.73.2
     "@effect/vitest": 4.1.4
     "@openfeature/server-sdk": 1.23.0
-    "@tanstack/react-query": 5.108.0
+    "@tanstack/react-query": 5.108.1
     "@tanstack/react-start": 1.169.7
     "@alchemy.run/cloudflare": 2.0.0-beta.87
     "@alchemy.run/fly": 2.0.0-beta.87
@@ -61,7 +61,7 @@ catalogs:
     elysia: 1.4.32
     fallow: 3.44.0
     fallow-type-aware: 3.44.0
-    renovate: 44.253.1
+    renovate: 44.255.1
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
     vite-plus: 1.7.0

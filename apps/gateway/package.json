@@ -2,6 +2,7 @@
   "name": "gateway",
   "version": "0.0.0",
   "private": true,
+  "description": "Discord Gateway connection on Fly: receives guild events and forwards them to the web Worker for ingestion.",
   "type": "module",
   "dependencies": {
     "@alchemy.run/cloudflare": "catalog:stack",

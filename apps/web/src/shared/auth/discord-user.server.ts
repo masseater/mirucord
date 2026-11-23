@@ -1,10 +1,9 @@
 import { and, eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
-import { db } from "#/shared/db/client.server";
+import { account, db } from "#/shared/db/index.server";
 
 import { getAuth } from "./auth.server";
-import { account } from "./generated/auth.table";
 
 const DISCORD_PROVIDER = "discord";
 

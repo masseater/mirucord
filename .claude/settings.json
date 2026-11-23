@@ -22,7 +22,8 @@
     "cc-jev-teacher": {
       "source": {
         "source": "github",
-        "repo": "masseater/cc-jev-teacher"
+        "repo": "masseater/cc-jev-teacher",
+        "ref": "4dd3cc551043e5d46199730108c7113d20652039"
       }
     }
   },

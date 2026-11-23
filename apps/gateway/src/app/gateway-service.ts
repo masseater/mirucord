@@ -1,5 +1,5 @@
 import { App, Service } from "@alchemy.run/fly";
-import { NodeSocket } from "@effect/platform-node";
+import { layerWebSocketConstructor } from "@effect/platform-node/NodeSocket";
 import { ENV_PREFIX, PREFIX } from "@repo/shared-util-app-name/app-name";
 import { ServerHost } from "alchemy/Runtime/Process";
 import { Discord, DiscordConfig } from "dfx";
@@ -41,7 +41,7 @@ const gatewayLayer = (botToken: string): Layer.Layer<DiscordGateway> => {
     Layer.provide([
       DiscordConfig.layer({ token, gateway: { intents: INTENTS } }),
       FetchHttpClient.layer,
-      NodeSocket.layerWebSocketConstructor,
+      layerWebSocketConstructor,
     ]),
   );
 };

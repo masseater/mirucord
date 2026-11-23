@@ -2,6 +2,7 @@
   "name": "@repo/ingest-util-gateway-contract",
   "version": "0.0.0",
   "private": true,
+  "description": "Schema of the jobs the Discord Gateway process sends to the web Worker, shared by both sides.",
   "type": "module",
   "exports": {
     ".": "./src/entities/gateway-job/index.ts"

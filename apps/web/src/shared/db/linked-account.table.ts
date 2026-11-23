@@ -1,6 +1,6 @@
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { user } from "#/shared/auth/generated/auth.table";
+import { user } from "./generated/auth.table";
 
 export const linkedAccount = sqliteTable(
   "linked_account",

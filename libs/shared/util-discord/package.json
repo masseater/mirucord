@@ -2,6 +2,7 @@
   "name": "@repo/shared-util-discord",
   "version": "0.0.0",
   "private": true,
+  "description": "Discord API types and helpers shared by the gateway and the web Worker.",
   "type": "module",
   "exports": {
     ".": "./src/entities/discord/index.ts"

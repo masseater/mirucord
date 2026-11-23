@@ -1,14 +1,13 @@
 import { and, eq, max } from "drizzle-orm";
 import { Array, Effect, Option, pipe } from "effect";
 
-import { db } from "#/shared/db/client.server";
-
 import {
+  db,
   oauthAccessToken,
   oauthClient,
   oauthConsent,
   oauthRefreshToken,
-} from "./generated/auth.table";
+} from "#/shared/db/index.server";
 
 export type ConnectedApp = Readonly<{
   clientId: string;

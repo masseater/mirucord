@@ -1,4 +1,4 @@
-import { Effect, Option, pipe, String as Str } from "effect";
+import { Effect, Option, pipe, Record, String as Str } from "effect";
 
 import { ingestDeliveries } from "#/features/ingest-messages/index.server";
 import { MCP_URL } from "#/shared/config";
@@ -50,12 +50,24 @@ const route = (request: Request): Response | Promise<Response> => {
   return renderPage(request);
 };
 
+const RESPONSE_HEADERS = Record.toEntries({
+  "X-Robots-Tag": "noindex",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=(), usb=()",
+  "Content-Security-Policy": "frame-ancestors 'none'; base-uri 'none'; object-src 'none'",
+});
+
 const unindexed = (request: Request): Promise<Response> =>
   runTraced(
     Effect.promise(() => Promise.resolve(route(request))).pipe(
       Effect.map((indexed) => {
         const response = new Response(indexed.body, indexed);
-        response.headers.set("X-Robots-Tag", "noindex");
+        for (const [name, value] of RESPONSE_HEADERS) {
+          response.headers.set(name, value);
+        }
         return response;
       }),
     ),

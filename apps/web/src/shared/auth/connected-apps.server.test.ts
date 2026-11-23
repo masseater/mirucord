@@ -2,16 +2,16 @@ import { it } from "@effect/vitest";
 import { DateTime, Effect, Option } from "effect";
 import { expect } from "vite-plus/test";
 
-import { db } from "#/shared/db/client.server";
-
-import { disconnectApp, listConnectedApps } from "./connected-apps.server";
 import {
+  db,
   oauthAccessToken,
   oauthClient,
   oauthConsent,
   oauthRefreshToken,
   user,
-} from "./generated/auth.table";
+} from "#/shared/db/index.server";
+
+import { disconnectApp, listConnectedApps } from "./connected-apps.server";
 
 const SCOPES = ["openid"];
 const CONNECTED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));

@@ -2,6 +2,7 @@
   "name": "web",
   "version": "0.0.0",
   "private": true,
+  "description": "mirucord web Worker on Cloudflare: dashboard, OAuth, ingestion of Discord messages and the read-only MCP servers.",
   "type": "module",
   "imports": {
     "#/*": "./src/*"

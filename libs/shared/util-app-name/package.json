@@ -2,6 +2,7 @@
   "name": "@repo/shared-util-app-name",
   "version": "0.0.0",
   "private": true,
+  "description": "The app name and the Alchemy check that every stack and resource name starts with it.",
   "type": "module",
   "exports": {
     ".": "./src/features/check-app-prefix/index.ts",

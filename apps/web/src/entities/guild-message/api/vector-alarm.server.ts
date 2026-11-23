@@ -39,10 +39,9 @@ const vectorsWithKey = (published: Published, key: CryptoKey): Effect.Effect<voi
   const keys = { guildId: published.guildId, key };
   return embedPending({ db: published.db, keys }).pipe(
     Effect.catchTag("EmbeddingError", ({ cause }) => retryLater(cause)),
-    Effect.flatMap((embedded) =>
-      publishVectors({ db: published.db, bucket: published.bucket, keys }).pipe(
-        Effect.map(({ status }) => ({ embedded, publishedMore: status === "more" })),
-      ),
+    Effect.zipWith(
+      Effect.suspend(() => publishVectors({ db: published.db, bucket: published.bucket, keys })),
+      (embedded, { status }) => ({ embedded, publishedMore: status === "more" }),
     ),
     Effect.flatMap((followup) =>
       Clock.currentTimeMillis.pipe(

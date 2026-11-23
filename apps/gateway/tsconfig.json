@@ -6,6 +6,7 @@
     "plugins": [
       {
         "name": "@effect/language-service",
+        "diagnostics": false,
         "allowedUnstableApis": [
           "@effect/platform-node/NodeSocket#layerWebSocketConstructor",
           "effect/http/FetchHttpClient#layer",

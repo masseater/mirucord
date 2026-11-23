@@ -77,40 +77,8 @@ jobs:
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-  release:
-    needs: verify
-    if: github.repository == 'masseater/typescript-template'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
-    concurrency:
-      group: release
-    steps:
-      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
-        with:
-          config-file: .github/release-please/config.json
-          manifest-file: .github/release-please/manifest.json
-          skip-github-pull-request: true
-      - if: github.event_name == 'workflow_dispatch'
-        uses: masseater/typescript-template/.github/actions/credentials@c116d175574f2f6917e2aa39caf83a141ef4bd94
-      - if: github.event_name == 'workflow_dispatch'
-        id: release-pr
-        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
-        with:
-          token: ${{ env.GITHUB_APP_TOKEN }}
-          config-file: .github/release-please/config.json
-          manifest-file: .github/release-please/manifest.json
-          skip-github-release: true
-      - if: steps.release-pr.outputs.pr
-        env:
-          GH_TOKEN: ${{ env.GITHUB_APP_TOKEN }}
-          PR: ${{ steps.release-pr.outputs.pr }}
-        run: gh pr merge "$(jq -r .number <<<"$PR")" --repo "$GITHUB_REPOSITORY" --squash --auto
-
   ci-telemetry:
-    needs: [verify, autofix, deploy, release]
+    needs: [verify, autofix, deploy]
     if: always()
     runs-on: ubuntu-latest
     permissions:

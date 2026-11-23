@@ -16,6 +16,7 @@
     "plugins": [
       {
         "name": "@effect/language-service",
+        "diagnostics": false,
         "allowedUnstableApis": [
           "@effect/atom-react/Hooks#useAtom",
           "@effect/atom-react/RegistryContext#RegistryProvider",

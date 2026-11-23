@@ -7,6 +7,7 @@ import rsc from "@vitejs/plugin-rsc";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
+  test: { isolate: true },
   resolve: { tsconfigPaths: true },
   msch: {
     lint: {
@@ -40,7 +41,7 @@ export default defineConfig({
       },
       "auth:generate": {
         command:
-          "auth generate --config auth.config.ts --output src/shared/auth/generated/auth.table.ts --yes",
+          "auth generate --config auth.config.ts --output src/shared/db/generated/auth.table.ts --yes",
       },
       "db:check": [
         "drizzle-kit check",

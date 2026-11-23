@@ -8,11 +8,10 @@ import { env } from "cloudflare:workers";
 import { Function } from "effect";
 
 import { MCP_URL, SITE_ORIGIN } from "#/shared/config";
-import { db } from "#/shared/db/client.server";
-
 import {
   account,
   authRelations,
+  db,
   jwks,
   oauthAccessToken,
   oauthClient,
@@ -24,7 +23,7 @@ import {
   session,
   user,
   verification,
-} from "./generated/auth.table";
+} from "#/shared/db/index.server";
 
 export type AuthOptions = BetterAuthOptions & {
   plugins: [

@@ -122,13 +122,12 @@ const rebuildAll = (publisher: Publisher): Effect.Effect<Rebuilt> => {
     Array.isReadonlyArrayEmpty(searchLedger(publisher.db).segments());
   return Effect.when(deletePrefix(publisher), Effect.succeed(fresh)).pipe(
     Effect.andThen(rebuildSealed(publisher, plan)),
-    Effect.flatMap((sealed) =>
-      rebuildRecent(publisher, sealedChanged).pipe(
-        Effect.map((recent) => ({
-          replaced: [...sealed, ...recent],
-          changed: sealedChanged || recentChanged,
-        })),
-      ),
+    Effect.zipWith(
+      Effect.suspend(() => rebuildRecent(publisher, sealedChanged)),
+      (sealed, recent) => ({
+        replaced: [...sealed, ...recent],
+        changed: sealedChanged || recentChanged,
+      }),
     ),
   );
 };

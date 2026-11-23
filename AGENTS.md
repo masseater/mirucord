@@ -56,4 +56,4 @@ Base designs, load estimates and cost estimates on the next scale, not the curre
 ### Docs and template
 
 - Do not add new files under docs/. Update existing files and remove finished plans and history.
-- When you change the scaffolding (hooks, lint, CI), make the same change in masseater/typescript-template and release it with release-please.
+- When you change the scaffolding (hooks, lint, CI), make the same change in masseater/typescript-template and release it there.

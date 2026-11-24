@@ -12,7 +12,7 @@ jobs:
   up-to-date:
     runs-on: ubuntu-latest
     steps:
-      - uses: masseater/typescript-template/.github/actions/auto-merge-gate@c116d175574f2f6917e2aa39caf83a141ef4bd94
+      - uses: masseater/typescript-template/.github/actions/auto-merge-gate@85e63634a051e4813f379fd082e40f4e65bdcb27
 
   wake:
     needs: [up-to-date]

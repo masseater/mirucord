@@ -4,6 +4,8 @@ import { Array, Option, pipe } from "effect";
 
 import { searchChannel } from "#/entities/guild-message/model/search-segment.schema";
 
+import { rowChunks } from "./bound-chunks.server";
+
 const FIRST_POSITION = 0;
 const NEXT = 1;
 
@@ -39,14 +41,15 @@ const positionsOf = (
   );
   if (Array.isReadonlyArrayNonEmpty(missing)) {
     const start = nextPosition(db);
-    db.insert(searchChannel)
-      .values(
-        pipe(
-          missing,
-          Array.map((id, index) => ({ id, position: start + index })),
-        ),
-      )
-      .run();
+    const rows = pipe(
+      missing,
+      Array.map((id, index) => ({ id, position: start + index })),
+    );
+    for (const chunk of rowChunks(rows)) {
+      db.insert(searchChannel)
+        .values([...chunk])
+        .run();
+    }
     return knownChannels(db);
   }
   return known;

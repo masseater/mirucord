@@ -9,6 +9,7 @@ import { guildMessage, SEALED_COLUMNS } from "#/entities/guild-message/model/gui
 import { phraseLedger, phraseStats } from "#/entities/guild-message/model/phrase-stats.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
+import { rowChunks } from "./bound-chunks.server";
 import { MessageStore } from "./message-store.server";
 import type {
   PhraseColumn,
@@ -89,22 +90,21 @@ export abstract class PhraseStore extends MessageStore {
 
   protected override recordPhrases(message: UnphrasedMessage, hashes: readonly PhraseHash[]): void {
     this.db.delete(phraseUse).where(eq(phraseUse.messageId, message.id)).run();
-    if (Array.isReadonlyArrayNonEmpty(hashes)) {
+    const uses = pipe(
+      hashes,
+      Array.map(({ phrase, common }) => ({
+        messageId: message.id,
+        phrase,
+        common,
+        channelId: message.channelId,
+        authorId: message.authorId,
+        createdAt: message.createdAt,
+      })),
+    );
+    for (const chunk of rowChunks(uses)) {
       this.db
         .insert(phraseUse)
-        .values(
-          pipe(
-            hashes,
-            Array.map(({ phrase, common }) => ({
-              messageId: message.id,
-              phrase,
-              common,
-              channelId: message.channelId,
-              authorId: message.authorId,
-              createdAt: message.createdAt,
-            })),
-          ),
-        )
+        .values([...chunk])
         .onConflictDoNothing()
         .run();
     }

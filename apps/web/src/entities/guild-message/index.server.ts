@@ -2,7 +2,7 @@ export { guildStore } from "./api/store-stub.server";
 export { openStored } from "./api/message-view.server";
 export type { MessageView } from "./api/message-view.server";
 export { MessageOutput } from "./model/message-output.schema";
-export { GuildStore } from "./api/guild-store.server";
+export { GuildArchive } from "./api/guild-archive.server";
 export { searchMessages } from "./api/search-messages.server";
 export type { MemberWrite, StoredMember } from "./api/member-types";
 export type { StoredVoiceSession } from "./api/voice-types";

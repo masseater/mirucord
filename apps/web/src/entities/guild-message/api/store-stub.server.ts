@@ -1,6 +1,8 @@
 import { env } from "cloudflare:workers";
 
-import type { GuildStore } from "./guild-store.server";
+import { OBJECT_LOCATION } from "#/shared/config";
 
-export const guildStore = (guildId: string): DurableObjectStub<GuildStore> =>
-  env.GUILD_STORE.getByName(guildId);
+import type { GuildArchive } from "./guild-archive.server";
+
+export const guildStore = (guildId: string): DurableObjectStub<GuildArchive> =>
+  env.GUILD_ARCHIVE.getByName(guildId, OBJECT_LOCATION);

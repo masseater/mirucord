@@ -1,5 +1,5 @@
 import { Array, pipe } from "effect";
-import type { ReactNode } from "react";
+import type { HTMLElementType, ReactNode } from "react";
 
 import { Embed } from "./embed";
 
@@ -8,7 +8,10 @@ export type EmbedItem = Readonly<{ accent: string; title: string; body: ReactNod
 export const EmbedStack = ({
   tag: List,
   items,
-}: Readonly<{ tag: "ol" | "ul"; items: readonly EmbedItem[] }>): ReactNode => (
+}: Readonly<{
+  tag: Extract<HTMLElementType, "ol" | "ul">;
+  items: readonly EmbedItem[];
+}>): ReactNode => (
   <List className="grid gap-2">
     {pipe(
       items,

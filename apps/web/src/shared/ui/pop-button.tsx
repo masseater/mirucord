@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 
 import { popButtonVariants } from "./pop-variants";
+import type { PopSize, PopTone } from "./pop-variants";
 
 export const PopButton = (
   props: Readonly<{
-    tone: "primary" | "secondary" | "danger";
-    size?: "sm" | "md" | "lg";
+    tone: PopTone;
+    size?: PopSize;
     children: ReactNode;
   }> &
     (Readonly<{ href: string }> | Readonly<{ disabled: boolean; onClick: () => void }>),

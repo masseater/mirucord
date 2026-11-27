@@ -20,18 +20,17 @@ const CLIENT_STATE_RULES = new Set([
   "stack/server-state-tanstack-query",
   "stack/ui-state-effect-atom",
 ]);
-const isClientStateRule = (name: string): boolean => CLIENT_STATE_RULES.has(name);
 
 const workspace = await workspaceSettings({
   root: import.meta.dirname,
   ruleSets: {
     decision: pipe(
       decisionRules,
-      Record.filter((_rule, name) => !isClientStateRule(name)),
+      Record.filter((_rule, name) => !CLIENT_STATE_RULES.has(name)),
     ),
     clientState: pipe(
       decisionRules,
-      Record.filter((_rule, name) => isClientStateRule(name)),
+      Record.filter((_rule, name) => CLIENT_STATE_RULES.has(name)),
     ),
     traced: tracedRules,
     brand: {

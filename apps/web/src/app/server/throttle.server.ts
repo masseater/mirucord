@@ -22,15 +22,13 @@ const tooManyRequests = (): Response =>
     headers: { "retry-after": String(RATE_LIMIT_PERIOD) },
   });
 
-const clientIp = (request: Request): string =>
-  Option.fromNullishOr(request.headers.get("cf-connecting-ip")).pipe(
-    Option.getOrElse(() => "unknown"),
-  );
+const headerOr = (request: Request, name: string, fallback: string): string =>
+  Option.fromNullishOr(request.headers.get(name)).pipe(Option.getOrElse(() => fallback));
+
+const clientIp = (request: Request): string => headerOr(request, "cf-connecting-ip", "unknown");
 
 const tokenOrIp = (request: Request): string =>
-  Option.fromNullishOr(request.headers.get("authorization")).pipe(
-    Option.getOrElse(() => `ip:${clientIp(request)}`),
-  );
+  headerOr(request, "authorization", `ip:${clientIp(request)}`);
 
 const digestOf = (key: string): Effect.Effect<string> =>
   Effect.promise(() => crypto.subtle.digest("SHA-256", textEncoder.encode(key))).pipe(

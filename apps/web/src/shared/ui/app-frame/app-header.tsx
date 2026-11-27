@@ -1,10 +1,8 @@
 import type { ReactNode } from "react";
 
-import { DASHBOARD_PATH } from "#/shared/config";
+import { DASHBOARD_NAME, DASHBOARD_PATH } from "#/shared/config";
 
 import { BrandLink } from "./brand-link";
-
-const DASHBOARD = "管理画面";
 
 export const AppHeader = (): ReactNode => (
   <header className="bg-dc-rail">
@@ -14,7 +12,7 @@ export const AppHeader = (): ReactNode => (
         href={DASHBOARD_PATH}
         className="text-dc-muted hover:text-dc-bright text-sm font-bold no-underline"
       >
-        {DASHBOARD}
+        {DASHBOARD_NAME}
       </a>
     </div>
   </header>

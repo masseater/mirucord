@@ -47,29 +47,28 @@ const encodeHead = Schema.encodeEffect(SearchHeadJson);
 export type SegmentFile = Readonly<{ guildId: string; segment: string }>;
 
 const headKey = (guildId: string): string => `${guildId}/head`;
-export const recentKey = ({ guildId, segment }: SegmentFile): string => `${guildId}/${segment}/x`;
-export const shardKey = ({
-  guildId,
-  segment,
-  shard,
-}: SegmentFile & Readonly<{ shard: number }>): string => `${guildId}/${segment}/i${shard}`;
+const inSegment = ({ guildId, segment }: SegmentFile, name: string): string =>
+  `${guildId}/${segment}/${name}`;
+
+export const recentKey = (file: SegmentFile): string => inSegment(file, "x");
+
+export const shardKey = ({ shard, ...file }: SegmentFile & Readonly<{ shard: number }>): string =>
+  inSegment(file, `i${shard}`);
+
 export const archiveKey = ({
   guildId,
   archive,
   shard,
 }: Readonly<{ guildId: string; archive: string; shard: number }>): string =>
-  `${guildId}/${archive}/a${shard}`;
-export const chunkKey = ({
-  guildId,
-  segment,
-  chunk,
-}: SegmentFile & Readonly<{ chunk: number }>): string => `${guildId}/${segment}/b${chunk}`;
+  inSegment({ guildId, segment: archive }, `a${shard}`);
+
+export const chunkKey = ({ chunk, ...file }: SegmentFile & Readonly<{ chunk: number }>): string =>
+  inSegment(file, `b${chunk}`);
 
 export const vectorFileKey = ({
-  guildId,
-  segment,
   file,
-}: SegmentFile & Readonly<{ file: string }>): string => `${guildId}/${segment}/${file}`;
+  ...segment
+}: SegmentFile & Readonly<{ file: string }>): string => inSegment(segment, file);
 
 export const centroidsKey = ({
   guildId,

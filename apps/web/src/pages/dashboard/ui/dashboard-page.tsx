@@ -2,14 +2,14 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSearch } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
+import { SignInPanel } from "#/features/sign-in";
 import { dashboardQuery } from "#/pages/dashboard/api/dashboard";
 import { landingOf } from "#/pages/dashboard/model/sign-in-landing";
-import { SIGN_IN_LANDING } from "#/shared/config";
+import { DASHBOARD_NAME, SIGN_IN_LANDING } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 
 import { DashboardView } from "./dashboard-view";
 import { LandingRedirect } from "./landing-redirect";
-import { SignInPanel } from "./sign-in-panel";
 
 export const DashboardPage = (): ReactNode => {
   const { data } = useSuspenseQuery(dashboardQuery);
@@ -18,7 +18,9 @@ export const DashboardPage = (): ReactNode => {
   return (
     <AppFrame>
       <LandingRedirect landing={landing} />
-      {data.status === "signedOut" && <SignInPanel returnTo={SIGN_IN_LANDING} />}
+      {data.status === "signedOut" && (
+        <SignInPanel title={DASHBOARD_NAME} returnTo={SIGN_IN_LANDING} />
+      )}
       {data.status === "ready" && <DashboardView dashboard={data} />}
     </AppFrame>
   );

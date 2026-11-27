@@ -2,6 +2,7 @@ export const SITE_HOST = "mirucord.masseater.dev";
 export const SITE_ORIGIN = `https://${SITE_HOST}`;
 export const MCP_URL = `${SITE_ORIGIN}/mcp`;
 export const DASHBOARD_PATH = "/dashboard";
+export const DASHBOARD_NAME = "管理画面";
 export const SIGN_IN_LANDING = `${DASHBOARD_PATH}?from=signIn`;
 export const PRIVACY_PATH = "/privacy";
 export const TERMS_PATH = "/terms";

@@ -36,4 +36,5 @@ export const FORUM_SCENE: Scene = {
       reactions: [{ emoji: "💜", count: 3, by: "me" }],
     },
   ],
+  ending: { kind: "none" },
 };

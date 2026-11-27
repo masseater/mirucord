@@ -7,5 +7,5 @@ export const FAQ_SCENE: Scene = {
   channel: FAQ_CHANNEL,
   time: "今日 21:05",
   heading: { guide: "なんでも聞いてね！", lead: "よくある質問" },
-  after: <FaqThread />,
+  ending: { kind: "content", content: <FaqThread /> },
 };

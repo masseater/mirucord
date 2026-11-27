@@ -23,10 +23,13 @@ export const PROBLEM_SCENE: Scene = {
       reactions: [{ emoji: "🙏", count: 3, by: "others" }],
     },
   ],
-  after: (
-    <>
-      <CampThread />
-      <ScatterScene />
-    </>
-  ),
+  ending: {
+    kind: "content",
+    content: (
+      <>
+        <CampThread />
+        <ScatterScene />
+      </>
+    ),
+  },
 };

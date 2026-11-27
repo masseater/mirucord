@@ -36,4 +36,5 @@ export const FEATURES_SCENE: Scene = {
       reactions: [{ emoji: "👍", count: 4, by: "others" }],
     },
   ],
+  ending: { kind: "none" },
 };

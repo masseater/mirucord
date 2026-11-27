@@ -31,5 +31,5 @@ export const STEPS_SCENE: Scene = {
       reactions: [{ emoji: "💜", count: 2, by: "me" }],
     },
   ],
-  system: { kind: "join", actor: BOT, text: "がサーバーに参加しました。" },
+  ending: { kind: "system", event: "join", actor: BOT, text: "がサーバーに参加しました。" },
 };

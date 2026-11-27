@@ -4,7 +4,6 @@ import { drizzle } from "drizzle-orm/durable-sqlite";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Effect, Option, pipe } from "effect";
 
-import { erasedAuthor } from "#/entities/guild-message/model/erased-author.schema";
 import {
   BOUND_LIMIT,
   guildMessage,
@@ -13,6 +12,7 @@ import {
 } from "#/entities/guild-message/model/guild-message.schema";
 import { TracedDurableObject } from "#/shared/observability/index.server";
 
+import { erasedAuthors } from "./erased-authors.server";
 import { migrateGuild } from "./guild-migrations.server";
 import { messageQueries } from "./message-queries.server";
 import { nextVersion, searchHooks } from "./search-hooks.server";
@@ -106,10 +106,6 @@ export abstract class MessageStore extends TracedDurableObject {
     }
   }
 
-  protected erasedAuthors(): readonly Readonly<{ id: string }>[] {
-    return this.db.select().from(erasedAuthor).all();
-  }
-
   #previous(kept: readonly IndexedMessage[], mode: WriteMode): readonly TrackedRow[] {
     if (mode === "adopt") {
       return [];
@@ -123,12 +119,7 @@ export abstract class MessageStore extends TracedDurableObject {
   }
 
   #writeKept(messages: readonly IndexedMessage[], mode: WriteMode): Effect.Effect<void> {
-    const erased = new Set(
-      pipe(
-        this.erasedAuthors(),
-        Array.map(({ id }) => id),
-      ),
-    );
+    const erased = new Set(erasedAuthors(this.db).ids());
     const kept = pipe(
       messages,
       Array.filter(({ row }) => !erased.has(row.authorId)),
@@ -194,7 +185,7 @@ export abstract class MessageStore extends TracedDurableObject {
   }
 
   public eraseAuthor(authorId: string): Promise<void> {
-    this.db.insert(erasedAuthor).values({ id: authorId }).onConflictDoNothing().run();
+    erasedAuthors(this.db).add(authorId);
     return this.#removeMatching("authorId", authorId);
   }
 
@@ -203,14 +194,9 @@ export abstract class MessageStore extends TracedDurableObject {
   }
 
   public clear(): Promise<void> {
-    const erased = this.erasedAuthors();
+    const erased = erasedAuthors(this.db).list();
     const restore = Effect.sync(() => {
-      if (Array.isReadonlyArrayNonEmpty(erased)) {
-        this.db
-          .insert(erasedAuthor)
-          .values([...erased])
-          .run();
-      }
+      erasedAuthors(this.db).restore(erased);
     });
     const wiped = Effect.promise(() => this.ctx.storage.deleteAll());
     return this.traced(

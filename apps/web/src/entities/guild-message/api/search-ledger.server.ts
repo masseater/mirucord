@@ -3,9 +3,10 @@ import type { SQL } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Option, pipe } from "effect";
 
-import { BOUND_LIMIT, guildMessage } from "#/entities/guild-message/model/guild-message.schema";
+import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { searchInvalid, searchSegment } from "#/entities/guild-message/model/search-segment.schema";
 
+import { rowChunks } from "./bound-chunks.server";
 import type { TrackedRow } from "./store-types";
 
 export const EARLIEST = 0;
@@ -136,14 +137,13 @@ const invalidate = (
   positions: readonly Position[],
   now: number,
 ): boolean => {
-  for (const chunk of Array.chunksOf(positions, BOUND_LIMIT)) {
+  const rows = pipe(
+    positions,
+    Array.map(({ segment, ordinal }) => ({ segment, ordinal, since: now })),
+  );
+  for (const chunk of rowChunks(rows)) {
     db.insert(searchInvalid)
-      .values(
-        pipe(
-          chunk,
-          Array.map(({ segment, ordinal }) => ({ segment, ordinal, since: now })),
-        ),
-      )
+      .values([...chunk])
       .onConflictDoNothing()
       .run();
   }

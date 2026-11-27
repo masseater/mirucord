@@ -1,6 +1,7 @@
 import type { ReactionChange } from "@repo/ingest-util-gateway-contract";
-import { Array, pipe } from "effect";
+import { Array } from "effect";
 
+import { erasedAuthors } from "./erased-authors.server";
 import { memberLedger } from "./member-ledger.server";
 import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
 import { NoteStore } from "./note-store.server";
@@ -10,21 +11,16 @@ import { voiceLedger } from "./voice-ledger.server";
 import type { VoiceChangeWrite, VoiceLookup, VoicePage, VoiceSnapshotWrite } from "./voice-types";
 
 export abstract class RelationStore extends NoteStore {
+  readonly #erased = erasedAuthors(this.db);
+
   readonly #members = memberLedger(this.db);
 
   readonly #voice = voiceLedger(this.db);
 
   readonly #reactions = reactionLedger(this.db);
 
-  protected erasedIds(): readonly string[] {
-    return pipe(
-      this.erasedAuthors(),
-      Array.map(({ id }) => id),
-    );
-  }
-
   public saveMembers(request: MemberWrite): void {
-    this.#members.write(request, this.erasedIds());
+    this.#members.write(request, this.#erased.ids());
   }
 
   public departMembers(userIds: readonly string[], now: number): void {
@@ -32,31 +28,31 @@ export abstract class RelationStore extends NoteStore {
   }
 
   public readMembers(lookup: MemberLookup): readonly StoredMember[] {
-    return this.#members.read(lookup, this.erasedIds());
+    return this.#members.read(lookup, this.#erased.ids());
   }
 
   public saveVoiceChanges(changes: readonly VoiceChangeWrite[]): void {
-    this.#voice.change(changes, this.erasedIds());
+    this.#voice.change(changes, this.#erased.ids());
   }
 
   public saveVoiceSnapshot(snapshot: VoiceSnapshotWrite): void {
-    this.#voice.snapshot(snapshot, this.erasedIds());
+    this.#voice.snapshot(snapshot, this.#erased.ids());
   }
 
   public readVoiceSessions(lookup: VoiceLookup): VoicePage {
-    return this.#voice.read(lookup, this.erasedIds());
+    return this.#voice.read(lookup, this.#erased.ids());
   }
 
   public saveReactions(changes: readonly ReactionChange[]): void {
-    this.#reactions.change(changes, this.erasedIds());
+    this.#reactions.change(changes, this.#erased.ids());
   }
 
   public readReactions(lookup: ReactionLookup): ReactionPage {
-    return this.#reactions.read(lookup, this.erasedIds());
+    return this.#reactions.read(lookup, this.#erased.ids());
   }
 
   public keptUserIds(userIds: readonly string[]): readonly string[] {
-    return Array.difference(userIds, this.erasedIds());
+    return Array.difference(userIds, this.#erased.ids());
   }
 
   public override remove(ids: readonly string[]): Promise<void> {

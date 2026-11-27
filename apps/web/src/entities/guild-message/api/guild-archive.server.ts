@@ -1,5 +1,6 @@
 import { Clock, Effect, Option } from "effect";
 
+import { erasedAuthors } from "./erased-authors.server";
 import { backfillPhrases } from "./phrase-backfill.server";
 import { RelationStore } from "./relation-store.server";
 import type { ExtractedPhrases, PhraseRequest, PhraseStatsLookup } from "./store-types";
@@ -20,7 +21,7 @@ export class GuildArchive extends RelationStore {
   }
 
   public writePhrases(extracted: readonly ExtractedPhrases[]): void {
-    const erased = new Set(this.erasedIds());
+    const erased = new Set(erasedAuthors(this.db).ids());
     for (const { message, hashes } of extracted) {
       if (this.markExtracted(message.id) && !erased.has(message.authorId)) {
         this.recordPhrases(message, hashes);

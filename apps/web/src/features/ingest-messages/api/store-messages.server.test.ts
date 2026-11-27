@@ -9,7 +9,13 @@ import { createGuildKey, openGuildKeys, openMessage } from "#/shared/crypto/inde
 import type { MessageBody } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
-import { putMessages, sealedIn, storedMessage, TEXT_CHANNEL } from "./guild-messages.test.support";
+import {
+  putMessages,
+  sealedIn,
+  storedIdsIn,
+  storedMessage,
+  TEXT_CHANNEL,
+} from "./guild-messages.test.support";
 import { ingestChannel } from "./ingest-channel.server";
 
 const DEFAULT_MESSAGE = 0;
@@ -18,6 +24,8 @@ const OWNER = "901";
 const GUILD = "700";
 const STORED_CHANNEL = "710";
 const STORED = "711";
+const PHRASEFUL = "712";
+const MANY_PHRASES = 60;
 const UNDESCRIBED_CHANNEL = "740";
 const UNDESCRIBED = "741";
 const FORWARD_CHANNEL = "750";
@@ -199,5 +207,25 @@ it.effect("stores the users a message mentions and the message it replies to", (
       mentions: [{ id: MENTIONED, name: "ともだち" }],
       replyTo: REPLIED,
     });
+  }),
+);
+
+it.effect("stores a message that carries more phrases than one insert can bind", () =>
+  Effect.gen(function* manyPhrases() {
+    const hashes = pipe(
+      Array.makeBy(MANY_PHRASES, (index) => index),
+      Array.map((index) => ({ phrase: `phrase-${index}`, common: `common-${index}` })),
+    );
+    yield* putMessages({
+      guildId: GUILD,
+      messages: [
+        {
+          ...storedMessage({ id: PHRASEFUL, channelId: STORED_CHANNEL }),
+          phrases: { status: "extracted", hashes },
+        },
+      ],
+    });
+    const stored = yield* storedIdsIn({ guildId: GUILD, channelId: STORED_CHANNEL });
+    expect(stored).toContain(PHRASEFUL);
   }),
 );

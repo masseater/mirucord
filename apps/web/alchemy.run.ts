@@ -22,7 +22,12 @@ import type { HttpClientError } from "effect/http";
 
 import type { GuildArchive, NeuronBudget, RequestCounter } from "./src/app/server/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest-messages/index.ts";
-import { FREE_GUILD_LIMIT, SITE_HOST, WORKER_PLACEMENT } from "./src/shared/config/index.ts";
+import {
+  FREE_GUILD_LIMIT,
+  RESYNC_CRON,
+  SITE_HOST,
+  WORKER_PLACEMENT,
+} from "./src/shared/config/index.ts";
 
 const PRODUCTION_STAGE = "prod";
 const CF_BEACON_TOKEN = "05cc8ac1b77246cf8c28e93350689c0b";
@@ -230,6 +235,7 @@ const web = Effect.gen(function* web() {
     logpush: true,
     limits: { cpuMs: 700 },
     placement: WORKER_PLACEMENT,
+    crons: [RESYNC_CRON],
     env: {
       ...discord,
       ...operations,

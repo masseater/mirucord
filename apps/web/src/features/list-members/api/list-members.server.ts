@@ -1,5 +1,4 @@
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { eq } from "drizzle-orm";
 import { Array, DateTime, Effect, Option, Order, pipe, Schema, String as Str } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
@@ -8,7 +7,7 @@ import { ConsentOutput } from "#/entities/scope";
 import { withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
 import { openGuildKey, openMember } from "#/shared/crypto/index.server";
-import { db, role } from "#/shared/db/index.server";
+import { loadRoles } from "#/shared/db/index.server";
 import {
   FIRST_OFFSET,
   Ids,
@@ -74,9 +73,7 @@ const isoOf = (at: number | null): string | null =>
   );
 
 const roleNamesOf = (guildId: string): Effect.Effect<ReadonlyMap<string, string>> =>
-  Effect.promise(() =>
-    db.select({ id: role.id, name: role.name }).from(role).where(eq(role.guildId, guildId)),
-  ).pipe(
+  loadRoles(guildId).pipe(
     Effect.map(
       (rows) =>
         new Map(

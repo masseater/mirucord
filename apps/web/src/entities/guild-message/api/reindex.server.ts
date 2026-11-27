@@ -6,9 +6,9 @@ import { SEQUENTIAL } from "#/entities/guild-message/lib/search-layout";
 import { sealedTokens } from "#/entities/guild-message/lib/search-tokens.server";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { openGuildKeys } from "#/shared/crypto/index.server";
+import { wrappedKeyOf } from "#/shared/db/index.server";
 
 import { searchLedger } from "./search-ledger.server";
-import { wrappedKeyOf } from "./wrapped-key.server";
 
 const REINDEX_BATCH = 500;
 

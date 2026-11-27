@@ -6,6 +6,7 @@ import { Array, Option, pipe } from "effect";
 import { BOUND_LIMIT, guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { searchSegment } from "#/entities/guild-message/model/search-segment.schema";
 
+import { inChunks } from "./bound-chunks.server";
 import { inRange, rangeOf, searchLedger } from "./search-ledger.server";
 import type { Segment } from "./search-ledger.server";
 
@@ -70,19 +71,16 @@ const storedVectors = (
   db: DrizzleSqliteDODatabase,
   ids: readonly string[],
 ): readonly StoredVector[] =>
-  pipe(
-    Array.chunksOf(ids, BOUND_LIMIT),
-    Array.flatMap((chunk) =>
-      db
-        .select({
-          id: guildMessage.id,
-          channelId: guildMessage.channelId,
-          vector: guildMessage.vector,
-        })
-        .from(guildMessage)
-        .where(inArray(guildMessage.id, [...chunk]))
-        .all(),
-    ),
+  inChunks(ids, (chunk) =>
+    db
+      .select({
+        id: guildMessage.id,
+        channelId: guildMessage.channelId,
+        vector: guildMessage.vector,
+      })
+      .from(guildMessage)
+      .where(inArray(guildMessage.id, [...chunk]))
+      .all(),
   );
 
 const markPublished = (

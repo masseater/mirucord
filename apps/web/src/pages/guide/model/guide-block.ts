@@ -34,3 +34,10 @@ export const blockKey: (block: GuideBlock) => string = Match.type<GuideBlock>().
       ),
   }),
 );
+
+export type GuideContent = Readonly<{
+  title: string;
+  tip: string;
+  lead: string;
+  sections: readonly GuideSection[];
+}>;

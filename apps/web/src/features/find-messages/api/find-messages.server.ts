@@ -1,4 +1,4 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, Effect, Option, pipe, Schema } from "effect";
 
 import {
@@ -14,7 +14,14 @@ import { NotFullyIngestedOutput } from "#/entities/scope";
 import { notFullyIngested, withChannel, withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
 import { openSearchKey } from "#/shared/crypto/index.server";
-import { FIRST_OFFSET, Limit, limitOf, Offset, structuredResult, TOOL_BASE } from "#/shared/mcp";
+import {
+  FIRST_OFFSET,
+  Limit,
+  limitOf,
+  Offset,
+  structuredResult,
+  toolRegistration,
+} from "#/shared/mcp";
 
 const FindMessagesInput = Schema.Struct({
   serverId: Schema.String,
@@ -39,9 +46,9 @@ const FindMessagesOutput = Schema.Struct({
 });
 
 const FIND_MESSAGES_TOOL = {
+  name: "find_messages",
   title: "Find messages",
   description: "Find messages that contain exact words.",
-  ...TOOL_BASE,
   outputSchema: FindMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: FindMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
@@ -119,8 +126,4 @@ const find =
       ),
     );
 
-export const registerFindMessages =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool("find_messages", FIND_MESSAGES_TOOL, find(discordUserId));
-  };
+export const registerFindMessages = toolRegistration({ ...FIND_MESSAGES_TOOL, handler: find });

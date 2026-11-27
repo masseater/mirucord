@@ -7,6 +7,7 @@ import {
 } from "@r_masseater/msch/lint";
 import { workspaceSettings } from "@r_masseater/msch/workspace-settings";
 import { restrictedSyntax as unguardedWorkersAi } from "@r_masseater/workers-tracing/oxlint";
+import { Record, pipe } from "effect";
 import { defineConfig } from "vite-plus";
 
 const BRAND_WORDS = "/[Mm]irucord|ミル/";
@@ -15,10 +16,22 @@ const BRAND_MESSAGE =
 const APP_NAME_MESSAGE =
   "スタックの最後で @repo/shared-util-app-name の requireAppPrefix を yield* して、リソース名の prefix を検査する";
 
+const CLIENT_STATE_RULES = new Set([
+  "stack/server-state-tanstack-query",
+  "stack/ui-state-effect-atom",
+]);
+
 const workspace = await workspaceSettings({
   root: import.meta.dirname,
   ruleSets: {
-    decision: decisionRules,
+    decision: pipe(
+      decisionRules,
+      Record.filter((_rule, name) => !CLIENT_STATE_RULES.has(name)),
+    ),
+    clientState: pipe(
+      decisionRules,
+      Record.filter((_rule, name) => CLIENT_STATE_RULES.has(name)),
+    ),
     traced: tracedRules,
     brand: {
       "eslint-js/no-restricted-syntax": [

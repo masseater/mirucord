@@ -2,21 +2,9 @@ import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { CategoryHeading } from "./category-heading";
-import type { SidebarCategory, SidebarRow } from "./sidebar-categories";
+import { rowKey } from "./sidebar-categories";
+import type { SidebarCategory } from "./sidebar-categories";
 import { SidebarItem } from "./sidebar-item";
-
-const rowKey = (row: SidebarRow): string => {
-  if (row.type === "link") {
-    return row.channel.id;
-  }
-  if (row.type === "page") {
-    return row.page.href;
-  }
-  if (row.type === "peek") {
-    return row.id;
-  }
-  return row.place.name;
-};
 
 export const SidebarGroup = ({ category }: Readonly<{ category: SidebarCategory }>): ReactNode => {
   if (category.state === "collapsed") {

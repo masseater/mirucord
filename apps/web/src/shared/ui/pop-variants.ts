@@ -1,4 +1,5 @@
 import { cva } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
 
 export const popButtonVariants = cva(
   "focus-visible:outline-dc-link inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full font-bold whitespace-nowrap no-underline focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-50 motion-safe:transition-colors",
@@ -17,3 +18,7 @@ export const popButtonVariants = cva(
     },
   },
 );
+
+export type PopTone = NonNullable<VariantProps<typeof popButtonVariants>["tone"]>;
+
+export type PopSize = NonNullable<VariantProps<typeof popButtonVariants>["size"]>;

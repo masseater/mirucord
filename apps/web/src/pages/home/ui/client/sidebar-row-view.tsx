@@ -5,7 +5,6 @@ import { PLACES } from "#/pages/home/ui/common/places";
 import { Mascot } from "#/shared/brand";
 
 import { ChannelLink } from "./channel-link";
-import { PageLink } from "./page-link";
 import { PlainRow } from "./plain-row";
 import type { SidebarRow } from "./sidebar-categories";
 
@@ -13,9 +12,11 @@ export const SidebarRowView = ({ row }: Readonly<{ row: SidebarRow }>): ReactNod
   Match.value(row).pipe(
     Match.discriminatorsExhaustive("type")({
       link: ({ channel }) => (
-        <ChannelLink id={channel.id} name={channel.name} kind={channel.kind} />
+        <ChannelLink href={`#${channel.id}`} name={channel.name} kind={channel.kind} tracked />
       ),
-      page: ({ page }) => <PageLink href={page.href} name={page.name} kind={page.kind} />,
+      page: ({ page }) => (
+        <ChannelLink href={page.href} name={page.name} kind={page.kind} tracked={false} />
+      ),
       peek: ({ id, activity }) => (
         <PlainRow place={PLACES[id]} activity={activity} peek={id} className="ch-peek">
           <Mascot className="ch-peek-miru absolute right-1 size-6" />

@@ -7,7 +7,7 @@ import type { ChannelIngest } from "#/features/ingest-messages/model/channel-ing
 import { channel, db } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { loadScope } from "./consent-scope.server";
+import { loadScope } from "./load-scope.server";
 import { whenManaged } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
 

@@ -1,9 +1,7 @@
-import type { ReactNode } from "react";
-
 import type { GuideSection } from "#/pages/guide/model/guide-block";
 import { MASCOT_NAME, SERVICE_NAME } from "#/shared/config";
 
-import { GuideDocument } from "./guide-document";
+import { guidePage } from "./guide-page";
 
 const TITLE = "技術の話";
 const TIP = `${MASCOT_NAME}の中身を見せちゃうよ`;
@@ -179,6 +177,4 @@ const SECTIONS: readonly GuideSection[] = [
   },
 ];
 
-export const TechPage = (): ReactNode => (
-  <GuideDocument title={TITLE} tip={TIP} lead={LEAD} sections={SECTIONS} />
-);
+export const TechPage = guidePage({ title: TITLE, tip: TIP, lead: LEAD, sections: SECTIONS });

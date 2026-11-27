@@ -3,13 +3,10 @@ import type { SQL } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Option, pipe } from "effect";
 
-import {
-  BOUND_LIMIT,
-  guildMessage,
-  TRACKED_COLUMNS,
-} from "#/entities/guild-message/model/guild-message.schema";
+import { guildMessage, TRACKED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
 
 import { authorQueries } from "./author-queries.server";
+import { inChunks } from "./bound-chunks.server";
 import type {
   AuthoredMessage,
   AuthorPage,
@@ -28,34 +25,28 @@ const boundsOf = ({ from, upTo }: CreatedRange): readonly SQL[] => {
 };
 
 const trackedRows = (db: DrizzleSqliteDODatabase, ids: readonly string[]): readonly TrackedRow[] =>
-  pipe(
-    Array.chunksOf(ids, BOUND_LIMIT),
-    Array.flatMap((chunk) =>
-      db
-        .select(TRACKED_COLUMNS)
-        .from(guildMessage)
-        .where(inArray(guildMessage.id, [...chunk]))
-        .all(),
-    ),
+  inChunks(ids, (chunk) =>
+    db
+      .select(TRACKED_COLUMNS)
+      .from(guildMessage)
+      .where(inArray(guildMessage.id, [...chunk]))
+      .all(),
   );
 
 const storedStates = (
   db: DrizzleSqliteDODatabase,
   ids: readonly string[],
 ): readonly StoredState[] =>
-  pipe(
-    Array.chunksOf(ids, BOUND_LIMIT),
-    Array.flatMap((chunk) =>
-      db
-        .select({
-          id: guildMessage.id,
-          editedAt: guildMessage.editedAt,
-          describedWith: guildMessage.describedWith,
-        })
-        .from(guildMessage)
-        .where(inArray(guildMessage.id, [...chunk]))
-        .all(),
-    ),
+  inChunks(ids, (chunk) =>
+    db
+      .select({
+        id: guildMessage.id,
+        editedAt: guildMessage.editedAt,
+        describedWith: guildMessage.describedWith,
+      })
+      .from(guildMessage)
+      .where(inArray(guildMessage.id, [...chunk]))
+      .all(),
   );
 
 const idsInChannelOf = (
@@ -65,19 +56,14 @@ const idsInChannelOf = (
 ): readonly string[] => {
   const inChannel = eq(guildMessage.channelId, channelId);
   return pipe(
-    Array.chunksOf(ids, BOUND_LIMIT),
-    Array.flatMap((chunk) => {
-      const listed = inArray(guildMessage.id, [...chunk]);
-      const rows = db
+    inChunks(ids, (chunk) =>
+      db
         .select({ id: guildMessage.id })
         .from(guildMessage)
-        .where(and(inChannel, listed))
-        .all();
-      return pipe(
-        rows,
-        Array.map(({ id }) => id),
-      );
-    }),
+        .where(and(inChannel, inArray(guildMessage.id, [...chunk])))
+        .all(),
+    ),
+    Array.map(({ id }) => id),
   );
 };
 
@@ -102,16 +88,13 @@ const countsByChannel = (
   db: DrizzleSqliteDODatabase,
   channelIds: readonly string[],
 ): readonly ChannelCount[] =>
-  pipe(
-    Array.chunksOf(channelIds, BOUND_LIMIT),
-    Array.flatMap((chunk) =>
-      db
-        .select({ channelId: guildMessage.channelId, messages: count() })
-        .from(guildMessage)
-        .where(inArray(guildMessage.channelId, [...chunk]))
-        .groupBy(guildMessage.channelId)
-        .all(),
-    ),
+  inChunks(channelIds, (chunk) =>
+    db
+      .select({ channelId: guildMessage.channelId, messages: count() })
+      .from(guildMessage)
+      .where(inArray(guildMessage.channelId, [...chunk]))
+      .groupBy(guildMessage.channelId)
+      .all(),
   );
 
 const oldestByChannel = (
@@ -119,8 +102,7 @@ const oldestByChannel = (
   channelIds: readonly string[],
 ): readonly ChannelOldest[] =>
   pipe(
-    Array.chunksOf(channelIds, BOUND_LIMIT),
-    Array.flatMap((chunk) =>
+    inChunks(channelIds, (chunk) =>
       db
         .select({ channelId: guildMessage.channelId, oldest: min(guildMessage.createdAt) })
         .from(guildMessage)
@@ -139,15 +121,12 @@ const authorsOf = (
   db: DrizzleSqliteDODatabase,
   ids: readonly string[],
 ): readonly AuthoredMessage[] =>
-  pipe(
-    Array.chunksOf(ids, BOUND_LIMIT),
-    Array.flatMap((chunk) =>
-      db
-        .select({ id: guildMessage.id, authorId: guildMessage.authorId })
-        .from(guildMessage)
-        .where(inArray(guildMessage.id, [...chunk]))
-        .all(),
-    ),
+  inChunks(ids, (chunk) =>
+    db
+      .select({ id: guildMessage.id, authorId: guildMessage.authorId })
+      .from(guildMessage)
+      .where(inArray(guildMessage.id, [...chunk]))
+      .all(),
   );
 
 export type MessageQueries = Readonly<{

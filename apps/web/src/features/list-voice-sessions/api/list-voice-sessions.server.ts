@@ -1,4 +1,4 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, DateTime, Effect, Option, pipe, Record, Schema } from "effect";
 
 import { guildStore, PRECISIONS } from "#/entities/guild-message/index.server";
@@ -6,7 +6,7 @@ import type { StoredVoiceSession } from "#/entities/guild-message/index.server";
 import { ConsentOutput, SpanFilter } from "#/entities/scope";
 import { spanScopeOf, withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
-import { structuredResult, TOOL_BASE } from "#/shared/mcp";
+import { structuredResult, toolRegistration } from "#/shared/mcp";
 
 const ListVoiceSessionsInput = Schema.Struct(SpanFilter);
 
@@ -35,9 +35,9 @@ const ListVoiceSessionsOutput = Schema.Struct({
 });
 
 const LIST_VOICE_SESSIONS_TOOL = {
+  name: "list_voice_sessions",
   title: "List voice sessions",
   description: "List who was in which voice or stage channel and when, newest join first.",
-  ...TOOL_BASE,
   outputSchema: ListVoiceSessionsOutput.pipe(
     Schema.toStandardSchemaV1,
     Schema.toStandardJSONSchemaV1,
@@ -95,12 +95,7 @@ const listVoiceSessions =
       return sessionsOf({ scope, input }).pipe(Effect.flatMap(structuredResult));
     });
 
-export const registerListVoiceSessions =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool(
-      "list_voice_sessions",
-      LIST_VOICE_SESSIONS_TOOL,
-      listVoiceSessions(discordUserId),
-    );
-  };
+export const registerListVoiceSessions = toolRegistration({
+  ...LIST_VOICE_SESSIONS_TOOL,
+  handler: listVoiceSessions,
+});

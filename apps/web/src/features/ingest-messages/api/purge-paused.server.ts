@@ -4,9 +4,9 @@ import { Array, Effect, pipe } from "effect";
 import { channel, db } from "#/shared/db/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { purgeChannel } from "./consent-scope.server";
 import { whenManaged } from "./managed-guild.server";
 import type { GuildMembership } from "./managed-guild.server";
+import { purgeChannel } from "./purge-channel.server";
 
 export type PurgeRequest = GuildMembership & Readonly<{ channelId: string }>;
 

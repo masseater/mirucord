@@ -15,8 +15,11 @@ const reactionLabel = (item: Reaction): string =>
     Match.exhaustive,
   );
 
-export const Reactions = ({ items }: Readonly<{ items: readonly Reaction[] }>): ReactNode => (
-  <ul className="mt-1 flex flex-wrap gap-1">
+export const Reactions = ({
+  items,
+  className,
+}: Readonly<{ items: readonly Reaction[]; className?: string }>): ReactNode => (
+  <ul className={cn("mt-1 flex flex-wrap gap-1", className)}>
     {pipe(
       items,
       Array.map((item) => (

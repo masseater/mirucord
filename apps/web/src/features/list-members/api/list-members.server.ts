@@ -1,5 +1,4 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
-import { eq } from "drizzle-orm";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, DateTime, Effect, Option, Order, pipe, Schema, String as Str } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
@@ -8,7 +7,7 @@ import { ConsentOutput } from "#/entities/scope";
 import { withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
 import { openGuildKey, openMember } from "#/shared/crypto/index.server";
-import { db, role } from "#/shared/db/index.server";
+import { loadRoles } from "#/shared/db/index.server";
 import {
   FIRST_OFFSET,
   Ids,
@@ -16,7 +15,7 @@ import {
   memberLimitOf,
   Offset,
   structuredResult,
-  TOOL_BASE,
+  toolRegistration,
 } from "#/shared/mcp";
 
 const ListMembersInput = Schema.Struct({
@@ -55,9 +54,9 @@ const ListMembersOutput = Schema.Struct({
 });
 
 const LIST_MEMBERS_TOOL = {
+  name: "list_members",
   title: "List members",
   description: "List a server's members as Discord shows them, oldest join first.",
-  ...TOOL_BASE,
   outputSchema: ListMembersOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: ListMembersInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
@@ -74,9 +73,7 @@ const isoOf = (at: number | null): string | null =>
   );
 
 const roleNamesOf = (guildId: string): Effect.Effect<ReadonlyMap<string, string>> =>
-  Effect.promise(() =>
-    db.select({ id: role.id, name: role.name }).from(role).where(eq(role.guildId, guildId)),
-  ).pipe(
+  loadRoles(guildId).pipe(
     Effect.map(
       (rows) =>
         new Map(
@@ -189,8 +186,4 @@ const listMembers =
       return membersOf({ scope, input }).pipe(Effect.flatMap(structuredResult));
     });
 
-export const registerListMembers =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool("list_members", LIST_MEMBERS_TOOL, listMembers(discordUserId));
-  };
+export const registerListMembers = toolRegistration({ ...LIST_MEMBERS_TOOL, handler: listMembers });

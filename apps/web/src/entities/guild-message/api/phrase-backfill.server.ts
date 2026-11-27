@@ -2,9 +2,9 @@ import { DateTime, Effect, Option } from "effect";
 
 import { phraseHashes } from "#/entities/guild-message/lib/phrases.server";
 import { openGuildKeys, openMessage } from "#/shared/crypto/index.server";
+import { wrappedKeyOf } from "#/shared/db/index.server";
 
 import type { ExtractedPhrases, UnphrasedMessage } from "./store-types";
-import { wrappedKeyOf } from "./wrapped-key.server";
 
 const BACKFILL_BATCH = 200;
 

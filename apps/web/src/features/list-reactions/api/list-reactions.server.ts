@@ -1,4 +1,4 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, DateTime, Effect, Option, pipe, Schema } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
@@ -8,7 +8,7 @@ import { DISCORD_UNAVAILABLE, withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
 import { liveReactionsOf } from "#/shared/discord/index.server";
 import type { DiscordRequestError, LiveReactions } from "#/shared/discord/index.server";
-import { errorResult, Ids, structuredResult, TOOL_BASE } from "#/shared/mcp";
+import { errorResult, Ids, structuredResult, toolRegistration } from "#/shared/mcp";
 
 import { keptUserIdsOf } from "./kept-users.server";
 
@@ -76,9 +76,9 @@ const ListReactionsOutput = Schema.Struct({
 });
 
 const LIST_REACTIONS_TOOL = {
+  name: "list_reactions",
   title: "List reactions",
   description: "List who reacted to or voted in polls on which messages, newest first.",
-  ...TOOL_BASE,
   outputSchema: ListReactionsOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: ListReactionsInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
@@ -218,8 +218,7 @@ const listReactions =
       return reactionsOf({ scope, input });
     });
 
-export const registerListReactions =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool("list_reactions", LIST_REACTIONS_TOOL, listReactions(discordUserId));
-  };
+export const registerListReactions = toolRegistration({
+  ...LIST_REACTIONS_TOOL,
+  handler: listReactions,
+});

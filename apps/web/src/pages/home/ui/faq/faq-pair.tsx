@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
+import { BOT } from "#/pages/home/ui/message/author";
 import { Message } from "#/pages/home/ui/message/message";
 
-import { FaqReply } from "./faq-reply";
+import { FaqAnswer } from "./faq-answer";
 import type { Question } from "./question";
 
 export const FaqPair = ({ question }: Readonly<{ question: Question }>): ReactNode => (
@@ -10,6 +11,8 @@ export const FaqPair = ({ question }: Readonly<{ question: Question }>): ReactNo
     <Message author={question.reply.author} time={question.time}>
       <h3>{question.reply.text}</h3>
     </Message>
-    <FaqReply question={question} />
+    <Message author={BOT} time={question.time} reply={question.reply}>
+      <FaqAnswer answer={question.answer} copy={question.copy} reactions={question.reactions} />
+    </Message>
   </>
 );

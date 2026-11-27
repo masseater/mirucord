@@ -3,12 +3,14 @@ import type { ReactNode } from "react";
 import { mascotSrc } from "#/shared/brand";
 import { SERVICE_NAME } from "#/shared/config";
 
-const NAME = SERVICE_NAME;
+import { FlowNode } from "./flow-node";
+
+const SHAPE = { height: 240, fill: "fill-pink", shadow: false, radius: 48 } as const;
+const TITLE = { y: 184, tone: "fill-ink text-xl font-black", text: SERVICE_NAME } as const;
 const CAPTION = "鍵をかけてしまっておく";
 
 export const MiruNode = ({ left, top }: Readonly<{ left: string; top: string }>): ReactNode => (
-  <g transform={`translate(${left} ${top})`}>
-    <rect width="230" height="240" rx="48" className="fill-pink stroke-ink" strokeWidth="3" />
+  <FlowNode left={left} top={top} shape={SHAPE} title={TITLE} captionY={212} caption={CAPTION}>
     <image
       href={mascotSrc}
       x="55"
@@ -18,11 +20,5 @@ export const MiruNode = ({ left, top }: Readonly<{ left: string; top: string }>)
       aria-hidden="true"
       className="motion-safe:animate-wiggle origin-fill"
     />
-    <text x="115" y="184" textAnchor="middle" className="fill-ink text-xl font-black">
-      {NAME}
-    </text>
-    <text x="115" y="212" textAnchor="middle" className="fill-ink-soft text-sm font-bold">
-      {CAPTION}
-    </text>
-  </g>
+  </FlowNode>
 );

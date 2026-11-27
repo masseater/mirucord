@@ -1,23 +1,18 @@
 import type { ReactNode } from "react";
 
-import type { ChannelKind } from "#/shared/discord";
 import { ChannelIcon } from "#/shared/ui/channel-icon";
 
-const NO_TOPIC = "";
+import type { Channel } from "./channels";
 
-export const ChannelHeader = ({
-  name,
-  kind = "text",
-  topic = NO_TOPIC,
-}: Readonly<{ name: string; kind?: ChannelKind; topic?: string }>): ReactNode => (
+export const ChannelHeader = ({ channel }: Readonly<{ channel: Channel }>): ReactNode => (
   <div className="ch-head bg-dc-chat border-dc-rail sticky z-10 flex h-12 items-center gap-2 border-b px-4">
     <span className="text-dc-muted">
-      <ChannelIcon kind={kind} size="lg" />
+      <ChannelIcon kind={channel.kind} size="lg" />
     </span>
-    <span className="text-dc-bright font-bold">{name}</span>
-    {topic !== NO_TOPIC && (
+    <span className="text-dc-bright font-bold">{channel.name}</span>
+    {channel.topic !== "" && (
       <span className="text-dc-muted border-dc-line ml-2 hidden truncate border-l pl-3 text-sm sm:block">
-        {topic}
+        {channel.topic}
       </span>
     )}
   </div>

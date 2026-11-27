@@ -1,17 +1,18 @@
 import { Array, pipe } from "effect";
 import { useId } from "react";
 import type { ReactNode } from "react";
+import { siClaude, siDiscord } from "simple-icons";
 
+import { BrandMark } from "#/pages/home/ui/common/brand-mark";
+import { mascotSrc } from "#/shared/brand";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { AiNode } from "./ai-node";
 import { FlowCarry } from "./flow-carry";
-import { MiruNode } from "./miru-node";
-import { ServerNode } from "./server-node";
+import { FlowNode } from "./flow-node";
+import { AI_NODE, MIRU_NODE, SERVER_NODE } from "./flow-nodes";
 
 const LABEL = `みんなのサーバーの会話を${MASCOT_NAME}が預かって AI に届ける図`;
 const PROTOCOL = "MCP";
-const AI_CAPTION = "話しかけるだけ";
 
 const LAYOUTS = {
   row: {
@@ -56,8 +57,20 @@ export const FlowDiagram = ({ layout }: Readonly<{ layout: keyof typeof LAYOUTS 
         )),
       )}
       <FlowCarry starts={carry} />
-      <ServerNode left={server.left} top={server.top} />
-      <MiruNode left={miru.left} top={miru.top} />
+      <FlowNode left={server.left} top={server.top} node={SERVER_NODE}>
+        <BrandMark path={siDiscord.path} left="91" top="26" size="48" className="fill-discord" />
+      </FlowNode>
+      <FlowNode left={miru.left} top={miru.top} node={MIRU_NODE}>
+        <image
+          href={mascotSrc}
+          x="55"
+          y="20"
+          width="120"
+          height="120"
+          aria-hidden="true"
+          className="motion-safe:animate-wiggle origin-fill"
+        />
+      </FlowNode>
       <text
         x={protocol.left}
         y={protocol.top}
@@ -66,7 +79,9 @@ export const FlowDiagram = ({ layout }: Readonly<{ layout: keyof typeof LAYOUTS 
       >
         {PROTOCOL}
       </text>
-      <AiNode left={ai.left} top={ai.top} caption={AI_CAPTION} />
+      <FlowNode left={ai.left} top={ai.top} node={AI_NODE}>
+        <BrandMark path={siClaude.path} left="103" top="24" size="24" className="fill-claude" />
+      </FlowNode>
     </svg>
   );
 };

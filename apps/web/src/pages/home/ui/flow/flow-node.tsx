@@ -3,41 +3,34 @@ import type { ReactNode } from "react";
 import { FlowCard } from "./flow-card";
 import { FlowLabel } from "./flow-label";
 
-export type NodeShape = Readonly<{ height: number; fill: string; shadow: boolean; radius: number }>;
+export type NodeSpec = Readonly<{
+  shape: Readonly<{ height: number; fill: string; shadow: boolean; radius: number }>;
+  title: Readonly<{ y: number; text: string; tone: string }>;
+  caption: Readonly<{ y: number; text: string }>;
+}>;
 
 const CAPTION_TONE = "fill-ink-soft text-sm font-bold";
 
 export const FlowNode = ({
   left,
   top,
-  shape,
-  title,
-  captionY,
-  caption,
+  node,
   children,
-}: Readonly<{
-  left: string;
-  top: string;
-  shape: NodeShape;
-  title: Readonly<{ y: number; text: string; tone: string }>;
-  captionY: number;
-  caption: string;
-  children: ReactNode;
-}>): ReactNode => (
+}: Readonly<{ left: string; top: string; node: NodeSpec; children: ReactNode }>): ReactNode => (
   <FlowCard
     left={left}
     top={top}
-    height={shape.height}
-    fill={shape.fill}
-    shadow={shape.shadow}
-    radius={shape.radius}
+    height={node.shape.height}
+    fill={node.shape.fill}
+    shadow={node.shape.shadow}
+    radius={node.shape.radius}
   >
     {children}
-    <FlowLabel y={title.y} tone={title.tone}>
-      {title.text}
+    <FlowLabel y={node.title.y} tone={node.title.tone}>
+      {node.title.text}
     </FlowLabel>
-    <FlowLabel y={captionY} tone={CAPTION_TONE}>
-      {caption}
+    <FlowLabel y={node.caption.y} tone={CAPTION_TONE}>
+      {node.caption.text}
     </FlowLabel>
   </FlowCard>
 );

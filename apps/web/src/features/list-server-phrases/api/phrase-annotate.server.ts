@@ -1,8 +1,6 @@
 import { runWorkersAi } from "@r_masseater/workers-tracing/workers-ai";
 import { env } from "cloudflare:workers";
-import { Array, Effect, Layer, Option, pipe, Schema, String } from "effect";
-import { FetchHttpClient, HttpClient } from "effect/http";
-import { fromUint8Array } from "js-base64";
+import { Array, Effect, Option, pipe, Schema, String } from "effect";
 
 import type { Phrase } from "#/entities/guild-message/index.server";
 import {
@@ -15,6 +13,7 @@ import {
 import type { GemmaOutput } from "#/shared/ai/index.server";
 import { SERVICE_NAME } from "#/shared/config";
 import type { MessageBody } from "#/shared/crypto/index.server";
+import { fetchBase64 } from "#/shared/http/index.server";
 
 import { narrowNote } from "./phrase-narrow.server";
 
@@ -23,7 +22,6 @@ const RESERVED_INPUT_TOKENS = 3000;
 const RESERVED_NEURONS = gemmaNeurons({ input: RESERVED_INPUT_TOKENS, output: MAX_TOKENS });
 const EXCERPT_LENGTH = 100;
 const FIRST = 0;
-const OK_STATUS = 200;
 const SHORTEST_NAME = 2;
 const SPEAKERS = "ABCDEFGHIJ";
 const OTHER_SPEAKER = "他";
@@ -140,15 +138,6 @@ server なら、用語集の見出しの説明として note を書きます。
 次のJSONだけを答えてください: {"type":"common"か"server","note":"serverなら説明、commonなら空文字"}`;
 };
 
-const withFetchClient = <Value>(
-  effect: Effect.Effect<Value, never, HttpClient.HttpClient>,
-): Effect.Effect<Value> =>
-  FetchHttpClient.layer.pipe(
-    Layer.build,
-    Effect.flatMap((context) => effect.pipe(Effect.provideContext(context))),
-    Effect.scoped,
-  );
-
 const emojiUrl = (key: string): string =>
   `https://cdn.discordapp.com/emojis/${pipe(key, String.slice(EMOJI_PREFIX.length))}.png?size=128`;
 
@@ -158,15 +147,9 @@ const emojiImage = ({ key }: Phrase): Effect.Effect<Option.Option<Image>> =>
     {
       onNone: () => Effect.succeedNone,
       onSome: (value) =>
-        HttpClient.HttpClient.pipe(
-          Effect.flatMap((client) => client.get(emojiUrl(value))),
-          Effect.filterOrFail(({ status }) => status === OK_STATUS),
-          Effect.flatMap((response) => response.arrayBuffer),
-          Effect.map((buffer) =>
-            Option.some({ data: fromUint8Array(new Uint8Array(buffer)), contentType: "image/png" }),
-          ),
+        fetchBase64(emojiUrl(value)).pipe(
+          Effect.map((data) => Option.some({ data, contentType: "image/png" })),
           Effect.orElseSucceed(() => Option.none<Image>()),
-          withFetchClient,
         ),
     },
   );

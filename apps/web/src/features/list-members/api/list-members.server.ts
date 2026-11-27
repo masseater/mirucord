@@ -1,5 +1,15 @@
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { Array, DateTime, Effect, Option, Order, pipe, Schema, String as Str } from "effect";
+import {
+  Array,
+  DateTime,
+  Effect,
+  Option,
+  Order,
+  pipe,
+  Record,
+  Schema,
+  String as Str,
+} from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import type { StoredMember } from "#/entities/guild-message/index.server";
@@ -7,7 +17,7 @@ import { ConsentOutput } from "#/entities/scope";
 import { withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
 import { openGuildKey, openMember } from "#/shared/crypto/index.server";
-import { loadRoles } from "#/shared/db/index.server";
+import { loadRoleField } from "#/shared/db/index.server";
 import {
   FIRST_OFFSET,
   Ids,
@@ -72,19 +82,6 @@ const isoOf = (at: number | null): string | null =>
     ),
   );
 
-const roleNamesOf = (guildId: string): Effect.Effect<ReadonlyMap<string, string>> =>
-  loadRoles(guildId).pipe(
-    Effect.map(
-      (rows) =>
-        new Map(
-          pipe(
-            rows,
-            Array.map(({ id, name }) => [id, name] as const),
-          ),
-        ),
-    ),
-  );
-
 const byJoined = Order.combine(
   Order.mapInput(Option.makeOrder(Order.Number), ({ joinedAt }: StoredMember) =>
     Option.fromNullOr(joinedAt),
@@ -108,9 +105,9 @@ const viewsOf = (
   Effect.gen(function* views() {
     const { guildId, wrappedKey } = scope.guild;
     const key = yield* openGuildKey(wrappedKey);
-    const roleNames = yield* roleNamesOf(guildId);
+    const roleNames = yield* loadRoleField({ guildId, pick: ({ name }) => name });
     const roleOf = (id: string): MemberView["roles"] =>
-      Option.match(Option.fromUndefinedOr(roleNames.get(id)), {
+      Option.match(Record.get(roleNames, id), {
         onNone: () => [],
         onSome: (name) => [{ id, name }],
       });

@@ -57,42 +57,37 @@ const allowedChannels = (
   );
 };
 
-const visibleChannelIdsDataFirst = (
-  snapshot: GuildSnapshot,
-  member: Option.Option<Member>,
-): ReadonlySet<string> =>
-  Option.match(member, {
-    onNone: () => new Set<string>(),
-    onSome: (present) => {
-      const readable = allowedChannels(snapshot, present, canReadHistory);
-      const threads = pipe(
-        snapshot.channels,
-        Array.filter(
-          (guildChannel) =>
-            THREAD_TYPES.has(guildChannel.type) &&
-            Option.exists(guildChannel.parentId, (parentId) => readable.has(parentId)),
-        ),
-        Array.map(({ id }) => id),
-      );
-      return new Set([...readable, ...threads]);
-    },
-  });
-
-export const visibleChannelIds: {
+const forMember = (
+  compute: (snapshot: GuildSnapshot, member: Member) => ReadonlySet<string>,
+): {
   (member: Option.Option<Member>): (snapshot: GuildSnapshot) => ReadonlySet<string>;
   (snapshot: GuildSnapshot, member: Option.Option<Member>): ReadonlySet<string>;
-} = Function.dual(DATA_FIRST_ARITY, visibleChannelIdsDataFirst);
+} =>
+  Function.dual(
+    DATA_FIRST_ARITY,
+    (snapshot: GuildSnapshot, member: Option.Option<Member>): ReadonlySet<string> =>
+      Option.match(member, {
+        onNone: () => new Set<string>(),
+        onSome: (present) => compute(snapshot, present),
+      }),
+  );
 
-const postableChannelIdsDataFirst = (
-  snapshot: GuildSnapshot,
-  member: Option.Option<Member>,
-): ReadonlySet<string> =>
-  Option.match(member, {
-    onNone: () => new Set<string>(),
-    onSome: (present) => allowedChannels(snapshot, present, canSendMessages),
-  });
+const readableWithThreads = (snapshot: GuildSnapshot, member: Member): ReadonlySet<string> => {
+  const readable = allowedChannels(snapshot, member, canReadHistory);
+  const threads = pipe(
+    snapshot.channels,
+    Array.filter(
+      (guildChannel) =>
+        THREAD_TYPES.has(guildChannel.type) &&
+        Option.exists(guildChannel.parentId, (parentId) => readable.has(parentId)),
+    ),
+    Array.map(({ id }) => id),
+  );
+  return new Set([...readable, ...threads]);
+};
 
-export const postableChannelIds: {
-  (member: Option.Option<Member>): (snapshot: GuildSnapshot) => ReadonlySet<string>;
-  (snapshot: GuildSnapshot, member: Option.Option<Member>): ReadonlySet<string>;
-} = Function.dual(DATA_FIRST_ARITY, postableChannelIdsDataFirst);
+export const visibleChannelIds = forMember(readableWithThreads);
+
+export const postableChannelIds = forMember((snapshot, member) =>
+  allowedChannels(snapshot, member, canSendMessages),
+);

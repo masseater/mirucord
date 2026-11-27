@@ -1,5 +1,6 @@
 export { MASCOT_NAME, SERVICE_NAME } from "./brand";
 export {
+  DASHBOARD_NAME,
   DASHBOARD_PATH,
   MCP_URL,
   PRIVACY_PATH,

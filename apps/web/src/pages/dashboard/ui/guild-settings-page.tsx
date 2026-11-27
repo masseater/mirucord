@@ -3,13 +3,13 @@ import { Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { SignInPanel } from "#/features/sign-in";
 import { guildPageQuery } from "#/pages/dashboard/api/dashboard";
-import { DASHBOARD_PATH } from "#/shared/config";
+import { DASHBOARD_NAME, DASHBOARD_PATH } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 
 import { GuildSettingsView } from "./guild-settings-view";
-import { SignInPanel } from "./sign-in-panel";
 
 const BACK = "サーバー一覧";
 const NOT_MANAGED = "このサーバーの設定は開けないよ";
@@ -26,7 +26,9 @@ export const GuildSettingsPage = (): ReactNode => {
         <ArrowLeft aria-hidden className="size-4" />
         {BACK}
       </Link>
-      {data.status === "signedOut" && <SignInPanel returnTo={`${DASHBOARD_PATH}/${guildId}`} />}
+      {data.status === "signedOut" && (
+        <SignInPanel title={DASHBOARD_NAME} returnTo={`${DASHBOARD_PATH}/${guildId}`} />
+      )}
       {data.status === "notManaged" && <MascotTip>{NOT_MANAGED}</MascotTip>}
       {data.status === "ready" && <GuildSettingsView settings={data.settings} />}
     </AppFrame>

@@ -3,7 +3,7 @@ import { Array, Effect, Option, pipe } from "effect";
 
 import { guildIngestOf, SCOPE_OF_CONSENT } from "#/features/ingest-messages/model/channel-ingest";
 import type { GuildConsent, GuildIngest } from "#/features/ingest-messages/model/channel-ingest";
-import { db, guild, ingestConsent, loadRolePermissions } from "#/shared/db/index.server";
+import { db, guild, ingestConsent, loadRoleField } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { isGuildManager } from "#/shared/permissions";
@@ -36,7 +36,7 @@ export const managedGuild = ({
           .from(guild)
           .where(eq(guild.id, guildId)),
       ).pipe(Effect.map(Array.head)),
-      rolePermissions: loadRolePermissions(guildId),
+      rolePermissions: loadRoleField({ guildId, pick: ({ permissions }) => permissions }),
       member: findMember(guildId, userId),
     },
     { concurrency: "unbounded" },

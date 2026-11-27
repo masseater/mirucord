@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Array, Effect, Option, pipe, Record } from "effect";
 
 import { guildStore, sealedTokens } from "#/entities/guild-message/index.server";
@@ -7,7 +7,7 @@ import { openGuildKeys } from "#/shared/crypto/index.server";
 import { db, guild, message } from "#/shared/db/index.server";
 
 import { enqueueMigration } from "./enqueue.server";
-import { inIdChunks } from "./id-chunks.server";
+import { deleteMessagesByIds } from "./id-chunks.server";
 
 const MIGRATE_BATCH = 200;
 const ANY_ROW = 1;
@@ -75,13 +75,12 @@ export const migrateMessages: Effect.Effect<void> = loadBatch.pipe(
     }),
   ),
   Effect.tap((rows) =>
-    inIdChunks({
-      ids: pipe(
+    deleteMessagesByIds(
+      pipe(
         rows,
         Array.map(({ id }) => id),
       ),
-      run: (chunk) => db.delete(message).where(inArray(message.id, [...chunk])),
-    }),
+    ),
   ),
   Effect.flatMap((rows) => {
     if (rows.length < MIGRATE_BATCH) {

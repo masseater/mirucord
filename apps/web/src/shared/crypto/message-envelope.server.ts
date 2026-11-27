@@ -1,46 +1,9 @@
-import { Effect, Function, Schema } from "effect";
-import { CompactEncrypt, compactDecrypt } from "jose";
+import { Effect, Schema } from "effect";
 
 import { MessageAttachment, MessageEmbed, MessagePoll } from "#/shared/discord";
 
-const DATA_FIRST_ARITY = 3;
-
-const MESSAGE_ALGORITHMS = { alg: "dir", enc: "A256GCM" } as const;
-
-const textEncoder = new TextEncoder();
-const textDecoder = new TextDecoder();
-
-const sealDataFirst = (plaintext: string, key: CryptoKey, context: string): Effect.Effect<string> =>
-  Effect.promise(() =>
-    new CompactEncrypt(textEncoder.encode(plaintext))
-      .setProtectedHeader({ ...MESSAGE_ALGORITHMS, ctx: context })
-      .encrypt(key),
-  );
-
-export const seal: {
-  (key: CryptoKey, context: string): (plaintext: string) => Effect.Effect<string>;
-  (plaintext: string, key: CryptoKey, context: string): Effect.Effect<string>;
-} = Function.dual(DATA_FIRST_ARITY, sealDataFirst);
-
-const unsealDataFirst = (sealed: string, key: CryptoKey, context: string): Effect.Effect<string> =>
-  Effect.promise(() =>
-    compactDecrypt(sealed, key, {
-      keyManagementAlgorithms: [MESSAGE_ALGORITHMS.alg],
-      contentEncryptionAlgorithms: [MESSAGE_ALGORITHMS.enc],
-    }),
-  ).pipe(
-    Effect.filterOrFail(
-      ({ protectedHeader }) => protectedHeader["ctx"] === context,
-      () => new Error("Sealed message does not belong to this address"),
-    ),
-    Effect.orDie,
-    Effect.map(({ plaintext }) => textDecoder.decode(plaintext)),
-  );
-
-export const unseal: {
-  (key: CryptoKey, context: string): (sealed: string) => Effect.Effect<string>;
-  (sealed: string, key: CryptoKey, context: string): Effect.Effect<string>;
-} = Function.dual(DATA_FIRST_ARITY, unsealDataFirst);
+import { typedEnvelope } from "./typed-envelope.server";
+import type { Opener, Sealer } from "./typed-envelope.server";
 
 const nothingYet = Effect.succeed<readonly never[]>([]);
 
@@ -66,36 +29,17 @@ const MessageBodySchema = Schema.Struct({
 export type MessageBody = typeof MessageBodySchema.Type;
 
 const MessageBodyJson = Schema.fromJsonString(MessageBodySchema);
-const encodeBody = Schema.encodeEffect(MessageBodyJson);
-const decodeBody = Schema.decodeEffect(MessageBodyJson);
 
 export type MessageAddress = Readonly<{ guildId: string; channelId: string; messageId: string }>;
 
-const contextOf = ({ guildId, channelId, messageId }: MessageAddress): string =>
-  `${guildId}/${channelId}/${messageId}`;
+const envelope = typedEnvelope<MessageBody, MessageAddress, Schema.SchemaError, Schema.SchemaError>(
+  {
+    encode: Schema.encodeEffect(MessageBodyJson),
+    decode: Schema.decodeEffect(MessageBodyJson),
+    contextOf: ({ guildId, channelId, messageId }) => `${guildId}/${channelId}/${messageId}`,
+  },
+);
 
-const sealMessageDataFirst = (
-  body: MessageBody,
-  key: CryptoKey,
-  address: MessageAddress,
-): Effect.Effect<string> => {
-  const sealWithKey = seal(key, contextOf(address));
-  return encodeBody(body).pipe(Effect.orDie, Effect.flatMap(sealWithKey));
-};
+export const sealMessage: Sealer<MessageBody, MessageAddress> = envelope.seal;
 
-export const sealMessage: {
-  (key: CryptoKey, address: MessageAddress): (body: MessageBody) => Effect.Effect<string>;
-  (body: MessageBody, key: CryptoKey, address: MessageAddress): Effect.Effect<string>;
-} = Function.dual(DATA_FIRST_ARITY, sealMessageDataFirst);
-
-const openMessageDataFirst = (
-  sealed: string,
-  key: CryptoKey,
-  address: MessageAddress,
-): Effect.Effect<MessageBody> =>
-  unseal(sealed, key, contextOf(address)).pipe(Effect.flatMap(decodeBody), Effect.orDie);
-
-export const openMessage: {
-  (key: CryptoKey, address: MessageAddress): (sealed: string) => Effect.Effect<MessageBody>;
-  (sealed: string, key: CryptoKey, address: MessageAddress): Effect.Effect<MessageBody>;
-} = Function.dual(DATA_FIRST_ARITY, openMessageDataFirst);
+export const openMessage: Opener<MessageBody, MessageAddress> = envelope.open;

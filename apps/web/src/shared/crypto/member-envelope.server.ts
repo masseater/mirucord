@@ -1,8 +1,7 @@
-import { Effect, Function, Schema } from "effect";
+import { Schema } from "effect";
 
-import { seal, unseal } from "./message-envelope.server";
-
-const DATA_FIRST_ARITY = 3;
+import { typedEnvelope } from "./typed-envelope.server";
+import type { Opener, Sealer } from "./typed-envelope.server";
 
 const MemberProfileSchema = Schema.Struct({
   username: Schema.String,
@@ -15,33 +14,18 @@ export type MemberProfile = typeof MemberProfileSchema.Type;
 export type MemberAddress = Readonly<{ guildId: string; userId: string }>;
 
 const ProfileJson = Schema.fromJsonString(MemberProfileSchema);
-const encodeProfile = Schema.encodeEffect(ProfileJson);
-const decodeProfile = Schema.decodeEffect(ProfileJson);
 
-const contextOf = ({ guildId, userId }: MemberAddress): string => `${guildId}/member/${userId}`;
+const envelope = typedEnvelope<
+  MemberProfile,
+  MemberAddress,
+  Schema.SchemaError,
+  Schema.SchemaError
+>({
+  encode: Schema.encodeEffect(ProfileJson),
+  decode: Schema.decodeEffect(ProfileJson),
+  contextOf: ({ guildId, userId }) => `${guildId}/member/${userId}`,
+});
 
-const sealMemberDataFirst = (
-  profile: MemberProfile,
-  key: CryptoKey,
-  address: MemberAddress,
-): Effect.Effect<string> => {
-  const sealWithKey = seal(key, contextOf(address));
-  return encodeProfile(profile).pipe(Effect.orDie, Effect.flatMap(sealWithKey));
-};
+export const sealMember: Sealer<MemberProfile, MemberAddress> = envelope.seal;
 
-export const sealMember: {
-  (key: CryptoKey, address: MemberAddress): (profile: MemberProfile) => Effect.Effect<string>;
-  (profile: MemberProfile, key: CryptoKey, address: MemberAddress): Effect.Effect<string>;
-} = Function.dual(DATA_FIRST_ARITY, sealMemberDataFirst);
-
-const openMemberDataFirst = (
-  sealed: string,
-  key: CryptoKey,
-  address: MemberAddress,
-): Effect.Effect<MemberProfile> =>
-  unseal(sealed, key, contextOf(address)).pipe(Effect.flatMap(decodeProfile), Effect.orDie);
-
-export const openMember: {
-  (key: CryptoKey, address: MemberAddress): (sealed: string) => Effect.Effect<MemberProfile>;
-  (sealed: string, key: CryptoKey, address: MemberAddress): Effect.Effect<MemberProfile>;
-} = Function.dual(DATA_FIRST_ARITY, openMemberDataFirst);
+export const openMember: Opener<MemberProfile, MemberAddress> = envelope.open;

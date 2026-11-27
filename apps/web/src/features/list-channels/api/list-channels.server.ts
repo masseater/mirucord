@@ -1,11 +1,11 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, DateTime, Effect, Option, pipe, Schema } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import { IngestOutput } from "#/entities/scope";
 import { ingestOf, readableChannels, withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
-import { structuredResult, TOOL_BASE } from "#/shared/mcp";
+import { structuredResult, toolRegistration } from "#/shared/mcp";
 
 const ListChannelsInput = Schema.Struct({ serverId: Schema.String });
 
@@ -27,9 +27,9 @@ const ListChannelsOutput = Schema.Struct({
 });
 
 const LIST_CHANNELS_TOOL = {
+  name: "list_channels",
   title: "List channels",
   description: "List the channels and threads you can read in a server.",
-  ...TOOL_BASE,
   outputSchema: ListChannelsOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: ListChannelsInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
@@ -93,8 +93,7 @@ const listChannels =
   ({ serverId }: typeof ListChannelsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: serverId, discordUserId })(visibleChannels);
 
-export const registerListChannels =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool("list_channels", LIST_CHANNELS_TOOL, listChannels(discordUserId));
-  };
+export const registerListChannels = toolRegistration({
+  ...LIST_CHANNELS_TOOL,
+  handler: listChannels,
+});

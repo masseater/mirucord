@@ -1,4 +1,4 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Effect, Option, Schema } from "effect";
 
 import { MessageOutput } from "#/entities/guild-message/index.server";
@@ -10,7 +10,7 @@ import {
   withScope,
 } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
-import { errorResult, Limit, limitOf, structuredResult, TOOL_BASE } from "#/shared/mcp";
+import { errorResult, Limit, limitOf, structuredResult, toolRegistration } from "#/shared/mcp";
 
 import { readAuthorMessages, readMessages } from "./stored-messages.server";
 
@@ -37,9 +37,9 @@ const ReadMessagesOutput = Schema.Struct({
 });
 
 const READ_MESSAGES_TOOL = {
+  name: "read_messages",
   title: "Read messages",
   description: "Read the latest messages of a channel or of one person, newest first.",
-  ...TOOL_BASE,
   outputSchema: ReadMessagesOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: ReadMessagesInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
@@ -107,8 +107,4 @@ const readTool =
       });
     });
 
-export const registerReadMessages =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool("read_messages", READ_MESSAGES_TOOL, readTool(discordUserId));
-  };
+export const registerReadMessages = toolRegistration({ ...READ_MESSAGES_TOOL, handler: readTool });

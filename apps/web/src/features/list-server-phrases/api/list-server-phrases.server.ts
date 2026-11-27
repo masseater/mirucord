@@ -1,19 +1,19 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Array, Effect, pipe, Schema } from "effect";
 
 import { readableChannels, withScope } from "#/entities/scope/index.server";
 import { ListServerPhrasesOutput } from "#/features/list-server-phrases/model/server-phrases-output";
-import { structuredResult, TOOL_BASE } from "#/shared/mcp";
+import { structuredResult, toolRegistration } from "#/shared/mcp";
 
 import { serverPhrases } from "./phrases.server";
 
 const ListServerPhrasesInput = Schema.Struct({ serverId: Schema.String });
 
 const LIST_SERVER_PHRASES_TOOL = {
+  name: "list_server_phrases",
   title: "List server phrases",
   description:
     "List the phrases, custom emoji and stickers a server's members keep repeating. Call it once per server before reading messages.",
-  ...TOOL_BASE,
   outputSchema: ListServerPhrasesOutput.pipe(
     Schema.toStandardSchemaV1,
     Schema.toStandardJSONSchemaV1,
@@ -41,12 +41,7 @@ const listServerPhrases =
       ),
     );
 
-export const registerListServerPhrases =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool(
-      "list_server_phrases",
-      LIST_SERVER_PHRASES_TOOL,
-      listServerPhrases(discordUserId),
-    );
-  };
+export const registerListServerPhrases = toolRegistration({
+  ...LIST_SERVER_PHRASES_TOOL,
+  handler: listServerPhrases,
+});

@@ -1,10 +1,10 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { Effect, Option, Schema } from "effect";
 
 import { notFullyIngested, withChannel, withScope } from "#/entities/scope/index.server";
 import { FindSimilarMessagesOutput } from "#/features/find-similar-messages/model/similar-messages-output";
 import { SERVICE_NAME } from "#/shared/config";
-import { errorResult, Limit, structuredResult, TOOL_BASE } from "#/shared/mcp";
+import { errorResult, Limit, structuredResult, toolRegistration } from "#/shared/mcp";
 
 import { findSimilar } from "./similar.server";
 
@@ -18,9 +18,9 @@ const FindSimilarMessagesInput = Schema.Struct({
 });
 
 const FIND_SIMILAR_MESSAGES_TOOL = {
+  name: "find_similar_messages",
   title: "Find similar messages",
   description: "Find messages by meaning when find_messages misses other wordings.",
-  ...TOOL_BASE,
   outputSchema: FindSimilarMessagesOutput.pipe(
     Schema.toStandardSchemaV1,
     Schema.toStandardJSONSchemaV1,
@@ -65,12 +65,7 @@ const findLike =
       ),
     );
 
-export const registerFindSimilarMessages =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool(
-      "find_similar_messages",
-      FIND_SIMILAR_MESSAGES_TOOL,
-      findLike(discordUserId),
-    );
-  };
+export const registerFindSimilarMessages = toolRegistration({
+  ...FIND_SIMILAR_MESSAGES_TOOL,
+  handler: findLike,
+});

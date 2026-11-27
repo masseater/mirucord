@@ -1,4 +1,4 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { asc, inArray } from "drizzle-orm";
 import { Array, DateTime, Effect, pipe, Record, Schema } from "effect";
 
@@ -8,7 +8,7 @@ import type { GuildScope } from "#/entities/scope/index.server";
 import { ListLinkedAccountsOutput } from "#/features/list-linked-accounts/model/linked-accounts-output";
 import { SERVICE_NAME } from "#/shared/config";
 import { db, linkedAccount } from "#/shared/db/index.server";
-import { Ids, structuredResult, TOOL_BASE } from "#/shared/mcp";
+import { Ids, structuredResult, toolRegistration } from "#/shared/mcp";
 
 const ListLinkedAccountsInput = Schema.Struct({
   serverId: Schema.String,
@@ -16,9 +16,9 @@ const ListLinkedAccountsInput = Schema.Struct({
 });
 
 const LIST_LINKED_ACCOUNTS_TOOL = {
+  name: "list_linked_accounts",
   title: "List linked accounts",
   description: `List the accounts on other services that people chose to show through ${SERVICE_NAME}.`,
-  ...TOOL_BASE,
   outputSchema: ListLinkedAccountsOutput.pipe(
     Schema.toStandardSchemaV1,
     Schema.toStandardJSONSchemaV1,
@@ -92,12 +92,7 @@ const listLinkedAccounts =
       return linkedAccountsOf(scope, input).pipe(Effect.flatMap(structuredResult));
     });
 
-export const registerListLinkedAccounts =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool(
-      "list_linked_accounts",
-      LIST_LINKED_ACCOUNTS_TOOL,
-      listLinkedAccounts(discordUserId),
-    );
-  };
+export const registerListLinkedAccounts = toolRegistration({
+  ...LIST_LINKED_ACCOUNTS_TOOL,
+  handler: listLinkedAccounts,
+});

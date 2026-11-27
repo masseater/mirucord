@@ -1,4 +1,4 @@
-import type { CallToolResult, McpServer } from "@modelcontextprotocol/server";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 import { eq } from "drizzle-orm";
 import { Array, DateTime, Effect, Option, Order, pipe, Schema, String as Str } from "effect";
 
@@ -16,7 +16,7 @@ import {
   memberLimitOf,
   Offset,
   structuredResult,
-  TOOL_BASE,
+  toolRegistration,
 } from "#/shared/mcp";
 
 const ListMembersInput = Schema.Struct({
@@ -55,9 +55,9 @@ const ListMembersOutput = Schema.Struct({
 });
 
 const LIST_MEMBERS_TOOL = {
+  name: "list_members",
   title: "List members",
   description: "List a server's members as Discord shows them, oldest join first.",
-  ...TOOL_BASE,
   outputSchema: ListMembersOutput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
   inputSchema: ListMembersInput.pipe(Schema.toStandardSchemaV1, Schema.toStandardJSONSchemaV1),
 };
@@ -189,8 +189,4 @@ const listMembers =
       return membersOf({ scope, input }).pipe(Effect.flatMap(structuredResult));
     });
 
-export const registerListMembers =
-  (discordUserId: string) =>
-  (server: McpServer): void => {
-    server.registerTool("list_members", LIST_MEMBERS_TOOL, listMembers(discordUserId));
-  };
+export const registerListMembers = toolRegistration({ ...LIST_MEMBERS_TOOL, handler: listMembers });

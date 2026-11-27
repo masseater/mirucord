@@ -2,7 +2,9 @@ import { isMemberJob } from "@repo/ingest-util-gateway-contract";
 import type { GatewayJob, MemberJob } from "@repo/ingest-util-gateway-contract";
 import { DiscordMemberSchema } from "@repo/shared-util-discord";
 import type { DiscordMember } from "@repo/shared-util-discord";
-import { Array, Option, pipe, Record, Schema } from "effect";
+import { Array, Option, pipe, Schema } from "effect";
+
+import { latestBy, mergeGrouped } from "./guild-batch";
 
 const MEMBERS_PER_JOB = 100;
 
@@ -84,14 +86,10 @@ const jobsOfGuild = (changes: Array.NonEmptyReadonlyArray<MemberChange>): readon
 };
 
 export const mergeMemberJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
-  const latest = new Map(
-    pipe(
-      jobs,
-      Array.filter(isMemberJob),
-      Array.flatMap(memberChangesOf),
-      Array.map((change) => [`${change.guildId}/${change.userId}`, change] as const),
-    ),
-  );
-  const byGuild = Array.groupBy([...latest.values()], ({ guildId }) => guildId);
-  return pipe(Record.values(byGuild), Array.flatMap(jobsOfGuild));
+  const changes = pipe(jobs, Array.filter(isMemberJob), Array.flatMap(memberChangesOf));
+  return mergeGrouped({
+    items: latestBy(changes, ({ guildId, userId }) => `${guildId}/${userId}`),
+    groupKey: ({ guildId }) => guildId,
+    build: jobsOfGuild,
+  });
 };

@@ -4,9 +4,10 @@ import { DiscordMessageSchema } from "@repo/shared-util-discord";
 import type { DiscordMessage } from "@repo/shared-util-discord";
 import { Discord } from "dfx";
 import type { GatewayMessageDeleteDispatchData } from "discord-api-types/v10";
-import { Array, Match, Option, pipe, Record, Schema } from "effect";
+import { Array, Match, Option, pipe, Schema } from "effect";
 
 import { ACTIVITY_JOBS, mergeActivityJobs } from "./activity-job";
+import { latestBy, mergeGrouped } from "./guild-batch";
 import { guildUpdateJob, joinJob, leaveJob, resyncJob, syncJob, syncJobOf } from "./guild-job";
 import { guildWideKeyOf } from "./guild-wide-key";
 import { departJob, membersJob, mergeMemberJobs } from "./member-job";
@@ -243,17 +244,6 @@ const jobsOfGroup = (events: Array.NonEmptyReadonlyArray<MessageChange>): readon
 };
 
 export const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
-  const latest = new Map(
-    pipe(
-      jobs,
-      Array.flatMap((job) => messageChangesOf(job)),
-      Array.map((event) => [event.messageId, event]),
-    ),
-  );
-  const groups = Array.groupBy(
-    [...latest.values()],
-    ({ change, channelId }) => `${change.kind}:${channelId}`,
-  );
   const membership = new Map(
     pipe(
       jobs,
@@ -271,15 +261,20 @@ export const mergeJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] =>
     Array.filter((guildId) => !membership.has(guildId)),
     Array.map((guildId) => syncJobOf(guildId)),
   );
+  const changes = pipe(
+    jobs,
+    Array.flatMap((job) => messageChangesOf(job)),
+  );
   return [
     ...Option.toArray(Array.findFirst(jobs, ({ kind }) => kind === "resync")),
     ...moves,
     ...syncs,
     ...mergeMemberJobs(jobs),
     ...mergeActivityJobs(jobs),
-    ...pipe(
-      Record.values(groups),
-      Array.flatMap((group) => jobsOfGroup(group)),
-    ),
+    ...mergeGrouped({
+      items: latestBy(changes, ({ messageId }) => messageId),
+      groupKey: ({ change, channelId }) => `${change.kind}:${channelId}`,
+      build: jobsOfGroup,
+    }),
   ];
 };

@@ -6,7 +6,9 @@ import type {
   VoiceSnapshotJob,
 } from "@repo/ingest-util-gateway-contract";
 import { Discord } from "dfx";
-import { Array, Match, Option, pipe, Record, Schema } from "effect";
+import { Array, Match, Option, pipe, Schema } from "effect";
+
+import { mergeGrouped } from "./guild-batch";
 
 const CHANGES_PER_JOB = 100;
 
@@ -130,10 +132,9 @@ const guildVoiceOf = (jobs: readonly (VoiceJob | VoiceSnapshotJob)[]): GuildVoic
   ),
 });
 
-export const mergeVoiceJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] => {
-  const byGuild = Array.groupBy(pipe(jobs, Array.filter(isVoiceJob)), ({ guildId }) => guildId);
-  return pipe(
-    Record.toEntries(byGuild),
-    Array.flatMap(([guildId, guildJobs]) => jobsOfGuild(guildId, guildVoiceOf(guildJobs))),
-  );
-};
+export const mergeVoiceJobs = (jobs: readonly GatewayJob[]): readonly GatewayJob[] =>
+  mergeGrouped({
+    items: pipe(jobs, Array.filter(isVoiceJob)),
+    groupKey: ({ guildId }) => guildId,
+    build: (group) => jobsOfGuild(Array.headNonEmpty(group).guildId, guildVoiceOf(group)),
+  });

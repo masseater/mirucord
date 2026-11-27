@@ -28,7 +28,7 @@ catalog:
   simple-icons: 16.38.1
   class-variance-authority: 0.7.1
   clsx: 2.1.1
-  "@cloudflare/vitest-plugin": 1.9.1
+  "@cloudflare/vitest-plugin": 1.9.2
   msw: 3.0.7
   "@msw/cloudflare": 0.2.0
   tailwind-merge: 3.7.1
@@ -62,7 +62,7 @@ catalogs:
     fallow: 3.48.0
     fallow-similar-code: 3.48.0
     fallow-type-aware: 3.48.0
-    renovate: 44.260.0
+    renovate: 44.260.2
     tailwindcss: 4.3.5
     typescript: 7.1.0-beta
     vite-plus: 1.8.0

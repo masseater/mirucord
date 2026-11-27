@@ -40,6 +40,8 @@ const observerToken = Effect.gen(function* observerToken() {
           "Account Rule Lists Read",
           "Logs Read",
           "Workers R2 Storage Read",
+          "Workers AI Read",
+          "AI Gateway Run",
         ],
         resources: { [`com.cloudflare.api.account.${accountId}`]: "*" },
       },

@@ -215,9 +215,13 @@ const storage = Effect.gen(function* storage() {
     migrations: "./drizzle",
   }).pipe(RemovalPolicy.protect());
   const INGEST = yield* Queues.Queue("Ingest", { name: yield* mirucordName("ingest") });
-  const SEARCH = yield* R2.Bucket("Search", {
-    name: yield* mirucordName("search"),
-    locationHint: "enam",
+  const searchName = yield* mirucordName("search");
+  yield* R2.Bucket("Search", { name: searchName, locationHint: "enam" }).pipe(
+    RemovalPolicy.destroy(),
+  );
+  const SEARCH = yield* R2.Bucket("SearchJapan", {
+    name: `${searchName}-japan`,
+    locationHint: "apac",
   }).pipe(RemovalPolicy.protect());
   return { DB, INGEST, SEARCH };
 });

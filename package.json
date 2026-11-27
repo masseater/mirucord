@@ -17,6 +17,7 @@
     "@types/node": "catalog:",
     "effect": "catalog:stack",
     "fallow": "catalog:stack",
+    "fallow-similar-code": "catalog:stack",
     "fallow-type-aware": "catalog:stack",
     "renovate": "catalog:stack",
     "typescript": "catalog:stack",

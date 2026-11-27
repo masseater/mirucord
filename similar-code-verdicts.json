@@ -1,0 +1,3083 @@
+{
+  "schema_version": "1",
+  "verdicts": [
+    {
+      "candidate_id": "similar-code:candidate:v1:25671685057ef67a746405b7673505ae3dd7541826267cf40d1760d78c13490f",
+      "review_key": "similar-code:review:v1:a2a1de221745e9f6f5785653093f8cf42025b69e94f2e711fda11e872e0412ea",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Each guide page is a three-line wrapper that passes its own title, lead and sections to GuideDocument; the page data is the only difference."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:bbb9e16a852454a3ad438b606a78bac3afea89439e3960ff2c6ed3f3534d1640",
+      "review_key": "similar-code:review:v1:f879240f0b342645a65f47a357f73ba8122dee931bcbbf77f82669ac9ccb9638",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3982a9cd56b47ee8a5e8f9fea1829178cfda23f45d89fa8952e4ab22070d7ab9",
+      "review_key": "similar-code:review:v1:39dce01f7d42800d632b708af09d4f32543a1cd24316f61cb5b5c33ebe2feebf",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0adaa047ddfdcd70d6bd841ff5579e9b5ae08a2a313d752ab6c468125c6cde9a",
+      "review_key": "similar-code:review:v1:aef2cf553fb8a3ed33bcf504410b8aaa075715a264a27314a8cdff480ffcc664",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0a882a2dfefca7b8bc442cb6367e04a9d7aa2c6ae991983cef465d7a1646352a",
+      "review_key": "similar-code:review:v1:1502a308ca7f8fac1971bf6688568a6edc22cfb7c754dffea06d41f8402bb67d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5a03a4de47e5cf038ef0fd16523b3711cc1d26909554ec1fdb35f61ac6aeb1f2",
+      "review_key": "similar-code:review:v1:c6450edbb2228d713fcd85a686d4235d1216c76799bf47915d0a42759ea5aab5",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ce15a18a2b81fedca844da6db94f75eb05c37b4aea66f966a8a22ce588d8c789",
+      "review_key": "similar-code:review:v1:8365da148762dd998592abf5ff760e9329461da76cd4918857da6007b70ca0f8",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a84bc03b65bb95b48a8236cdf942acefae32a9ded8f86020a6cd6f9a8de16a18",
+      "review_key": "similar-code:review:v1:b68f7638e6142f08b2c278261fd2fd891ac01c03d26c967376a94a3b549e54ab",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:681c738250f4f49cd1f6a3e9321523e706b15338226d27451833c9ab940ea1ec",
+      "review_key": "similar-code:review:v1:6e2b2cf066eb2e4c33258fa66de7969e996724b02ba74cdb14f65926da781cee",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8024e16b40fbffada17f0d4b6c966e038f0c9a87a77a5d493b505aae34d32d91",
+      "review_key": "similar-code:review:v1:3c0c0ebdc6294dbf13a1bbd313b0e6de8fccdcada496bf10dd7b4c2b0c5e4620",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:75711acce7ff15190507e059a82a53a57643b07a48a3809baad61ee48ca5d7ca",
+      "review_key": "similar-code:review:v1:d559cd78cd3f14420434b90a03e823841117426e2ca8a73db4483517a1bc6986",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4bd831968d11b4d37bce6690f11dfb5612f1e56e33d82666d106607d5df18c3e",
+      "review_key": "similar-code:review:v1:02a301da4234ae9724e3eee4c80d7c89368c8c7bf4e89ee6f7d83ae80fc47e69",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3a5994e6e6ed6ef28aab97b0b92d2134c11bac3acc6cc31e1dc1aad57188c197",
+      "review_key": "similar-code:review:v1:b33f0bb891755701b7164907c4836ecf6bfe031e62e6ac5bf684e6191cc19302",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4d87f03010b1ad2879b36f78b4bd02bb254efc55e5b47aa169c64fdad6a8fb9d",
+      "review_key": "similar-code:review:v1:635bb107ab5b8cf7cf211476f0949d93821358c35a94931ea48e9d917fcc3d63",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:65da01efcdf1d8ce0b8f3ed35f2e7e20161a901e014cc327649a0ce5c4746da9",
+      "review_key": "similar-code:review:v1:21f997abb6654668be0b3f155c96a6e08f550830b968739156e3b8ef443edd73",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:32584f4f9102ecba32631987b8d44a40f0e4c5fae17b00670a3c02229590740a",
+      "review_key": "similar-code:review:v1:d4a7e786bc6af8f320b6e591f37762164982c855a16ddd6a424058afe516ceb0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:2fc2834681f9c20c22765df801bc1cd52e16e051c901503ba4a6f86368880bdc",
+      "review_key": "similar-code:review:v1:813b315fd591f4b99deb6adbb3d7a1f7e9b80b41a35593ec29b0f037c099fa12",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f4edc3b1017960beed72e08a9484f2f1030d92d8a6170c105586b670fb0370ef",
+      "review_key": "similar-code:review:v1:73bff5aa2988f635a8704a371b6049e7faf711fa8fae96f0aa5f8022c821fb5d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4f31bb089df9d40d9a6bdcba6b64f8930d42264aa43fff1c8b5613ce292b1715",
+      "review_key": "similar-code:review:v1:9625e83633f791f74e40881bc80e418243f2015619c4abe656b62fd26f89430d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:c0517e6fbcaf53a98649b2d384abd959d56ebae704c29dd4fdb91522380724f5",
+      "review_key": "similar-code:review:v1:e5f06aee4b9a6b47fc6f23882caade772a0ac2a56329cdc644d44a04273101fc",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:76db82b2360768a5f81a1e0823609620bc075781e0cea8ce668291637bdcdd00",
+      "review_key": "similar-code:review:v1:0b01418d743ef68df7f20e2dd7a42460006cc9b7a04c269a512b642322a48c32",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:21778f1362246d1c874953abd4aa1462541605298df97d4a7641f0fa0959206a",
+      "review_key": "similar-code:review:v1:3b338b377a0b56a9640eb7769f383ca6ac93d78300acd727ede6fb1c6f8f077d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9bba037b6c87793ea633877d0aa11fbc7711c33b13ce58e2331bb1949ce612a1",
+      "review_key": "similar-code:review:v1:b1ba291851d9e8377d612649e2b3c51aad74aef08e781c289396deb26bca1aa2",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:669b816e19b6403104a5330cbf245e37354a7f3f8364734c15ab537856ea7f85",
+      "review_key": "similar-code:review:v1:09258aa10a5ffe4408be3eb39237cefa1916679eb1b186cab6488da7777c42e2",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0b5352df072e3fe5d19e10c4203337f6c9c6c3a8d47f8e810c7aac5f1f0bb5e2",
+      "review_key": "similar-code:review:v1:0c5085984d333adf41115a9e54cdbe7e5240f9e2485207f942cfc3f889e83221",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b95e1283cf55b8aae594ac223e0e4952dca7be66379db2772802a9dd266aff04",
+      "review_key": "similar-code:review:v1:882a492eec23dd722ad0a5e38dfa998e0f66c129f40bffd45cc2ec7e2c54bd22",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e9e8ef6d222ae4a56bd047e443ef73c73ebafae265bdc61c9c27dab29e13b62a",
+      "review_key": "similar-code:review:v1:9e072534b19462ff55fc1769ee5ecc6027d990c36ea5ee7a9126b65300e4a18e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:1962b3896b850f70949611b6ceb20ed073703485709101d146b8e6a9a9eeb028",
+      "review_key": "similar-code:review:v1:98f8ad64c502f4ef8b9e5a26d88603b8d7ac1304562f6828d66c05e83efe5d42",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:42a58edb9d7a145156039bb8e3acb42b75e567aa32adbdc4bff6034acbc528e5",
+      "review_key": "similar-code:review:v1:10662b49d7d9d8febb64f862e4baef7bf7b2320a001270c058f075893cf96e6a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:edb37c92cb7774ac561aa2dbb92c6f0169fc4b74b5ff3c68401d5746377e2515",
+      "review_key": "similar-code:review:v1:edfdab4250e868d46e9ca963c018c7104c9ad4a3befca60a4ac9582747462529",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8d4302d048cfbf3e972acfa705368c26c6dfcd37549658774eaa89a1a27218f6",
+      "review_key": "similar-code:review:v1:2e3d35d3e0263f4e35e19a134e2ca675a84e020d0a1555201af773d9b55375f3",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:dc546d2d9497728f72241751baebd158df221c287117927c2665bd1c313fd983",
+      "review_key": "similar-code:review:v1:1051c8dfd047791e2a147a7baa2ccbe7d21c62c6f7e8bde189bc095a4ac0dd21",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5543f1d1da0a3288bd9ee9fc427141f54e593105769fa3777b70c6033772c1ed",
+      "review_key": "similar-code:review:v1:22aa20930b26cf3643d473e576d36d3b2e47dc41acc8efb504005fbc5e2161d5",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cec5f8372365f983819e7871fc9db7d3a2af685254b3f80b3b79abdcc40320ba",
+      "review_key": "similar-code:review:v1:da01afdae564cc464d67ebafe68f8427c315244016a5fe6213b8bf6bcee3e340",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3fc0f82a4f9550dba0281e813d1f7617e016057a7e5dfcf9e1bacdc683cc951e",
+      "review_key": "similar-code:review:v1:282c99a7b6b633b1da5f99d1a15f2f415b906ee3522bc59a19c1443a95ed1562",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9194ac340b5406fca50da1334c1079c234a9c985c7d1a2e5e015387c7c4ff7af",
+      "review_key": "similar-code:review:v1:a6ccad2168231b9a96b0eb514c0aaa92dd6509920031ce88314cb71795bf2f4a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d75c2ecd1bdb112f3ceb86599984d75917ed3bb3e65fa7d86e18523c6f4e1520",
+      "review_key": "similar-code:review:v1:6acb7ae41569b4cce97d8c9bd7c89c0ad1f002c9123f58c36e18fe59f7f693d8",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8aba5d98ea4558cad64a186613fc31df953991f3f4246e6451f90bfc440e3b4d",
+      "review_key": "similar-code:review:v1:426dafb988d6fbba7b9b6ddea4ca2781e64adbfcbb2edf7e4ce0ce4e2471da83",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:7e5830de5615be736c4417a2eacbd032c06f05a02434e5797a7848f1a74adfcd",
+      "review_key": "similar-code:review:v1:0ce710027f2c6a2e9827da54cad3ff31df77dadfa427c3f2b54047d9ffa13a91",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9867ea8bbc47c420cb66da674c30662597c998c509f7d805272fb18eb97fc3ba",
+      "review_key": "similar-code:review:v1:551a0e25185b46df99f3f5c3dbbbeb84cab13fd0dbf430ea4052d484ab6d8139",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:bd8eab199217c0f834a4e1b7642d2ab975de413cae975921883e49440b4dd438",
+      "review_key": "similar-code:review:v1:f7f23d366aae8b8000d1d316db70b696e065116baef3084440a000a3881adb9c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cba8a07b957080712f2aa9639ed2073984b0637c52e041ba8df91a8b7e7e418d",
+      "review_key": "similar-code:review:v1:7bc735b05fcf034e74f51e0d55e8c2ebb4615b6da0933cd9e0cb4ba7400fa73c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cec52007c273443299125d101f2af9ee8b53f7c292160129202c697a87527f9a",
+      "review_key": "similar-code:review:v1:b6d3b57f4eb6008829588edf810c1dd4cf2ae656115b55defa4f28b3ffc96e8b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:aeb5e80ee3ef3c61485c92a5759829543e50ae0fdff2b9eea23e3a70ed5636ab",
+      "review_key": "similar-code:review:v1:06e8b169051879daed01cd6c555b7762adca3bf75f017f3b8469615a58e323d1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3fee30a71e9bcef747737227f711b0401e02147daa51467588c5b798f4a60a53",
+      "review_key": "similar-code:review:v1:457efdf1dbb21d7ca8c4e6f0251f361b7694f442b0b896e7b995d2e744326b13",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f106ab512dddf3a10ff284134c6c23ef29095cdb6b11d867528d39fd4ac1cedc",
+      "review_key": "similar-code:review:v1:c66c717d9a675a5fcd469207667657f6423cc484dbfac3db4940057beba527b8",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:53a968c01ae657eeeb9b63dabd4abf35903ffba26230282eb1c0e02f877ba125",
+      "review_key": "similar-code:review:v1:7d073814a454a78c6543a712436de694b4e619d8f5d51fd2aef0f5a3d7d04a6d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:c3eaed4608d7996baed86908062c60591c0ff85d1fe53fe3579b9b6cad2f9e2e",
+      "review_key": "similar-code:review:v1:19d5177fb8e18b7bc4178640feae4ad03c9d0c502ffe4b99d2230d84daf260b5",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:29f24ade8e6d91f34b676fb2339c813a0a0e797e5993efef8efbee2d6bdacdac",
+      "review_key": "similar-code:review:v1:464fd9aa324ab2e5beb01aa22203f9c106469db9fcdbcda723b2a7dd1dea5b17",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d77c3bac36f5b8d91ea2612eb46fa61a16fce7fe1da8d64cc8ce91159cd5176b",
+      "review_key": "similar-code:review:v1:d8dd8605c2c5b09359054d0a15b5bae7b3d7d3aca1e6730ecc1a0abdaaa8f249",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:51a691670bdee73db56d2a3e3f5005b12d4653a2226f9efeb82a37de4b76e5ac",
+      "review_key": "similar-code:review:v1:f966f1473a9b60dc1cb0a33b13c66f7ca07f57f8d59bfa489e32e54ee1273c9e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:98a4a4cb252a8f164b63d14a0cbde8e48bdb5f6e648ee1d8550801a37f9c8aae",
+      "review_key": "similar-code:review:v1:c88c299aa812bfbd8bc15ff042dceba6ddaf6e05e2d2fb052c139507e821f54b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f679d462c5118fc49644c20e584b832b712c7102e7a3c22fd7cbb3ab3bb52d07",
+      "review_key": "similar-code:review:v1:441b51e7fb6d259e6050b8fabcf8a6bb010c3cd89ae7500468c8524904da749c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a8e36ab72fb951f4d6c5b4bfe16c8a3fc279aca200ea91403bdc16a6aa25e5c9",
+      "review_key": "similar-code:review:v1:f03f74fe721431701226d1801e466dc538d1a5d7f7735395ee73821523490b1a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9adbb353a7d6e2304eb1f9aa4d9a4f2b2c652a6c4b29863873ac086fb5d2aacc",
+      "review_key": "similar-code:review:v1:aa9918c5e930c5598011873223b0aa57de1c8d12041698effd839acbd1283982",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:fbaf4947741609ad2ef9c7d8e24948ed3437c3be2ae226d1dd35e7fa723d3def",
+      "review_key": "similar-code:review:v1:cc7671f28f2632334736f7c9019b8e57e91e53b8e2d1b02213771c702afa63b0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9e83a16e70d976aeab56ca0f8d72c0cf553a40f33649bf105398e3838295fa1d",
+      "review_key": "similar-code:review:v1:b00a0d335d17bf417e9318c035e9986d2d91115c74081ce532d3b87428dbc8d8",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d3abe038f9921ee9d4d8d42d8339ff0705c71d2182a8665e2bd906dc7a2ba0a6",
+      "review_key": "similar-code:review:v1:02791ca8da874758a4cc7d6b7738f4bf3335e8850efd41888a13483eea156381",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3665b8a4ac0be01fb7307328a8d9ed21465fd66312eef4dba195e7eba427d7ad",
+      "review_key": "similar-code:review:v1:ad919c4ae00bd74cf44dd18adf18184b6bbd1d2c10c8c16735dbe8a84fcb23b0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:1dc7725d131a021c09aeaad7f4ddd97b185b02ad4c28d65bc44612055463608a",
+      "review_key": "similar-code:review:v1:3efe90cf8eec60a343071435b063b9940f6216cad96135332c6ac4939a817b27",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5e036f60efabf15fb54d1a7cba19fcc02de35e2801a54baf5823cecdb9a32fa9",
+      "review_key": "similar-code:review:v1:67dd392b2be89949153477807eb9ae67148f8e55b1c9810a75216ffddfe1eb79",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:32be7bc899b29adac3f32d4eba0a3d5b54461a37b18744739c049ea79d1f527d",
+      "review_key": "similar-code:review:v1:9afed83dcd76543ea4dcafd7319064bc47ed4790a914eb309465d1b5a666cebd",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:30ab478fe2f223deace7fb52bd0bca7adf039c0f85a2376570300f2715433596",
+      "review_key": "similar-code:review:v1:73c8bf60de4186438b13dbdc9ddda999a983b9b4d5ec05475a4e89a58730f943",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:df817ed95c2f26a755cb95cee50b1f909fe29f9dd0b685d59aad9e5cc8b1aec9",
+      "review_key": "similar-code:review:v1:dddcdc221765df5e1e1594c5efde0016ec9946a97e1e3f286832656fd76ed1bd",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:877261c372b631d1254cc9ba8876e22336ddf44fb9f7714c9141ab8288d2f5d7",
+      "review_key": "similar-code:review:v1:dfe2f8d433db9f0aa4af4fb36e55ff2c5b4b335453f4bb1410724ceb2ad3e0ac",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:84b976ab2ae81a70d101a873ab4b3d7edd757746feaf009b5be40d77c1c90404",
+      "review_key": "similar-code:review:v1:6e471ecc95ca47a0d16360e5265de291d13f9acb41cb870f8532c79d32ca839a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e237319dd05e94080738d24edf026d8414a71f74f24beacc95c6dedeccd8ef01",
+      "review_key": "similar-code:review:v1:8eb0866e14d692ef14d257d6ee8d238e3d79479013ce30c9f7921f0cae10c621",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e7c8326261008e85e13f89c2b2b6ccea495c132e032da18c919fb2b48503bfaa",
+      "review_key": "similar-code:review:v1:eb09b7fa267e7430d2809f6bfecc470d29c1f916bf45ed5a3cc75e8b920d00b9",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:42764257c9ad19638eac837ddc2cfdb927eefd84cd40aaac0a8fb4c99dcc866a",
+      "review_key": "similar-code:review:v1:9e5f1090b034f38033ba6b80d26b1088cdbfafdc24bda4fb77d2a55acdc780bc",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:6e8a95fac33f8c9a0a4003569055c0eddc671d5bc8f082ff1b6c4251a212cc74",
+      "review_key": "similar-code:review:v1:213f8927b12cda26a072532a26c57a08693f0a921fe98665a21fcd8558a9d595",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:183dc7a4dc618c0b08bb972325c5338ba121c5a5b38dd78d114755aa0b1f2b32",
+      "review_key": "similar-code:review:v1:615b7065a166bf2a15a20dbd5ff8249534f185559419193df7d40b20c9d5eebe",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:21478e42f961c663fbf3065e3a9ad7b2817ef2468dac9054ff1cfa9d875633e0",
+      "review_key": "similar-code:review:v1:b97f3c96a09d4c7466298267c7a7fe0062c44d082ead4c903e5b48b388f6d148",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:dd9df3ca61089c4a74e5b01f222efe3cec5f71c8caf70fc5831cb49b585c10ee",
+      "review_key": "similar-code:review:v1:ba4dce9d20117240c3a7ef3184894cecba2f6d3810eb775ce8eaf7aa34c6f3fc",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:765362bd8e9edc10d480e55e28bc767a69d8ad1b58f366aff62b3be9e2164b76",
+      "review_key": "similar-code:review:v1:eb168d4b64da7e9e51c993c533be86ffe0511690477081aaa956f473cbd437f8",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:1058fd676882359962c7c57d4cf4d27ea10747deae3308e0adc295680685c2dd",
+      "review_key": "similar-code:review:v1:d5fa6d604b2067ba5c46c6528e5dff40db3bb89663fd044ee66b3b81ccd0c01c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f104eba97b8d79518699d5c111c59c9519cf6d433a27548e729d92a4dc23a85e",
+      "review_key": "similar-code:review:v1:bfe8928252fe13e0dffeb118df3ef9f2046a24ee9447f35d7fd3ce922679f991",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:72c251594d10747b10f1779ce13491b8f82bc4870cc4a0408c027dff70f5f0a3",
+      "review_key": "similar-code:review:v1:19329427b606b724b52b5600054767f69b7184bacca0824045bffdf38401e5ca",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3fbd04db5b034ad09d11ddb0dff5cfbf87c00f5288649f9d189630a4aeca6f61",
+      "review_key": "similar-code:review:v1:42916fc7c035f0695a715e3196b56c6573917bc8e38557021ecf5adfbe7b5c30",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cf85c23dc184690cb5c532e492d440f96c3dde70f21464769cdb4af0628d28be",
+      "review_key": "similar-code:review:v1:495de29efa5cccf26c25aa693d447f8278a21dcd7154d5bd4c36d3a35f9c058f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:645ce1f90d0ace2b0fd10e42fdc7244079b58ba60537d9f4221a8030a491d8f5",
+      "review_key": "similar-code:review:v1:12f8fa72f2a093696c838d28919db039792d62e4e6def4dd7745acf764dcc3a5",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d45fafcdf916913803b67eebdfc75955a20b2bcc97c9f0f6ca1f42f3760ba834",
+      "review_key": "similar-code:review:v1:869ded73c9eba77757315dbbf8a0732264ea09a41b3ac78504ca67afdbc94737",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d942834e584e52869fd1394ffe1d473ef03774efeeb73d94fca34660022ff387",
+      "review_key": "similar-code:review:v1:7b02d905318a6d0f748c696aa6ea2db84d0f6d043213537f7c3be43f16645e47",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4e52672c0501585af230958b118446d20710d5479df961a94ef3813f0443fb8e",
+      "review_key": "similar-code:review:v1:2f13b47820affe1898a860b94baa707d2412425f38c0b6686d01e7aaad27fe04",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:584e7ef4878996fb106e31b4be8fa0241df505e062e324bc57606df2ad8d9abf",
+      "review_key": "similar-code:review:v1:6086fe15e21f7eb359e81e7e7f750bb33ca646ad12fb87b00dd53de5fb6d742f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e36b9a79066840be370a98d68af5ed67766b75d0a104639aa3117c6a2d88759c",
+      "review_key": "similar-code:review:v1:afbfd37e6d564fbc8c653ff66d630737163fe42ef97db6a91bdc9c3905a4033a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:fc807a95f5f9f61c902020f614ba8047aeeda3aed4d132b66185099f209d059e",
+      "review_key": "similar-code:review:v1:1e1baa48af07fbd3c83b3b975062dd73d51bded7aa4f11e9bdb1066daf2599c1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0311a59ed857406241593a5eb13a2a0ece1909a4f08c7447bc7bcec73a685f73",
+      "review_key": "similar-code:review:v1:238759aa513562afec8e8c0af3f89c53c99d831dc62b76526630a13d2c55d038",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:63591b0d5a98d2cb7f22dbd9fd0d09551dc83064bd0a1008100bb5ed52bc1b5c",
+      "review_key": "similar-code:review:v1:5ff9740e8274090c07375142826766d7bcfc6aecf1d4e1aa81e7c4e7ec3bf12b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:edd1befe20c11feb4e70028007e3a048cf2bc1e15816a88cc104f8bb82e22675",
+      "review_key": "similar-code:review:v1:7f02d2e259ace4482a93f60357701efe328b8a2e03c0b09d06a852de6b802c0c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:2178ba2041f06d21c3dbf3062e77cfd3da996479b8edc43747555d4e18fced54",
+      "review_key": "similar-code:review:v1:1b1ebfaa56f547b52cc3436c594c0fdbbfb6cff9d3ff7604f59c989c9f91ae14",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:98964f88f65d3629882794ec51c12220f8655fcd3697dc86ef5f02fa2a44b1ba",
+      "review_key": "similar-code:review:v1:b187b9522cfbc17089504e57c7e11b1214a2d9b661c533e9982636997f36bc01",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ad80fd583c3d3124c8a1e2d0eda7edb60425a27be93d0bc1a6abfd9344350e9a",
+      "review_key": "similar-code:review:v1:a6c27de6e56cc45f152c0221ed7fb67a4ffc8c6f0572872b1b749497573cb702",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8050c82939d4329c51d8bba6b43b9e4860e4a57a61a0449a4d68c7b80c92afb0",
+      "review_key": "similar-code:review:v1:284cda646fbef248a2a250ac1066734740019c566f052d26c55d3d2fafdfec7d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b54750e986f66617a248d05f0683fea6e4b3d1803f6275aba029f219d6116cc0",
+      "review_key": "similar-code:review:v1:219e04cdbc7155b459e4077e4480d8e775bcd9b936a583edb1784a56fd8f1a3b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:7c7442fa27cce94b96830802fe7a1406b3f9d2a3d30dc4450baefaccea4ff5a9",
+      "review_key": "similar-code:review:v1:7f9d5cdec5639a7760c18e342f2f783157d16543ad265636bbd5544b35833552",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:03d24dc05f8bc8885daa6fe42a66534f2aa7361312c3d2d2f7ab1764b6f0e05f",
+      "review_key": "similar-code:review:v1:95813fe4977a2884f7664e6b24cb63f69fefa928897e788d779693634494cfbb",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9414a0583b041c7e62dedbc00e34278429c5b9b2c12f55072f3b23feb7997877",
+      "review_key": "similar-code:review:v1:f56722dd43bd038798b6ab32277664ae4220dfbac322732fad1f3196bb8f4375",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "The dashboard panel only wraps the sign-in feature's panel with the dashboard's copy, so the two are not the same component."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f861e02b8fde95b8b7a710e0cd99b2932ebfe955fc108d3209753886a11fa87c",
+      "review_key": "similar-code:review:v1:c555eca5cd3a1dfceb2f7fbd77f9a12475fb75e4415d2f47d9ccc700da2bdcf1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3cd8ad4e483b8cfe3b1e77cf5201494acc65d6db4673bc7b6e89902bb2827e7b",
+      "review_key": "similar-code:review:v1:5d7c0f7933dba72d19eb4f81d2965f86c2e27fc532d0862200dd6fe39501e649",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:85a3bad1732f8b1c26089156a29d531388b7ccc02c2b52d12b10f633af6d5d16",
+      "review_key": "similar-code:review:v1:b6f51a0222e78236193ae0331c0f37d2bb4fea4c73d90f5d6a9db2b2fa472e3e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9af1acc1593ccd71c621409a3969e8bfd75d66891b4d90b3d6d66883aae3b5cd",
+      "review_key": "similar-code:review:v1:c4ff972eb19b69939b5778fbaf78d40861ed1138caca28530dafb781fe06a51d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:870d4d99a108d2a751a9a4c8959fcfc41bd494d637853f1801bac64fef475863",
+      "review_key": "similar-code:review:v1:3b9a44126c536c18d935c78bdaea9c8cece2b31dd84fb5ff8f1044d5134d527d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:487e66c1afecf284097035cde8bcef87198f869e11af1ccb67608ceb0ea57556",
+      "review_key": "similar-code:review:v1:d9e17582ae5d83f82e8c6ae75c834e6e5cffa70b31531a9a88c28bb75a55318c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:edbb0b0c2a9b1625a3809be9d947cb7d61c34e67cb516aab7b3708b52d7049e2",
+      "review_key": "similar-code:review:v1:d1fa3ee4fd3c61cc3da732ab6cc66eabde9a4e463da6a198b5b585fd046c3ab2",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:93a461fd8fac343187b3cd308a050f651b68b6a69d62646475452710060e88b4",
+      "review_key": "similar-code:review:v1:1d3788f6077099f8c1c141c91599693adf1ef01654a888b86d111d26a0986e45",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0cad6aa8a14b5d580869aa26a2fc4071c5dc7920bae2802fa45a3c786be6b4d4",
+      "review_key": "similar-code:review:v1:762d958170e296add5577f7db2fa3b6aa6c8150fac5915bce835e955d145a922",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8fb6a421acca77df9c59dc5e885290b79b2c93aa3739c241178eddf29f8764e8",
+      "review_key": "similar-code:review:v1:abfda4b2358d0cdcf28466e07d91ebe6edf1e1990aa82a98899e5841590f360c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:34eda0b4439c48ea51c76c660264b511a5f682a77c2fc3c058dd390fe959febc",
+      "review_key": "similar-code:review:v1:e73e6d4d51bd858c14b6774eb520541bada1ff4593b053090426223432888325",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f9f99c4b0add92e63c3861fcf4934bf44c022858067e66a9d12d97640768fe35",
+      "review_key": "similar-code:review:v1:d74f9491ccb877554ac793a33a6d29ce4d18599e5ef64b4c5d2cf7f7c4f43238",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e3801e028adb236d43114fd23b16b1af26c2ccd45321655e450e7ccfba6c8624",
+      "review_key": "similar-code:review:v1:e771e4a8f0cdb15acfb9ca4241b5cfdcc139e6f53ef7d615d4655ae0d15e005a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a69f4821af342dade8bbed773abfe60012fe4aa47ac70809510fbd212771cd5d",
+      "review_key": "similar-code:review:v1:e7c050edf1bdc25e107bf54b17599fa72926fac2824bd41f5199e85cd4b6daf3",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:35978bce936ce2bbd7098a7f52f4b7e5174441c5b5c324ec0b6edd2da9f0ee7f",
+      "review_key": "similar-code:review:v1:868f09695c0e8c55dec48504c5ac6a3a9c312f5831a8c9659da16f35e1a21cac",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:045e358d64db4bc569e15c77054a9972b196116dbe4c1cc12d35e19c02f073ec",
+      "review_key": "similar-code:review:v1:9ec2e35122233bc4e8e6182fb6caba0a6f6243711c744a86c64f13eb41f96e50",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f4401d368d51a5091828dc95c781bd0279bec39a026b81d5d18754d192c8647d",
+      "review_key": "similar-code:review:v1:8c8713ac59b76b40211dc8d6dd89ca03e8f17afd4b45637bd0b9257adc822168",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9952d4676a168737847e7aa45576aecd87f5610ba5fdfc2c13a8ca99494ad272",
+      "review_key": "similar-code:review:v1:780faa8eb6b0957398cdd993987f13333eef4b3139ae031cf51015b4643c78ee",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:05ba72f1b4391ce008dec3e8c1f849d8c5073c18c980f0df5b8d6bd4d041ff96",
+      "review_key": "similar-code:review:v1:efd95884daaa6fba51daf4b18442532381c408fd1114f15222982be5d06b688b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:dafb5451d2d34ecaeb26d8f4d17702fcc4e74deeb24ddfede95c0e53d936df26",
+      "review_key": "similar-code:review:v1:74683a2955343f0a7810562c194b8e09edacc4392c226152d12508d42a180780",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:df4a5ae93fdf214362a3b986f472d4b366856b1a05549a44600a40c3af4f353f",
+      "review_key": "similar-code:review:v1:41108867dfa9fffe09661f0f2fab908d83ee157ae532fbbe8980aed830188f27",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:50d9f4006c8e374047a6fe136d4f8d02eee50483f26da1ec0574c89909e817e8",
+      "review_key": "similar-code:review:v1:ed8c753330890eb32a93e41b4982b1e827bee29b4d9d4c89eab954829137e6b1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:2aa4c1e4d8cc4cc45cd63f2ff14b3377e39bf11b755cf1f1f5dd5817a9a5159a",
+      "review_key": "similar-code:review:v1:e5142686fa14b61dc39ab655fafed09c2a3f679018c7a22059ab455d3cb332b5",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:87ab2f5049899fea5e8019cb53cf45affafd5983c02b0b0bbccc6122f0ff2551",
+      "review_key": "similar-code:review:v1:d502592c5fe94d2bd57c3f5f1c5219918f5659f72ae8be48b366cdbe6e5200c7",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:40d79d33adce57352e00ef930ce629b62916c22cacc0623917c6478a16e3c585",
+      "review_key": "similar-code:review:v1:29a68da5c714cb00a783e42535eca574c91bf4f42ff1faf7239d900f20230143",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:88b8bdae539eff7b80b0462e9d113beb9b89807f938188fd3715849b2f8326fe",
+      "review_key": "similar-code:review:v1:adda8b15f1ff6f55a20df77d813a80b27e47b506c7a714c44fe06468b4ce8850",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:78a5f7be1c140afd10d7da72585c3b834b292e8cef811dcb39b96d5696a88d2a",
+      "review_key": "similar-code:review:v1:9a4bb6961dc59098b14570461e9d1515fc674167eb935554165680ebe3ee04e1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a121bbdde3cf7a77ae6eaa274c8c845e640305cf713baff80e2c15fafaeb4020",
+      "review_key": "similar-code:review:v1:6bf53ef447851256d05ae623c5b4ae3f241f2b0cb1532575e23a980a3ea9ca47",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:213ba3f70bf3b5ec0cbdc683a5e8c6bc3459d9fbc26cfee4893b14b98feec26d",
+      "review_key": "similar-code:review:v1:ae145c850798f0d457e4da314f70f24637c681a2a508872dcd0b3c155563ca71",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:966d2563db7560882bb2810c958bb371c31374b2c00e0159b536ba0c70e7d36d",
+      "review_key": "similar-code:review:v1:07e2ad43aca42ca656283db07f22eadea3178f73f7f89702a403f254065853e6",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:7a3fa74ebae4da700376f86098bbdb99467d91fa4f408f26684837f2cf6d634e",
+      "review_key": "similar-code:review:v1:82c06af6b995f4e67f8dbda4ed241ca4a825b3eca696b423a84668a0009f0cf1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e3443edbe5ef5da4e11c3cc2b24c172ecb6b297b7e1c154572806d9657016ee6",
+      "review_key": "similar-code:review:v1:fa08d28c159539d12cd4c4ebef8e776d66a9efaa3ab86626697ec2d57909b087",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:450dcf96902808f66b9f14d81c8e87b31ea5d90c017b96e2baaeba9bc8aa8af6",
+      "review_key": "similar-code:review:v1:77907d45f696f8df6cae2154fb841b7bc5b78451436df9718d8b0772267e861a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b9a53734b2f320fcc7c74a235cccb1cb604ab74eb8c8ae8f50733726ba0324e8",
+      "review_key": "similar-code:review:v1:25c6cc0d2cb263a372d43ad769bf65529d6722bf2b526b31da0464f59729971b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:710b5668e95d08ef88c64f644161eb2ae64a340ebc7e5fb69695092b42db929d",
+      "review_key": "similar-code:review:v1:3cd6b7002bcebd3e188511b02958296772b8b327576447c4a03fcd49b22771d7",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5a096fc7c91deea119ed1f20c455e72e981f4f0d80eda78bf00cbc1f9745f05a",
+      "review_key": "similar-code:review:v1:17f58509a456416345d0a4f7fce86371d5b6f72ed37fc431fc7ebc08650a4db1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ddc64bc945ad06ccd8c4e93a64ab4443393c3560e57042451d355e85990a1755",
+      "review_key": "similar-code:review:v1:34069a1ce6953d7a4044b47ed7c242fa442c056a0d061faff3232b4484faa065",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:31e88df500b0e30efef60d8fa664327b14c61deb2340fcf31541d8bad8163279",
+      "review_key": "similar-code:review:v1:736de4ccfc36055fd0d2aa3afa3e657140f7747415f03e2bd8cd15b5e3c98737",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Key wrapping and message sealing steps that run different cryptographic operations on different inputs; they are kept separate so each step stays auditable."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d3bbc44174270f44c7c178db9813ae45c9a5cbeb8f398257e8a0fec67ec802fe",
+      "review_key": "similar-code:review:v1:799d52361514bc24307502129d71104c2ec43b3474603eb9730a4d79d2e0b78e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:16e11f993e480dde492a128593876ae16dc34e111b95501c800784efbe732650",
+      "review_key": "similar-code:review:v1:64697e6f49d98e54c100ece2cb060b3e1482694a3f3516997f2c0ab775bd4f35",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0afd2ded96e00d0ec1389015d617d377ebd90a0b8c10cec09d5a6c1e5d4ba127",
+      "review_key": "similar-code:review:v1:f539aaeb77e12f3e388010389470b8cb2dbedb9af1c2175f210a93d0162f071a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:911658c56a06e250f31e8d140f889953e685c790f681bbc30a47053aed1ba826",
+      "review_key": "similar-code:review:v1:6ffe42d04eea1d7071c1050c38e30ec664be7ae63716aaa606b3c09f02c639b0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8c4f71cd186bb97298898d0bcf38669da5ec0e0e67d13146ed19290ccaeeaa90",
+      "review_key": "similar-code:review:v1:e7ab3a068932abe44b9d81cd5650b5214346c71a5c41fefb66ced5b0870568e6",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:7fc9df690202719f0b8d4e80e95241afaf7161b67831f08f167214be87445f7c",
+      "review_key": "similar-code:review:v1:325996fa8d53eb05355df5a355232d40833f7b49bd39bac6a3527b660956d47a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:eb7632e2abe5cd365b6465885a783bbcdc774b9692448715d9b1f959351a10f8",
+      "review_key": "similar-code:review:v1:b94f25167ff8b8abe5426ba77338956c9e9b0047adcac5f4d7b46a215cee5818",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:2f734af19d05ba8d73a46b09a95db15f13999ead2a031def31d1a4fb684a8f84",
+      "review_key": "similar-code:review:v1:a5da11ccca2f6549b248e9e1d32b955c62de27b774a9b3d88397632c6bd0fe08",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:228681013bbfd41fef0feb3f99c262049f36b652d99986e264d557a7dfa041bb",
+      "review_key": "similar-code:review:v1:b313e50f392d16a7b692a9b133d751a90ee0ee279b1f2056bb9d95f678ddedd0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Key wrapping and message sealing steps that run different cryptographic operations on different inputs; they are kept separate so each step stays auditable."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a11451d5a92aecec7a3ce18217505ba22fc7fb0dbbc10743dd9ae4dc9725095e",
+      "review_key": "similar-code:review:v1:c73a0099c6daf6da08bdcacac3a3e309b94469d398d049aa4ec6f7106696af90",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Two Alchemy resource patches that set different issue fields of the Worker; they differ in the field and the value they write."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:1353622a4e749220541c0fb8c4ffed9486ee84f42036b5db20e36bf2b5a81065",
+      "review_key": "similar-code:review:v1:3497c1626f8ea1fd14ab1c558c9c5316f179fdecb934dee8f224b184073c9867",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a1e835cd33a924adf26dd6bc8f3d0c02ac6eed39e95abae9c8a7514e197c503c",
+      "review_key": "similar-code:review:v1:ac9ecf3445339b5ea2bb707cb892b7c16b24f8d3440f5a8844a53f3d2adcb384",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4438e0b7e8c48ef1116e347fa3624948850b6999bc068cb2d9bef0b625c9b665",
+      "review_key": "similar-code:review:v1:945251ed16197cb5c0e03f90ee51ef8ad251489b166d3bf16d8469971b7ebb53",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0e7b3dc151ea0dd6377f56aa1764855f0c0541a87ae202bc88dd086f1cb9714f",
+      "review_key": "similar-code:review:v1:61146511105a4934f8ed93b80a3acd0f75a38a93721bc0fb208d49fd67f76f06",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b64f072496a05d8267bdb84e48c5f446da0e8dae5f5bea92f27ee47d8c7210ad",
+      "review_key": "similar-code:review:v1:f8ddd44aa70c7b2566bcc691ef16d98bc10252cee33d9254a7f3096b343872ac",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3463801e0e9afdd8a1b9ee082edb16b8e0fa7b7f1d23c064b2dabb349e4b275a",
+      "review_key": "similar-code:review:v1:06627bd8b05a05b17f6fb1977c49d60c0f42c512d05544d9ba60269e9ccef029",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d9450b7344d693221a9aac8a32362fa0f7b1c600c3c105040b96739e30cdb05a",
+      "review_key": "similar-code:review:v1:53795e5246a9896498c5da34e0e1e2c401937126f3c6b976ed7cd28f4432b7fd",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:dcedb6b5348affdb1c1f3daae5b0732b035116bb28d33ff56932b900631bc423",
+      "review_key": "similar-code:review:v1:4987c905e449b62ef8d1febd1b709bb364f78db98f2b38ea822b915fe12ad5d7",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cefdc6173174fe89480a45287228f38491e1dfb243704f4503344ca6851c8170",
+      "review_key": "similar-code:review:v1:009da1e5e021e460685b117e6abed11bb284c03b6cde067f7777079c2f76b4a9",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3cecae86a315bd7f8028b57ef17a2a43aa887b2077b4f157f2eb0e14033725d6",
+      "review_key": "similar-code:review:v1:4b22dcb33bcd3816ef51d89d7ee87afdbc019425c11de9c8b3dd2fb72154e54c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b4a46b79adc26fcf19b6dfea7419473aff4686607c144a1ff3779338f6caf668",
+      "review_key": "similar-code:review:v1:2a2f6b502a6737fa63f2723caa6f04fb013461ef39ac291504fb4327f81c566c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5259966d42ea4f394a70eda912cb57090cf7293cb026e48f439cd97bf38136a3",
+      "review_key": "similar-code:review:v1:d69c638d9a542a8387d9545af6685b866eb2b4aa806e286091411cf4cc6e362e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e91ce082d1c2dc0138653dc8ecdc98f5f4f80dbe829807e0cfa6f3e8662aaa76",
+      "review_key": "similar-code:review:v1:4d0d495dd4afeea0a47b2b2b8438cdfe07448fe279a9403db78cefa70361a433",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:05afd4aef4492241f59f0d73b2ed83e8f264050dc936fd6a94fee82243546e35",
+      "review_key": "similar-code:review:v1:4dacd4c20b6df37c1ab25a94e5081446e082eafe61cc801011ccd3dfc666cb75",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0723174bd3e4a038c2cfd32df2cf100f4c9c41626a81f7283428b7ea8a781b96",
+      "review_key": "similar-code:review:v1:e697b242a1430e59b05969c6f8dc0cae03d65fff8a9478cea97609acf522dcf4",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b205a61385944a50469bca6b3d489f37f259c1d8560c446f2f6a585a3c43984c",
+      "review_key": "similar-code:review:v1:8ddc0d30b9e80173097f24bbc53c69504e3b656fe201afe65e8030256e6cb13a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d4ccd22765e76060bdf08a5eb48dac789402b2ecc94c8a1ef38f741b93b9cf78",
+      "review_key": "similar-code:review:v1:6434e3284406f67db324873ade2d7274d91475aa3023052eac451fd1427c85c0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:41dfbf05e40ca24ae0e83f04d0c17eb338e8569532feb3a6a5a87e9c02826ecb",
+      "review_key": "similar-code:review:v1:b9cef90397131a55e4b189d21729dc427537614aeb07d7a51d14364d4088402c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4826886314f660721600a725e756cd47d5b4eeb5cdb2bbbdde4bc181c43a550b",
+      "review_key": "similar-code:review:v1:befb9778d65b8e4d714f26e7b85e3691aa71e15dc5cac5418f3218738928a4b2",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:535b7b515f4fe65083cddfa3e7bd08b8cba567a5c8a3ed8c5f72c7ea4f3bf14b",
+      "review_key": "similar-code:review:v1:447b82afc274e6be493bd42952c884713ba08180e7f49319a78062a162b5bd79",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3a767a26222f6c8904a19615e4eb5716c4c6b9804a498c9b6268a5030520cf82",
+      "review_key": "similar-code:review:v1:2f0812490fff2da29e9a03eb9fb4dee2d8cd95402996f3fad16e67d18ad3794a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:dff8ed3e5e0604cfd5097d6e0bc0411ee8f098a1f7684fceed3d0db025628372",
+      "review_key": "similar-code:review:v1:434d307d580b4355dc2a182142bdc85741d537443762f6ebf77395b84a2502a7",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f63bc36a60e2f5d34efa548b4fd093d290f014f2d56e91cc6319d39f3d5d99a7",
+      "review_key": "similar-code:review:v1:e54319effaee69d0735d09f4f9fb9e3c3baa1d050d86649942ca7a236070a3c0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a66234814b8e752ba7424ffc829196e5f344d61ffb1eff32e37d7acaab113f67",
+      "review_key": "similar-code:review:v1:8a6b8bef51bed5c5e6598af71fed212226123d6fa7417312b19c0a3b6315a16b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:13dadc0387990a11031b6ad079156d39ec98f3e898d8af0af4ad4496a6b6409d",
+      "review_key": "similar-code:review:v1:7ab6a5f8266803e28ccc6f1bde49dd23a6d10eecc845912c63aae6c40aac32bb",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f8acb96dd3d89cd6571fc06bab637e96ee941a23d8499d56e7a61180c7dd4cec",
+      "review_key": "similar-code:review:v1:37f423dc3bc46faaec1be7d182f9ffe13e2324a594d219a59ab4605d9cc4f47a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:500b9372b1579aa25b79352b472a1409e7c0c86d40761a1c5254a9ce77b47303",
+      "review_key": "similar-code:review:v1:8962e8eabedfd7e09ca4130fc30daa10b2a73c25ced74c1481d76b5a66212569",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:682e210a180fa5ea5271e23304fef76f6107c08264b7e9628671dfa87e2cc1c5",
+      "review_key": "similar-code:review:v1:0af1cb446b266d5f3b99fa4d8dc5a9578d54d7a6550b552b29ec417782759f6c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:1fd41216c57f09d387da9c85fae7bcc3eb61cab09907df8326a6491961166090",
+      "review_key": "similar-code:review:v1:0e88adb47d939d47ba537fde1b59706e9d4ab86b570cb216cafc36c3315ef7e0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:609ee725aff297c963d4b8489d1ebe958ef190e763bd746edcb3cdfd6c3120e5",
+      "review_key": "similar-code:review:v1:17450a06c883badcf087d68b9628e7ed02dfd7735806fe79b72bfea942a8d30a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f16ebd0583683fa1e71287eecc0b350c8a5fd50a1b2e008e4da96175cb49fdbd",
+      "review_key": "similar-code:review:v1:0b71bed45ca1513f04c0e132ca1a6ea9d959175083768d7cb1a911017c744bfe",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9141c59a1200821392c0156c4085ccf9e384b4f815de23dc1e2b8d9cce1db2a2",
+      "review_key": "similar-code:review:v1:7c286a532505cf55bf11d2a5742c2366e02509e10096ae106674b1f498edbd27",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:1dfe35807649d922627a6129944286279ed8cd114d52b6e800a3c9900794ad0f",
+      "review_key": "similar-code:review:v1:2fc26ddc425135eb2d744143843f7b692d7268334294d513853b3027da8411cf",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:fddcbff7958e620f40b6b0a71ab120446025459e2c24ffa223359c16d719683c",
+      "review_key": "similar-code:review:v1:6de427337932bd05046ad6ec76c80019d4334a35840739e8d2a8f542394e9baf",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:179dcf3974f8e4580eb0b1337dec650ad47aa4898bc69441fd0ac332504a9131",
+      "review_key": "similar-code:review:v1:feb927ccb32010d70e9821f7320ee88ed43ee8eef7301eb8424bf5bc1cef5efe",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:af222bd392a0d65ffb2c9878b980cc623355966fb61e843704c3175f3223bac9",
+      "review_key": "similar-code:review:v1:b6d56c7678002fbc469041461fc9ae58f381b132b7d40d622be1b065cad2e1ff",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0f1867dfe5e12b133082cbc8c701b143ce9b0520b9612af2ad7ca1b34faf42d1",
+      "review_key": "similar-code:review:v1:82b6881260a68d6923eef567ef58dc5a92163f5a7e34931f9235d8bf166874aa",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:09d854f87908be463c14dbb2436305645484c1146b41624d184ece1d747f6c7d",
+      "review_key": "similar-code:review:v1:f3016aa259e4c59ab8a5f2b0c35ce4f43bde72d2fdafe8cbadb1c71b16b1cd54",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:bde98d91989425681a4839e8a152cd4d34344f85fe72cfa903fdb8ed0f823244",
+      "review_key": "similar-code:review:v1:cebb62e9366bc4eb658f1a5e8936ec86000ad11cfcf8c0f62c4c4cab02d14b35",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5fcdfbfb2183dc31f6fb1d9c2a364255e98cd849403405f3f0ae7970ccf05624",
+      "review_key": "similar-code:review:v1:cf313f53922aa9756bd2ecf019a1febea15b92e4341cbc5c13af486f5b93d5c9",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b42f9c1d460278728948bd6d6a1783313730f15e0f41c519988536e18a18c124",
+      "review_key": "similar-code:review:v1:baba0bb7754e97c00f21f56e50fe4ea4d93017d2cf606e4f4acf1ca514e9509c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8bc8ca98e88ffb2a01140dc2d49cec7127d8a56995c982b38e2a4f29b0e75802",
+      "review_key": "similar-code:review:v1:bb756f05a35bb03e83b11f9ac0b0c255f3236545a51c47d1cf2aa06f9acc864e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3cd3d11c297ef137883e3dfd4c885a55734e9bccc938bceaf29036a77e2457b0",
+      "review_key": "similar-code:review:v1:0306694ba70d9439b9883ffca309a27e4661cbfdb981fa6a0f901bc91fd2e294",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:12c1e13781b93493b0b10fa214173282787f8238dc748fc455eec7d41d69ed03",
+      "review_key": "similar-code:review:v1:d6b499ec642b57027576dc72e7cb6aba7821ca31c780b8be583f89418d087569",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:6584f5733c850c5ccf4289e4a03f1431c3b507470b645c606f3464e04113b569",
+      "review_key": "similar-code:review:v1:40100b3568304ec358ed811fc5a37de4023e879d31f4c70c9652a359c4728849",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f42b91b58678ed3579fbb6417811a6bc8888d8b1bc7b214a13171ebf3bd723f9",
+      "review_key": "similar-code:review:v1:42a3ddc160d3f2121bea3d9ac564442daf9bdbbe927d78fd343bfa233ac64a15",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4fa76134aa62d4642941cf01683d4c23363192b75a3230512e7ccdd49882093f",
+      "review_key": "similar-code:review:v1:08d8804677b785aaa646997a108a53d99e8c0eb3a1e8c7f7b2f206e1b2805171",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:03942a8dbe20aa4ade7132074ce9748e4115d94936ae91fb58b285e0a682cac9",
+      "review_key": "similar-code:review:v1:8fde800ccd2e489becf3207e2b58504c760e725f1b14e0fe2d7b22a02201c4e2",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:96d8117fdf8e80a127732dc714a12851c0f9998ce32b5fc5f6f9a556c33ed556",
+      "review_key": "similar-code:review:v1:ed6c84fa8749a036f0abcbf336d761913ba8075cc9dbd2049efc93e9dbf7189b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8fe5ba95ea296a67b3681ebe4f755686b786b1fe6b3a6db32a210165c30eefa3",
+      "review_key": "similar-code:review:v1:5528e8f28976769f98ecc089027697029311c46033adec6e3b3eb74e3ecc84c2",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:73bdf6667c5a45ec4e3696ae4108f4125c0ae4cc0dc0d18b3c1bde91ca843f36",
+      "review_key": "similar-code:review:v1:fa1eebed0138377d58cca0aa253d915b2f3204a5f448b0538ada440f8e1b3d25",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:1046e5f62aec183c631b50b5ea451b23e0941e396d6f86fc5bb3f9d5be4f28be",
+      "review_key": "similar-code:review:v1:bbf86e4bb3bbd0f11bce5cacee026b1d0ee59c37115a46b6a4c7a33d58e5a076",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:03a27d3e7b6bc9d3544515c4d4e31124d9477635f0f627b0ef08b6a203210885",
+      "review_key": "similar-code:review:v1:f494eae94d2b0a5e0fe9dc70435812e2d0436b736d699ed20976e4de69321326",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a94c31299b045f70c2e69ed910c48002f2e1e75a35b74faa3109e7604280168d",
+      "review_key": "similar-code:review:v1:d4df1253cac894963bbea80a3ae1a2a95271304e426e5de9bc0e50c1c7db920f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a1e0d1a082b45f0c8ce1a471b0a7623e003f708df2c17f8b60b36eb35a8706ba",
+      "review_key": "similar-code:review:v1:cff2c867123060a3a8fc19f754030c4ce07859211323bb923700e2a5a49e1fa7",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e29c93afe5737b4cfc8576dbe23c27730c7926a14e5fb4872b2148e4c353bf73",
+      "review_key": "similar-code:review:v1:995a46b4b4d26749bdd1350201dd23799222d49122d8b022620e4088c68ba3b3",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3ffce079f849ac45dda82496a7c9308bf352488ccf6156955b1608cc9d794cd6",
+      "review_key": "similar-code:review:v1:f827844357393c60983bfcbfd02075e8e472cd5ded16ed165abcff41e1765081",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:dde8aab77c1b9b16e74cb96b804a4cfd2f1275f546d354640f77217fa717209a",
+      "review_key": "similar-code:review:v1:f3264747b5a25ad58d9cfb2c9eda4f5798cc5827458b70bfd53fd25edb093fe3",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e54f0d37f02c100501fd03582a0e7981ba745fa81e041d4ebba7a3b3235dbcf9",
+      "review_key": "similar-code:review:v1:039269267090e4d5d4d019719d2333f8ed572ce391809858f574e8b8bda9c7ad",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:c601b158aa5e56576177d0c9e51d71b94ddadcd4a37a32159f2f3cf7de1b2540",
+      "review_key": "similar-code:review:v1:0197b392700b1959cb3cd07a0ca3bcdf4ae91ab9655a2d291026004a5f017768",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:fe9036590d833b4b4658ba89630cb462702793f5c26a3ff488a2e2d068ac8673",
+      "review_key": "similar-code:review:v1:cf49f28b661c94aba6caf69ea77ede9d711e28430bb77fbf7c8d6facf9966158",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cea179326e56dff1a95953dd6b418a27a63624d0c1aa7157adf9c1f2e992adbc",
+      "review_key": "similar-code:review:v1:9126ac3f71ed4b177cc1e9f2206ada88fb8ca725b5ffb21d72dff06bc63eb6f4",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:01ee21730b5cb19940aaa0dcbdbc1808d17542f2e2fe87c473ef50df86dbdde8",
+      "review_key": "similar-code:review:v1:690eef54058b59e50376a68278a701afa5dd18e9ace53278275bd50b33830e63",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:6f0ed484c628cc5f626dbf82d40941abc9131945817e701b3e9fae2fafbb20f9",
+      "review_key": "similar-code:review:v1:b70442b8bab75b20301bcd2a911081736677bd6952cdf3c6bf9ba72c392f82ca",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b8cdc4d14314a6304f812a123cbb0886e0da29acfc84138cce06f47536cd9730",
+      "review_key": "similar-code:review:v1:6099c926573622a43063cf9f6aef489b08fcd154410ec1c729cc9cc2ebc2c1ff",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:44ed259268be7b285b183796db64385bbff01bc4b8e1de695f3885e9a47161fe",
+      "review_key": "similar-code:review:v1:46c88a273ddd91ce71236d8851c8fc82659b8fb7cfce9e10eee9e53a062ca7fc",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:446c8681bdac0be7bb725de87d2ee688b142c9d279b8deeb0e333e71220da34a",
+      "review_key": "similar-code:review:v1:fa0355399f3d82698c1cf4a988d45e96afefcf8f5bab9fb652a4f489571c4e87",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b52342b27c9e87281fef918b051cfbace80d3b36a52e6e0ef078f4ac1e47daee",
+      "review_key": "similar-code:review:v1:911660aea7c41fb0a1ed0757438989eef479798d844917d3261bc46516e3fc8c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a5b47ddfcd18f919e9d69a17845d83a048e555064b28c5aa1ad6ce5d7a7b070e",
+      "review_key": "similar-code:review:v1:c19196f093ab057b6faf9e95d13654a2ddcc1c787f109e0a3ec25c8062740f03",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3d1f81c8b1eff602b8a7501de37c35d5c504d08329bec1690089169f79aee65a",
+      "review_key": "similar-code:review:v1:b80d8f34598587347277212f757b98f5115e9d2c819a6374023e757cb8417705",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d14bf94abc8a5b5fdb1a0dcc5725c0db88a80d0d595541a52681d7a4683a2c4c",
+      "review_key": "similar-code:review:v1:ca90792663ba7808b42c772294cb10dddeda1cb6bc45b34f8fe15aa7d45f1bee",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:014b56555d38fa138e8d3866b34da95c4e893c649502aeb4309abe5d9588c1d0",
+      "review_key": "similar-code:review:v1:4337a4d4aa57ffb61d85b6b7434ca2eff7de67d51b88fb9f676a68e8d70efb8a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:528b87769e5f159394627ee808d45cab77c8f4e29fa201b53c0f5faf561d3af8",
+      "review_key": "similar-code:review:v1:cf8531236f0f57bce419a6cfb0c2ee46de89bd86f03ea7514167203aa42edcb1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:996cfe47ecf65c0e5f2a7f88a08672826fe4cbcb7744fb6b0063c7793ac1732c",
+      "review_key": "similar-code:review:v1:5b3369f0f18249bcb6e12858a5213c2f5bf50f76502c35ea7f3ca02d755eb45d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:437875269f552473f74d87133131224632ece9d19981a5cdc6327f588dabc6fe",
+      "review_key": "similar-code:review:v1:32e420edcfda0e5935b61b9d07f7e049794c322a3190a1d1735594fa3e7032e3",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:aadb9909d9cc64e3b6678afdb12f4515c3862148f1ff46435c8cfa71dbc70a0c",
+      "review_key": "similar-code:review:v1:a27109fe5cefb6098ce16ca64fe0499d9036644a778c235f2e3c039d76bdbe24",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:332f37b45a397bdf2fe51fe7973c50c93d9d72b804c7779f3a0310ac82ed1c97",
+      "review_key": "similar-code:review:v1:fdbe25412c2dbf1a48c5b5724fc4742de4f3a8ce1792012828b0a4c20e67d967",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:be8c12c9bfbe8756a16b95cff2ab59b3d9441c4f0a6da8a408ec6caf3d55fec0",
+      "review_key": "similar-code:review:v1:825777b43b289b1b7caf976f5dab99ab6dc263824bc42c1e536b6a36c123f5eb",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:eb79f86f2e4ed00e7f728dfacd0fef1442e90c0b1954d712196ba1da3cdc6ea5",
+      "review_key": "similar-code:review:v1:3cbfaf8a2ff38d298c534e3984096abf22ba0d11905d16e3add5b240de5e244e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:07edd49ec80483bfc972600d9170695091f83977b283c9ff81b6c68c90ea8c7e",
+      "review_key": "similar-code:review:v1:81270d9171a59f5738d73cd28e174c60513de8b50dece70a0a12744808c76c40",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:dd0cb9d53513d53b2362b937357f3a159552a386f701e25d78858b61ac572413",
+      "review_key": "similar-code:review:v1:96dea12a0f9f27829985352f6db477e33200263fb648a86151b20974c1a6d844",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Key wrapping and message sealing steps that run different cryptographic operations on different inputs; they are kept separate so each step stays auditable."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0edc404f53680793ce30fd7cf0c6c3da83cdeab6ea4c25867d47e0fe3895239f",
+      "review_key": "similar-code:review:v1:461ebd8907a004806edd159b0466baa766979a72cea4c5ab14a7b8ecd4a1e6ea",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:981c5a3390f8b7c36c3b1edb74d7470fcd80a2fc0b593d5680d21a75545067db",
+      "review_key": "similar-code:review:v1:ed352545d528cd370b0e0c457b7563c74202b6ce7338cc39e6b06888f5bf9544",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:7c6dc483b7399aa0a40d9ff287b31fc61a3dca795b71a3364bfba76b643b982c",
+      "review_key": "similar-code:review:v1:185bf1f0b97a15113971dc48cf2bed8ce171887daab123d571f6232cb2d4ce80",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:57eac6d3b1309a46699c03dd37bb3006edce357790c901189364cf14963f6b46",
+      "review_key": "similar-code:review:v1:c9c793d64552e6e3d29b2f79d5f45d85868281db4f681b7dedd5ec277831cdc4",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b1c66337faa326fab998dd943e18faca768ce8f1dfb8fc7ef268ad76359a27fa",
+      "review_key": "similar-code:review:v1:a9102c585bd712d2a88338bdd78b9cdbfcf9317cbe1cef578297a20fb80d6044",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:855a37ff09c8cc9867de3a1487525da451f4d476b9fe75460957645327676ed7",
+      "review_key": "similar-code:review:v1:4bea77f3a762d97fe9f09ebbd950a03101708fc9e3f372633699b5c262007ce2",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:bd9c19a2674c71e0c50668a9c661e2e87e1d99758e329331ed82cf5a0e15ccf6",
+      "review_key": "similar-code:review:v1:23f63b2a56cc0d4c7ff7e4d117ff359f143fe42207171aaf79f53966962fb16d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5e5ab3da27236dc733b6c67c1ded44b656230d5efff6825f926af9613f648355",
+      "review_key": "similar-code:review:v1:3468fcbfbba49e688f1f3cbd7d993299d507ddaa5540e5b8b1914516ec75e97b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0decf3bdd763dbefdee6c1ecda826f3f3085b0312ff7fa6c5a4d3cbde880911e",
+      "review_key": "similar-code:review:v1:ec3ffb2734416ae77b30af06894d1316d9e28eefc88eba24f66d41da41c3399f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b2de44c1bc6a113ccadbab66dd13a6d21cdeecb908020af928d9690d8a45259b",
+      "review_key": "similar-code:review:v1:ee054cf6a1c5c44dee275d6f493811f62cf5199c2f6a38159ff5daf3ab9756c7",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:6aa215a6a507186d1c258e92dca87ae169e626e9607e87dcf5a291706499cb04",
+      "review_key": "similar-code:review:v1:28797e7e0745628e811a57ec26ff913ab48cb9151ab825f591743fe4eac29e09",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:665abc4e77e5f5bacbce5d9d3e0410a9867d0988e06fd35d1d661356e5c0dc6c",
+      "review_key": "similar-code:review:v1:133cddfdfb6f40d6c68a06ab1804ff769564359e1420890bc61eae3dbe15984a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f29a6415395389e66556a0f7165d0d860b2377ff501fae75b4e85d8c3baa40e4",
+      "review_key": "similar-code:review:v1:8d1bec182d961de1cf1836b191a55a17cfa60dba572d13c6d325797f0d6ab000",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:392e9f9b97d8c1ba8ea2fa11b3755549b73d4882ae4d21e560e96c16b77888f0",
+      "review_key": "similar-code:review:v1:523ba3a31b36d8b923ea314986dd1791d48e393b69bf1d64d30f41108185c20f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:c5d3a2131610eb110e827be64f5443f6de33c9510583cb41ddf705707da8095d",
+      "review_key": "similar-code:review:v1:c6136fe2649cfbbd22709e59583dab0bdea0a4d0a0fa26620dc27e2a5f4fe1fd",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:804e5bfa865e23e4b4927e843c8bccbc5a0464f9e5e0b0bb8061af2964d95630",
+      "review_key": "similar-code:review:v1:d1bab9ea7ecf8488cc6c72d0788e026b75f78685c71cde8fc0764e01a0cc3f5e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:732d794e04d092263453fff08cc0350a7324b644711528e9c693e4f8d3875ddc",
+      "review_key": "similar-code:review:v1:cfa5a071d6535bd43be7272b787a9f4867c8bba20cd1406a0a89a197ddd5a705",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ee5219ef293bf58b11536c9c0fd0baa3a498ca2e3e4a80cebc1e98830249f446",
+      "review_key": "similar-code:review:v1:05b67b8312e2ae8d65ba1af4c47812fe46d4dfe82b4d099d1a7b0b2b19a22963",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cd2b6b55efaf2bf5c2c386938face5b239df262d62a1917e4d22187089cb8aac",
+      "review_key": "similar-code:review:v1:f4d348e515ca6d0e6e9cef05a2a04c5e818da62aef48aa826a50334aaced7684",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b33fbd2043b4413402bf143de255757e87a18fb732d2b75785484d3106be8f1f",
+      "review_key": "similar-code:review:v1:0627515dd17191fec47132fa0ea61449e80f1b4233e98c630bea042a904b717f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:fa8289866d08160cc70f3bf0702768f18e0561c926d2017095a417cd2427731c",
+      "review_key": "similar-code:review:v1:1a011f2d50c5091c588e52955edbf1934a297b5e40d00df50ef13b5611670c66",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:081187a0ff0ceaca176702ccfd73bb6f991582f2eed705a408295460e5a552b4",
+      "review_key": "similar-code:review:v1:cec91d205e0c6889873c1d699d5def963bcc949d617dd366ab60b052ca801317",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:2b614a4cd2742117b9ebac2feb616ef0f5fdbf21f17850e24ba2387feb0c417f",
+      "review_key": "similar-code:review:v1:7095b8e06c6803daee0f3a57ea4d322089343a37780e1da4b1fb5e5ad92646be",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:32953a592bffd3d1f1539d49aa952bfcfa96813caee35e24415505ac0d79c4a9",
+      "review_key": "similar-code:review:v1:f0a50fdfb04ca7b7f76520b6fb8ee4e994b6030259090c413b64ecec41300548",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:519fa4ebe403c9aedb64f49fea8db8ac2a1acfcfe14fb6644a3ee6ffb14fca08",
+      "review_key": "similar-code:review:v1:2ce9b9113ba6fcf0e876e734457857f39c73694b998fec7c674b1cd88c953822",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:95313e81336b7204ead59eb0b7c01a473f49c7bfce35b117b1666dea62923bb8",
+      "review_key": "similar-code:review:v1:16d991fff0e06626a6ed2ac5c1d1af59c7525ff92cce7a95e3c1e789d063467f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:c65e0cfe33f78a0486db64e6209cc4a9bdad4cecfbf9debf8e3132035c068abd",
+      "review_key": "similar-code:review:v1:1500bab1a7987e5fa130d5dec4860fa29526f2d470cc1a174b98ac4ba231e52a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ffb0923eafe8a4f6567f05579c4fa01dafbe4deff3fc51dfe14925ca8a88072d",
+      "review_key": "similar-code:review:v1:6b3807f1c8e205288301e03972446787a5c49c8f546a7c1663e1b21be8662d98",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e26711deba487f608bcc20a2027b8779360111496cbe906d412a779f2c52c93a",
+      "review_key": "similar-code:review:v1:e1975dc80cf1e7fb86e45787a58020b2f718b2f094f82d10767e797162c21651",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Key wrapping and message sealing steps that run different cryptographic operations on different inputs; they are kept separate so each step stays auditable."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:6035d1a621a550ce98fa204589d674662ddad3d7aa277aee7f60ee5c36b90e1d",
+      "review_key": "similar-code:review:v1:0ed7da7efeec3ec5754d4a1fdc9480a2e347b617e646f6e80110bf4c1e66dbe5",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Two Alchemy resource patches that set different issue fields of the Worker; they differ in the field and the value they write."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:6d2b1e9ac2e34bd468e286b01797f1a7ee3b627931cd45c62f9f3faa8e0b1e2f",
+      "review_key": "similar-code:review:v1:8e8f0c6dc4e6f00c8c28934a2d1bddd5992303ac6dc47b8decf8dedde8658140",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4c7f4b1e184bf8ebbd59a39438f27def6ff24207722eefe026ad6a6e27daf203",
+      "review_key": "similar-code:review:v1:88b0d88734de6fa4ef2c2ac56405beb3467313d45bdf83d5421eca7ff4f2d391",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:42db4c1e7d140bc465407ab238d1a1700e3f478a3fd64efab65f84d4efa0ed03",
+      "review_key": "similar-code:review:v1:72a303b1cec8b560449f8b6805e8b4437261c58da98cb153427bb39dde262be3",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9a4a02de0d9bb5f5a2f27ac42c1a9c0b70398ac174b048f5089b22a7e7e776b5",
+      "review_key": "similar-code:review:v1:75e57feef7748724efe5e0f360b68dab5335d4ac2bc63fe153fbc4ffe2815812",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:119126d4d5888638bff88a2aec1bfbb866d1b2a023ced73b2562a1ae8c07bc66",
+      "review_key": "similar-code:review:v1:12a1099cf536120db1483fd6448b4cdbca93c25689e8da31c537805940252009",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0286905285e4273d84c250f5cd45846555756dd6bd0eab88b11672402f8f5e77",
+      "review_key": "similar-code:review:v1:9af25937abcd6ba34a22769fbbe01f6b7dff07540e7c741f7835a138db61d3bb",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ea5513733db84ffe2b17d64dfdab166bb33fa4df187ae80b3dba2a916af3c766",
+      "review_key": "similar-code:review:v1:6e846a8509d074a9d4bf4cd59fb260d0237218159f22a5e8b0ca7bc6743ec9db",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:04ea947b40c0f12585b6ba7381828c059a9fa2765862dfe4b82579a98b0dccb2",
+      "review_key": "similar-code:review:v1:48695b2ce50022866d37b9e2b1017b51514f10d313b742c2b9a4c27fbac0b9dc",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0cc1aa7ae35b59940076165dd7d7731bca62f04ba2e58cd78c7ee636dc1c9c66",
+      "review_key": "similar-code:review:v1:368cda82ee0af555f1f309485bb0aab0f819e074e76cff48c9d05a3bcd9973a4",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:2b5e8b3c32097c9379d1aca57e76ea6e5680869e2553037c894096797af548ca",
+      "review_key": "similar-code:review:v1:75fbf0fa22c6299992282ff2dfbcde742e85046219e0e141357c26127d391f2a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e818b1cc0e0b644c09c6b3cf3e6e5ab5f8342c15b9a8b95189bc900816b82775",
+      "review_key": "similar-code:review:v1:235643d9e26c3c59c711d0c3bfe0513cd1fe8f12d1e2c6abb58078a87ab44998",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:61c6815dd45554f0c17028d4cb8142133e7f4aa84292b1d51f6d8cfab70af9f1",
+      "review_key": "similar-code:review:v1:5e0fb4e3dc26880ba4344d76fd2bc5175b20fa42990238657589433fe7603787",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4962160e9b27c733ac08fc10db7ddad849850c0f697b7e46ad90ecdb8ecda28e",
+      "review_key": "similar-code:review:v1:9f1ffae22c0ee7d9b13c7e7a21d08c9960b3d9e9f253133785b175261e518818",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5eed5bcdf81edfbaaef4e96c597b70e90cb9277200f6b6157608f32e8290686a",
+      "review_key": "similar-code:review:v1:37bcd604a543853e7b254dc00932b31530f3619868beb98c186125541ec7373d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:1d0116653808471e35e79880b24ce6c8671c9f45b4b115d41c97774c52dc1670",
+      "review_key": "similar-code:review:v1:d0062592a30ff6d3aa2fce0b0f5ca67b2dd8fae4d31a7d2ab0b3b3b48fd08b9d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:0b9b3a423f8e6217ae0a9f8d47f2567ca944925431d6720fc966bbb821ef704b",
+      "review_key": "similar-code:review:v1:8d8503b570100bd280d8ce8979a6e3f44718ca47e7b82392943f5caadb0108f6",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8828031bf5ce17dc377c12846756500f330b23614b393cfacc8b9533f30d4973",
+      "review_key": "similar-code:review:v1:2c9fa58769c58ff687b0b686774a1a7e7e6f22c401b2c12f6b688279d0759774",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cdca274948231c1498eed748aa8e8ecb78a6166a5cc5d78eaa9b2cb3ecfc1d87",
+      "review_key": "similar-code:review:v1:36336940f1297c4878586200fec001a6eff26952f1c6c7af476fea64bdf9f4dc",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:410590be24c8010463b27ea235a509c04d9f15de68e00d02080a704ecd9b3850",
+      "review_key": "similar-code:review:v1:04c92f5b00a80145dcc6764f60487a9576f00a7feebf47516fb30f5db721a10e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:591bc559a87cf2cd736a2cd61e0b9e2caf977e6e9e6a78f64cd790e5eb27601d",
+      "review_key": "similar-code:review:v1:361a407916fc55cfd8426543d1410908e040cf47d73554f170caf090b06dc734",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:6460f5570f18f0e40f465c7c292db7db1698fe45e099f78b00b18664197d06b1",
+      "review_key": "similar-code:review:v1:7fd73bb1c4e707a3bb2d070ddce59ad356d0721b52d57c6604745167c95c1732",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:2b39b5d8ae5c7315c6a0c2ce1cdf85037bfef3bce2daa86c3416737c0093aa92",
+      "review_key": "similar-code:review:v1:bff5ccb16dafa205d48d815fd3a452e6c7f6aea412905a4e96783a90c408d854",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8b7676e90c0216ca889e5fbfedd9aeb5c21e7d888f68de863d496f1f62644f01",
+      "review_key": "similar-code:review:v1:fa4180835eb6d6e0c1e2b725f7ad8b23827f6c6b6c3fcb2b94072ebe0bc0729d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d3b3eeb2452d5903a88a1da8b03ef00b837700eb24fa4748941f4c8e699acd57",
+      "review_key": "similar-code:review:v1:b91f8676c0c8ded0cb0cf8088281c86ce65d4bd651889a2c2de71bd547ab3ee5",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:7c393485114b7fe372cbfb0c7d5569c6d6bc3b9f197887a15519bac27b1aee63",
+      "review_key": "similar-code:review:v1:5398e9d4b66a83e82ea08647c5d27396a2e382dc9313f154bd1b71596009dce2",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ddc02a98b93430ae3b9bff97eaf8401c93c77ee0259488482d8763e2082048d2",
+      "review_key": "similar-code:review:v1:f0f4d2666e50a8413b3db4f66640dbce56aac583b1a90bc6631839cb63052677",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:016b387e0f98f4ddc88e91fc40fa59ac1a77b50f401156342c90c73cf92cac7c",
+      "review_key": "similar-code:review:v1:1e1956b46c23ff063e2b2cefa8d25a1514e81c4b7bae1aeccd60882fd50a1021",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:09730635c77a218f000c0efc757b4b93cf8c0cc5a884cf8c77bfceafa07a2b8f",
+      "review_key": "similar-code:review:v1:b112af96d4cd7debf7aadedbc246b78decfb260836c577f8b52fbefd0553472c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:532e6b57eb87190248b0e9b0bb1e1ab272def8a25c1c4c0a8c2f83f5b0e5ebea",
+      "review_key": "similar-code:review:v1:78c09582d22889d66a72bb85c2ffb0b16e16339ea1dc3b47f1a2003c7955f87b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:15ece3e8602a5815bb7a4eb9c1da75149f665e364c40471874cde1952b796ba8",
+      "review_key": "similar-code:review:v1:76e9427ae953a78f315c605c819bdc35074fac48f5708c56919aad6eafab69e6",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f4f95859f05a297ba99325f9f52a7402f4aa12df27ecdb69bda18b3bd471dab6",
+      "review_key": "similar-code:review:v1:a1c0d3248b84d95eab33ec665e88e321e96ca262d762b03fd665eb28fb0342d0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cfdf97788c26ed0d1bebb896af4c52b8e15a0a2ae10bddbc5f08387e9b75ad7c",
+      "review_key": "similar-code:review:v1:fbbe192907e4eb7d2a4fee61c4cef056eb9bfb6d2bc38217f1b52da1d4d35da1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f16425552bf936ed58b8495e928c35170c7bdf0e110e7dddcc420b12efe8f794",
+      "review_key": "similar-code:review:v1:586feb2bf42c8ae1fca02008499d761e04c165b8bf00959205e49df7f9a90884",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5456e4fb2640e08135fe19fd8ce2290b3301661f39638bce269f9149966f1acf",
+      "review_key": "similar-code:review:v1:4828a0c67b992e53b06a6dd55e6e054934b74d9eb107273b65a6ee4dc34b5f98",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:64910f41bd26cbd433b92ccbbf6ff9c35aad434d78f6c11f426e7f9d1d4b1a80",
+      "review_key": "similar-code:review:v1:4eaf31869aae96c200bb045de61917263cbf2c05c217ffc37793447130b58f02",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:28b7287acba753a652b0512af85c4b127552cc69ad39268ec8ffc15744c8376f",
+      "review_key": "similar-code:review:v1:736ae2ba8c634b28131b70ac3f08b8806d469ad97229b22aa0780dd5aed8ca06",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ebcda657d0bf49dce2863121d2e7ffe72ede350cc02bacbe254303d7a78713bb",
+      "review_key": "similar-code:review:v1:3290c3a2c9bc201978c8140a7bfdd8ec56b95852624f3f8d67ec5f5f9c9d787e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "intentional-duplication",
+      "rationale": "Mirror-image halves of one operation in the same file (opposite direction, seal and open, newest and oldest); each reads clearly as written and a shared helper would only take the direction as a flag."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f596b97e6b74365db69585ca4ff285895ff3df0d840431185862e2179328952f",
+      "review_key": "similar-code:review:v1:be29612044a75dd2cd99fdd3b5efb5b6c2ce6ff8c6d85bf11348abe40c7c1767",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:cf57b235029dc685cf731f6e6688dbbce73a479fb06d1b36c780008a1290711f",
+      "review_key": "similar-code:review:v1:e6d8cb7ea90938f93fdf65913deafa2f58cb763b81402b37a2888bebc07f8e8c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:81ad264bd9ed428b2fa87ae962d5a50aeb96f6dcc8dd385196e448dadf4fc778",
+      "review_key": "similar-code:review:v1:fe7a391c152a0047be64a014af9f181c31200ffd325eebff01598d9f49dd5909",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f3021086d3a85e64b6a14f633c96f7d123c27cce783861551172d6d96a50b52c",
+      "review_key": "similar-code:review:v1:3a1a44e62158ac5c66327df46ebc4b2233f29140e955688787c3a8d2a3b2137d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:053eb6c0e8ff286812e1847be69cc9b4d37479c2e5fe7b10529543e0baf535b2",
+      "review_key": "similar-code:review:v1:c959eecda76c345987fe127827bce310b44180c4ba133b2be3affe73d7625689",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a5295b3af6daf80ee7e4dd94abe2c5ed018ee497adb255c6355d17a2f51c4589",
+      "review_key": "similar-code:review:v1:d7def27d70bebb6779371edba68b9591aab7f597a7d9aebe6e649c45e1ab1abc",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f4b18b030295f29b6df2de918c0f26cde377a0c1d70f7a43457f2fbf277e1870",
+      "review_key": "similar-code:review:v1:653f4d6842f6979b9c504885792a4bd99a73e7c47a7cf834294ba79f9f02acff",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:aca8664b5b8ae53c2e17263a0adf9f0447c2cbc979e2b9ebc821fc55a3a990a6",
+      "review_key": "similar-code:review:v1:55ff0bd773ce01c0a58eb9845c20c7959ffe49c87513624e81cd032406a2592f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a0f99f56a5c99eaafd25cce84b5e621ce6bbe2711443292f1b888c1be5ae3a3d",
+      "review_key": "similar-code:review:v1:c24468f4a022d868d99032418ff2585861da73d29aefac40889f47e21df76ea4",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:3e014a2f831419a4d6be25edf374bff0879f398e27280edb6a0ca624609bf018",
+      "review_key": "similar-code:review:v1:c30fcbbc27147eda93eff1974f006fadc822b08023941f19ba069fefb9ff3ee0",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:16346321201d635476fae82c3ed94b2469ddda05add49034f86d41ce4bc50e22",
+      "review_key": "similar-code:review:v1:19f31298a32e72efcd98f6793bbba47d3a986054dfb9067274c627fe44dcdddb",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e4925de9196e0a71a90838370ce58a3ffddbbb9e8588512f9671da232a7305cc",
+      "review_key": "similar-code:review:v1:634f899702c7a7024b13677f6ef3c114217ea9697b17d8b8695653a50a940e2b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Similar in shape but different in purpose, inputs and callers."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:25de942f1ffae72940d957c011c4dc8d3f2ad3a0229eaefb078d7ca0f98684c1",
+      "review_key": "similar-code:review:v1:7c102de08cc76b6ab34b6f81c922332e30848ea9db527dcbe1670ba190ddaf64",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:bb8cad3980e939553c95e96908ec1a57f4a96d2786d9dcc0dd28ce66a4c1e135",
+      "review_key": "similar-code:review:v1:6cd7b2bef435855ae7c652add812be08ad55a25a6e5c48fba14cada05aee4a3d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:67f695a53370efd81bf8eaef17edfd3b2cf4251b6f796cf4a482736177995890",
+      "review_key": "similar-code:review:v1:01d76764ae06a75f2fb56c39359d5459c888131818a2a439b95aca345c251eb7",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:7ff04bc03a8c7fdb16909ed7a4d70dead0c5d680ecb8a90b512274f5af20c5e0",
+      "review_key": "similar-code:review:v1:453ba5c1103693aea07a7c6e2498323c5ef78a95711c3b915362ca5efe6d3f5e",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8772c87e0fb2d90b7b7e7662f7b884b7b0fff78ce740d4198160834660f274b7",
+      "review_key": "similar-code:review:v1:32bd80dbcb9377939b0e7dff72530762afd2aece713c91e97c205b7ddb04140b",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:246a28e78337ee2e6482771f23ae8b942b050d09c26e6bee659bd1997780aa49",
+      "review_key": "similar-code:review:v1:d33c63f665eb4f7dc57cf729a59bdd88de00b8d34e98733091f68225eaf7fe45",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:fcf05b0efb8f98b735ea0c8662371ff7a297fe7d5b898ac4d933e0b2d297e040",
+      "review_key": "similar-code:review:v1:ca6d82c9b5fba98bba3cb6bd8b878544181599e51433494a12d25dcc8f489f91",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:439b239afd3bd2f3005a6488c120cc16e975732b1fd8d346dc503d9132c74219",
+      "review_key": "similar-code:review:v1:5501f77206aff2c77da7dd63bb7ac75ed9460a4269537a804a897cf78fa81367",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e2a34fe9f20e4e157b207256a4dc89e8d102af6bc66c5cfdc798385901bbe00c",
+      "review_key": "similar-code:review:v1:52e9961bad37788a4f7b7cf0b183199a0ef6b33c6084ec2687c916458b82ce85",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:2e538098fa4b443fc0bd20c54a1c1a994bcab71c22eb0acbe0ab5e579dd32142",
+      "review_key": "similar-code:review:v1:af60bb65d60e26291085b69dda5c175b8b4c6dc3f4baa4036738ba5cc86f3bda",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d7154ce38f697d9f5ff92f683c912d7e01f0a830fa0ed9601ff0664f01b42149",
+      "review_key": "similar-code:review:v1:4ae7f7d83c156e90b5ecfbcf3d89652e3a353c2558c2c649f6d30df77b92a013",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:96382ea663a7f58bb8e3cdc44b884e7e79bd3add4387d34975c354903dc79c43",
+      "review_key": "similar-code:review:v1:55c7995eb72f4d36c500e8f78c73c40357a4f4a28fa7ae1379b507fee4ee3fb8",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:8471b4f4058ac811033c9253e233bf8fabe5ddad4069ab1a49d8a109ec0fed99",
+      "review_key": "similar-code:review:v1:a0a93c45451eb85192155859e89176f0a4103d38a64d7da76b9231ff739f00ec",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4f455b7bfa16fdcd63c9c4a18dfeec73d8565c79d4ff780020365070b8ad7a6a",
+      "review_key": "similar-code:review:v1:96e544a4a6d007566d603617fc5feaf8f80333011b2e50a616e9fab673f6890f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9a8c075e9d197b8845498a54cb47fd2b15ce8795d726cabb91d0b6fdbc820ff0",
+      "review_key": "similar-code:review:v1:af52b3b841de44340b1890c19aa28811b4256f80ac3ede05441b064d530873b3",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d50dec32cfb3971d6e0083bdf71f84c2b33cf62184d78b007d8279b8fa7b634b",
+      "review_key": "similar-code:review:v1:ad131c556cbddf15c7242f6bcf87fad8bcf5ca9102a7109918602c557ae254c8",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "UI components with a similar JSX skeleton and different props, classes and content; they belong to different screens."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4cdce302ad13b0325db2c5496c959092dbb16f1f5ce16b42a1f481928bde5fd5",
+      "review_key": "similar-code:review:v1:a417c31d751527141f27d772961d0068eba78de6f9e3374bf04bde25f950af47",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:1e0d7604633e49c723d68ef3062e2f7cfdd385cc7071962399ee44897cf6a278",
+      "review_key": "similar-code:review:v1:55b63e33f3f44c1a7c0b1619922d8d6355be98137660308ee9b0e46b84d7e1fe",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:a22011386fb23650b4e706d7f0820c86e151c6a7455d2f3a650c4e2c7ab73920",
+      "review_key": "similar-code:review:v1:3eba9f911397554edd325ec03a7dd4f9728272c0571738c8fe83b5ad8caf94b1",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:9802996ad42647909e9f4b06eea6056b5fba96c66646e377779b49f723bcdbb2",
+      "review_key": "similar-code:review:v1:a4ed036a68ccdaf95dcd4d057bb555d6917952e9aeceda277446851642688118",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:05581d8a66c77a5307c48c40722fe36967cb99fe02b7e8df37a933961f4c354d",
+      "review_key": "similar-code:review:v1:c9dc9be541bf81ab0da7214ab7ca0497c5b85dde8600c6a6965cce6088c911ec",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5e12a624f5d407a820a3de9c359d9429fc7e019d4d9da1b1a2e551998e51cd63",
+      "review_key": "similar-code:review:v1:bc3f40a9ab9db5e06789af30a53d1940660c3b9cdb2f948025b4cd7e9fefaf03",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e7c2a2f0e18e8579c7c31f3e5538a76bd67b68de67ba7c7e297f0f8a8ec1c67a",
+      "review_key": "similar-code:review:v1:dfc5c7ebfaec8841887626e98564caf6353fbf63116949a5c0cb7ce1e5b0c58c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:613ed1f2fc508debbf236ac0e071bfb15e2247dfc857d04e1a243294772ae225",
+      "review_key": "similar-code:review:v1:30291b3b78b7095d1e4e6cb1cbb22f4be4e249fd7b4011c25fb2ff95e1a4ba3d",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:e6fa67be4b111b6159dda066d2bcc517823b79793240b2edfeb2216f746dc78a",
+      "review_key": "similar-code:review:v1:d77f87a46fcbcf4c624848b517b4986a60fa6f9b9c46a27cf9b5288e5b94fc0f",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:6fa40d8fd055d8fa63e6fc92beef1cf520bb5dfbf5cb514498efbb7085375644",
+      "review_key": "similar-code:review:v1:813a0afd72943d61916ee0c582ffd26a062de624d9c75d5cf853e35e5236ccf5",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:42c8d3912d852e786b7ba7938f44c011c3e28581cc96331c86e76316fce33fb4",
+      "review_key": "similar-code:review:v1:094b8aa1547bac27b2af2be066bc7d2c5e8cbda0dc654629681632d19cd76588",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:5b2611ecaca5beacb68ee9111747ec3e47b816b6d6ef00d8bf789525fa8e5653",
+      "review_key": "similar-code:review:v1:348db5509b55935b53aac65c0e85f0ba65c672d98ec9a464502b711212c0710c",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:f363bfbca9477a39d8556a83a04e335c451b970d7cf8ef8753b1c47c71c218b3",
+      "review_key": "similar-code:review:v1:516a130019df9fbd35228e9df440bb7c8392f4ba42a79937992701c2c9767db4",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Job builders and mergers for different Gateway event kinds; each kind has its own fields and its own merge key."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:4bf3221c18800180301ed4f84e7b25f705c6694adb2a5b3e2590377470028d19",
+      "review_key": "similar-code:review:v1:62da7be31f14cc007198582fb3fcd315cf0d7223d5403baa9080c6803a773008",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:d1fad0a605d305e6e55c1935ebef785806794227fc2cb1dfc75225fa48841229",
+      "review_key": "similar-code:review:v1:f4e78f536303d7b5959e624bf1a0f07972fa98c53a16ec3c669216ec12cbb8f5",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b24305382a5194fa525a545a0f48a857fc20deea8643917e863873375ec07db1",
+      "review_key": "similar-code:review:v1:7b7fddc4e38dd3cd6c6ce9cc5fb13e290b3a0b554e908c5d48b1cff175b8dfa6",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ec7cfa4e00687daaaf0ec1cbac8e3a4cc9ab46141fa7634daa24886966fe91ad",
+      "review_key": "similar-code:review:v1:5835b3586a7e2b95e190b0f7b1c528674d0c38715d7a6ffe03ee8f392d6c3c2a",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:b53543e46a4be1c7f11e5fb09824291a5dba65d4626c6902461d9a51545a92b6",
+      "review_key": "similar-code:review:v1:7a5a5491ef69cc0fcd8f25eda8a047b18d3cc8a85584e45883b3087a3919e9f7",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:545b3aa49f46795885cd6b50fa33e1bb96a16d67311375950bb08e02c144abf6",
+      "review_key": "similar-code:review:v1:b3d8372920c0c25cf00c64348a3b4353e2f01e4aad30c7374d97d7de96ea6161",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Each registers one MCP tool with its own name, input schema and handler; the registration call is the shared shape."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:edb6fc534e17d028533549666adf4f1618075e52fff380f9edd5b33780b760a5",
+      "review_key": "similar-code:review:v1:7e0807ca8a5f81a4ab4b559c0652b2e118987bb287a8c2d1fbf0a8869ab36f85",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Landing page sections built from the same wrapper skeleton; each section holds its own copy, markup and layout, and the shared part is already in shared/ui."
+    },
+    {
+      "candidate_id": "similar-code:candidate:v1:ed77ab44b9d8f1b2bb52aa3b47a232124983b02ff7a91ca633cc8843146a8cdd",
+      "review_key": "similar-code:review:v1:3745af333afbcf87cac4e3961b5c0b89a071c42b8b5bda8a9d2e8ab86c817480",
+      "candidate_worthy": false,
+      "behaviorally_equivalent": false,
+      "refactor_safe": false,
+      "outcome": "related-but-distinct",
+      "rationale": "Database queries and store methods shaped alike by the Drizzle and Effect style, each over its own table, columns and filter; a shared helper would hide those differences."
+    }
+  ]
+}

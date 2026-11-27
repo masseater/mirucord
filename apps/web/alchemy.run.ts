@@ -20,9 +20,9 @@ import type { Context } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import type { GuildStore, NeuronBudget, RequestCounter } from "./src/app/server/index.ts";
+import type { GuildArchive, NeuronBudget, RequestCounter } from "./src/app/server/index.ts";
 import { INGEST_MAX_RETRIES } from "./src/features/ingest-messages/index.ts";
-import { FREE_GUILD_LIMIT, SITE_HOST } from "./src/shared/config/index.ts";
+import { FREE_GUILD_LIMIT, SITE_HOST, WORKER_PLACEMENT } from "./src/shared/config/index.ts";
 
 const PRODUCTION_STAGE = "prod";
 const CF_BEACON_TOKEN = "05cc8ac1b77246cf8c28e93350689c0b";
@@ -229,6 +229,7 @@ const web = Effect.gen(function* web() {
     compatibility: { date: "2026-08-25", flags: ["global_fetch_strictly_public"] },
     logpush: true,
     limits: { cpuMs: 700 },
+    placement: WORKER_PLACEMENT,
     env: {
       ...discord,
       ...operations,
@@ -238,7 +239,7 @@ const web = Effect.gen(function* web() {
       DB,
       INGEST,
       SEARCH,
-      GUILD_STORE: Workers.DurableObject<GuildStore>("GuildStore"),
+      GUILD_ARCHIVE: Workers.DurableObject<GuildArchive>("GuildArchive"),
       AI: Workers.AI(),
       VERSION: Workers.VersionMetadata(),
       REQUEST_COUNTER: Workers.DurableObject<RequestCounter>("RequestCounter"),

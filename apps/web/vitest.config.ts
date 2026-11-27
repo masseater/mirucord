@@ -26,7 +26,7 @@ export default defineConfig({
               r2Buckets: ["SEARCH"],
               queueProducers: { INGEST: { queueName: "ingest" } },
               durableObjects: {
-                GUILD_STORE: { className: "GuildStore", useSQLite: true },
+                GUILD_ARCHIVE: { className: "GuildArchive", useSQLite: true },
                 REQUEST_COUNTER: { className: "RequestCounter", useSQLite: true },
                 NEURON_BUDGET: { className: "NeuronBudget", useSQLite: true },
               },

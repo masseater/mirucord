@@ -83,7 +83,7 @@ const Observability = Schema.StructWithRest(
   [Schema.Record(Schema.String, Schema.Unknown)],
 );
 
-const ObservabilitySetting = Schema.optional(Schema.NullOr(Observability));
+const ObservabilitySetting = Observability.pipe(Schema.NullOr, Schema.optional);
 
 const ScriptSettings = Schema.Struct({
   result: Schema.Struct({ observability: ObservabilitySetting }),

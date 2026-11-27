@@ -45,7 +45,7 @@ const decodeSimilar = Schema.decodeUnknownEffect(FindSimilarMessagesOutput);
 
 const findSimilar = (query: string): Effect.Effect<typeof FindSimilarMessagesOutput.Type> =>
   callTool({ name: "find_similar_messages", args: { serverId: GUILD_A, query } }).pipe(
-    Effect.flatMap(({ structured }) => decodeSimilar(Option.getOrUndefined(structured))),
+    Effect.flatMap(({ structured }) => structured.pipe(Option.getOrUndefined, decodeSimilar)),
     Effect.orDie,
   );
 

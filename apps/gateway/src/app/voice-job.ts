@@ -22,7 +22,7 @@ const VoiceStateEvent = Schema.Struct({
 
 const GuildCreateEvent = Schema.Struct({
   id: Schema.String,
-  voice_states: Schema.optional(Schema.Array(VoiceState)),
+  voice_states: VoiceState.pipe(Schema.Array, Schema.optional),
 });
 
 const decodeVoiceState = Schema.decodeOption(VoiceStateEvent);

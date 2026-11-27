@@ -95,7 +95,7 @@ export const idsOf =
   (key: ListingKey) =>
   (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<readonly string[]> =>
     outcome.pipe(
-      Effect.flatMap(({ structured }) => decodeListing(Option.getOrUndefined(structured))),
+      Effect.flatMap(({ structured }) => structured.pipe(Option.getOrUndefined, decodeListing)),
       Effect.map((listing) => Option.getOrElse(Option.fromUndefinedOr(listing[key]), () => [])),
       Effect.map((items) =>
         pipe(
@@ -108,7 +108,7 @@ export const idsOf =
 
 export const readIngestOf = (outcome: Effect.Effect<ToolOutcome>): Effect.Effect<string> =>
   outcome.pipe(
-    Effect.flatMap(({ structured }) => decodeReadIngest(Option.getOrUndefined(structured))),
+    Effect.flatMap(({ structured }) => structured.pipe(Option.getOrUndefined, decodeReadIngest)),
     Effect.map(({ ingest }) => ingest),
     Effect.orDie,
   );

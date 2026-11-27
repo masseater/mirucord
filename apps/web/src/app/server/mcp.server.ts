@@ -29,10 +29,10 @@ export const serveMcp = (request: Request): Promise<Response> =>
   requireMcpAuth(
     getAuth(),
     (authorized, claims) =>
-      runTraced(
-        linkedDiscordUser(Option.fromNullishOr(claims.sub)).pipe(
-          Effect.flatMap((discordUserId) => respond(authorized, discordUserId)),
-        ),
+      Option.fromNullishOr(claims.sub).pipe(
+        linkedDiscordUser,
+        Effect.flatMap((discordUserId) => respond(authorized, discordUserId)),
+        runTraced,
       ),
     { resource: MCP_URL },
   )(request);

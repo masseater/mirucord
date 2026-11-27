@@ -36,11 +36,12 @@ const FORM = "application/x-www-form-urlencoded";
 const withClient = <Value>(
   call: Effect.Effect<Value, HttpClientError.HttpClientError, HttpClient.HttpClient>,
 ): Effect.Effect<Value, DiscordRequestError> =>
-  Effect.scoped(
-    Layer.build(FetchHttpClient.layer).pipe(
-      Effect.flatMap((context) => call.pipe(Effect.provideContext(context))),
-    ),
-  ).pipe(Effect.mapError((cause) => requestErrorOf({ response: cause.response })));
+  FetchHttpClient.layer.pipe(
+    Layer.build,
+    Effect.flatMap((context) => call.pipe(Effect.provideContext(context))),
+    Effect.scoped,
+    Effect.mapError((cause) => requestErrorOf({ response: cause.response })),
+  );
 
 export const listPublicConnections = (
   accessToken: string,
@@ -69,7 +70,11 @@ export const revokeUserToken = (accessToken: string): Effect.Effect<void, Discor
   const request = HttpClientRequest.post(OAuth2Routes.tokenRevocationURL).pipe(
     HttpClientRequest.bodyText(form.toString(), FORM),
   );
-  return withClient(
-    HttpClient.execute(request).pipe(Effect.flatMap(HttpClientResponse.filterStatusOk)),
-  ).pipe(Effect.asVoid, Effect.withSpan("revokeUserToken"));
+  return request.pipe(
+    HttpClient.execute,
+    Effect.flatMap(HttpClientResponse.filterStatusOk),
+    withClient,
+    Effect.asVoid,
+    Effect.withSpan("revokeUserToken"),
+  );
 };

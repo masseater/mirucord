@@ -32,7 +32,7 @@ const ReadMessagesInput = Schema.Struct({
 
 const ReadMessagesOutput = Schema.Struct({
   ingest: Schema.optionalKey(IngestOutput),
-  notFullyIngested: Schema.optionalKey(Schema.Array(PendingChannelOutput)),
+  notFullyIngested: PendingChannelOutput.pipe(Schema.Array, Schema.optionalKey),
   messages: Schema.Array(MessageOutput),
 });
 

@@ -6,10 +6,10 @@ import { role } from "./guild.table";
 
 export const loadRoleField = ({
   guildId,
-  field,
+  pick,
 }: Readonly<{
   guildId: string;
-  field: "name" | "permissions";
+  pick: (row: Readonly<{ name: string; permissions: string }>) => string;
 }>): Effect.Effect<Readonly<Record<string, string>>> =>
   Effect.promise(() =>
     db
@@ -21,7 +21,7 @@ export const loadRoleField = ({
       Record.fromEntries(
         pipe(
           rows,
-          Array.map((row) => [row.id, row[field]]),
+          Array.map((row) => [row.id, pick(row)]),
         ),
       ),
     ),

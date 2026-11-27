@@ -95,7 +95,7 @@ const viewsOf = (
   Effect.gen(function* views() {
     const { guildId, wrappedKey } = scope.guild;
     const key = yield* openGuildKey(wrappedKey);
-    const roleNames = yield* loadRoleField({ guildId, field: "name" });
+    const roleNames = yield* loadRoleField({ guildId, pick: ({ name }) => name });
     const roleOf = (id: string): MemberView["roles"] =>
       Option.match(Option.fromUndefinedOr(roleNames[id]), {
         onNone: () => [],

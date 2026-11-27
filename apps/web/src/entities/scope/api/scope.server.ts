@@ -92,7 +92,7 @@ const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =
           Effect.all(
             {
               channels: loadChannels(guildId),
-              rolePermissions: loadRoleField({ guildId, field: "permissions" }),
+              rolePermissions: loadRoleField({ guildId, pick: ({ permissions }) => permissions }),
               consent: loadConsent(guildId),
             },
             { concurrency: "unbounded" },

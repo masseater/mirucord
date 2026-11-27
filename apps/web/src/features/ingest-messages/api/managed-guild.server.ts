@@ -36,7 +36,7 @@ export const managedGuild = ({
           .from(guild)
           .where(eq(guild.id, guildId)),
       ).pipe(Effect.map(Array.head)),
-      rolePermissions: loadRoleField({ guildId, field: "permissions" }),
+      rolePermissions: loadRoleField({ guildId, pick: ({ permissions }) => permissions }),
       member: findMember(guildId, userId),
     },
     { concurrency: "unbounded" },

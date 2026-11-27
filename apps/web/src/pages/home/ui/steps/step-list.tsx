@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
-import { DcLink } from "#/pages/home/ui/common/dc-link";
 import { SETUP_PROMPT } from "#/pages/home/ui/common/setup-prompt";
 import { DASHBOARD_PATH, ONBOARDING_STEPS } from "#/shared/config";
 import { CopyBlock } from "#/shared/ui/copy-block";
+import { PopButton } from "#/shared/ui/pop-button";
 
 import { InviteChip } from "./invite-chip";
 import { PromptBox } from "./prompt-box";
@@ -17,9 +17,9 @@ const CONSENT = "同意する";
 const inviteActions = (): ReactNode => (
   <div className="flex flex-wrap gap-2">
     <InviteChip />
-    <DcLink href={DASHBOARD_PATH} tone="secondary">
+    <PopButton href={DASHBOARD_PATH} tone="secondary" size="sm">
       {CONSENT}
-    </DcLink>
+    </PopButton>
   </div>
 );
 

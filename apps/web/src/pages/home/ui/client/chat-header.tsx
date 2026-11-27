@@ -1,22 +1,10 @@
-import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import { ChannelHeader } from "#/pages/home/ui/common/channel-header";
-import { CHANNELS } from "#/pages/home/ui/common/channels";
+import { ChannelLayers } from "#/pages/home/ui/common/channel-layers";
 
 export const ChatHeader = (): ReactNode => (
-  <div className="ch-bar bg-dc-chat sticky z-20 h-12">
-    {pipe(
-      CHANNELS,
-      Array.map((channel) => (
-        <div
-          key={channel.id}
-          data-channel={channel.id}
-          className="ch-bar-item col-start-1 row-start-1"
-        >
-          <ChannelHeader name={channel.name} kind={channel.kind} topic={channel.topic} />
-        </div>
-      )),
-    )}
-  </div>
+  <ChannelLayers className="ch-bar bg-dc-chat sticky z-20 h-12" layerClassName="ch-bar-item">
+    {(channel) => <ChannelHeader channel={channel} />}
+  </ChannelLayers>
 );

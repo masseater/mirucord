@@ -3,17 +3,12 @@ import type { ReactNode } from "react";
 
 import { MEMBERS } from "#/pages/home/ui/common/members";
 import { SETUP_PROMPT } from "#/pages/home/ui/common/setup-prompt";
-import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
-import { Message } from "#/pages/home/ui/message/message";
-import { PostHeading } from "#/pages/home/ui/message/post-heading";
+import { memberAuthor } from "#/pages/home/ui/message/author";
 import { FREE_GUILD_LIMIT, MASCOT_NAME } from "#/shared/config";
 
 import { Closing } from "./closing";
 import { FaqPair } from "./faq-pair";
 
-const LEAD = "よくある質問";
-const GUIDE = "なんでも聞いてね！";
-const TIME = "今日 21:05";
 const NEW = "新着";
 
 const QUESTIONS = [
@@ -66,11 +61,8 @@ const QUESTIONS = [
   },
 ] as const;
 
-export const FaqBody = (): ReactNode => (
+export const FaqThread = (): ReactNode => (
   <>
-    <Message author={BOT} time={TIME}>
-      <PostHeading guide={GUIDE} lead={LEAD} />
-    </Message>
     <div className="text-dc-new mx-4 mt-4 flex items-center text-xs font-bold">
       <hr className="border-dc-new grow" />
       <span className="bg-dc-new text-dc-bright rounded-sm px-1">{NEW}</span>

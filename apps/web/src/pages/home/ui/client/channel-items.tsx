@@ -1,30 +1,16 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import { CHANNELS } from "#/pages/home/ui/common/channels";
 import { cn } from "#/shared/lib/utils";
 
-import { ChannelLink } from "./channel-link";
-import { GUIDE_CHANNELS } from "./guide-channels";
-import { PageLink } from "./page-link";
+import { LINK_ROWS, PAGE_ROWS, rowKey } from "./sidebar-categories";
+import { SidebarItem } from "./sidebar-item";
 
 export const ChannelItems = ({ className }: Readonly<{ className: string }>): ReactNode => (
   <ul className={cn("gap-0.5", className)}>
     {pipe(
-      CHANNELS,
-      Array.map((channel) => (
-        <li key={channel.id}>
-          <ChannelLink id={channel.id} name={channel.name} kind={channel.kind} />
-        </li>
-      )),
-    )}
-    {pipe(
-      GUIDE_CHANNELS,
-      Array.map((page) => (
-        <li key={page.href}>
-          <PageLink href={page.href} name={page.name} kind={page.kind} />
-        </li>
-      )),
+      [...LINK_ROWS, ...PAGE_ROWS],
+      Array.map((row) => <SidebarItem key={rowKey(row)} row={row} />),
     )}
   </ul>
 );

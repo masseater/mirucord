@@ -24,11 +24,9 @@ export default defineConfig({
         },
         { files: ["src/**/*.{ts,tsx}"], excludeFiles: ["**/*.test.ts"], use: ["traced"] },
         {
-          files: ["src/**/*.server.ts", "src/**/*.test.support.ts"],
-          rules: {
-            "stack/server-state-tanstack-query": "off",
-            "stack/ui-state-effect-atom": "off",
-          },
+          files: ["src/**/*.{ts,tsx}"],
+          excludeFiles: ["**/*.server.ts", "**/*.test.support.ts", "**/*.test.ts"],
+          use: ["clientState"],
         },
       ],
     },

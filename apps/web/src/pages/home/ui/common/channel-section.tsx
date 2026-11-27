@@ -1,10 +1,16 @@
 import type { ReactNode } from "react";
 
+import { ChannelHeader } from "./channel-header";
+import type { Channel } from "./channels";
+
 export const ChannelSection = ({
-  id,
+  channel,
   children,
-}: Readonly<{ id: string; children: ReactNode }>): ReactNode => (
-  <section id={id} className="ch-section">
-    <div className="ch-pane pb-10">{children}</div>
+}: Readonly<{ channel: Channel; children: ReactNode }>): ReactNode => (
+  <section id={channel.id} className="ch-section">
+    <div className="ch-pane pb-10">
+      <ChannelHeader channel={channel} />
+      {children}
+    </div>
   </section>
 );

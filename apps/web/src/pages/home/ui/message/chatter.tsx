@@ -9,18 +9,20 @@ import type { Reaction } from "./reactions";
 
 export type ChatLine = Readonly<{
   author: Author;
-  time: string;
   text: string;
   reply?: Reply;
   reactions: readonly Reaction[];
 }>;
 
-export const Chatter = ({ lines }: Readonly<{ lines: readonly ChatLine[] }>): ReactNode => (
+export const Chatter = ({
+  lines,
+  time,
+}: Readonly<{ lines: readonly ChatLine[]; time: string }>): ReactNode => (
   <div>
     {pipe(
       lines,
       Array.map((line) => (
-        <Message key={line.text} author={line.author} time={line.time} reply={line.reply}>
+        <Message key={line.text} author={line.author} time={time} reply={line.reply}>
           <p>{line.text}</p>
           <Reactions items={line.reactions} />
         </Message>

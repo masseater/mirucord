@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import type { ManagedGuild } from "#/features/ingest-messages/index.server";
 import { MASCOT_NAME } from "#/shared/config";
 import { Panel } from "#/shared/ui/panel";
-import { popButtonVariants } from "#/shared/ui/pop-variants";
+import { PopButton } from "#/shared/ui/pop-button";
 
 import { GuildCard } from "./guild-card";
 
@@ -23,8 +23,8 @@ export const GuildList = ({
         Array.map((guild) => <GuildCard key={guild.id} guild={guild} />),
       )}
     </ul>
-    <a href={inviteUrl} className={popButtonVariants({ tone: "secondary", size: "md" })}>
+    <PopButton href={inviteUrl} tone="secondary">
       {INVITE}
-    </a>
+    </PopButton>
   </Panel>
 );

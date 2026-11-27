@@ -299,8 +299,8 @@ catalogs:
       specifier: 1.23.0
       version: 1.23.0
     '@r_masseater/workers-tracing':
-      specifier: 0.6.0
-      version: 0.6.0
+      specifier: 0.6.1
+      version: 0.6.1
     '@tanstack/react-query':
       specifier: 5.108.4
       version: 5.108.4
@@ -375,7 +375,7 @@ importers:
         version: 0.57.1(03cecdf369b532fc2f19a7ba3daf6eed)
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
-        version: 0.6.0(f666146f4da18dc8e157e1074828df8a)
+        version: 0.6.1(f666146f4da18dc8e157e1074828df8a)
       '@tanstack/intent':
         specifier: 'catalog:'
         version: 0.5.6
@@ -500,7 +500,7 @@ importers:
         version: 1.23.0(@openfeature/core@1.12.0)
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
-        version: 0.6.0(4b410c85b0580246ec6732b1f36d584e)
+        version: 0.6.1(4b410c85b0580246ec6732b1f36d584e)
       '@repo/ingest-util-gateway-contract':
         specifier: workspace:*
         version: link:../../libs/ingest/util-gateway-contract
@@ -3542,8 +3542,8 @@ packages:
       vite: '*'
       vite-plus: '>=1.5.0'
 
-  '@r_masseater/workers-tracing@0.6.0':
-    resolution: {integrity: sha512-GVG1tm+TH0kSi89DdABLNTan2auZX1PCgo/i1ArGmraKvpa4D5biQ+vxmXEt+48Ogzy3mJgrpsHYyRaYSE7dhw==}
+  '@r_masseater/workers-tracing@0.6.1':
+    resolution: {integrity: sha512-6oQdY62gEr784F8xGjqCGRAAT363Zo04eHcokOjvUXbUgwsZDzCUGnHF4iqRv9rduGN26/U/Qat3FPhSBFGBTg==}
     engines: {node: v26.13.1}
     hasBin: true
     peerDependencies:
@@ -12339,7 +12339,7 @@ snapshots:
       - redis
       - utf-8-validate
 
-  '@r_masseater/workers-tracing@0.6.0(4b410c85b0580246ec6732b1f36d584e)':
+  '@r_masseater/workers-tracing@0.6.1(4b410c85b0580246ec6732b1f36d584e)':
     dependencies:
       effect: 4.1.5
     optionalDependencies:
@@ -12350,7 +12350,7 @@ snapshots:
       alchemy: 2.0.0-beta.87(@effect/platform-node@4.1.5(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0)))(@types/react@19.3.0)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(ws@8.22.1)
       elysia: 1.4.32(@sinclair/typebox@0.34.52)(exact-mirror@0.2.9(@sinclair/typebox@0.34.52))(file-type@22.1.1(supports-color@7.2.0))(openapi-types@12.1.3)(typescript@7.1.0-beta)
 
-  '@r_masseater/workers-tracing@0.6.0(f666146f4da18dc8e157e1074828df8a)':
+  '@r_masseater/workers-tracing@0.6.1(f666146f4da18dc8e157e1074828df8a)':
     dependencies:
       effect: 4.1.5
     optionalDependencies:

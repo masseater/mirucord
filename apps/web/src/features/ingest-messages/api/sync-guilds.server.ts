@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Array, DateTime, Effect, Option, pipe } from "effect";
+import { Boolean, Array, DateTime, Effect, Option, pipe } from "effect";
 
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { db, guild, listGuildIds, role } from "#/shared/db/index.server";
@@ -127,24 +127,28 @@ const admitJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestEr
     ),
   );
 
-export const syncJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
-  whenIngestEnabled(
-    listGuildIds.pipe(
-      Effect.flatMap((stored) => {
-        if (stored.includes(guildId)) {
-          return Effect.void;
-        }
-        return admitJoinedGuild(guildId);
+const byKnownGuild = ({
+  guildId,
+  known,
+  unknown,
+}: Readonly<{
+  guildId: string;
+  known: Effect.Effect<void, DiscordRequestError>;
+  unknown: Effect.Effect<void, DiscordRequestError>;
+}>): Effect.Effect<void, DiscordRequestError> =>
+  listGuildIds.pipe(
+    Effect.flatMap((stored) =>
+      Boolean.match(stored.includes(guildId), {
+        onTrue: () => known,
+        onFalse: () => unknown,
       }),
     ),
   );
 
-export const syncKnownGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
-  listGuildIds.pipe(
-    Effect.flatMap((stored) => {
-      if (stored.includes(guildId)) {
-        return syncOneGuild(guildId);
-      }
-      return Effect.void;
-    }),
+export const syncJoinedGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+  whenIngestEnabled(
+    byKnownGuild({ guildId, known: Effect.void, unknown: admitJoinedGuild(guildId) }),
   );
+
+export const syncKnownGuild = (guildId: string): Effect.Effect<void, DiscordRequestError> =>
+  byKnownGuild({ guildId, known: syncOneGuild(guildId), unknown: Effect.void });

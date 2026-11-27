@@ -5,37 +5,55 @@ import { guildStore } from "#/entities/guild-message/index.server";
 
 import { whenConsented } from "./consented.server";
 
-export const storeGatewayVoice = ({ guildId, changes }: VoiceJob): Effect.Effect<void> => {
-  const logged = Effect.logInfo("Voice changes stored").pipe(
-    Effect.annotateLogs({ guildId, changes: changes.length }),
+const logged = ({
+  guildId,
+  label,
+  counts,
+}: Readonly<{
+  guildId: string;
+  label: string;
+  counts: Readonly<Record<string, number>>;
+}>): Effect.Effect<void> => Effect.logInfo(label).pipe(Effect.annotateLogs({ guildId, ...counts }));
+
+const storeActivity = ({
+  guildId,
+  label,
+  counts,
+  save,
+}: Readonly<{
+  guildId: string;
+  label: string;
+  counts: Readonly<Record<string, number>>;
+  save: () => Promise<unknown>;
+}>): Effect.Effect<void> =>
+  whenConsented(guildId)(() =>
+    Effect.promise(save).pipe(Effect.andThen(logged({ guildId, label, counts }))),
   );
-  return whenConsented(guildId)(() =>
-    Effect.promise(() => guildStore(guildId).saveVoiceChanges(changes)).pipe(
-      Effect.andThen(logged),
-    ),
-  );
-};
+
+export const storeGatewayVoice = ({ guildId, changes }: VoiceJob): Effect.Effect<void> =>
+  storeActivity({
+    guildId,
+    label: "Voice changes stored",
+    counts: { changes: changes.length },
+    save: () => guildStore(guildId).saveVoiceChanges(changes),
+  });
 
 export const storeVoiceSnapshot = ({
   guildId,
   at,
   present,
-}: VoiceSnapshotJob): Effect.Effect<void> => {
-  const logged = Effect.logInfo("Voice snapshot stored").pipe(
-    Effect.annotateLogs({ guildId, present: present.length }),
-  );
-  return whenConsented(guildId)(() =>
-    Effect.promise(() => guildStore(guildId).saveVoiceSnapshot({ at, present })).pipe(
-      Effect.andThen(logged),
-    ),
-  );
-};
+}: VoiceSnapshotJob): Effect.Effect<void> =>
+  storeActivity({
+    guildId,
+    label: "Voice snapshot stored",
+    counts: { present: present.length },
+    save: () => guildStore(guildId).saveVoiceSnapshot({ at, present }),
+  });
 
-export const storeGatewayReactions = ({ guildId, changes }: ReactionsJob): Effect.Effect<void> => {
-  const logged = Effect.logInfo("Reactions stored").pipe(
-    Effect.annotateLogs({ guildId, changes: changes.length }),
-  );
-  return whenConsented(guildId)(() =>
-    Effect.promise(() => guildStore(guildId).saveReactions(changes)).pipe(Effect.andThen(logged)),
-  );
-};
+export const storeGatewayReactions = ({ guildId, changes }: ReactionsJob): Effect.Effect<void> =>
+  storeActivity({
+    guildId,
+    label: "Reactions stored",
+    counts: { changes: changes.length },
+    save: () => guildStore(guildId).saveReactions(changes),
+  });

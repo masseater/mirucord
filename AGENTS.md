@@ -29,18 +29,18 @@ The base stack is TypeScript 7, Effect, Alchemy and Cloudflare.
 
 Base designs, load estimates and cost estimates on the next scale, not the current one.
 
-| Item | Assumption |
-| --- | --- |
-| Servers | 500 |
-| Members per server | 200 on average, 1,000 at most |
-| Daily users | Half the members of each server |
+| Item               | Assumption                      |
+| ------------------ | ------------------------------- |
+| Servers            | 500                             |
+| Members per server | 200 on average, 1,000 at most   |
+| Daily users        | Half the members of each server |
 
-| Item | Requirement |
-| --- | --- |
-| Concurrent requests per server | 1,000 |
-| Total requests | 1,000 per second |
-| Ingested messages | 2,000 per server per day |
-| Response time | Handle the load above in parallel and answer each request within 3 minutes of the Worker receiving it. Within that, lower response time and cost are better. Do not rely on the MCP tasks extension |
+| Item                           | Requirement                                                                                                                                                                                         |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Concurrent requests per server | 1,000                                                                                                                                                                                               |
+| Total requests                 | 1,000 per second                                                                                                                                                                                    |
+| Ingested messages              | 2,000 per server per day                                                                                                                                                                            |
+| Response time                  | Handle the load above in parallel and answer each request within 3 minutes of the Worker receiving it. Within that, lower response time and cost are better. Do not rely on the MCP tasks extension |
 
 - Take the per-server member counts, post counts, request counts, and DO row counts, sizes and wall time used in estimates from production through the Cloudflare GraphQL Analytics API and the Discord API, and write the values and the date into the estimate.
 - `作業配信` is the name of a server, not a streamer's server.

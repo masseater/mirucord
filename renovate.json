@@ -65,7 +65,6 @@
       "packageNameTemplate": "https://github.com/{{{depName}}}"
     }
   ],
-  "gitIgnoredAuthors": ["41898282+github-actions[bot]@users.noreply.github.com"],
   "rollbackPrs": false,
   "timezone": "Asia/Tokyo"
 }

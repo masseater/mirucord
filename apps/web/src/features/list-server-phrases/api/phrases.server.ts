@@ -134,11 +134,13 @@ const viewOf =
     );
   };
 
+const NO_NOTE = Option.getOrNull(Option.none<string>());
+
 const withNote = (view: Labelled["view"], note: string | null): PhraseView => ({ ...view, note });
 
 const noteView = (note: Option.Option<Note>): Option.Option<string | null> =>
   Option.match(note, {
-    onNone: () => Option.none<string>().pipe(Option.getOrNull, Option.some),
+    onNone: () => Option.some(NO_NOTE),
     onSome: (found) => {
       if (found.status === "common") {
         return Option.none();
@@ -146,7 +148,7 @@ const noteView = (note: Option.Option<Note>): Option.Option<string | null> =>
       if (found.status === "server") {
         return Option.some(found.note);
       }
-      return Option.none<string>().pipe(Option.getOrNull, Option.some);
+      return Option.some(NO_NOTE);
     },
   });
 

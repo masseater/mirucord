@@ -12,6 +12,11 @@
   "ignoreTests": true,
   "packageRules": [
     {
+      "description": "vite-plus は oxlint と tsrs の版を固定し、@effect/tsgo は対応している版の tsrs にしかパッチを当てられない。ルートの tsrs と組で上げ、合わない版が入る赤を防ぐ。",
+      "matchPackageNames": ["vite-plus", "@effect/tsgo", "tsrs"],
+      "groupName": "vite-plus and effect-tsgo"
+    },
+    {
       "matchPackageNames": [
         "effect",
         "@effect/**",

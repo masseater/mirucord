@@ -20,6 +20,7 @@
     "fallow-similar-code": "catalog:stack",
     "fallow-type-aware": "catalog:stack",
     "renovate": "catalog:stack",
+    "tsrs": "catalog:stack",
     "typescript": "catalog:stack",
     "vite-plus": "catalog:stack"
   },

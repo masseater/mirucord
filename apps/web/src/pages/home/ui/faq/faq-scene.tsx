@@ -1,5 +1,5 @@
-import type { Scene } from "#/pages/home/ui/common/channel-scene";
 import { FAQ_CHANNEL } from "#/pages/home/ui/common/channels";
+import type { Scene } from "#/pages/home/ui/common/scene";
 
 import { FaqThread } from "./faq-thread";
 

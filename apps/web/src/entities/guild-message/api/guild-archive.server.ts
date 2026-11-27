@@ -2,20 +2,7 @@ import { Clock, Effect, Option } from "effect";
 
 import { backfillPhrases } from "./phrase-backfill.server";
 import { RelationStore } from "./relation-store.server";
-import type {
-  ExtractedPhrases,
-  NoteClaim,
-  PhraseContext,
-  PhraseExample,
-  PhraseNote,
-  PhraseRequest,
-  PhraseSamples,
-  PhraseStatsLookup,
-  PhraseTally,
-  SampleRequest,
-  SavedStats,
-  UnphrasedMessage,
-} from "./store-types";
+import type { ExtractedPhrases, PhraseRequest, PhraseStatsLookup } from "./store-types";
 import { vectorLedger } from "./vector-ledger.server";
 import type { Coverage } from "./vector-ledger.server";
 
@@ -32,29 +19,6 @@ export class GuildArchive extends RelationStore {
     return this.ctx.storage.setAlarm(now).then(() => lookup);
   }
 
-  public phraseTally(channelIds: readonly string[], now: number): PhraseTally {
-    return this.tallyPhrases(channelIds, now);
-  }
-
-  public phraseExamples(
-    phrases: readonly string[],
-    channelIds: readonly string[],
-  ): readonly PhraseExample[] {
-    return this.examplesOf(phrases, channelIds);
-  }
-
-  public savePhraseStats(visibility: string, stats: SavedStats): void {
-    this.saveStats(visibility, stats);
-  }
-
-  public phraseContexts(messageIds: readonly string[]): readonly PhraseContext[] {
-    return this.contextsOf(messageIds);
-  }
-
-  public unphrased(now: number, limit: number): readonly UnphrasedMessage[] {
-    return this.unphrasedMessages(now, limit);
-  }
-
   public writePhrases(extracted: readonly ExtractedPhrases[]): void {
     const erased = new Set(this.erasedIds());
     for (const { message, hashes } of extracted) {
@@ -64,26 +28,6 @@ export class GuildArchive extends RelationStore {
     }
     this.countWrites(extracted.length);
     this.forgetStats();
-  }
-
-  public phraseNotes(phrases: readonly string[]): readonly PhraseNote[] {
-    return this.notesOf(phrases);
-  }
-
-  public claimPhraseNotes(claim: NoteClaim): readonly string[] {
-    return this.claimNotes(claim);
-  }
-
-  public savePhraseNotes(notes: readonly PhraseNote[], now: number): void {
-    this.saveNotes(notes, now);
-  }
-
-  public phraseSamples(request: SampleRequest): readonly PhraseSamples[] {
-    return this.samplesOf(request);
-  }
-
-  public releasePhraseNotes(phrases: readonly string[]): void {
-    this.releaseNotes(phrases);
   }
 
   public vectorCoverage(): Coverage {

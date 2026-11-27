@@ -59,7 +59,7 @@ const settledOf = (status: NoteStatus): Option.Option<PhraseNote["status"]> =>
   Option.liftPredicate(status, (value): value is PhraseNote["status"] => value !== "pending");
 
 export abstract class NoteStore extends PhraseStore {
-  protected notesOf(phrases: readonly string[]): readonly PhraseNote[] {
+  public phraseNotes(phrases: readonly string[]): readonly PhraseNote[] {
     return pipe(
       Array.chunksOf(phrases, BOUND_LIMIT),
       Array.flatMap((chunk) => {
@@ -86,7 +86,7 @@ export abstract class NoteStore extends PhraseStore {
     );
   }
 
-  protected claimNotes({ phrases, now }: NoteClaim): readonly string[] {
+  public claimPhraseNotes({ phrases, now }: NoteClaim): readonly string[] {
     const taken = or(
       inArray(phraseNote.status, SETTLED_NOTES),
       gte(phraseNote.updatedAt, now - CLAIM_MS),
@@ -127,7 +127,7 @@ export abstract class NoteStore extends PhraseStore {
     return claimed;
   }
 
-  protected saveNotes(notes: readonly PhraseNote[], now: number): void {
+  public savePhraseNotes(notes: readonly PhraseNote[], now: number): void {
     for (const { phrase, status, sealed, examples } of notes) {
       const note = {
         status,
@@ -171,7 +171,7 @@ export abstract class NoteStore extends PhraseStore {
     }
   }
 
-  protected samplesOf({ phrases, channelIds }: SampleRequest): readonly PhraseSamples[] {
+  public phraseSamples({ phrases, channelIds }: SampleRequest): readonly PhraseSamples[] {
     const channels = new Set(channelIds);
     return pipe(
       phrases,
@@ -230,7 +230,7 @@ export abstract class NoteStore extends PhraseStore {
       .all();
   }
 
-  protected releaseNotes(phrases: readonly string[]): void {
+  public releasePhraseNotes(phrases: readonly string[]): void {
     for (const chunk of Array.chunksOf(phrases, BOUND_LIMIT)) {
       this.db
         .delete(phraseNote)

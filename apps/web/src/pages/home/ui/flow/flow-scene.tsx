@@ -1,8 +1,8 @@
-import type { Scene } from "#/pages/home/ui/common/channel-scene";
 import { HOW_CHANNEL } from "#/pages/home/ui/common/channels";
 import { MEMBERS } from "#/pages/home/ui/common/members";
+import type { Scene } from "#/pages/home/ui/common/scene";
 import { memberAuthor, BOT } from "#/pages/home/ui/message/author";
-import type { ChatLine } from "#/pages/home/ui/message/chatter";
+import type { ChatLine } from "#/pages/home/ui/message/chat-line";
 import { MASCOT_NAME } from "#/shared/config";
 
 import { FlowFigure } from "./flow-figure";

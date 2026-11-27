@@ -29,24 +29,16 @@ export const serverWith =
     return server;
   };
 
-type ToolDefinition<
-  OutputArgs extends StandardSchemaWithJSON,
-  InputArgs extends StandardSchemaWithJSON | undefined,
-> = Readonly<{
-  name: string;
-  title: string;
-  description: string;
-  outputSchema: OutputArgs;
-  inputSchema?: InputArgs;
-  handler: (discordUserId: string) => ToolCallback<InputArgs>;
-}>;
-
 export const toolRegistration =
-  <
-    OutputArgs extends StandardSchemaWithJSON,
-    InputArgs extends StandardSchemaWithJSON | undefined = undefined,
-  >(
-    definition: ToolDefinition<OutputArgs, InputArgs>,
+  <InputArgs extends StandardSchemaWithJSON | undefined = undefined>(
+    definition: Readonly<{
+      name: string;
+      title: string;
+      description: string;
+      outputSchema: StandardSchemaWithJSON;
+      inputSchema?: InputArgs;
+      handler: (discordUserId: string) => ToolCallback<InputArgs>;
+    }>,
   ) =>
   (discordUserId: string) =>
   (server: McpServer): void => {

@@ -1,4 +1,4 @@
-import type { Scene } from "#/pages/home/ui/common/channel-scene";
+import type { Scene } from "#/pages/home/ui/common/scene";
 
 import { FAQ_SCENE } from "./faq/faq-scene";
 import { FEATURES_SCENE } from "./features/features-scene";

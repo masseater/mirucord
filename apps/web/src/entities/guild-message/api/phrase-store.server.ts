@@ -126,7 +126,7 @@ export abstract class PhraseStore extends MessageStore {
     }
   }
 
-  protected unphrasedMessages(now: number, limit: number): readonly UnphrasedMessage[] {
+  public unphrased(now: number, limit: number): readonly UnphrasedMessage[] {
     return this.db
       .select({ ...SEALED_COLUMNS, authorId: guildMessage.authorId })
       .from(guildMessage)
@@ -157,14 +157,14 @@ export abstract class PhraseStore extends MessageStore {
     const ledger = this.ledgerOf();
     const due =
       now - ledger.backfillRequestedAt >= BACKFILL_RETRY_MS &&
-      Array.isReadonlyArrayNonEmpty(this.unphrasedMessages(now, PREVIOUS_MESSAGES));
+      Array.isReadonlyArrayNonEmpty(this.unphrased(now, PREVIOUS_MESSAGES));
     if (due) {
       this.saveLedger({ ...ledger, guildId, backfillRequestedAt: now });
     }
     return due;
   }
 
-  protected tallyPhrases(channelIds: readonly string[], now: number): PhraseTally {
+  public phraseTally(channelIds: readonly string[], now: number): PhraseTally {
     const ledger = this.ledgerOf();
     const channels = new Set(channelIds);
     const rows = this.db
@@ -202,7 +202,7 @@ export abstract class PhraseStore extends MessageStore {
     };
   }
 
-  protected examplesOf(
+  public phraseExamples(
     phrases: readonly string[],
     channelIds: readonly string[],
   ): readonly PhraseExample[] {
@@ -228,7 +228,7 @@ export abstract class PhraseStore extends MessageStore {
     );
   }
 
-  protected saveStats(visibility: string, { generation, ...stats }: SavedStats): void {
+  public savePhraseStats(visibility: string, { generation, ...stats }: SavedStats): void {
     if (this.ledgerOf().generation !== generation) {
       return;
     }
@@ -254,7 +254,7 @@ export abstract class PhraseStore extends MessageStore {
       .all();
   }
 
-  protected contextsOf(messageIds: readonly string[]): readonly PhraseContext[] {
+  public phraseContexts(messageIds: readonly string[]): readonly PhraseContext[] {
     return pipe(
       Array.chunksOf(messageIds, BOUND_LIMIT),
       Array.flatMap((chunk) =>

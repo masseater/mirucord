@@ -1,8 +1,8 @@
-import type { Scene } from "#/pages/home/ui/common/channel-scene";
 import { START_CHANNEL } from "#/pages/home/ui/common/channels";
 import { MEMBERS } from "#/pages/home/ui/common/members";
+import type { Scene } from "#/pages/home/ui/common/scene";
 import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
-import type { ChatLine } from "#/pages/home/ui/message/chatter";
+import type { ChatLine } from "#/pages/home/ui/message/chat-line";
 
 import { StepList } from "./step-list";
 

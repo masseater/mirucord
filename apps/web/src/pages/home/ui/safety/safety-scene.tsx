@@ -1,6 +1,6 @@
-import type { Scene } from "#/pages/home/ui/common/channel-scene";
 import { SAFETY_CHANNEL } from "#/pages/home/ui/common/channels";
 import { MEMBERS } from "#/pages/home/ui/common/members";
+import type { Scene } from "#/pages/home/ui/common/scene";
 import { memberAuthor } from "#/pages/home/ui/message/author";
 import { MASCOT_NAME } from "#/shared/config";
 

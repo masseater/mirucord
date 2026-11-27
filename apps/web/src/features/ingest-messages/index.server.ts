@@ -12,3 +12,4 @@ export { listManagedGuilds } from "./api/managed-guild.server";
 export type { ManagedGuild } from "./api/managed-guild.server";
 export type { GuildIngest } from "./model/channel-ingest";
 export { guildLimit } from "./api/guild-membership.server";
+export { resyncGuilds } from "./api/resync.server";

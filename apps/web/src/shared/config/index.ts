@@ -15,3 +15,4 @@ export { FREE_GUILD_LIMIT } from "./plan";
 export { ONBOARDING_STEPS, SAMPLE_PROMPT } from "./onboarding";
 export { webAnalyticsBeacon } from "./web-analytics";
 export { OBJECT_GENERATION, OBJECT_LOCATION, WORKER_PLACEMENT } from "./japan";
+export { RESYNC_CRON } from "./resync";

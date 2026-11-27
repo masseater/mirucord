@@ -38,7 +38,7 @@ catalog:
   type-fest: 6.0.3
   "@yarnpkg/parsers": 3.1.0
   dfx: 1.1.1
-  lucide-react: 1.78.0
+  lucide-react: 1.79.0
   ml-kmeans: 7.0.1
 catalogs:
   stack:

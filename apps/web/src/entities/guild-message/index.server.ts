@@ -4,6 +4,7 @@ export type { MessageView } from "./api/message-view.server";
 export { MessageOutput } from "./model/message-output.schema";
 export { GuildArchive } from "./api/guild-archive.server";
 export { searchMessages } from "./api/search-messages.server";
+export { moveLegacySearch } from "./api/legacy-search.server";
 export type { MemberWrite, StoredMember } from "./api/member-types";
 export type { StoredVoiceSession } from "./api/voice-types";
 export { PRECISIONS } from "./model/voice-session.schema";

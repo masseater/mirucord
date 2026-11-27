@@ -1,6 +1,8 @@
 import { env } from "cloudflare:workers";
 import { Array, Effect, Option, pipe, String as Str } from "effect";
 
+import { OBJECT_GENERATION, OBJECT_LOCATION } from "#/shared/config";
+
 const RATE_LIMIT_PERIOD = 60;
 
 const MCP_RATE_LIMIT = { limit: 600, period: RATE_LIMIT_PERIOD } as const;
@@ -47,7 +49,12 @@ const rejection = (
 ): Effect.Effect<Option.Option<Response>> =>
   digestOf(key).pipe(
     Effect.flatMap((name) =>
-      Effect.promise(() => env.REQUEST_COUNTER.getByName(name).hit(limit, period)),
+      Effect.promise(() =>
+        env.REQUEST_COUNTER.getByName(`${name}${OBJECT_GENERATION}`, OBJECT_LOCATION).hit(
+          limit,
+          period,
+        ),
+      ),
     ),
     Effect.map((allowed) =>
       Option.liftPredicate(allowed, (passed) => !passed).pipe(Option.map(tooManyRequests)),

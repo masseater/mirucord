@@ -1,9 +1,11 @@
 import { env } from "cloudflare:workers";
 import { DateTime, Effect } from "effect";
 
+import { OBJECT_GENERATION, OBJECT_LOCATION } from "#/shared/config";
+
 import type { Spending } from "./neuron-budget.server";
 
-const BUDGET_NAME = "account";
+const BUDGET_NAME = `account${OBJECT_GENERATION}`;
 const QUERY_LIMIT = 9000;
 const LIVE_LIMIT = 8000;
 const BACKGROUND_LIMIT = 7000;
@@ -18,7 +20,7 @@ const LIMITS: Readonly<Record<Priority, number>> = {
 };
 
 const spendOn = (spending: Spending): Effect.Effect<boolean> =>
-  Effect.promise(() => env.NEURON_BUDGET.getByName(BUDGET_NAME).spend(spending));
+  Effect.promise(() => env.NEURON_BUDGET.getByName(BUDGET_NAME, OBJECT_LOCATION).spend(spending));
 
 const today = DateTime.now.pipe(Effect.map(DateTime.formatIsoDateUtc));
 

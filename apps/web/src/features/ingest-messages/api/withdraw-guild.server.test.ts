@@ -72,8 +72,8 @@ const rowsOf = (guildId: string): Effect.Effect<Readonly<{ consents: number; mes
     })),
   );
 
-const breakGuildStore = (): void => {
-  vi.spyOn(env.GUILD_STORE, "getByName").mockImplementation(() => {
+const breakGuildArchive = (): void => {
+  vi.spyOn(env.GUILD_ARCHIVE, "getByName").mockImplementation(() => {
     throw new Error("guild store unavailable");
   });
 };
@@ -126,7 +126,7 @@ it.effect("keeps the consent when the stored data could not be removed", () =>
   Effect.gen(function* failed() {
     const guildId = "810";
     yield* seedGuild(guildId);
-    breakGuildStore();
+    breakGuildArchive();
     const exit = yield* Effect.exit(withdrawGuild(guildId));
     vi.restoreAllMocks();
     expect(Exit.isFailure(exit)).toBe(true);
@@ -166,7 +166,7 @@ it.effect("gives the consent back when the queued withdrawal keeps failing", () 
     const guildId = "850";
     yield* seedGuild(guildId);
     yield* requestWithdrawal(guildId);
-    breakGuildStore();
+    breakGuildArchive();
     yield* deliverWithdrawal(guildId, LAST_ATTEMPT);
     vi.restoreAllMocks();
     expect(handled).toStrictEqual({ acked: NEVER, retried: ONCE });

@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { Array, Effect, Option, pipe } from "effect";
 
 import type { ChannelProgress, Consent } from "#/entities/scope/model/ingest-status";
-import { channel, db, guild, ingestConsent, loadRolePermissions } from "#/shared/db/index.server";
+import { channel, db, guild, ingestConsent, loadRoleField } from "#/shared/db/index.server";
 import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { visibleChannelIds } from "#/shared/permissions";
@@ -92,7 +92,7 @@ const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =
           Effect.all(
             {
               channels: loadChannels(guildId),
-              rolePermissions: loadRolePermissions(guildId),
+              rolePermissions: loadRoleField({ guildId, field: "permissions" }),
               consent: loadConsent(guildId),
             },
             { concurrency: "unbounded" },

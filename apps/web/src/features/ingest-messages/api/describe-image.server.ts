@@ -1,8 +1,6 @@
 import { runWorkersAi } from "@r_masseater/workers-tracing/workers-ai";
 import { env } from "cloudflare:workers";
-import { Effect, Layer, Option, Schedule, Schema, String } from "effect";
-import { FetchHttpClient, HttpClient } from "effect/http";
-import { fromUint8Array } from "js-base64";
+import { Effect, Option, Schedule, Schema, String } from "effect";
 
 import {
   GEMMA_MODEL,
@@ -13,9 +11,9 @@ import {
 } from "#/shared/ai/index.server";
 import type { GemmaOutput } from "#/shared/ai/index.server";
 import { SERVICE_NAME } from "#/shared/config";
+import { fetchBase64 } from "#/shared/http/index.server";
 
 export const DESCRIBE_MODEL = GEMMA_MODEL;
-const OK_STATUS = 200;
 const MAX_TOKENS = 160;
 const RETRY_TIMES = 2;
 const RETRY_BASE = "500 millis";
@@ -50,17 +48,11 @@ type FetchedImage = Readonly<{ data: string; contentType: string }>;
 const fetchImage = ({
   url,
   contentType,
-}: ImageSource): Effect.Effect<FetchedImage, DescribeError, HttpClient.HttpClient> =>
-  HttpClient.HttpClient.pipe(
-    Effect.flatMap((client) => client.get(url)),
-    Effect.filterOrFail(
-      ({ status }) => status === OK_STATUS,
-      ({ status }) => DescribeError.make({ stage: "fetch", reason: `status ${status}` }),
-    ),
-    Effect.flatMap((response) => response.arrayBuffer),
-    Effect.map((buffer) => ({ data: fromUint8Array(new Uint8Array(buffer)), contentType })),
-    Effect.catchTag(["HttpClientError"], (cause) =>
-      Effect.fail(DescribeError.make({ stage: "fetch", reason: cause.reason.name })),
+}: ImageSource): Effect.Effect<FetchedImage, DescribeError> =>
+  fetchBase64(url).pipe(
+    Effect.map((data) => ({ data, contentType })),
+    Effect.catchTag("FetchError", ({ reason }) =>
+      Effect.fail(DescribeError.make({ stage: "fetch", reason })),
     ),
   );
 
@@ -110,9 +102,7 @@ const runModel = ({ data, contentType }: FetchedImage): Effect.Effect<string, De
     ),
   );
 
-const describeWithClient = (
-  source: ImageSource,
-): Effect.Effect<Option.Option<string>, never, HttpClient.HttpClient> =>
+const describeWithClient = (source: ImageSource): Effect.Effect<Option.Option<string>> =>
   fetchImage(source).pipe(
     Effect.flatMap((image) => reserveNeurons.pipe(Effect.andThen(runModel(image)))),
     Effect.retry({
@@ -130,9 +120,4 @@ const describeWithClient = (
   );
 
 export const describeImage = (source: ImageSource): Effect.Effect<Option.Option<string>> =>
-  FetchHttpClient.layer.pipe(
-    Layer.build,
-    Effect.flatMap((context) => describeWithClient(source).pipe(Effect.provideContext(context))),
-    Effect.scoped,
-    Effect.withSpan("describeImage"),
-  );
+  describeWithClient(source).pipe(Effect.withSpan("describeImage"));

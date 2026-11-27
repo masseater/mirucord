@@ -42,7 +42,7 @@ catalog:
   ml-kmeans: 7.0.1
 catalogs:
   stack:
-    "@r_masseater/workers-tracing": 0.6.0
+    "@r_masseater/workers-tracing": 0.6.1
     "@distilled.cloud/cloudflare": 1.0.0-rc.20
     "@effect/atom-react": 4.1.5
     "@effect/tsgo": 0.73.7

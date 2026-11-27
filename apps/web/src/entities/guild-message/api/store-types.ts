@@ -14,8 +14,6 @@ export type PhraseState =
   | Readonly<{ status: "pending" }>
   | Readonly<{ status: "extracted"; hashes: readonly PhraseHash[] }>;
 
-export type ExtractedHashes = Extract<PhraseState, Readonly<{ status: "extracted" }>>["hashes"];
-
 export type PhraseColumn = "messageId" | "authorId" | "channelId";
 
 export type NoteStatus = "pending" | "common" | "server";

@@ -216,18 +216,19 @@ const storage = Effect.gen(function* storage() {
   }).pipe(RemovalPolicy.protect());
   const INGEST = yield* Queues.Queue("Ingest", { name: yield* mirucordName("ingest") });
   const searchName = yield* mirucordName("search");
-  yield* R2.Bucket("Search", { name: searchName, locationHint: "enam" }).pipe(
-    RemovalPolicy.destroy(),
-  );
+  const SEARCH_LEGACY = yield* R2.Bucket("Search", {
+    name: searchName,
+    locationHint: "enam",
+  }).pipe(RemovalPolicy.destroy());
   const SEARCH = yield* R2.Bucket("SearchJapan", {
     name: `${searchName}-japan`,
     locationHint: "apac",
   }).pipe(RemovalPolicy.protect());
-  return { DB, INGEST, SEARCH };
+  return { DB, INGEST, SEARCH, SEARCH_LEGACY };
 });
 
 const web = Effect.gen(function* web() {
-  const { DB, INGEST, SEARCH } = yield* storage;
+  const { DB, INGEST, SEARCH, SEARCH_LEGACY } = yield* storage;
   const BETTER_AUTH_SECRET = yield* makeRandom("BetterAuthSecret");
   const MASTER_KEY = yield* masterKey;
   const { discord, release, operations } = yield* settings;
@@ -249,6 +250,7 @@ const web = Effect.gen(function* web() {
       DB,
       INGEST,
       SEARCH,
+      SEARCH_LEGACY,
       GUILD_ARCHIVE: Workers.DurableObject<GuildArchive>("GuildArchive"),
       AI: Workers.AI(),
       VERSION: Workers.VersionMetadata(),

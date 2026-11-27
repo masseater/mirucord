@@ -12,6 +12,7 @@ import type { SearchHead, SegmentEntry } from "./search-files.server";
 import { loadPage, required } from "./search-page.server";
 import type { MissingFile } from "./search-page.server";
 import { allViews, invalidOf, matched, readShardSet } from "./search-shard-set.server";
+import type { ShardSet } from "./search-shard-set.server";
 
 const NONE = 0;
 const ONE_SHARD = 1;
@@ -48,11 +49,22 @@ type Scope = Readonly<{
 
 type Scanned<Hits> = Readonly<{ hits: Hits; reads: readonly FileRead[] }>;
 
-const scanPiece = (
+const ordinalsIn = (
   { request, head, allowed }: Scope,
+  { segment, set }: Readonly<{ segment: string; set: ShardSet }>,
+): readonly number[] => {
+  const invalid = invalidOf({ head, segment });
+  return matched({
+    views: allViews({ set, tokens: request.tokens }),
+    filter: { allowed, skipped: (ordinal) => invalid.has(ordinal) },
+  });
+};
+
+const scanPiece = (
+  scope: Scope,
   segment: SegmentEntry,
 ): Effect.Effect<Scanned<SealedHits>, MissingFile, FileGate> => {
-  const invalid = invalidOf({ head, segment: segment.name });
+  const { request } = scope;
   return readShardSet({
     tokens: request.tokens,
     shardCount: segment.shards,
@@ -62,10 +74,7 @@ const scanPiece = (
       hits: {
         segment: segment.name,
         from: segment.from,
-        ordinals: matched({
-          views: allViews({ set, tokens: request.tokens }),
-          filter: { allowed, skipped: (ordinal) => invalid.has(ordinal) },
-        }),
+        ordinals: ordinalsIn(scope, { segment: segment.name, set }),
       },
       reads,
     })),
@@ -73,10 +82,10 @@ const scanPiece = (
 };
 
 const scanRecent = (
-  { request, head, allowed }: Scope,
+  scope: Scope,
   segment: SegmentEntry,
 ): Effect.Effect<Scanned<RecentHits>, MissingFile, FileGate> => {
-  const invalid = invalidOf({ head, segment: segment.name });
+  const { request } = scope;
   return cachedBytes(recentKey({ guildId: request.guildId, segment: segment.name })).pipe(
     Effect.flatMap((read) =>
       required(read).pipe(Effect.map((bytes) => ({ read, file: decodeRecent(bytes) }))),
@@ -85,12 +94,9 @@ const scanRecent = (
       hits: {
         segment: segment.name,
         createdAt: file.createdAt,
-        ordinals: matched({
-          views: allViews({
-            set: { count: ONE_SHARD, shardAt: () => Option.some(file.index) },
-            tokens: request.tokens,
-          }),
-          filter: { allowed, skipped: (ordinal) => invalid.has(ordinal) },
+        ordinals: ordinalsIn(scope, {
+          segment: segment.name,
+          set: { count: ONE_SHARD, shardAt: () => Option.some(file.index) },
         }),
       },
       reads: [read],

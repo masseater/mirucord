@@ -5,7 +5,9 @@ import { channel, db, message } from "#/shared/db/index.server";
 
 const ID_CHUNK = 50;
 
-const tableOf = (from: "channel" | "message"): typeof channel | typeof message =>
+type IdTable = "channel" | "message";
+
+const tableOf = (from: IdTable): typeof channel | typeof message =>
   Match.value(from).pipe(
     Match.when("channel", () => channel),
     Match.when("message", () => message),
@@ -26,9 +28,7 @@ export const inIdChunks = <Row>({
 export const deleteByIds = ({
   from,
   ids,
-}: Readonly<{ from: "channel" | "message"; ids: readonly string[] }>): Effect.Effect<
-  readonly unknown[]
-> =>
+}: Readonly<{ from: IdTable; ids: readonly string[] }>): Effect.Effect<readonly unknown[]> =>
   inIdChunks({
     ids,
     run: (chunk) => {

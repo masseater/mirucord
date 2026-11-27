@@ -1,12 +1,18 @@
 import type { ReactNode } from "react";
-import { siDiscord } from "simple-icons";
 
-export const DiscordMark = ({
+export const BrandMark = ({
+  path,
   className,
+  size,
   left,
   top,
-  size,
-}: Readonly<{ className: string; left?: string; top?: string; size: string }>): ReactNode => (
+}: Readonly<{
+  path: string;
+  className: string;
+  size: string;
+  left?: string;
+  top?: string;
+}>): ReactNode => (
   <svg
     x={left}
     y={top}
@@ -16,6 +22,6 @@ export const DiscordMark = ({
     aria-hidden="true"
     className={className}
   >
-    <path d={siDiscord.path} />
+    <path d={path} />
   </svg>
 );

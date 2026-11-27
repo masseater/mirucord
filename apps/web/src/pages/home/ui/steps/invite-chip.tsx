@@ -1,9 +1,10 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Match } from "effect";
 import type { ReactNode } from "react";
+import { siDiscord } from "simple-icons";
 
 import { inviteQuery } from "#/pages/home/api/invite";
-import { DiscordMark } from "#/pages/home/ui/common/discord-mark";
+import { BrandMark } from "#/pages/home/ui/common/brand-mark";
 import { MASCOT_NAME } from "#/shared/config";
 import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
@@ -17,7 +18,7 @@ export const InviteChip = (): ReactNode => {
     Match.discriminatorsExhaustive("status")({
       open: ({ url }) => (
         <PopButton href={url} tone="primary" size="sm">
-          <DiscordMark size="20" className="fill-dc-bright" />
+          <BrandMark path={siDiscord.path} size="20" className="fill-dc-bright" />
           {LABEL}
         </PopButton>
       ),

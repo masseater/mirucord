@@ -19,13 +19,6 @@ const MARK: Readonly<Record<Exclude<Activity["status"], "read">, string>> = {
 
 const UNREAD_LABEL = "未読";
 
-const shown = (activity: Activity): string => {
-  if (activity.status === "mention") {
-    return String(activity.count);
-  }
-  return "";
-};
-
 const spoken = (activity: Activity): string => {
   if (activity.status === "mention") {
     return `メンション ${activity.count} 件`;
@@ -67,7 +60,7 @@ export const PlainRow = ({
     <span className="truncate">{place.name}</span>
     {activity.status !== "read" && (
       <span aria-hidden="true" className={MARK[activity.status]}>
-        {shown(activity)}
+        {activity.status === "mention" && activity.count}
       </span>
     )}
     <span className="sr-only">{spoken(activity)}</span>

@@ -1,20 +1,13 @@
 import type { ReactNode } from "react";
 
-import { PRIVACY_PATH, SERVICE_NAME, SITE_HOST, TERMS_PATH } from "#/shared/config";
+import { SERVICE_NAME } from "#/shared/config";
+import { LegalLinks } from "#/shared/ui/legal-links";
 
-const PRIVACY = "プライバシーポリシー";
-const TERMS = "利用規約";
 const NOTICE = `Discord は Discord Inc. の商標です。${SERVICE_NAME} は Discord Inc. とは関係ありません。`;
 
 export const SiteFooter = (): ReactNode => (
   <footer className="bg-dc-chat text-dc-muted border-dc-line flex flex-wrap gap-x-6 gap-y-2 border-t px-4 py-6 text-xs">
-    <span className="font-bold">{SITE_HOST}</span>
-    <a href={PRIVACY_PATH} className="hover:text-dc-text font-bold">
-      {PRIVACY}
-    </a>
-    <a href={TERMS_PATH} className="hover:text-dc-text font-bold">
-      {TERMS}
-    </a>
+    <LegalLinks />
     <span>{NOTICE}</span>
   </footer>
 );

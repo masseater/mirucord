@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import { siClaude } from "simple-icons";
 
+import { BrandMark } from "#/pages/home/ui/common/brand-mark";
+
+import { FlowCard } from "./flow-card";
+import { FlowLabel } from "./flow-label";
+
 const AI_LABEL = "AI";
 
 export const AiNode = ({
@@ -8,25 +13,13 @@ export const AiNode = ({
   top,
   caption,
 }: Readonly<{ left: string; top: string; caption: string }>): ReactNode => (
-  <g transform={`translate(${left} ${top})`}>
-    <rect y="8" width="230" height="160" rx="40" className="fill-ink" />
-    <rect width="230" height="160" rx="40" className="fill-butter stroke-ink" strokeWidth="3" />
-    <svg
-      x="103"
-      y="24"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="fill-claude"
-    >
-      <path d={siClaude.path} />
-    </svg>
-    <text x="115" y="96" textAnchor="middle" className="fill-ink text-4xl font-black">
+  <FlowCard left={left} top={top} height={160} fill="fill-butter" shadow radius={40}>
+    <BrandMark path={siClaude.path} left="103" top="24" size="24" className="fill-claude" />
+    <FlowLabel y={96} tone="fill-ink text-4xl font-black">
       {AI_LABEL}
-    </text>
-    <text x="115" y="128" textAnchor="middle" className="fill-ink-soft text-sm font-bold">
+    </FlowLabel>
+    <FlowLabel y={128} tone="fill-ink-soft text-sm font-bold">
       {caption}
-    </text>
-  </g>
+    </FlowLabel>
+  </FlowCard>
 );

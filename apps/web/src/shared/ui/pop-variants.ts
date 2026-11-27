@@ -19,8 +19,6 @@ export const popButtonVariants = cva(
   },
 );
 
-type PopVariants = NonNullable<VariantProps<typeof popButtonVariants>>;
+export type PopTone = NonNullable<VariantProps<typeof popButtonVariants>["tone"]>;
 
-export type PopTone = NonNullable<PopVariants["tone"]>;
-
-export type PopSize = NonNullable<PopVariants["size"]>;
+export type PopSize = NonNullable<VariantProps<typeof popButtonVariants>["size"]>;

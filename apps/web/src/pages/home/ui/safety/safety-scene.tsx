@@ -23,8 +23,9 @@ export const SAFETY_SCENE: Scene = {
       reactions: [{ emoji: "👍", count: 2, by: "me" }],
     },
   ],
-  system: {
-    kind: "pin",
+  ending: {
+    kind: "system",
+    event: "pin",
     actor: memberAuthor(MEMBERS.miho),
     text: "がメッセージをこのチャンネルにピン留めしました。",
   },

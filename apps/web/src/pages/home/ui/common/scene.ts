@@ -7,6 +7,11 @@ import type { Reaction } from "#/pages/home/ui/message/reactions";
 
 import type { Channel } from "./channels";
 
+export type SceneEnding =
+  | Readonly<{ kind: "none" }>
+  | Readonly<{ kind: "system"; event: "join" | "pin"; actor: Author; text: string }>
+  | Readonly<{ kind: "content"; content: ReactNode }>;
+
 export type Scene = Readonly<{
   channel: Channel;
   time: string;
@@ -15,6 +20,5 @@ export type Scene = Readonly<{
   figure?: ReactNode;
   reactions?: readonly Reaction[];
   chatter?: readonly ChatLine[];
-  system?: Readonly<{ kind: "join" | "pin"; actor: Author; text: string }>;
-  after?: ReactNode;
+  ending: SceneEnding;
 }>;

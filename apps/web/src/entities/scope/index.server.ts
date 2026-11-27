@@ -1,3 +1,4 @@
+export { loadConsentDetail } from "./api/consent-detail.server";
 export { readableGuilds } from "./api/scope.server";
 export type { GuildScope } from "./api/scope.server";
 export { spanScopeOf } from "./api/span-scope.server";

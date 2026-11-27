@@ -7,7 +7,7 @@ import type {
   MessagePage,
 } from "#/shared/discord/index.server";
 
-import { loadScope } from "./consent-scope.server";
+import { loadScope } from "./load-scope.server";
 import { storeMessages } from "./store-messages.server";
 import type { StoreTarget } from "./store-messages.server";
 

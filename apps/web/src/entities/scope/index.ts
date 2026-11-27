@@ -1,3 +1,4 @@
+export type { ConsentDetail } from "./model/consent-detail";
 export { CONSENTS } from "./model/ingest-status";
 export {
   ConsentOutput,

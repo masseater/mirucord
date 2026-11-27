@@ -8,6 +8,8 @@ import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { visibleChannelIds } from "#/shared/permissions";
 import type { GuildChannel, GuildSnapshot } from "#/shared/permissions";
 
+import { loadConsentDetail } from "./consent-detail.server";
+
 const MEMBER_CONCURRENCY = 4;
 
 export type StoredChannel = GuildChannel & ChannelProgress & Readonly<{ name: string }>;
@@ -61,15 +63,13 @@ const loadChannels = (guildId: string): Effect.Effect<readonly StoredChannel[]> 
   );
 
 const loadConsent = (guildId: string): Effect.Effect<Consent> =>
-  Effect.promise(() =>
-    db
-      .select({ guildId: ingestConsent.guildId })
-      .from(ingestConsent)
-      .where(and(eq(ingestConsent.guildId, guildId), eq(ingestConsent.state, "granted"))),
-  ).pipe(
-    Effect.map((rows): Consent =>
-      Array.match(rows, { onEmpty: () => "notConsented", onNonEmpty: () => "consented" }),
-    ),
+  loadConsentDetail(guildId).pipe(
+    Effect.map(({ status }): Consent => {
+      if (status === "granted") {
+        return "consented";
+      }
+      return "notConsented";
+    }),
   );
 
 const loadGuild = (guildId: string): Effect.Effect<Option.Option<StoredGuild>> =>

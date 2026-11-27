@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { Consent } from "#/features/ingest-messages/index.server";
+import type { ConsentDetail } from "#/entities/scope";
 import { dateFormat } from "#/pages/dashboard/model/format";
 import { Panel } from "#/shared/ui/panel";
 
@@ -10,7 +10,7 @@ const WITHDRAWING = "削除中";
 
 export const ConsentRecord = ({
   consent,
-}: Readonly<{ consent: Exclude<Consent, Readonly<{ status: "awaiting" }>> }>): ReactNode => {
+}: Readonly<{ consent: Exclude<ConsentDetail, Readonly<{ status: "awaiting" }>> }>): ReactNode => {
   if (consent.status === "withdrawing") {
     return (
       <Panel accent="border-l-4 border-l-pink-deep">

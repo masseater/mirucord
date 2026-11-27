@@ -2,7 +2,7 @@ import { DiscordMessageSchema } from "@repo/shared-util-discord";
 import type { DiscordMessage } from "@repo/shared-util-discord";
 import { ChannelType, OverwriteType } from "discord-api-types/v10";
 import type { APIOverwrite, APIRole } from "discord-api-types/v10";
-import { Array, Effect, Function, Option, Schema } from "effect";
+import { Array, Effect, Function, Option, pipe, Schema } from "effect";
 
 import { decodeBody, withDiscord } from "./client.server";
 import type { DiscordRequestError } from "./client.server";
@@ -51,10 +51,20 @@ const Channel = Schema.Struct({
   thread_metadata: Schema.optional(ThreadMetadata),
 });
 
-const ThreadList = Schema.Struct({ threads: Schema.Array(Channel) });
+const UnknownChannel = Schema.Struct({ id: Schema.String, type: Schema.Int });
+
+const AnyChannel = Schema.Union([Channel, UnknownChannel]);
+
+const isKnownChannel = Schema.is(Channel);
+
+const knownChannels = (
+  channels: readonly (typeof AnyChannel.Type)[],
+): readonly (typeof Channel.Type)[] => pipe(channels, Array.filter(isKnownChannel));
+
+const ThreadList = Schema.Struct({ threads: Schema.Array(AnyChannel) });
 
 const ArchivedThreadList = Schema.Struct({
-  threads: Schema.Array(Channel),
+  threads: Schema.Array(AnyChannel),
   has_more: Schema.Boolean,
 });
 
@@ -78,7 +88,10 @@ const decodeUser = decodeBody(User);
 
 const decodeGuild = decodeBody(Guild);
 
-const decodeChannels = decodeList(Channel);
+const decodeChannels = (
+  raw: readonly (typeof AnyChannel.Encoded)[] | null,
+): Effect.Effect<readonly DiscordChannel[]> =>
+  decodeList(AnyChannel)(raw).pipe(Effect.map(knownChannels));
 
 const decodeThreadList = decodeBody(ThreadList);
 
@@ -119,7 +132,7 @@ export const listActiveThreads = (
   withDiscord((rest) =>
     rest.getActiveGuildThreads(guildId).pipe(
       Effect.flatMap(decodeThreadList),
-      Effect.map(({ threads }) => threads),
+      Effect.map(({ threads }) => knownChannels(threads)),
     ),
   );
 
@@ -134,7 +147,8 @@ const listArchivedThreadsBefore = (
     }),
   ).pipe(
     Effect.flatMap(decodeArchivedThreadList),
-    Effect.flatMap(({ threads, has_more }) => {
+    Effect.flatMap(({ threads: listed, has_more }) => {
+      const threads = knownChannels(listed);
       const next = Array.last(threads).pipe(
         Option.flatMap(({ thread_metadata }) => Option.fromUndefinedOr(thread_metadata)),
         Option.flatMap(({ archive_timestamp }) => Option.fromNullOr(archive_timestamp)),

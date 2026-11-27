@@ -190,8 +190,8 @@ catalogs:
       specifier: 1.7.27
       version: 1.7.27
     '@cloudflare/vitest-plugin':
-      specifier: 1.9.1
-      version: 1.9.1
+      specifier: 1.9.2
+      version: 1.9.2
     '@cloudflare/workers-types':
       specifier: 5.20261124.1
       version: 5.20261124.1
@@ -335,8 +335,8 @@ catalogs:
       specifier: 3.48.0
       version: 3.48.0
     renovate:
-      specifier: 44.260.0
-      version: 44.260.0
+      specifier: 44.260.2
+      version: 44.260.2
     tailwindcss:
       specifier: 4.3.5
       version: 4.3.5
@@ -393,7 +393,7 @@ importers:
         version: 3.48.0
       renovate:
         specifier: catalog:stack
-        version: 44.260.0(supports-color@7.2.0)(typanion@3.14.0)
+        version: 44.260.2(supports-color@7.2.0)(typanion@3.14.0)
       typescript:
         specifier: catalog:stack
         version: 7.1.0-beta
@@ -594,7 +594,7 @@ importers:
         version: 2.0.0-beta.87(alchemy@2.0.0-beta.87(@effect/platform-node@4.1.5(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0)))(@types/react@19.3.0)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(ws@8.22.1))(effect@4.1.5)
       '@cloudflare/vitest-plugin':
         specifier: 'catalog:'
-        version: 1.9.1(@types/node@26.6.6)(vitest@5.1.1)
+        version: 1.9.2(@types/node@26.6.6)(vitest@5.1.1)
       '@cloudflare/workers-types':
         specifier: 'catalog:'
         version: 5.20261124.1
@@ -1237,8 +1237,8 @@ packages:
       workerd:
         optional: true
 
-  '@cloudflare/vitest-plugin@1.9.1':
-    resolution: {integrity: sha512-2ENGPk5Edc68Qbb6+TQrP9eqini7VnLmYxdQejo1x61litasDx/U4H3YB/jx+sUs0j006wxeiCiQmCLxCRDydw==}
+  '@cloudflare/vitest-plugin@1.9.2':
+    resolution: {integrity: sha512-5kvabPtAcJNg/VMZyJ6M3dczw02eG8miWXOst1xMQLqKG9ItWYtzeln/q9+FV0T57Gg8ftLXjZS9mzoYfnxBdQ==}
     peerDependencies:
       vitest: ^4.1.0 || ^5.0.0
 
@@ -1360,15 +1360,6 @@ packages:
   '@commitlint/types@21.2.3':
     resolution: {integrity: sha512-sGEA473TlCvhCGNoTBY9OXZVWdscIXdGt0dm8EpB+2MRfmt8LNh/X56P/T3nCtEB+eH5qGEa3odphSAoUxSfSQ==}
     engines: {node: '>=22.12.0'}
-
-  '@containerbase/base@14.68.3':
-    resolution: {integrity: sha512-PiUE8GjftYvVZ1z+XEhGCDestdOFnpzTk8EQ3wdrH4BvpJ4kXMTsqG4BUIwi1ui9dBDFOq5ICESFNy5PA555NA==}
-    engines: {node: '>=24.10.0'}
-    peerDependencies:
-      zod: ^4.0.0
-    peerDependenciesMeta:
-      zod:
-        optional: true
 
   '@containerbase/base@14.69.0':
     resolution: {integrity: sha512-m+DFun6PKfMABNOIVH4NejCNCE7SyR7gKW793qwsY5DklNhBl5cZkU8pTV8gI/+hprJdy5ajMkHqfbu+QAcn/w==}
@@ -3656,8 +3647,8 @@ packages:
     peerDependencies:
       '@redis/client': ^6.2.1
 
-  '@renovatebot/base-image@13.176.0':
-    resolution: {integrity: sha512-+4K9OzTzBDF1MjZy75IS2Lpd4uUsD8jWgx2yHDof/p2MFaAIyzO+XWtvOr6FsC0BfWThjmmmfUuhwkcC6AZmzA==}
+  '@renovatebot/base-image@13.176.1':
+    resolution: {integrity: sha512-wbZ1IrpIXJ4aYKXOiGbnSBlYnPWUiu8yfeTeY1W3paehXkI4kAaU5T56lsdYRrxpq4b13LWGAH8uziyETqhF2A==}
     engines: {node: '>=24.10.0'}
     peerDependencies:
       zod: ^4.0.0
@@ -7644,8 +7635,8 @@ packages:
     resolution: {integrity: sha512-e5ISH9xMYU0DzrT+jl8q2ze9D6eWBto+I8CNpe+VI+K2J/F/k3PdkdTdz4wvGVH4NTpo+NRYTVIuMQEMMcsLqg==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  miniflare@5.20261123.0-beta:
-    resolution: {integrity: sha512-ObCOK12WQjUw2yWJH8olMzDSkXaj8xlmZkfJp0MU7y/gnvfv9cBGj9o075ywFeBCBoKopRy8J9Ci3Sh4cquoxg==}
+  miniflare@5.20261123.1-beta:
+    resolution: {integrity: sha512-o2a+xv6Ug144FgUJm7ciSWMiI7R0OH0svGCfqb1+6l9cUfZebc6YMWIK43PeyzWr3x6BLq2j4O9i8BsKk055oA==}
     engines: {node: '>=22.12.0'}
     peerDependencies:
       kerberos: ^2.0.0
@@ -8333,8 +8324,8 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
-  renovate@44.260.0:
-    resolution: {integrity: sha512-n3PZvn7Iyv34xnzuud34WmXDmii5kJu+oGQaqI5jK8aJQqUAQ4GRMmpxUORxdEox9OFC4asJVKqBgRvG63PeIw==}
+  renovate@44.260.2:
+    resolution: {integrity: sha512-20FkNORZs6bcMOPcY49X2ngHedcz5Evznm4ginvFDG5f5pFvfviSdAZ7OxG8qdpqtAsVMiaZk63wr/gIwlI8Vg==}
     engines: {node: ^24.11.0 || ^26.13.0, pnpm: ^11.0.0}
     hasBin: true
 
@@ -10298,11 +10289,11 @@ snapshots:
     optionalDependencies:
       workerd: 1.20261026.1
 
-  '@cloudflare/vitest-plugin@1.9.1(@types/node@26.6.6)(vitest@5.1.1)':
+  '@cloudflare/vitest-plugin@1.9.2(@types/node@26.6.6)(vitest@5.1.1)':
     dependencies:
       cjs-module-lexer: 1.2.3
       esbuild: 0.28.2
-      miniflare: 5.20261123.0-beta(@types/node@26.6.6)
+      miniflare: 5.20261123.1-beta(@types/node@26.6.6)
       vitest: 5.1.1(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-preview@5.1.1)(@vitest/ui@5.1.1)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(msw@3.0.7(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))
       zod: 4.6.6
     transitivePeerDependencies:
@@ -10420,12 +10411,6 @@ snapshots:
     dependencies:
       conventional-commits-parser: 7.1.2
       picocolors: 1.1.1
-
-  '@containerbase/base@14.68.3(zod@4.6.7)':
-    dependencies:
-      semver: 7.8.6
-    optionalDependencies:
-      zod: 4.6.7
 
   '@containerbase/base@14.69.0(zod@4.6.7)':
     dependencies:
@@ -12368,7 +12353,7 @@ snapshots:
     dependencies:
       '@redis/client': 6.2.1(@opentelemetry/api@1.10.0)
 
-  '@renovatebot/base-image@13.176.0(zod@4.6.7)':
+  '@renovatebot/base-image@13.176.1(zod@4.6.7)':
     dependencies:
       '@containerbase/base': 14.69.0(zod@4.6.7)
     optionalDependencies:
@@ -12390,7 +12375,7 @@ snapshots:
 
   '@renovatebot/osv-offline-db@4.5.10(supports-color@7.2.0)(zod@4.6.7)':
     dependencies:
-      '@containerbase/base': 14.68.3(zod@4.6.7)
+      '@containerbase/base': 14.69.0(zod@4.6.7)
       debug: 4.4.3(supports-color@7.2.0)
     transitivePeerDependencies:
       - supports-color
@@ -16600,7 +16585,7 @@ snapshots:
 
   mimic-response@4.0.0: {}
 
-  miniflare@5.20261123.0-beta(@types/node@26.6.6):
+  miniflare@5.20261123.1-beta(@types/node@26.6.6):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.35.5(@types/node@26.6.6)
@@ -17390,7 +17375,7 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
-  renovate@44.260.0(supports-color@7.2.0)(typanion@3.14.0):
+  renovate@44.260.2(supports-color@7.2.0)(typanion@3.14.0):
     dependencies:
       '@aws-sdk/client-codecommit': 3.1139.0
       '@aws-sdk/client-ec2': 3.1139.0
@@ -17423,7 +17408,7 @@ snapshots:
       '@pnpm/parse-overrides': 1001.0.4
       '@qnighy/marshal': 0.1.3
       '@redis/client': 6.3.1(@opentelemetry/api@1.10.0)
-      '@renovatebot/base-image': 13.176.0(zod@4.6.7)
+      '@renovatebot/base-image': 13.176.1(zod@4.6.7)
       '@renovatebot/detect-tools': 5.0.0
       '@renovatebot/good-enough-parser': 4.0.3
       '@renovatebot/osv-offline': 4.5.10(supports-color@7.2.0)(zod@4.6.7)

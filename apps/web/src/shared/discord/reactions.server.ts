@@ -22,7 +22,7 @@ const Poll = Schema.Struct({ answers: Schema.Array(PollAnswer) });
 
 const MessageReactions = Schema.Struct({
   author: Schema.Struct({ id: Schema.String }),
-  reactions: Schema.optional(Schema.Array(Reaction)),
+  reactions: Reaction.pipe(Schema.Array, Schema.optional),
   poll: Schema.optional(Poll),
 });
 

@@ -143,10 +143,10 @@ server なら、用語集の見出しの説明として note を書きます。
 const withFetchClient = <Value>(
   effect: Effect.Effect<Value, never, HttpClient.HttpClient>,
 ): Effect.Effect<Value> =>
-  Effect.scoped(
-    Layer.build(FetchHttpClient.layer).pipe(
-      Effect.flatMap((context) => effect.pipe(Effect.provideContext(context))),
-    ),
+  FetchHttpClient.layer.pipe(
+    Layer.build,
+    Effect.flatMap((context) => effect.pipe(Effect.provideContext(context))),
+    Effect.scoped,
   );
 
 const emojiUrl = (key: string): string =>

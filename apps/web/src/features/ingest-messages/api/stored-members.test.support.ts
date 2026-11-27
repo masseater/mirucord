@@ -10,7 +10,7 @@ const SEEDED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));
 
 const StoredRowSchema = Schema.Struct({
   userId: Schema.String,
-  roles: Schema.fromJsonString(Schema.Array(Schema.String)),
+  roles: Schema.String.pipe(Schema.Array, Schema.fromJsonString),
   joinedAt: Schema.NullOr(Schema.Finite),
   leftAt: Schema.NullOr(Schema.Finite),
 });

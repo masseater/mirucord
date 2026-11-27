@@ -70,7 +70,6 @@ overrides:
   vite@*: "catalog:" # exit: unused
   glob@>=9.0.0 <=14.0.1: ^14.0.2 # exit: unused
   minimatch@<11.0.1: ^11.0.1 # exit: unused
-  seroval@<1.6.11: ^1.6.11 # exit: unused
   katex@>=0.11.0 <0.18.2: ^0.19.0 # exit: unused
 peerDependencyRules:
   allowAny:
@@ -93,4 +92,3 @@ minimumReleaseAgeExclude:
   - "@r_masseater/fu4@0.2.0"
   - "@r_masseater/msch@0.53.1"
   - "@r_masseater/oxlint-plugin-decision@0.8.0"
-  - "@r_masseater/workers-tracing@0.5.0"

@@ -11,6 +11,7 @@ import { preparedOf } from "./phrase-samples.server";
 import type { Prepared } from "./phrase-samples.server";
 
 const CONCURRENCY = 16;
+const NO_NOTE = Option.getOrNull(Option.none<string>());
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -39,7 +40,7 @@ const sealNote = (
   note: Option.Option<string>,
 ): Effect.Effect<string | null> =>
   Option.match(note, {
-    onNone: () => Effect.succeed(Option.getOrNull(Option.none<string>())),
+    onNone: () => Effect.succeed(NO_NOTE),
     onSome: (text) =>
       sealBytes({
         bytes: textEncoder.encode(text),
@@ -56,8 +57,7 @@ const openNote = (
     return Effect.succeed([phrase, { status }]);
   }
   return Option.match(Option.fromNullOr(sealed), {
-    onNone: () =>
-      Effect.succeed([phrase, { status, note: Option.getOrNull(Option.none<string>()) }]),
+    onNone: () => Effect.succeed([phrase, { status, note: NO_NOTE }]),
     onSome: (bytes) =>
       openBytes({ bytes: toUint8Array(bytes), key, context: contextFor(guildId, phrase) }).pipe(
         Effect.map((opened) => [phrase, { status, note: textDecoder.decode(opened) }]),

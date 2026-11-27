@@ -7,7 +7,7 @@ const ServerPhrase = Schema.Struct({
   people: Schema.Int,
   lastUsedAt: Schema.String,
   channels: Schema.Array(Schema.Struct({ id: Schema.String, name: Schema.String })),
-  examples: Schema.Array(Schema.Array(Schema.String)).annotate({
+  examples: Schema.String.pipe(Schema.Array, Schema.Array).annotate({
     description: "Each with the message before it",
   }),
   note: Schema.NullOr(Schema.String).annotate({

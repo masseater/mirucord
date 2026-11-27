@@ -84,25 +84,21 @@ const hasInChannel = (
   Permissions.has(basePermissions(reader), "Administrator") ||
   Permissions.has(channelPermissions(reader, overwrites), required);
 
-const canReadHistoryDataFirst = (
-  reader: ReaderContext,
-  overwrites: readonly Overwrite[],
-): boolean => hasInChannel(reader, overwrites, READ_HISTORY);
-
-export const canReadHistory: {
+interface ChannelCheck {
   (overwrites: readonly Overwrite[]): (reader: ReaderContext) => boolean;
   (reader: ReaderContext, overwrites: readonly Overwrite[]): boolean;
-} = Function.dual(DATA_FIRST_ARITY, canReadHistoryDataFirst);
+}
 
-const canSendMessagesDataFirst = (
-  reader: ReaderContext,
-  overwrites: readonly Overwrite[],
-): boolean => hasInChannel(reader, overwrites, SEND);
+const channelCheck = (required: bigint): ChannelCheck =>
+  Function.dual(
+    DATA_FIRST_ARITY,
+    (reader: ReaderContext, overwrites: readonly Overwrite[]): boolean =>
+      hasInChannel(reader, overwrites, required),
+  );
 
-export const canSendMessages: {
-  (overwrites: readonly Overwrite[]): (reader: ReaderContext) => boolean;
-  (reader: ReaderContext, overwrites: readonly Overwrite[]): boolean;
-} = Function.dual(DATA_FIRST_ARITY, canSendMessagesDataFirst);
+export const canReadHistory: ChannelCheck = channelCheck(READ_HISTORY);
+
+export const canSendMessages: ChannelCheck = channelCheck(SEND);
 
 export const isGuildManager = (reader: ReaderContext): boolean =>
   reader.userId === reader.ownerId || Permissions.any(basePermissions(reader), MANAGE);

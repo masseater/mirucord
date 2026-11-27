@@ -1,9 +1,7 @@
-import type { ReactNode } from "react";
-
 import type { GuideSection } from "#/pages/guide/model/guide-block";
 import { FREE_GUILD_LIMIT, MASCOT_NAME, REPOSITORY_URL, SERVICE_NAME } from "#/shared/config";
 
-import { GuideDocument } from "./guide-document";
+import { guidePage } from "./guide-page";
 
 const TITLE = "セルフホスト";
 const TIP = `自分のおうちでも${MASCOT_NAME}は働けるよ`;
@@ -164,6 +162,4 @@ const SECTIONS: readonly GuideSection[] = [
   },
 ];
 
-export const SelfHostPage = (): ReactNode => (
-  <GuideDocument title={TITLE} tip={TIP} lead={LEAD} sections={SECTIONS} />
-);
+export const SelfHostPage = guidePage({ title: TITLE, tip: TIP, lead: LEAD, sections: SECTIONS });

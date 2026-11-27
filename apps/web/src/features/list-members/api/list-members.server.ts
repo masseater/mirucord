@@ -1,5 +1,15 @@
 import type { CallToolResult } from "@modelcontextprotocol/server";
-import { Array, DateTime, Effect, Option, Order, pipe, Schema, String as Str } from "effect";
+import {
+  Array,
+  DateTime,
+  Effect,
+  Option,
+  Order,
+  pipe,
+  Record,
+  Schema,
+  String as Str,
+} from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 import type { StoredMember } from "#/entities/guild-message/index.server";
@@ -97,7 +107,7 @@ const viewsOf = (
     const key = yield* openGuildKey(wrappedKey);
     const roleNames = yield* loadRoleField({ guildId, pick: ({ name }) => name });
     const roleOf = (id: string): MemberView["roles"] =>
-      Option.match(Option.fromUndefinedOr(roleNames[id]), {
+      Option.match(Record.get(roleNames, id), {
         onNone: () => [],
         onSome: (name) => [{ id, name }],
       });

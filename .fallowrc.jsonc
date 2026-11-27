@@ -17,7 +17,7 @@
   },
   "typeAware": { "enabled": true, "require": "complete" },
   "failOnParseError": true,
-  "ignoreDependencies": ["@effect/language-service"],
+  "ignoreDependencies": ["@effect/language-service", "fallow-similar-code"],
   "ignorePatterns": [".claude/**"],
   "audit": { "gate": "all" },
   "security": {

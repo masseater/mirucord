@@ -39,7 +39,7 @@ const sealNote = (
   note: Option.Option<string>,
 ): Effect.Effect<string | null> =>
   Option.match(note, {
-    onNone: () => Effect.succeed(Option.getOrNull(Option.none<string>())),
+    onNone: () => Option.none<string>().pipe(Option.getOrNull, Effect.succeed),
     onSome: (text) =>
       sealBytes({
         bytes: textEncoder.encode(text),

@@ -20,7 +20,7 @@ export const listPhrases = callTool({
   name: "list_server_phrases",
   args: { serverId: GUILD_A },
 }).pipe(
-  Effect.flatMap(({ structured }) => decodePhrases(Option.getOrUndefined(structured))),
+  Effect.flatMap(({ structured }) => structured.pipe(Option.getOrUndefined, decodePhrases)),
   Effect.map(({ phrases }) => phrases),
   Effect.orDie,
 );

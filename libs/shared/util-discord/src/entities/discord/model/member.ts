@@ -4,9 +4,9 @@ import { Author } from "./message.ts";
 
 export const Member = Schema.Struct({
   user: Author,
-  nick: Schema.optional(Schema.NullOr(Schema.String)),
+  nick: Schema.String.pipe(Schema.NullOr, Schema.optional),
   roles: Schema.Array(Schema.String),
-  joined_at: Schema.optional(Schema.NullOr(Schema.DateTimeUtcFromString)),
+  joined_at: Schema.DateTimeUtcFromString.pipe(Schema.NullOr, Schema.optional),
 });
 
 export type DiscordMember = typeof Member.Type;

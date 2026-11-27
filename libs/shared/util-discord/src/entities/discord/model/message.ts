@@ -17,7 +17,7 @@ const Embed = Schema.Struct({
   title: Schema.optional(Schema.String),
   description: Schema.optional(Schema.String),
   url: Schema.optional(Schema.String),
-  fields: Schema.optional(Schema.Array(EmbedField)),
+  fields: EmbedField.pipe(Schema.Array, Schema.optional),
 });
 
 const noEmbeds = Effect.succeed<readonly never[]>([]);
@@ -26,7 +26,7 @@ const Embeds = Schema.Array(Embed).pipe(Schema.withDecodingDefaultKey(noEmbeds))
 
 const StickerItem = Schema.Struct({ name: Schema.String });
 
-const StickerItems = Schema.optional(Schema.Array(StickerItem));
+const StickerItems = StickerItem.pipe(Schema.Array, Schema.optional);
 
 const PollMedia = Schema.Struct({ text: Schema.optional(Schema.String) });
 
@@ -38,7 +38,7 @@ const Poll = Schema.Struct({
 export const Author = Schema.Struct({
   id: Schema.String,
   username: Schema.String,
-  global_name: Schema.optional(Schema.NullOr(Schema.String)),
+  global_name: Schema.String.pipe(Schema.NullOr, Schema.optional),
   bot: Schema.optional(Schema.Boolean),
 });
 
@@ -72,7 +72,7 @@ export const Message = Schema.Struct({
   message_reference: Schema.optional(MessageReference),
   webhook_id: Schema.optional(Schema.String),
   attachments: Schema.Array(Attachment),
-  message_snapshots: Schema.optional(Schema.Array(MessageSnapshot)),
+  message_snapshots: MessageSnapshot.pipe(Schema.Array, Schema.optional),
   embeds: Embeds,
   sticker_items: StickerItems,
   poll: Schema.optional(Poll),

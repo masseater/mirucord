@@ -29,9 +29,9 @@ const Role = Schema.Struct({
 const Guild = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
-  icon: Schema.optional(Schema.NullOr(Schema.String)),
+  icon: Schema.String.pipe(Schema.NullOr, Schema.optional),
   owner_id: Schema.String,
-  system_channel_id: Schema.optional(Schema.NullOr(Schema.String)),
+  system_channel_id: Schema.String.pipe(Schema.NullOr, Schema.optional),
   roles: Schema.Array(Role),
 });
 
@@ -44,10 +44,10 @@ const ThreadMetadata = Schema.Struct({ archive_timestamp: Schema.NullOr(Schema.S
 const Channel = Schema.Struct({
   id: Schema.String,
   type: Schema.Enum(ChannelType),
-  name: Schema.optional(Schema.NullOr(Schema.String)),
-  parent_id: Schema.optional(Schema.NullOr(Schema.String)),
+  name: Schema.String.pipe(Schema.NullOr, Schema.optional),
+  parent_id: Schema.String.pipe(Schema.NullOr, Schema.optional),
   position: Schema.optional(Schema.Finite),
-  permission_overwrites: Schema.optional(Schema.Array(PermissionOverwrite)),
+  permission_overwrites: PermissionOverwrite.pipe(Schema.Array, Schema.optional),
   thread_metadata: Schema.optional(ThreadMetadata),
 });
 

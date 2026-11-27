@@ -38,7 +38,7 @@ const notFullyIngestedOf = (
   outcome: Effect.Effect<ToolOutcome>,
 ): Effect.Effect<readonly string[]> =>
   outcome.pipe(
-    Effect.flatMap(({ structured }) => decodeSearchIngest(Option.getOrUndefined(structured))),
+    Effect.flatMap(({ structured }) => structured.pipe(Option.getOrUndefined, decodeSearchIngest)),
     Effect.map(({ notFullyIngested }) =>
       pipe(
         notFullyIngested,
@@ -56,7 +56,7 @@ const foundOf = (
   outcome: Effect.Effect<ToolOutcome>,
 ): Effect.Effect<Readonly<{ total: number; ids: readonly string[] }>> =>
   outcome.pipe(
-    Effect.flatMap(({ structured }) => decodeFound(Option.getOrUndefined(structured))),
+    Effect.flatMap(({ structured }) => structured.pipe(Option.getOrUndefined, decodeFound)),
     Effect.map(({ total, messages }) => ({
       total,
       ids: pipe(

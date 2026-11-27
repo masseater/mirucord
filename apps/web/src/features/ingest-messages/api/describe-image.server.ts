@@ -130,8 +130,9 @@ const describeWithClient = (
   );
 
 export const describeImage = (source: ImageSource): Effect.Effect<Option.Option<string>> =>
-  Effect.scoped(
-    Layer.build(FetchHttpClient.layer).pipe(
-      Effect.flatMap((context) => describeWithClient(source).pipe(Effect.provideContext(context))),
-    ),
-  ).pipe(Effect.withSpan("describeImage"));
+  FetchHttpClient.layer.pipe(
+    Layer.build,
+    Effect.flatMap((context) => describeWithClient(source).pipe(Effect.provideContext(context))),
+    Effect.scoped,
+    Effect.withSpan("describeImage"),
+  );

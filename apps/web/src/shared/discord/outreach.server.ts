@@ -8,7 +8,7 @@ const WEBHOOK_PATH_PARTS = 2;
 
 const NO_MENTIONS = { parse: [] };
 
-const NullableId = Schema.optional(Schema.NullOr(Schema.String));
+const NullableId = Schema.String.pipe(Schema.NullOr, Schema.optional);
 
 const AuditLogEntry = Schema.Struct({ target_id: NullableId, user_id: NullableId });
 

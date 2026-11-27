@@ -84,7 +84,7 @@ export class Gateway extends Service<Gateway>()(
     yield* host.run(
       Config.Redacted(BOT_TOKEN_SECRET).pipe(
         Effect.orDie,
-        Effect.flatMap((botToken) => runGateway(Redacted.value(botToken))),
+        Effect.flatMap((botToken) => botToken.pipe(Redacted.value, runGateway)),
       ),
     );
     return {};

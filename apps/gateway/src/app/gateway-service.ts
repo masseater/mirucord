@@ -76,7 +76,7 @@ export class Gateway extends Service<Gateway>()(
     main: import.meta.url,
     handler: "Gateway",
     image: "node:26.12.1-slim",
-    region: "iad",
+    region: "nrt",
     services: [],
   },
   Effect.gen(function* gateway() {

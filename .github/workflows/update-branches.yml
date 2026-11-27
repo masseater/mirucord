@@ -3,13 +3,15 @@ name: update-branches
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -18,7 +20,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: masseater/typescript-template/.github/actions/update-branches@85e63634a051e4813f379fd082e40f4e65bdcb27
+      - uses: masseater/typescript-template/.github/actions/update-branches@d9de249aed55a920f53ecb21da13550867ee15b5
 
   ci-telemetry:
     needs: [update]
@@ -29,6 +31,6 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: masseater/typescript-template/.github/actions/ci-telemetry@85e63634a051e4813f379fd082e40f4e65bdcb27
+      - uses: masseater/typescript-template/.github/actions/ci-telemetry@d9de249aed55a920f53ecb21da13550867ee15b5
         with:
           github-token: ${{ github.token }}

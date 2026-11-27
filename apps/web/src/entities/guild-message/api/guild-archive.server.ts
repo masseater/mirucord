@@ -1,4 +1,4 @@
-import { Clock, Effect, Option } from "effect";
+import { Array, Clock, Effect, Option, pipe } from "effect";
 
 import { erasedAuthors } from "./erased-authors.server";
 import { backfillPhrases } from "./phrase-backfill.server";
@@ -22,11 +22,18 @@ export class GuildArchive extends RelationStore {
 
   public writePhrases(extracted: readonly ExtractedPhrases[]): void {
     const erased = new Set(erasedAuthors(this.db).ids());
-    for (const { message, hashes } of extracted) {
-      if (this.markExtracted(message.id) && !erased.has(message.authorId)) {
-        this.recordPhrases(message, hashes);
-      }
-    }
+    const marked = this.markExtracted(
+      pipe(
+        extracted,
+        Array.map(({ message }) => message.id),
+      ),
+    );
+    this.recordPhrases(
+      pipe(
+        extracted,
+        Array.filter(({ message }) => marked.has(message.id) && !erased.has(message.authorId)),
+      ),
+    );
     this.countWrites(extracted.length);
     this.forgetStats();
   }

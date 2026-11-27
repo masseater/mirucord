@@ -4,14 +4,14 @@ import { Array, Duration, Option, Order, pipe } from "effect";
 
 import { phraseTotals } from "#/entities/guild-message/lib/phrase-totals";
 import { PHRASE_WINDOW_DAYS } from "#/entities/guild-message/lib/phrases.server";
-import type { PhraseHash } from "#/entities/guild-message/lib/phrases.server";
 import { guildMessage, SEALED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
 import { phraseLedger, phraseStats } from "#/entities/guild-message/model/phrase-stats.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
-import { rowChunks } from "./bound-chunks.server";
 import { MessageStore } from "./message-store.server";
+import { phraseUseLedger } from "./phrase-use-ledger.server";
 import type {
+  ExtractedPhrases,
   PhraseColumn,
   PhraseContext,
   PhraseExample,
@@ -61,6 +61,8 @@ const EMPTY_LEDGER: Ledger = {
 const inWindow = (now: number): SQL => gte(guildMessage.createdAt, now - PHRASE_WINDOW_MS);
 
 export abstract class PhraseStore extends MessageStore {
+  readonly #uses = phraseUseLedger(this.db);
+
   protected ledgerOf(): Ledger {
     const found = this.db
       .select({
@@ -88,26 +90,8 @@ export abstract class PhraseStore extends MessageStore {
     this.saveLedger({ ...ledger, written: ledger.written + written });
   }
 
-  protected override recordPhrases(message: UnphrasedMessage, hashes: readonly PhraseHash[]): void {
-    this.db.delete(phraseUse).where(eq(phraseUse.messageId, message.id)).run();
-    const uses = pipe(
-      hashes,
-      Array.map(({ phrase, common }) => ({
-        messageId: message.id,
-        phrase,
-        common,
-        channelId: message.channelId,
-        authorId: message.authorId,
-        createdAt: message.createdAt,
-      })),
-    );
-    for (const chunk of rowChunks(uses)) {
-      this.db
-        .insert(phraseUse)
-        .values([...chunk])
-        .onConflictDoNothing()
-        .run();
-    }
+  protected override recordPhrases(written: readonly ExtractedPhrases[]): void {
+    this.#uses.record(written);
   }
 
   protected forgetStats(): void {
@@ -273,14 +257,19 @@ export abstract class PhraseStore extends MessageStore {
     );
   }
 
-  protected markExtracted(messageId: string): boolean {
-    return Array.isReadonlyArrayNonEmpty(
-      this.db
-        .update(guildMessage)
-        .set({ phrases: "extracted" })
-        .where(eq(guildMessage.id, messageId))
-        .returning({ id: guildMessage.id })
-        .all(),
+  protected markExtracted(messageIds: readonly string[]): ReadonlySet<string> {
+    return pipe(
+      Array.chunksOf(messageIds, BOUND_LIMIT),
+      Array.flatMap((chunk) =>
+        this.db
+          .update(guildMessage)
+          .set({ phrases: "extracted" })
+          .where(inArray(guildMessage.id, [...chunk]))
+          .returning({ id: guildMessage.id })
+          .all(),
+      ),
+      Array.map(({ id }) => id),
+      (ids) => new Set(ids),
     );
   }
 }

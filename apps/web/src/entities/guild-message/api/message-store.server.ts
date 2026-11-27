@@ -22,7 +22,7 @@ import type {
   ChannelCount,
   ChannelOldest,
   CreatedRange,
-  ExtractedHashes,
+  ExtractedPhrases,
   IndexedMessage,
   PhraseColumn,
   PhraseState,
@@ -31,12 +31,10 @@ import type {
   StoredRow,
   StoredState,
   TrackedRow,
-  UnphrasedMessage,
   WriteMode,
 } from "./store-types";
 
 const NO_MESSAGES = 0;
-const NEXT_WRITE = 1;
 
 type Seq = Readonly<{ seq: number }>;
 
@@ -45,7 +43,7 @@ type Versioned = StoredRow & Readonly<{ tokens: readonly number[]; version: numb
 export abstract class MessageStore extends TracedDurableObject {
   protected readonly db = this.#open();
 
-  protected abstract recordPhrases(message: UnphrasedMessage, hashes: ExtractedHashes): void;
+  protected abstract recordPhrases(extracted: readonly ExtractedPhrases[]): void;
 
   protected abstract countWrites(written: number): void;
 
@@ -98,11 +96,22 @@ export abstract class MessageStore extends TracedDurableObject {
       .all();
   }
 
-  #write({ row, tokens, phrases }: IndexedMessage, version: number, mode: WriteMode): void {
+  #write(
+    { row, tokens, phrases }: IndexedMessage,
+    version: number,
+    mode: WriteMode,
+  ): readonly ExtractedPhrases[] {
     const written = this.#upsert({ ...row, tokens, version }, phrases, mode);
     if (Array.isReadonlyArrayNonEmpty(written) && phrases.status === "extracted") {
-      this.recordPhrases(row, phrases.hashes);
-      this.countWrites(NEXT_WRITE);
+      return [{ message: row, hashes: phrases.hashes }];
+    }
+    return [];
+  }
+
+  #recordExtracted(extracted: readonly ExtractedPhrases[]): void {
+    if (Array.isReadonlyArrayNonEmpty(extracted)) {
+      this.recordPhrases(extracted);
+      this.countWrites(extracted.length);
     }
   }
 
@@ -129,9 +138,12 @@ export abstract class MessageStore extends TracedDurableObject {
     }
     const previous = this.#previous(kept, mode);
     const version = nextVersion(this.db);
-    for (const message of kept) {
-      this.#write(message, version, mode);
-    }
+    this.#recordExtracted(
+      pipe(
+        kept,
+        Array.flatMap((message) => this.#write(message, version, mode)),
+      ),
+    );
     return this.search.forget(previous).pipe(Effect.andThen(this.search.flushLater()));
   }
 

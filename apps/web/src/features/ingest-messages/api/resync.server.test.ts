@@ -1,12 +1,13 @@
 import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { env } from "cloudflare:workers";
+import { eq } from "drizzle-orm";
 import { Array, DateTime, Effect, pipe } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
 import { createGuildKey } from "#/shared/crypto/index.server";
-import { db, guild } from "#/shared/db/index.server";
+import { channel, db, guild } from "#/shared/db/index.server";
 
 import { catchUpGuild, resyncGuilds } from "./resync.server";
 
@@ -112,5 +113,23 @@ it.effect("a catch-up stores and welcomes a server that joined while the gateway
       { id: KEPT, name: `guild ${KEPT}` },
       { id: JOINED, name: `renamed ${JOINED}` },
     ]);
+  }),
+);
+
+it.effect("a catch-up skips a channel whose type this build does not know", () =>
+  Effect.gen(function* unknownType() {
+    network.use(
+      http.get(`${DISCORD}/guilds/:guildId/channels`, () =>
+        HttpResponse.json([
+          { id: "801", type: 0, name: "general", position: 0 },
+          { id: "802", type: 99, name: "future", position: 1 },
+        ]),
+      ),
+    );
+    yield* catchUpGuild(JOINED);
+    const stored = yield* Effect.promise(() =>
+      db.select({ id: channel.id }).from(channel).where(eq(channel.guildId, JOINED)),
+    );
+    expect(stored).toStrictEqual([{ id: "801" }]);
   }),
 );

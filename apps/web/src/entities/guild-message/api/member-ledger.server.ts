@@ -5,6 +5,7 @@ import { Array, Option, pipe } from "effect";
 import { guildMember } from "#/entities/guild-message/model/guild-member.schema";
 import { BOUND_LIMIT } from "#/entities/guild-message/model/guild-message.schema";
 
+import { inChunks } from "./bound-chunks.server";
 import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
 
 const STILL_HERE = Option.getOrNull(Option.none<number>());
@@ -88,15 +89,12 @@ const rowsOf = (
   return Option.match(Option.fromNullOr(userIds), {
     onNone: () => db.select(columns).from(guildMember).all(),
     onSome: (ids) =>
-      pipe(
-        Array.chunksOf(ids, BOUND_LIMIT),
-        Array.flatMap((chunk) =>
-          db
-            .select(columns)
-            .from(guildMember)
-            .where(inArray(guildMember.userId, [...chunk]))
-            .all(),
-        ),
+      inChunks(ids, (chunk) =>
+        db
+          .select(columns)
+          .from(guildMember)
+          .where(inArray(guildMember.userId, [...chunk]))
+          .all(),
       ),
   });
 };

@@ -7,6 +7,7 @@ import { Array, Match, Option, Order, pipe } from "effect";
 import { BOUND_LIMIT } from "#/entities/guild-message/model/guild-message.schema";
 import { pollVote, reaction } from "#/entities/guild-message/model/reaction.schema";
 
+import { inChunks } from "./bound-chunks.server";
 import type { ReactionLookup, ReactionPage, StoredReaction, StoredVote } from "./reaction-types";
 import { unlessErased } from "./unless-erased";
 
@@ -94,11 +95,6 @@ const changeOf = (db: DrizzleSqliteDODatabase, change: ReactionChange): void => 
     }),
   );
 };
-
-const inChunks = <Row>(
-  ids: readonly string[],
-  query: (chunk: readonly string[]) => readonly Row[],
-): readonly Row[] => pipe(Array.chunksOf(ids, BOUND_LIMIT), Array.flatMap(query));
 
 const reactionRowsOf = (
   db: DrizzleSqliteDODatabase,

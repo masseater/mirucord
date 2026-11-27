@@ -3,27 +3,26 @@ import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Option, pipe } from "effect";
 
 import type { SealedEntry } from "#/entities/guild-message/lib/search-segment";
-import { BOUND_LIMIT, guildMessage } from "#/entities/guild-message/model/guild-message.schema";
+import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
+
+import { inChunks } from "./bound-chunks.server";
 
 const sealedEntries = (
   db: DrizzleSqliteDODatabase,
   ids: readonly string[],
 ): readonly SealedEntry[] => {
-  const rows = pipe(
-    Array.chunksOf(ids, BOUND_LIMIT),
-    Array.flatMap((chunk) =>
-      db
-        .select({
-          id: guildMessage.id,
-          channelId: guildMessage.channelId,
-          sealed: guildMessage.sealed,
-          createdAt: guildMessage.createdAt,
-          editedAt: guildMessage.editedAt,
-        })
-        .from(guildMessage)
-        .where(inArray(guildMessage.id, [...chunk]))
-        .all(),
-    ),
+  const rows = inChunks(ids, (chunk) =>
+    db
+      .select({
+        id: guildMessage.id,
+        channelId: guildMessage.channelId,
+        sealed: guildMessage.sealed,
+        createdAt: guildMessage.createdAt,
+        editedAt: guildMessage.editedAt,
+      })
+      .from(guildMessage)
+      .where(inArray(guildMessage.id, [...chunk]))
+      .all(),
   );
   const byId = new Map(
     pipe(
@@ -42,15 +41,12 @@ const changedSince = (
   ids: readonly string[],
   built: number,
 ): readonly number[] => {
-  const versions = pipe(
-    Array.chunksOf(ids, BOUND_LIMIT),
-    Array.flatMap((chunk) =>
-      db
-        .select({ id: guildMessage.id, version: guildMessage.version })
-        .from(guildMessage)
-        .where(inArray(guildMessage.id, [...chunk]))
-        .all(),
-    ),
+  const versions = inChunks(ids, (chunk) =>
+    db
+      .select({ id: guildMessage.id, version: guildMessage.version })
+      .from(guildMessage)
+      .where(inArray(guildMessage.id, [...chunk]))
+      .all(),
   );
   const current = new Map(
     pipe(

@@ -3,9 +3,9 @@ import type { SQL } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Option, Order, pipe } from "effect";
 
-import { BOUND_LIMIT } from "#/entities/guild-message/model/guild-message.schema";
 import { voiceSession } from "#/entities/guild-message/model/voice-session.schema";
 
+import { inChunks } from "./bound-chunks.server";
 import type {
   StoredVoiceSession,
   VoiceChangeWrite,
@@ -143,11 +143,7 @@ const rowsOf = (db: DrizzleSqliteDODatabase, lookup: VoiceLookup): readonly Sess
       .all();
   return Option.match(Option.fromNullOr(lookup.userIds), {
     onNone: () => query([]),
-    onSome: (ids) =>
-      pipe(
-        Array.chunksOf(ids, BOUND_LIMIT),
-        Array.flatMap((chunk) => query([inArray(voiceSession.userId, [...chunk])])),
-      ),
+    onSome: (ids) => inChunks(ids, (chunk) => query([inArray(voiceSession.userId, [...chunk])])),
   });
 };
 

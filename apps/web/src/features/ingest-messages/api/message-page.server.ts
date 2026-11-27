@@ -15,17 +15,17 @@ export type IngestError = DiscordRequestError;
 
 const SnowflakeOrder: Order.Order<string> = Order.mapInput(Order.BigInt, BigInt);
 
-export const newestId = (ids: readonly string[]): Option.Option<string> =>
-  Array.match(ids, {
-    onEmpty: () => Option.none(),
-    onNonEmpty: (nonEmpty) => Option.some(Array.max(nonEmpty, SnowflakeOrder)),
-  });
+const edgeId =
+  (pick: (ids: Array.NonEmptyReadonlyArray<string>, order: Order.Order<string>) => string) =>
+  (ids: readonly string[]): Option.Option<string> =>
+    Array.match(ids, {
+      onEmpty: () => Option.none(),
+      onNonEmpty: (nonEmpty) => Option.some(pick(nonEmpty, SnowflakeOrder)),
+    });
 
-export const oldestId = (ids: readonly string[]): Option.Option<string> =>
-  Array.match(ids, {
-    onEmpty: () => Option.none(),
-    onNonEmpty: (nonEmpty) => Option.some(Array.min(nonEmpty, SnowflakeOrder)),
-  });
+export const newestId = edgeId(Array.max);
+
+export const oldestId = edgeId(Array.min);
 
 export const isNewerThan = Order.isGreaterThan(SnowflakeOrder);
 

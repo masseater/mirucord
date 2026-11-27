@@ -3,6 +3,7 @@ import { Effect, Schema } from "effect";
 import { MessageAttachment, MessageEmbed, MessagePoll } from "#/shared/discord";
 
 import { typedEnvelope } from "./typed-envelope.server";
+import type { Opener, Sealer } from "./typed-envelope.server";
 
 const nothingYet = Effect.succeed<readonly never[]>([]);
 
@@ -39,6 +40,6 @@ const envelope = typedEnvelope<MessageBody, MessageAddress, Schema.SchemaError, 
   },
 );
 
-export const sealMessage = envelope.seal;
+export const sealMessage: Sealer<MessageBody, MessageAddress> = envelope.seal;
 
-export const openMessage = envelope.open;
+export const openMessage: Opener<MessageBody, MessageAddress> = envelope.open;

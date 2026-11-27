@@ -50,10 +50,10 @@ const fetchImage = ({
   contentType,
 }: ImageSource): Effect.Effect<FetchedImage, DescribeError> =>
   fetchBase64(url).pipe(
-    Effect.map((data) => ({ data, contentType })),
-    Effect.catchTag("FetchError", ({ reason }) =>
-      Effect.fail(DescribeError.make({ stage: "fetch", reason })),
-    ),
+    Effect.mapBoth({
+      onSuccess: (data) => ({ data, contentType }),
+      onFailure: (reason) => DescribeError.make({ stage: "fetch", reason }),
+    }),
   );
 
 const RESERVED_NEURONS = gemmaNeurons({ input: RESERVED_INPUT_TOKENS, output: MAX_TOKENS });

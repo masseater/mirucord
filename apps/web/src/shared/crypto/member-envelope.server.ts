@@ -1,6 +1,7 @@
 import { Schema } from "effect";
 
 import { typedEnvelope } from "./typed-envelope.server";
+import type { Opener, Sealer } from "./typed-envelope.server";
 
 const MemberProfileSchema = Schema.Struct({
   username: Schema.String,
@@ -25,6 +26,6 @@ const envelope = typedEnvelope<
   contextOf: ({ guildId, userId }) => `${guildId}/member/${userId}`,
 });
 
-export const sealMember = envelope.seal;
+export const sealMember: Sealer<MemberProfile, MemberAddress> = envelope.seal;
 
-export const openMember = envelope.open;
+export const openMember: Opener<MemberProfile, MemberAddress> = envelope.open;

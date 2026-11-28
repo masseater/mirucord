@@ -13,12 +13,12 @@ import {
   revoked,
   seedConnectionsAccount,
   storedToken,
-} from "./connections-account.test.support";
+} from "./connections-account.test.support.ts";
 import {
   loadLinkedAccounts,
   publishLinkedAccounts,
   withdrawLinkedAccounts,
-} from "./linked-account-store.server";
+} from "./linked-account-store.server.ts";
 
 const NO_TOKEN = Option.getOrNull(Option.none<string>());
 

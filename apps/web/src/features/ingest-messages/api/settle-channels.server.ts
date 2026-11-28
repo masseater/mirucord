@@ -4,10 +4,10 @@ import { Array, DateTime, Effect, Option, pipe } from "effect";
 import type { IngestRow } from "#/features/ingest-messages/model/channel-ingest";
 import { channel, db } from "#/shared/db/index.server";
 
-import { columnsOf } from "./bot-access.server";
-import type { ChannelSync } from "./channel-listing.server";
-import { deleteChannelsByIds, inIdChunks } from "./id-chunks.server";
-import { forgetChannelMessages } from "./message-rows.server";
+import { columnsOf } from "./bot-access.server.ts";
+import type { ChannelSync } from "./channel-listing.server.ts";
+import { deleteChannelsByIds, inIdChunks } from "./id-chunks.server.ts";
+import { forgetChannelMessages } from "./message-rows.server.ts";
 
 type StoredRow = Readonly<{
   id: string;

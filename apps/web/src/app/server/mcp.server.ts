@@ -6,7 +6,7 @@ import { discordUserIdOf, getAuth } from "#/shared/auth/index.server";
 import { MCP_URL } from "#/shared/config";
 import { runTraced } from "#/shared/observability/index.server";
 
-import { buildServer } from "./mcp-tools.server";
+import { buildServer } from "./mcp-tools.server.ts";
 
 const FORBIDDEN = 403;
 const notLinked = (): Response =>

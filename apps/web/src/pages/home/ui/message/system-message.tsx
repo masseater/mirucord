@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-import type { Author } from "./author";
-import { AuthorName } from "./author-name";
+import { AuthorName } from "./author-name.tsx";
+import type { Author } from "./author.ts";
 
 const KINDS = {
   join: { icon: ArrowRight, color: "text-dc-online" },

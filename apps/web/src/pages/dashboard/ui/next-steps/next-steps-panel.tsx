@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { ConsentStep, RegisterStep } from "#/pages/dashboard/model/next-steps";
 import { Panel } from "#/shared/ui/panel";
 
-import { NextStepList } from "./next-step-list";
+import { NextStepList } from "./next-step-list.tsx";
 
 const TITLE = "次にやること";
 

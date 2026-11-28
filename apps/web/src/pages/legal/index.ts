@@ -1,2 +1,2 @@
-export { PrivacyPage } from "./ui/privacy-page";
-export { TermsPage } from "./ui/terms-page";
+export { PrivacyPage } from "./ui/privacy-page.tsx";
+export { TermsPage } from "./ui/terms-page.tsx";

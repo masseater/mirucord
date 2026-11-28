@@ -21,8 +21,8 @@ import {
 import { resolveScope } from "#/entities/scope/index.test.support";
 import type { ToolOutcome } from "#/shared/mcp/index.test.support";
 
-import { registerReadMessages } from "./read-messages.server";
-import { readMessages } from "./stored-messages.server";
+import { registerReadMessages } from "./read-messages.server.ts";
+import { readMessages } from "./stored-messages.server.ts";
 
 const callTool = userToolCaller([registerReadMessages]);
 const READ_LIMIT = 50;

@@ -9,7 +9,7 @@ import { DASHBOARD_NAME, DASHBOARD_PATH } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 
-import { GuildSettingsView } from "./guild-settings-view";
+import { GuildSettingsView } from "./guild-settings-view.tsx";
 
 const BACK = "サーバー一覧";
 const NOT_MANAGED = "このサーバーの設定は開けないよ";

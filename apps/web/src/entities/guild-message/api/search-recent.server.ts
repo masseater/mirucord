@@ -5,8 +5,8 @@ import { Option } from "effect";
 import { FLUSH_DELAY_MS } from "#/entities/guild-message/lib/search-layout";
 import { searchInvalid } from "#/entities/guild-message/model/search-segment.schema";
 
-import { EARLIEST, recentOf, sealedOf, searchLedger } from "./search-ledger.server";
-import type { Segment } from "./search-ledger.server";
+import { EARLIEST, recentOf, sealedOf, searchLedger } from "./search-ledger.server.ts";
+import type { Segment } from "./search-ledger.server.ts";
 
 export type Flush = "due" | "now";
 

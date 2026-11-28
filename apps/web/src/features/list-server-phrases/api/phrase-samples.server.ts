@@ -5,7 +5,7 @@ import type { NoteSample, SealedMessage } from "#/entities/guild-message/index.s
 import { openMessage } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 
-import type { NoteInput, NoteSubject, OpenedSample } from "./phrase-annotate.server";
+import type { NoteInput, NoteSubject, OpenedSample } from "./phrase-annotate.server.ts";
 
 export type Prepared = Readonly<{ input: NoteInput; examples: readonly string[] }>;
 

@@ -9,7 +9,7 @@ import { authClient } from "#/shared/auth";
 import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { FeedbackLine } from "./feedback-line";
+import { FeedbackLine } from "./feedback-line.tsx";
 
 const SUMMARY = "アカウントを削除する";
 const DETAIL = "元に戻せません";

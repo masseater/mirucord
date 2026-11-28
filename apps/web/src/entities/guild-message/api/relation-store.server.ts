@@ -1,14 +1,19 @@
 import type { ReactionChange } from "@repo/ingest-util-gateway-contract";
 import { Array } from "effect";
 
-import { erasedAuthors } from "./erased-authors.server";
-import { memberLedger } from "./member-ledger.server";
-import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
-import { NoteStore } from "./note-store.server";
-import { reactionLedger } from "./reaction-ledger.server";
-import type { ReactionLookup, ReactionPage } from "./reaction-ledger.server";
-import { voiceLedger } from "./voice-ledger.server";
-import type { VoiceChangeWrite, VoiceLookup, VoicePage, VoiceSnapshotWrite } from "./voice-types";
+import { erasedAuthors } from "./erased-authors.server.ts";
+import { memberLedger } from "./member-ledger.server.ts";
+import type { MemberLookup, MemberWrite, StoredMember } from "./member-types.ts";
+import { NoteStore } from "./note-store.server.ts";
+import { reactionLedger } from "./reaction-ledger.server.ts";
+import type { ReactionLookup, ReactionPage } from "./reaction-ledger.server.ts";
+import { voiceLedger } from "./voice-ledger.server.ts";
+import type {
+  VoiceChangeWrite,
+  VoiceLookup,
+  VoicePage,
+  VoiceSnapshotWrite,
+} from "./voice-types.ts";
 
 export abstract class RelationStore extends NoteStore {
   readonly #erased = erasedAuthors(this.db);

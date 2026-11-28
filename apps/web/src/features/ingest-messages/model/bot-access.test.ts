@@ -1,8 +1,8 @@
 import { DateTime, Duration } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { isPastRetention, observeAccess } from "./bot-access";
-import type { BotAccess } from "./bot-access";
+import { isPastRetention, observeAccess } from "./bot-access.ts";
+import type { BotAccess } from "./bot-access.ts";
 
 const HIDDEN_AT = DateTime.makeUnsafe("2026-10-01T00:00:00Z");
 const LATER = DateTime.makeUnsafe("2026-10-05T00:00:00Z");

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { FlowDiagram } from "./flow-diagram";
+import { FlowDiagram } from "./flow-diagram.tsx";
 
 export const FlowFigure = (): ReactNode => (
   <div className="bg-milk text-ink @container mt-1 max-w-3xl rounded-lg p-4 md:p-8">

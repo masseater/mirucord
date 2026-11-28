@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { Array, Effect, Option } from "effect";
 
-import { db } from "./client.server";
-import { guild } from "./guild.table";
+import { db } from "./client.server.ts";
+import { guild } from "./guild.table.ts";
 
 export const wrappedKeyOf = (guildId: string): Effect.Effect<Option.Option<string>> =>
   Effect.promise(() =>

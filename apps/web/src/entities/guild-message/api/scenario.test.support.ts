@@ -14,8 +14,8 @@ import { indexTokens } from "#/entities/guild-message/lib/search-tokens.server";
 import { createGuildKey, openGuildKeys, sealMessage } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent, role } from "#/shared/db/index.server";
 
-import { guildStore } from "./store-stub.server";
-import type { IndexedMessage } from "./store-types";
+import { guildStore } from "./store-stub.server.ts";
+import type { IndexedMessage } from "./store-types.ts";
 
 export const USER = "900";
 export const OWNER = "901";

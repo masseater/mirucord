@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import type { Author } from "./author";
-import { AuthorName } from "./author-name";
+import { AuthorName } from "./author-name.tsx";
+import type { Author } from "./author.ts";
 
 export const MessageBody = ({
   author,

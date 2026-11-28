@@ -5,11 +5,11 @@ import { openGuildKeys } from "#/shared/crypto/index.server";
 import { FORBIDDEN, NOT_FOUND, findMessage, listMessages } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
-import { loadChannelKey } from "./ingest-channel.server";
-import { oldestId, storeConsented } from "./message-page.server";
-import type { IngestError } from "./message-page.server";
-import { deleteMessages, storedInChannel } from "./message-rows.server";
-import type { ChannelRef } from "./message-rows.server";
+import { loadChannelKey } from "./ingest-channel.server.ts";
+import { oldestId, storeConsented } from "./message-page.server.ts";
+import type { IngestError } from "./message-page.server.ts";
+import { deleteMessages, storedInChannel } from "./message-rows.server.ts";
+import type { ChannelRef } from "./message-rows.server.ts";
 
 const SNOWFLAKE_STEP = 1n;
 const LISTED_LOOKUP_MIN = 2;

@@ -2,17 +2,23 @@ import { Array, Effect, Option, pipe } from "effect";
 
 import { SEQUENTIAL } from "#/entities/guild-message/lib/search-layout";
 
-import { archiveStep } from "./search-archive.server";
-import type { ArchiveStatus } from "./search-archive.server";
-import { buildPiece, recordPieces } from "./search-build.server";
-import type { Publisher } from "./search-build.server";
-import { deletePrefix, deleteSegments, writeFiles } from "./search-files.server";
-import { deletedEntry, writeSearchHead } from "./search-head.server";
-import { EARLIEST, recentOf, sealedOf, segmentNames, searchLedger } from "./search-ledger.server";
-import type { Segment } from "./search-ledger.server";
-import { PURGE_AFTER_MS, searchPlanner } from "./search-plan.server";
-import type { PieceRow, PieceSpec, Plan } from "./search-plan.server";
-import { recentPlan } from "./search-recent.server";
+import { archiveStep } from "./search-archive.server.ts";
+import type { ArchiveStatus } from "./search-archive.server.ts";
+import { buildPiece, recordPieces } from "./search-build.server.ts";
+import type { Publisher } from "./search-build.server.ts";
+import { deletePrefix, deleteSegments, writeFiles } from "./search-files.server.ts";
+import { deletedEntry, writeSearchHead } from "./search-head.server.ts";
+import {
+  EARLIEST,
+  recentOf,
+  sealedOf,
+  segmentNames,
+  searchLedger,
+} from "./search-ledger.server.ts";
+import type { Segment } from "./search-ledger.server.ts";
+import { PURGE_AFTER_MS, searchPlanner } from "./search-plan.server.ts";
+import type { PieceRow, PieceSpec, Plan } from "./search-plan.server.ts";
+import { recentPlan } from "./search-recent.server.ts";
 
 type Replacement = Readonly<{
   kind: Segment["kind"];

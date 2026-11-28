@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import type { LinkedChoice } from "#/pages/dashboard/api/linked-account-store.server";
 
-import { LinkedAccountLine } from "./linked-account-line";
+import { LinkedAccountLine } from "./linked-account-line.tsx";
 
 export const LinkedAccountChoiceRow = ({
   choice,

@@ -1,2 +1,2 @@
-export { decodeVector, DIMENSIONS, dequantize, encodeVector, quantize } from "./vector";
-export type { Quantized } from "./vector";
+export { decodeVector, DIMENSIONS, dequantize, encodeVector, quantize } from "./vector.ts";
+export type { Quantized } from "./vector.ts";

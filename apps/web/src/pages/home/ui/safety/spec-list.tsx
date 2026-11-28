@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Embed } from "#/pages/home/ui/message/embed";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { SpecField } from "./spec-field";
+import { SpecField } from "./spec-field.tsx";
 
 const SPECS = [
   {

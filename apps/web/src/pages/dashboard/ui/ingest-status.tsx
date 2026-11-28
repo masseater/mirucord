@@ -6,9 +6,9 @@ import { groupByCategory } from "#/pages/dashboard/model/channel-groups";
 import { countFormat } from "#/pages/dashboard/model/format";
 import { Panel } from "#/shared/ui/panel";
 
-import { CategoryHeading } from "./category-heading";
-import { IngestPill } from "./ingest-pill";
-import { IngestStatusRow } from "./ingest-status-row";
+import { CategoryHeading } from "./category-heading.tsx";
+import { IngestPill } from "./ingest-pill.tsx";
+import { IngestStatusRow } from "./ingest-status-row.tsx";
 
 const TITLE = "取り込みの状況";
 const STORED = "思い出";

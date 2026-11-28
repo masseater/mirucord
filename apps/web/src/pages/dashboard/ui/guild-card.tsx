@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest-messages/index.server";
 
-import { GuildIcon } from "./guild-icon";
-import { GuildPageLink } from "./guild-page-link";
-import { GuildSummary } from "./guild-summary";
+import { GuildIcon } from "./guild-icon.tsx";
+import { GuildPageLink } from "./guild-page-link.tsx";
+import { GuildSummary } from "./guild-summary.tsx";
 
 export const GuildCard = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => (
   <li>

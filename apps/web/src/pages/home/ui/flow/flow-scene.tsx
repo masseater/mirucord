@@ -5,7 +5,7 @@ import { memberAuthor, BOT } from "#/pages/home/ui/message/author";
 import type { ChatLine } from "#/pages/home/ui/message/chat-line";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { FlowFigure } from "./flow-figure";
+import { FlowFigure } from "./flow-figure.tsx";
 
 const QUESTION: ChatLine = {
   author: memberAuthor(MEMBERS.tanaka),

@@ -3,7 +3,7 @@ import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import type { Overwrite } from "#/shared/permissions";
 
-import { BACKFILLS, BOT_ACCESSES } from "./channel-state";
+import { BACKFILLS, BOT_ACCESSES } from "./channel-state.ts";
 
 export const guild = sqliteTable("guild", {
   id: text().primaryKey(),

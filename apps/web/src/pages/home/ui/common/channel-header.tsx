@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { ChannelIcon } from "#/shared/ui/channel-icon";
 
-import type { Channel } from "./channels";
+import type { Channel } from "./channels.ts";
 
 export const ChannelHeader = ({ channel }: Readonly<{ channel: Channel }>): ReactNode => (
   <div className="ch-head bg-dc-chat border-dc-rail sticky z-10 flex h-12 items-center gap-2 border-b px-4">

@@ -4,9 +4,9 @@ import type { Place, PlaceId } from "#/pages/home/ui/common/places";
 import { cn } from "#/shared/lib/utils";
 import { ChannelIcon } from "#/shared/ui/channel-icon";
 
-import { ActivityMark } from "./activity-mark";
-import type { Activity } from "./sidebar-categories";
-import { ThreadCorner } from "./thread-corner";
+import { ActivityMark } from "./activity-mark.tsx";
+import type { Activity } from "./sidebar-categories.ts";
+import { ThreadCorner } from "./thread-corner.tsx";
 
 const TONE: Readonly<Record<Activity["status"], string>> = {
   read: "text-dc-muted",

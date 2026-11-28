@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest-messages/index.server";
 
-import { ChannelLabel } from "./channel-label";
-import { ForumDisclosureButton } from "./forum-disclosure-button";
+import { ChannelLabel } from "./channel-label.tsx";
+import { ForumDisclosureButton } from "./forum-disclosure-button.tsx";
 
 export const ForumPillToggle = ({ channel }: Readonly<{ channel: SettingsChannel }>): ReactNode => (
   <ForumDisclosureButton

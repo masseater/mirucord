@@ -23,8 +23,8 @@ import {
   selectedKeysOf,
   toggledKeys,
   UNTOUCHED_LINKS,
-} from "./linked-account-draft";
-import type { LinkedDraft } from "./linked-account-draft";
+} from "./linked-account-draft.ts";
+import type { LinkedDraft } from "./linked-account-draft.ts";
 
 export type LinkedAccountForm = Readonly<{
   selected: readonly string[];

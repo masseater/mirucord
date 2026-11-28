@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 
 import type { ConnectedApp } from "#/shared/auth/index.server";
 
-import { AccountPanel } from "./account-panel";
-import { ConnectedAppPanel } from "./connected-app-panel";
-import { LinkedAccountPanel } from "./linked-account-panel";
+import { AccountPanel } from "./account-panel.tsx";
+import { ConnectedAppPanel } from "./connected-app-panel.tsx";
+import { LinkedAccountPanel } from "./linked-account-panel.tsx";
 
 export const AccountPanels = ({
   apps,

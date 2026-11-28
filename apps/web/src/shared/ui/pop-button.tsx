@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { popButtonVariants } from "./pop-variants";
-import type { PopSize, PopTone } from "./pop-variants";
+import { popButtonVariants } from "./pop-variants.ts";
+import type { PopSize, PopTone } from "./pop-variants.ts";
 
 export const PopButton = (
   props: Readonly<{

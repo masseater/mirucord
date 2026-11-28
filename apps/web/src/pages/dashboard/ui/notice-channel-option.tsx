@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest-messages/index.server";
 
-import { ChannelLabel } from "./channel-label";
+import { ChannelLabel } from "./channel-label.tsx";
 
 const GROUP = "notice-channel";
 

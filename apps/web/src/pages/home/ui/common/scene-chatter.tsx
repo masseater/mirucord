@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Message } from "#/pages/home/ui/message/message";
 import { Reactions } from "#/pages/home/ui/message/reactions";
 
-import type { Scene } from "./scene";
+import type { Scene } from "./scene.ts";
 
 export const SceneChatter = ({ scene }: Readonly<{ scene: Scene }>): ReactNode =>
   scene.chatter && (

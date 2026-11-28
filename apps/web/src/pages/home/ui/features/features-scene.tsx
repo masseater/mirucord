@@ -5,7 +5,7 @@ import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
 import type { ChatLine } from "#/pages/home/ui/message/chat-line";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { FeatureGrid } from "./feature-grid";
+import { FeatureGrid } from "./feature-grid.tsx";
 
 const WORRY: ChatLine = {
   author: memberAuthor(MEMBERS.yui),

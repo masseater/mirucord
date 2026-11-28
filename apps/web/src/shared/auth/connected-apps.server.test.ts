@@ -11,7 +11,7 @@ import {
   user,
 } from "#/shared/db/index.server";
 
-import { disconnectApp, listConnectedApps } from "./connected-apps.server";
+import { disconnectApp, listConnectedApps } from "./connected-apps.server.ts";
 
 const SCOPES = ["openid"];
 const CONNECTED_AT = DateTime.toDate(DateTime.makeUnsafe("2026-10-01T00:00:00Z"));

@@ -13,7 +13,7 @@ import {
   userToolCaller,
 } from "#/entities/guild-message/index.test.support";
 
-import { registerListMembers } from "./list-members.server";
+import { registerListMembers } from "./list-members.server.ts";
 
 const callTool = userToolCaller([registerListMembers]);
 

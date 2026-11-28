@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { REPOSITORY_URL } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 
-import { LegalSection } from "./legal-section";
+import { LegalSection } from "./legal-section.tsx";
 
 const REVISED = "2026 年 10 月 10 日 制定、2026 年 10 月 13 日 改定";
 const CONTACT = "本サービスに関するお問い合わせは、GitHub の Issues にて受け付ける。";

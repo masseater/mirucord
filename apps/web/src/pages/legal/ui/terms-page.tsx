@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { SERVICE_NAME } from "#/shared/config";
 
-import { LegalDocument } from "./legal-document";
+import { LegalDocument } from "./legal-document.tsx";
 
 const TITLE = "利用規約";
 

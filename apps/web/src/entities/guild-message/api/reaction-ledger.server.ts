@@ -7,9 +7,9 @@ import { Array, Match, Option, Order, pipe } from "effect";
 import { BOUND_LIMIT } from "#/entities/guild-message/model/guild-message.schema";
 import { pollVote, reaction } from "#/entities/guild-message/model/reaction.schema";
 
-import { inChunks } from "./bound-chunks.server";
-import type { ReactionLookup, ReactionPage, StoredReaction, StoredVote } from "./reaction-types";
-import { unlessErased } from "./unless-erased";
+import { inChunks } from "./bound-chunks.server.ts";
+import type { ReactionLookup, ReactionPage, StoredReaction, StoredVote } from "./reaction-types.ts";
+import { unlessErased } from "./unless-erased.ts";
 
 export type ReactionLedger = Readonly<{
   change: (changes: readonly ReactionChange[], erased: readonly string[]) => void;
@@ -235,4 +235,4 @@ export const reactionLedger = (db: DrizzleSqliteDODatabase): ReactionLedger => (
   },
 });
 
-export type { ReactionLookup, ReactionPage } from "./reaction-types";
+export type { ReactionLookup, ReactionPage } from "./reaction-types.ts";

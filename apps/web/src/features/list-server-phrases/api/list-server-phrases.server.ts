@@ -5,7 +5,7 @@ import { readableChannels, withScope } from "#/entities/scope/index.server";
 import { ListServerPhrasesOutput } from "#/features/list-server-phrases/model/server-phrases-output";
 import { structuredResult, toolRegistration } from "#/shared/mcp";
 
-import { serverPhrases } from "./phrases.server";
+import { serverPhrases } from "./phrases.server.ts";
 
 const ListServerPhrasesInput = Schema.Struct({ serverId: Schema.String });
 

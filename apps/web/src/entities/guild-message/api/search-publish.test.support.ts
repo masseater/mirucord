@@ -2,7 +2,7 @@ import { Array, Effect, Option, pipe } from "effect";
 
 import type { IndexedMessage } from "#/entities/guild-message/index.server";
 
-import { searchMessages } from "./search-messages.server";
+import { searchMessages } from "./search-messages.server.ts";
 
 export const CHANNEL = "600";
 const AUTHOR = "701";

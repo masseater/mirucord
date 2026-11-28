@@ -1,9 +1,9 @@
 import { Array, Effect, Number, Option, Order, pipe, Schema } from "effect";
 
-import { STAMP_BYTES } from "./search-layout";
-import { SealedEntrySchema } from "./search-segment";
-import type { SealedEntry } from "./search-segment";
-import type { PostingView } from "./search-shard";
+import { STAMP_BYTES } from "./search-layout.ts";
+import { SealedEntrySchema } from "./search-segment.ts";
+import type { SealedEntry } from "./search-segment.ts";
+import type { PostingView } from "./search-shard.ts";
 
 const FIRST = 0;
 const NEXT = 1;

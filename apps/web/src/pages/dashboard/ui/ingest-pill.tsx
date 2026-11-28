@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { GuildIngest, SettingsChannel } from "#/features/ingest-messages/index.server";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { Pill } from "./pill";
+import { Pill } from "./pill.tsx";
 
 const INGEST = {
   unreadable: { label: `${MASCOT_NAME}が見られないチャンネル`, tone: "bg-dc-active text-dc-muted" },

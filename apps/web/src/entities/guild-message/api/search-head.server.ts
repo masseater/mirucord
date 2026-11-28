@@ -3,13 +3,13 @@ import { Array, Effect, Option, pipe, Record } from "effect";
 
 import { searchInvalid } from "#/entities/guild-message/model/search-segment.schema";
 
-import { liveArchive } from "./search-archive-ledger.server";
-import { searchChannels } from "./search-channels.server";
-import { vectorsOfRow, writeHead } from "./search-files.server";
-import type { ArchiveEntry, SearchHead, SegmentEntry } from "./search-files.server";
-import { searchLedger } from "./search-ledger.server";
-import type { Segment } from "./search-ledger.server";
-import { centroidStamp } from "./vector-centroids.server";
+import { liveArchive } from "./search-archive-ledger.server.ts";
+import { searchChannels } from "./search-channels.server.ts";
+import { vectorsOfRow, writeHead } from "./search-files.server.ts";
+import type { ArchiveEntry, SearchHead, SegmentEntry } from "./search-files.server.ts";
+import { searchLedger } from "./search-ledger.server.ts";
+import type { Segment } from "./search-ledger.server.ts";
+import { centroidStamp } from "./vector-centroids.server.ts";
 
 const entryOf = (segment: Segment, isArchived: (name: string) => boolean): SegmentEntry => ({
   name: segment.name,

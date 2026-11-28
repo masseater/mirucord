@@ -2,9 +2,9 @@ import { Array, DateTime, Effect, Option, pipe } from "effect";
 
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
-import { idsOf, isFullPage } from "./message-page.server";
-import { channelMessagesSince, deleteMessages } from "./message-rows.server";
-import type { ChannelRef } from "./message-rows.server";
+import { idsOf, isFullPage } from "./message-page.server.ts";
+import { channelMessagesSince, deleteMessages } from "./message-rows.server.ts";
+import type { ChannelRef } from "./message-rows.server.ts";
 
 const oldestTimestamp = (page: readonly DiscordMessage[]): Option.Option<DateTime.DateTime> =>
   Array.match(page, {

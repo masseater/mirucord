@@ -1,6 +1,6 @@
 import { Array, Effect, Option } from "effect";
 
-import { settleNeurons } from "./budget.server";
+import { settleNeurons } from "./budget.server.ts";
 
 export const GEMMA_MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const INPUT_NEURONS_PER_MILLION = 9091;

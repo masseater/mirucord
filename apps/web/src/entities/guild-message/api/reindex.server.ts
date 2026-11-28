@@ -8,7 +8,7 @@ import { guildMessage } from "#/entities/guild-message/model/guild-message.schem
 import { openGuildKeys } from "#/shared/crypto/index.server";
 import { wrappedKeyOf } from "#/shared/db/index.server";
 
-import { searchLedger } from "./search-ledger.server";
+import { searchLedger } from "./search-ledger.server.ts";
 
 const REINDEX_BATCH = 500;
 

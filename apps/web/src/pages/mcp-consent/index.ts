@@ -1,2 +1,2 @@
-export { validateConsentSearch } from "./api/consent";
-export { ConsentPage } from "./ui/consent-page";
+export { validateConsentSearch } from "./api/consent.ts";
+export { ConsentPage } from "./ui/consent-page.tsx";

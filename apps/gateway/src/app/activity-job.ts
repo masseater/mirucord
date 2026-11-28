@@ -1,7 +1,7 @@
 import type { GatewayJob } from "@repo/ingest-util-gateway-contract";
 
-import { mergeReactionJobs, reactionJobOf } from "./reaction-job";
-import { mergeVoiceJobs, voiceJobOf } from "./voice-job";
+import { mergeReactionJobs, reactionJobOf } from "./reaction-job.ts";
+import { mergeVoiceJobs, voiceJobOf } from "./voice-job.ts";
 
 export const ACTIVITY_JOBS = [voiceJobOf, reactionJobOf];
 

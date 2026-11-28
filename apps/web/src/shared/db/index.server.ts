@@ -1,12 +1,12 @@
-export { db } from "./client.server";
-export { listGuildIds } from "./guild-ids.server";
-export { commonPhrase } from "./common-phrase.table";
-export { channel, guild, ingestConsent, role } from "./guild.table";
-export { linkedAccount } from "./linked-account.table";
-export { message } from "./message.table";
-export { wrappedKeyOf } from "./guild-key.server";
-export { loadRoleField } from "./roles.server";
-export type { Backfill } from "./channel-state";
+export { db } from "./client.server.ts";
+export { listGuildIds } from "./guild-ids.server.ts";
+export { commonPhrase } from "./common-phrase.table.ts";
+export { channel, guild, ingestConsent, role } from "./guild.table.ts";
+export { linkedAccount } from "./linked-account.table.ts";
+export { message } from "./message.table.ts";
+export { wrappedKeyOf } from "./guild-key.server.ts";
+export { loadRoleField } from "./roles.server.ts";
+export type { Backfill } from "./channel-state.ts";
 export {
   account,
   authRelations,
@@ -21,4 +21,4 @@ export {
   session,
   user,
   verification,
-} from "./generated/auth.table";
+} from "./generated/auth.table.ts";

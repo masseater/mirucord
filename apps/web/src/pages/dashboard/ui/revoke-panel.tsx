@@ -9,7 +9,7 @@ import { useReturnToDashboard } from "#/pages/dashboard/model/use-return-to-dash
 import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { FeedbackLine } from "./feedback-line";
+import { FeedbackLine } from "./feedback-line.tsx";
 
 const SUMMARY = "同意を取り消す";
 const DETAIL = "元に戻せません";

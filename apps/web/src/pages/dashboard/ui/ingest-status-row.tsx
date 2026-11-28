@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest-messages/index.server";
 
-import { ChannelLabel } from "./channel-label";
-import { ForumToggle } from "./forum-toggle";
-import { IngestPill } from "./ingest-pill";
-import { PurgeChannelButton } from "./purge-channel-button";
+import { ChannelLabel } from "./channel-label.tsx";
+import { ForumToggle } from "./forum-toggle.tsx";
+import { IngestPill } from "./ingest-pill.tsx";
+import { PurgeChannelButton } from "./purge-channel-button.tsx";
 
 export const IngestStatusRow = ({
   guildId,

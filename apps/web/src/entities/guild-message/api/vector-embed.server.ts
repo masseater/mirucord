@@ -9,7 +9,7 @@ import type { Quantized } from "#/shared/ai";
 import { embedTexts, nextBudgetDay } from "#/shared/ai/index.server";
 import { openMessage, sealBytes } from "#/shared/crypto/index.server";
 
-import { vectorLedger } from "./vector-ledger.server";
+import { vectorLedger } from "./vector-ledger.server.ts";
 
 const EMBED_BATCH = 50;
 const BATCHES_PER_RUN = 4;

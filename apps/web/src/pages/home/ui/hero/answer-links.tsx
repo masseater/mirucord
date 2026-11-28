@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { MEMORY_ID } from "./memory";
+import { MEMORY_ID } from "./memory.ts";
 
 const SOURCE = "#ざつだん 22:14";
 const CITATION = "思い出を 4 件みつけたよ";

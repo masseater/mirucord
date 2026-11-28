@@ -6,7 +6,7 @@ import { registerListServers } from "#/features/list-servers/index.server";
 import { registerReadMessages } from "#/features/read-messages/index.server";
 import { serverWith } from "#/shared/mcp";
 
-import { RELATION_TOOLS } from "./mcp-relation-tools.server";
+import { RELATION_TOOLS } from "./mcp-relation-tools.server.ts";
 
 export const buildServer = serverWith([
   ...RELATION_TOOLS,

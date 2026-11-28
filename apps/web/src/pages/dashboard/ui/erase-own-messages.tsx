@@ -14,7 +14,7 @@ import {
 import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { FeedbackLine } from "./feedback-line";
+import { FeedbackLine } from "./feedback-line.tsx";
 
 const SUMMARY = "自分の投稿を削除する";
 const IRREVERSIBLE = "元に戻せません";

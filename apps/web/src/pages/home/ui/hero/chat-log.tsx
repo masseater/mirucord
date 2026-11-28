@@ -6,9 +6,9 @@ import { Message } from "#/pages/home/ui/message/message";
 import type { Reply } from "#/pages/home/ui/message/message";
 import { Reactions } from "#/pages/home/ui/message/reactions";
 
-import { SeekMiru } from "./seek-miru";
+import { SeekMiru } from "./seek-miru.tsx";
 import starPhoto from "./star-photo.svg";
-import { Vow } from "./vow";
+import { Vow } from "./vow.tsx";
 
 const SKY = "今日の星空やばかったね";
 const SKY_ALT = "キャンプ場で撮った星空の写真";

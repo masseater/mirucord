@@ -1,1 +1,1 @@
-export { registerListLinkedAccounts } from "./api/list-linked-accounts.server";
+export { registerListLinkedAccounts } from "./api/list-linked-accounts.server.ts";

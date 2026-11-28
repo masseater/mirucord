@@ -3,7 +3,7 @@ import { expect, it } from "vite-plus/test";
 
 import type { ForumPostsOutcome } from "#/pages/dashboard/api/dashboard";
 
-import { forumPostsNote, forumPostsViewOf } from "./forum-posts-view";
+import { forumPostsNote, forumPostsViewOf } from "./forum-posts-view.ts";
 
 const NO_RESULT = Option.getOrUndefined(Option.none<ForumPostsOutcome>());
 

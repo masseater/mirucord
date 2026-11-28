@@ -4,10 +4,10 @@ import { describe, expect } from "vite-plus/test";
 
 import { DIMENSIONS, quantize } from "#/shared/ai";
 
-import { groupEntries } from "./clusters";
-import { nearestRows } from "./nearest";
-import { blockOf, decodeBlock, encodeBlock, entriesOf } from "./vector-block";
-import type { VectorEntry } from "./vector-block";
+import { groupEntries } from "./clusters.ts";
+import { nearestRows } from "./nearest.ts";
+import { blockOf, decodeBlock, encodeBlock, entriesOf } from "./vector-block.ts";
+import type { VectorEntry } from "./vector-block.ts";
 
 const ROW_COUNT = 3;
 const GROUP_COUNT = 4;

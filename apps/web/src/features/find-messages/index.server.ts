@@ -1,1 +1,1 @@
-export { registerFindMessages } from "./api/find-messages.server";
+export { registerFindMessages } from "./api/find-messages.server.ts";

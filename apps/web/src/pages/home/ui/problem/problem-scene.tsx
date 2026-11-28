@@ -4,8 +4,8 @@ import type { Scene } from "#/pages/home/ui/common/scene";
 import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { CampThread } from "./camp-thread";
-import { ScatterScene } from "./scatter-scene";
+import { CampThread } from "./camp-thread.tsx";
+import { ScatterScene } from "./scatter-scene.tsx";
 
 const GUIDE = "あの話どこだっけ…？";
 const ASKER = memberAuthor(MEMBERS.yui);

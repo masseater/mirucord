@@ -3,7 +3,7 @@ import { Array, pipe } from "effect";
 
 import { erasedAuthor } from "#/entities/guild-message/model/erased-author.schema";
 
-import { rowChunks } from "./bound-chunks.server";
+import { rowChunks } from "./bound-chunks.server.ts";
 
 export type ErasedAuthor = Readonly<{ id: string }>;
 

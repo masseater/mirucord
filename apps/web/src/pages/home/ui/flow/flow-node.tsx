@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { FlowCard } from "./flow-card";
-import { FlowLabel } from "./flow-label";
+import { FlowCard } from "./flow-card.tsx";
+import { FlowLabel } from "./flow-label.tsx";
 
 export type NodeSpec = Readonly<{
   shape: Readonly<{ height: number; fill: string; shadow: boolean; radius: number }>;

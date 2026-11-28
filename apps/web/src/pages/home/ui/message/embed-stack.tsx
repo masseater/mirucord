@@ -1,7 +1,7 @@
 import { Array, pipe } from "effect";
 import type { HTMLElementType, ReactNode } from "react";
 
-import { Embed } from "./embed";
+import { Embed } from "./embed.tsx";
 
 export type EmbedItem = Readonly<{ accent: string; title: string; body: ReactNode }>;
 

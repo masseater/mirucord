@@ -2,7 +2,7 @@ import { expect, it } from "vite-plus/test";
 
 import type { Dashboard } from "#/pages/dashboard/api/dashboard.server";
 
-import { landingOf } from "./sign-in-landing";
+import { landingOf } from "./sign-in-landing.ts";
 
 const ready = (ingest: "awaiting" | "done"): Dashboard => ({
   status: "ready",

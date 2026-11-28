@@ -5,8 +5,8 @@ import { Array, Option, pipe } from "effect";
 
 import { guildMessage, TRACKED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
 
-import { authorQueries } from "./author-queries.server";
-import { inChunks } from "./bound-chunks.server";
+import { authorQueries } from "./author-queries.server.ts";
+import { inChunks } from "./bound-chunks.server.ts";
 import type {
   AuthoredMessage,
   AuthorPage,
@@ -16,7 +16,7 @@ import type {
   SealedMessage,
   StoredState,
   TrackedRow,
-} from "./store-types";
+} from "./store-types.ts";
 
 const boundsOf = ({ from, upTo }: CreatedRange): readonly SQL[] => {
   const lower = Option.map(Option.fromNullOr(from), (time) => gte(guildMessage.createdAt, time));

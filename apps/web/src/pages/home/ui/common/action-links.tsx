@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { PopButton } from "#/shared/ui/pop-button";
 import type { PopSize } from "#/shared/ui/pop-variants";
 
-import { START_LINK } from "./start-link";
-import type { ActionLink } from "./start-link";
+import { START_LINK } from "./start-link.ts";
+import type { ActionLink } from "./start-link.ts";
 
 export const ActionLinks = ({
   className,

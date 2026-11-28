@@ -6,9 +6,9 @@ import { Array, Option, pipe } from "effect";
 import { BOUND_LIMIT, guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { searchSegment } from "#/entities/guild-message/model/search-segment.schema";
 
-import { inChunks } from "./bound-chunks.server";
-import { inRange, rangeOf, searchLedger } from "./search-ledger.server";
-import type { Segment } from "./search-ledger.server";
+import { inChunks } from "./bound-chunks.server.ts";
+import { inRange, rangeOf, searchLedger } from "./search-ledger.server.ts";
+import type { Segment } from "./search-ledger.server.ts";
 
 const NO_VECTOR = 0;
 const ONE_ROW = 1;

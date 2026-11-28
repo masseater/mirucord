@@ -1,8 +1,8 @@
 import { Discord, UI } from "dfx";
 import { Array, Effect, Option, pipe, Schema, String as Str } from "effect";
 
-import { decodeBody, withDiscord } from "./client.server";
-import type { DiscordRequestError } from "./client.server";
+import { decodeBody, withDiscord } from "./client.server.ts";
+import type { DiscordRequestError } from "./client.server.ts";
 
 const WEBHOOK_PATH_PARTS = 2;
 

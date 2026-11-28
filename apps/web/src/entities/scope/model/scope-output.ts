@@ -1,6 +1,6 @@
 import { Schema } from "effect";
 
-import { CONSENTS, INGEST_STATUSES } from "./ingest-status";
+import { CONSENTS, INGEST_STATUSES } from "./ingest-status.ts";
 
 export const IngestOutput = Schema.Literals(INGEST_STATUSES).annotate({
   description:

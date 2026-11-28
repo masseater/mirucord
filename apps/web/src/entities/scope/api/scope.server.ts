@@ -8,7 +8,7 @@ import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { visibleChannelIds } from "#/shared/permissions";
 import type { GuildChannel, GuildSnapshot } from "#/shared/permissions";
 
-import { loadConsentDetail } from "./consent-detail.server";
+import { loadConsentDetail } from "./consent-detail.server.ts";
 
 const MEMBER_CONCURRENCY = 4;
 

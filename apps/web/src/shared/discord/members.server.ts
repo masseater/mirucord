@@ -2,8 +2,8 @@ import { DiscordMemberSchema } from "@repo/shared-util-discord";
 import type { DiscordMember } from "@repo/shared-util-discord";
 import { Array, Effect, Option, Schema } from "effect";
 
-import { decodeBody, withDiscord } from "./client.server";
-import type { DiscordRequestError } from "./client.server";
+import { decodeBody, withDiscord } from "./client.server.ts";
+import type { DiscordRequestError } from "./client.server.ts";
 
 const MEMBER_PAGE = 1000;
 

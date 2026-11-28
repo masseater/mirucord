@@ -1,1 +1,1 @@
-export { registerListChannels } from "./api/list-channels.server";
+export { registerListChannels } from "./api/list-channels.server.ts";

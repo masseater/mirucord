@@ -1,4 +1,4 @@
-import { MASCOT_NAME } from "./brand";
+import { MASCOT_NAME } from "./brand.ts";
 
 export const SAMPLE_PROMPT = "去年の夏の思い出を教えて";
 

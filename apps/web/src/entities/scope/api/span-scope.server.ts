@@ -3,7 +3,7 @@ import { Array, Option, pipe, Record } from "effect";
 import { spanLookupOf } from "#/entities/scope/model/span-input";
 import type { SpanInput, SpanLookup } from "#/entities/scope/model/span-input";
 
-import type { GuildScope } from "./scope.server";
+import type { GuildScope } from "./scope.server.ts";
 
 export type SpanRequest = Readonly<{
   scope: GuildScope;

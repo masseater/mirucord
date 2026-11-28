@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import type { GuildSettings } from "#/features/ingest-messages/index.server";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 
-import { ConsentForm } from "./consent-form";
-import { ConsentRecord } from "./consent-record";
-import { GrantedPanels } from "./granted-panels";
+import { ConsentForm } from "./consent-form.tsx";
+import { ConsentRecord } from "./consent-record.tsx";
+import { GrantedPanels } from "./granted-panels.tsx";
 
 const TIP = {
   awaiting: "よければ同意してね",

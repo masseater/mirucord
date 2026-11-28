@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { ForumPost } from "#/features/ingest-messages/index.server";
 import { countFormat } from "#/pages/dashboard/model/format";
 
-import { IngestPill } from "./ingest-pill";
+import { IngestPill } from "./ingest-pill.tsx";
 
 const MESSAGES = "メッセージ";
 const UNIT = "件";

@@ -7,7 +7,7 @@ import { openGuildKey, sealMember } from "#/shared/crypto/index.server";
 import { listGuildMembers } from "#/shared/discord/index.server";
 import type { DiscordGuildMember, DiscordRequestError } from "#/shared/discord/index.server";
 
-import { whenConsented } from "./consented.server";
+import { whenConsented } from "./consented.server.ts";
 
 type StoredMemberRow = MemberWrite["members"][number];
 

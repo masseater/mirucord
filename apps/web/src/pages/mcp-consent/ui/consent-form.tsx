@@ -10,7 +10,7 @@ import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 
-import { ConsentActions } from "./consent-actions";
+import { ConsentActions } from "./consent-actions.tsx";
 
 const TIP = `${MASCOT_NAME}とつなぐよ`;
 

@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 
 import { forumPostsQuery } from "#/pages/dashboard/api/dashboard";
 
-import { ForumPostRow } from "./forum-post-row";
-import { forumPostsNote, forumPostsViewOf } from "./forum-posts-view";
+import { ForumPostRow } from "./forum-post-row.tsx";
+import { forumPostsNote, forumPostsViewOf } from "./forum-posts-view.ts";
 
 export const ForumPostList = ({
   guildId,

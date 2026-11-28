@@ -5,7 +5,7 @@ import type { SealedHits } from "#/entities/guild-message/lib/search-query";
 import { rangeAt } from "#/entities/guild-message/lib/search-shard";
 import type { PostingView } from "#/entities/guild-message/lib/search-shard";
 
-import type { ArchiveEntry, SearchHead } from "./search-files.server";
+import type { ArchiveEntry, SearchHead } from "./search-files.server.ts";
 
 type LivePiece = Readonly<{
   name: string;

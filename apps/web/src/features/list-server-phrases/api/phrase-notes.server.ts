@@ -5,10 +5,10 @@ import { guildStore } from "#/entities/guild-message/index.server";
 import type { PhraseNote } from "#/entities/guild-message/index.server";
 import { openBytes, sealBytes } from "#/shared/crypto/index.server";
 
-import { annotatePhrase } from "./phrase-annotate.server";
-import type { Note, NoteSubject } from "./phrase-annotate.server";
-import { preparedOf } from "./phrase-samples.server";
-import type { Prepared } from "./phrase-samples.server";
+import { annotatePhrase } from "./phrase-annotate.server.ts";
+import type { Note, NoteSubject } from "./phrase-annotate.server.ts";
+import { preparedOf } from "./phrase-samples.server.ts";
+import type { Prepared } from "./phrase-samples.server.ts";
 
 const CONCURRENCY = 16;
 const NO_NOTE = Option.getOrNull(Option.none<string>());

@@ -3,8 +3,8 @@ import { Array, Function, Option, pipe } from "effect";
 
 import { THREAD_TYPES } from "#/shared/discord";
 
-import { canReadHistory, canSendMessages } from "./permissions";
-import type { Overwrite, ReaderContext } from "./permissions";
+import { canReadHistory, canSendMessages } from "./permissions.ts";
+import type { Overwrite, ReaderContext } from "./permissions.ts";
 
 export type GuildChannel = Readonly<{
   id: string;

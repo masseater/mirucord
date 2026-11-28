@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import type { ReadableGuild } from "#/pages/dashboard/api/dashboard.server";
 
-import { ReadableGuildRow } from "./readable-guild-row";
+import { ReadableGuildRow } from "./readable-guild-row.tsx";
 
 export const ReadableGuildList = ({
   guilds,

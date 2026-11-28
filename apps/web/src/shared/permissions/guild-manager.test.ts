@@ -1,7 +1,7 @@
 import { PermissionFlagsBits } from "discord-api-types/v10";
 import { expect, it } from "vite-plus/test";
 
-import { isGuildManager } from "./permissions";
+import { isGuildManager } from "./permissions.ts";
 
 const GUILD = "100";
 const OWNER = "200";

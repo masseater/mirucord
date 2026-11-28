@@ -1,1 +1,1 @@
-export { resolveScope } from "./api/scope.server";
+export { resolveScope } from "./api/scope.server.ts";

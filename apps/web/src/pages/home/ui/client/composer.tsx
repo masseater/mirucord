@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { TYPING_DOTS } from "#/pages/home/ui/common/typing-dots";
 
-import { ComposerHint } from "./composer-hint";
+import { ComposerHint } from "./composer-hint.tsx";
 
 const PLUS = "+";
 const TYPER = "ゆい";

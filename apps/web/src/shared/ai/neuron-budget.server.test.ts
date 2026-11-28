@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import { TestClock } from "effect/testing";
 import { describe, expect } from "vite-plus/test";
 
-import { settleNeurons, spendNeurons } from "./budget.server";
+import { settleNeurons, spendNeurons } from "./budget.server.ts";
 
 const BACKFILL = 6000;
 const OVERFLOW = 2000;

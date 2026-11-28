@@ -13,8 +13,8 @@ import type {
   DiscordRequestError,
 } from "#/shared/discord/index.server";
 
-import { botReader } from "./bot-readable.server";
-import type { BotView } from "./bot-readable.server";
+import { botReader } from "./bot-readable.server.ts";
+import type { BotView } from "./bot-readable.server.ts";
 
 export type ChannelListing = Readonly<{
   stored: readonly DiscordChannel[];

@@ -1,2 +1,2 @@
-export { SelfHostPage } from "./ui/self-host-page";
-export { TechPage } from "./ui/tech-page";
+export { SelfHostPage } from "./ui/self-host-page.ts";
+export { TechPage } from "./ui/tech-page.ts";

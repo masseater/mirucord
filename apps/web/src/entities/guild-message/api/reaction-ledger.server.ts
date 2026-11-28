@@ -6,7 +6,7 @@ import { Array, Match, Option, Order, pipe } from "effect";
 
 import { pollVote, reaction } from "#/entities/guild-message/model/reaction.schema";
 
-import { deleteIn, inChunks } from "./bound-chunks.server.ts";
+import { deleteIn, firstFound, inChunksOf } from "./bound-chunks.server.ts";
 import type { ReactionLookup, ReactionPage, StoredReaction, StoredVote } from "./reaction-types.ts";
 import { unlessErased } from "./unless-erased.ts";
 
@@ -108,18 +108,20 @@ const reactionRowsOf = (
   const byMessage = Option.map(Option.fromNullOr(lookup.messageId), (id) =>
     select(eq(reaction.messageId, id)),
   );
-  const byUser = Option.map(Option.fromNullOr(lookup.userIds), (ids) =>
-    inChunks(ids, (chunk) => select(inArray(reaction.userId, [...chunk]))),
-  );
-  const byAuthor = Option.map(Option.fromNullOr(lookup.authorIds), (ids) =>
-    inChunks(ids, (chunk) => select(inArray(reaction.messageAuthorId, [...chunk]))),
-  );
-  return pipe(
-    byMessage,
-    Option.orElse(() => byUser),
-    Option.orElse(() => byAuthor),
-    Option.getOrElse(() => select()),
-  );
+  return firstFound({
+    options: [
+      byMessage,
+      inChunksOf({
+        values: lookup.userIds,
+        query: (chunk) => select(inArray(reaction.userId, [...chunk])),
+      }),
+      inChunksOf({
+        values: lookup.authorIds,
+        query: (chunk) => select(inArray(reaction.messageAuthorId, [...chunk])),
+      }),
+    ],
+    fallback: () => select(),
+  });
 };
 
 const voteRowsOf = (db: DrizzleSqliteDODatabase, lookup: ReactionLookup): readonly StoredVote[] => {
@@ -132,14 +134,16 @@ const voteRowsOf = (db: DrizzleSqliteDODatabase, lookup: ReactionLookup): readon
   const byMessage = Option.map(Option.fromNullOr(lookup.messageId), (id) =>
     select(eq(pollVote.messageId, id)),
   );
-  const byUser = Option.map(Option.fromNullOr(lookup.userIds), (ids) =>
-    inChunks(ids, (chunk) => select(inArray(pollVote.userId, [...chunk]))),
-  );
-  return pipe(
-    byMessage,
-    Option.orElse(() => byUser),
-    Option.getOrElse(() => select()),
-  );
+  return firstFound({
+    options: [
+      byMessage,
+      inChunksOf({
+        values: lookup.userIds,
+        query: (chunk) => select(inArray(pollVote.userId, [...chunk])),
+      }),
+    ],
+    fallback: () => select(),
+  });
 };
 
 type Filtered = Readonly<{ channelId: string; userId: string; at: number }>;

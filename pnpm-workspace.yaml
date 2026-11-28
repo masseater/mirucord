@@ -73,6 +73,7 @@ overrides:
   glob@>=9.0.0 <=14.0.1: ^14.0.2 # exit: unused
   minimatch@<11.0.1: ^11.0.1 # exit: unused
   katex@>=0.11.0 <0.18.2: ^0.19.0 # exit: unused
+  "@r_masseater/vite-plus-adopt>@r_masseater/h56m": ^0.3.0 # exit: unused
 peerDependencyRules:
   allowAny:
     - vite

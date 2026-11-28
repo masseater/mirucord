@@ -4,7 +4,11 @@ import { Array, Duration, Option, Order, pipe } from "effect";
 
 import { phraseTotals } from "#/entities/guild-message/lib/phrase-totals";
 import { PHRASE_WINDOW_DAYS } from "#/entities/guild-message/lib/phrases.server";
-import { guildMessage, SEALED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
+import {
+  BOUND_LIMIT,
+  guildMessage,
+  SEALED_COLUMNS,
+} from "#/entities/guild-message/model/guild-message.schema";
 import { phraseLedger, phraseStats } from "#/entities/guild-message/model/phrase-stats.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
@@ -29,7 +33,6 @@ export type Ledger = Readonly<{
   backfillRequestedAt: number;
 }>;
 
-const BOUND_LIMIT = 90;
 const LEDGER_ID = 1;
 const NOTHING_WRITTEN = 0;
 const NEXT_GENERATION = 1;
@@ -102,12 +105,7 @@ export abstract class PhraseStore extends MessageStore {
 
   protected override forgetPhrases(column: PhraseColumn, values: readonly string[]): void {
     this.forgetStats();
-    for (const chunk of Array.chunksOf(values, BOUND_LIMIT)) {
-      this.db
-        .delete(phraseUse)
-        .where(inArray(phraseUse[column], [...chunk]))
-        .run();
-    }
+    this.#uses.forget(column, values);
   }
 
   public unphrased(now: number, limit: number): readonly UnphrasedMessage[] {

@@ -1,7 +1,5 @@
 import { and, count, desc, eq, inArray, lt } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/durable-sqlite";
-import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Effect, Option, pipe } from "effect";
 
 import {
@@ -13,8 +11,9 @@ import {
 import { TracedDurableObject } from "#/shared/observability/index.server";
 
 import { erasedAuthors } from "./erased-authors.server.ts";
-import { migrateGuild } from "./guild-migrations.server.ts";
+import { migrateGuild, openGuild } from "./guild-migrations.server.ts";
 import { messageQueries } from "./message-queries.server.ts";
+import { latestPerId, writeMessages } from "./message-write.server.ts";
 import { nextVersion, searchHooks } from "./search-hooks.server.ts";
 import type {
   AuthoredMessage,
@@ -25,10 +24,8 @@ import type {
   ExtractedPhrases,
   IndexedMessage,
   PhraseColumn,
-  PhraseState,
   ReadPage,
   SealedMessage,
-  StoredRow,
   StoredState,
   TrackedRow,
   WriteMode,
@@ -36,24 +33,14 @@ import type {
 
 const NO_MESSAGES = 0;
 
-type Seq = Readonly<{ seq: number }>;
-
-type Versioned = StoredRow & Readonly<{ tokens: readonly number[]; version: number }>;
-
 export abstract class MessageStore extends TracedDurableObject {
-  protected readonly db = this.#open();
+  protected readonly db = openGuild(this.ctx.storage);
 
   protected abstract recordPhrases(extracted: readonly ExtractedPhrases[]): void;
 
   protected abstract countWrites(written: number): void;
 
   protected abstract forgetPhrases(column: PhraseColumn, values: readonly string[]): void;
-
-  #open(): DrizzleSqliteDODatabase {
-    const db = drizzle(this.ctx.storage);
-    migrateGuild(db);
-    return db;
-  }
 
   readonly #remigrate = Effect.sync(() => {
     migrateGuild(this.db);
@@ -73,39 +60,6 @@ export abstract class MessageStore extends TracedDurableObject {
 
   #tracked(ids: readonly string[]): readonly TrackedRow[] {
     return this.#queries.tracked(ids);
-  }
-
-  #upsert(row: Versioned, phrases: PhraseState, mode: WriteMode): readonly Seq[] {
-    const insert = this.db.insert(guildMessage).values({ ...row, phrases: phrases.status });
-    if (mode === "adopt") {
-      return insert.onConflictDoNothing().returning({ seq: guildMessage.seq }).all();
-    }
-    const changes = {
-      sealed: row.sealed,
-      editedAt: row.editedAt,
-      describedWith: row.describedWith,
-      phrases: phrases.status,
-      tokens: row.tokens,
-      version: row.version,
-      vector: Option.getOrNull(Option.none<Uint8Array>()),
-      vectorAt: Option.getOrNull(Option.none<number>()),
-    };
-    return insert
-      .onConflictDoUpdate({ target: guildMessage.id, set: changes })
-      .returning({ seq: guildMessage.seq })
-      .all();
-  }
-
-  #write(
-    { row, tokens, phrases }: IndexedMessage,
-    version: number,
-    mode: WriteMode,
-  ): readonly ExtractedPhrases[] {
-    const written = this.#upsert({ ...row, tokens, version }, phrases, mode);
-    if (Array.isReadonlyArrayNonEmpty(written) && phrases.status === "extracted") {
-      return [{ message: row, hashes: phrases.hashes }];
-    }
-    return [];
   }
 
   #recordExtracted(extracted: readonly ExtractedPhrases[]): void {
@@ -136,13 +90,10 @@ export abstract class MessageStore extends TracedDurableObject {
     if (Array.isReadonlyArrayEmpty(kept)) {
       return Effect.void;
     }
-    const previous = this.#previous(kept, mode);
-    const version = nextVersion(this.db);
+    const latest = latestPerId(kept);
+    const previous = this.#previous(latest, mode);
     this.#recordExtracted(
-      pipe(
-        kept,
-        Array.flatMap((message) => this.#write(message, version, mode)),
-      ),
+      writeMessages({ db: this.db, items: latest, previous, version: nextVersion(this.db) }),
     );
     return this.search.forget(previous).pipe(Effect.andThen(this.search.flushLater()));
   }

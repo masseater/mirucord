@@ -26,6 +26,9 @@ const STORED_CHANNEL = "710";
 const STORED = "711";
 const PHRASEFUL = "712";
 const MANY_PHRASES = 60;
+const BATCH_SIZE = 30;
+const BATCH_FIRST = 8000;
+const DUPLICATED = 1;
 const UNDESCRIBED_CHANNEL = "740";
 const UNDESCRIBED = "741";
 const FORWARD_CHANNEL = "750";
@@ -227,5 +230,25 @@ it.effect("stores a message that carries more phrases than one insert can bind",
     });
     const stored = yield* storedIdsIn({ guildId: GUILD, channelId: STORED_CHANNEL });
     expect(stored).toContain(PHRASEFUL);
+  }),
+);
+
+it.effect("stores a batch of new messages, one of them listed twice, beside a stored one", () =>
+  Effect.gen(function* batch() {
+    const ids = pipe(
+      Array.makeBy(BATCH_SIZE, (index) => String(BATCH_FIRST + index)),
+      Array.map((id) => storedMessage({ id, channelId: STORED_CHANNEL })),
+    );
+    const twice = pipe(ids, Array.take(DUPLICATED));
+    yield* putMessages({
+      guildId: GUILD,
+      messages: [...ids, ...twice, storedMessage({ id: STORED, channelId: STORED_CHANNEL })],
+    });
+    const stored = yield* storedIdsIn({ guildId: GUILD, channelId: STORED_CHANNEL });
+    const batched = pipe(
+      stored,
+      Array.filter((id) => Number(id) >= BATCH_FIRST),
+    );
+    expect(batched).toHaveLength(BATCH_SIZE);
   }),
 );

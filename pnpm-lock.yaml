@@ -380,8 +380,8 @@ catalogs:
       specifier: 3.48.0
       version: 3.48.0
     renovate:
-      specifier: 44.262.1
-      version: 44.262.1
+      specifier: 44.262.2
+      version: 44.262.2
     tailwindcss:
       specifier: 4.3.5
       version: 4.3.5
@@ -441,7 +441,7 @@ importers:
         version: 3.48.0(tsrs@7.1.0-beta.tsrs5)
       renovate:
         specifier: catalog:stack
-        version: 44.262.1(supports-color@7.2.0)(typanion@3.14.0)
+        version: 44.262.2(supports-color@7.2.0)(typanion@3.14.0)
       tsrs:
         specifier: catalog:stack
         version: 7.1.0-beta.tsrs5
@@ -5809,6 +5809,10 @@ packages:
     resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
     engines: {node: '>=22.12.0'}
 
+  commander@15.1.0:
+    resolution: {integrity: sha512-cgnQ88TRrWcC7pVq46RzJVRMktu3W2RcbnoidnfBsl1bmDCBwJS/udcIZpKoCrbAYYaCqsz1yZCVIgbIaU3ddQ==}
+    engines: {node: '>=22.12.0'}
+
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
 
@@ -8418,8 +8422,8 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
-  renovate@44.262.1:
-    resolution: {integrity: sha512-Tble+nO4Tctj9xZps3OuZDXKP1/ttfT8zRpFsaeOSKFnkmC355LQm8YAxbw1tVfnFTmpwe89SQiXXj0/30fLTQ==}
+  renovate@44.262.2:
+    resolution: {integrity: sha512-bsqL2jqISbOkUMC5pogOZZuIR/bTwNDPfWn06Rzf4c0cDJwVj7/NvVeLNA9PAdohAXGHrvmpuzq40mUrgZax4g==}
     engines: {node: ^24.11.0 || ^26.13.0, pnpm: ^11.0.0}
     hasBin: true
 
@@ -14526,6 +14530,8 @@ snapshots:
 
   commander@15.0.0: {}
 
+  commander@15.1.0: {}
+
   commander@2.20.3:
     optional: true
 
@@ -17480,7 +17486,7 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
-  renovate@44.262.1(supports-color@7.2.0)(typanion@3.14.0):
+  renovate@44.262.2(supports-color@7.2.0)(typanion@3.14.0):
     dependencies:
       '@aws-sdk/client-codecommit': 3.1139.0
       '@aws-sdk/client-ec2': 3.1139.0
@@ -17533,7 +17539,7 @@ snapshots:
       cacache: 20.0.4
       changelog-filename-regex: 2.0.1
       clean-git-ref: 2.0.1
-      commander: 15.0.0
+      commander: 15.1.0
       common-tags: 1.8.2
       croner: 10.0.1
       cronstrue: 3.41.0

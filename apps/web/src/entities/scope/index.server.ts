@@ -1,7 +1,7 @@
-export { loadConsentDetail } from "./api/consent-detail.server";
-export { readableGuilds } from "./api/scope.server";
-export type { GuildScope } from "./api/scope.server";
-export { spanScopeOf } from "./api/span-scope.server";
+export { loadConsentDetail } from "./api/consent-detail.server.ts";
+export { readableGuilds } from "./api/scope.server.ts";
+export type { GuildScope } from "./api/scope.server.ts";
+export { spanScopeOf } from "./api/span-scope.server.ts";
 export {
   DISCORD_UNAVAILABLE,
   ingestById,
@@ -10,4 +10,4 @@ export {
   readableChannels,
   withChannel,
   withScope,
-} from "./api/tool-scope.server";
+} from "./api/tool-scope.server.ts";

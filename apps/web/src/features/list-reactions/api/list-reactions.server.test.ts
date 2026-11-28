@@ -17,7 +17,7 @@ import {
   userToolCaller,
 } from "#/entities/guild-message/index.test.support";
 
-import { registerListReactions } from "./list-reactions.server";
+import { registerListReactions } from "./list-reactions.server.ts";
 
 const callTool = userToolCaller([registerListReactions]);
 

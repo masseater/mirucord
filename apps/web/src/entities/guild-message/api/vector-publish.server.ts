@@ -3,13 +3,13 @@ import { Array, Effect, Option } from "effect";
 
 import { groupEntries } from "#/entities/guild-message/lib/clusters";
 
-import { deleteKeys, vectorKeys, writeFiles } from "./search-files.server";
-import { writeSearchHead } from "./search-head.server";
-import type { Segment } from "./search-ledger.server";
-import { saveCentroids } from "./vector-centroids.server";
-import type { Keys } from "./vector-embed.server";
-import { openEntries, sealFiles } from "./vector-files.server";
-import { vectorLedger } from "./vector-ledger.server";
+import { deleteKeys, vectorKeys, writeFiles } from "./search-files.server.ts";
+import { writeSearchHead } from "./search-head.server.ts";
+import type { Segment } from "./search-ledger.server.ts";
+import { saveCentroids } from "./vector-centroids.server.ts";
+import type { Keys } from "./vector-embed.server.ts";
+import { openEntries, sealFiles } from "./vector-files.server.ts";
+import { vectorLedger } from "./vector-ledger.server.ts";
 
 const ONE_SEGMENT = 1;
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { ChannelHeader } from "./channel-header";
-import type { Channel } from "./channels";
+import { ChannelHeader } from "./channel-header.tsx";
+import type { Channel } from "./channels.ts";
 
 export const ChannelSection = ({
   channel,

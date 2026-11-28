@@ -1,10 +1,10 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import { CategoryHeading } from "./category-heading";
-import { rowKey } from "./sidebar-categories";
-import type { SidebarCategory } from "./sidebar-categories";
-import { SidebarItem } from "./sidebar-item";
+import { CategoryHeading } from "./category-heading.tsx";
+import { rowKey } from "./sidebar-categories.ts";
+import type { SidebarCategory } from "./sidebar-categories.ts";
+import { SidebarItem } from "./sidebar-item.tsx";
 
 export const SidebarGroup = ({ category }: Readonly<{ category: SidebarCategory }>): ReactNode => {
   if (category.state === "collapsed") {

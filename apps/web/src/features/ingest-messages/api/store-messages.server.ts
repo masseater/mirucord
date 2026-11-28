@@ -17,12 +17,12 @@ import { sealMessage } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
-import { DESCRIBE_MODEL, describeImage, isDescribable } from "./describe-image.server";
-import type { ImageSource } from "./describe-image.server";
-import { attachmentsOf, bodyOf, hasRichBody } from "./message-body.server";
-import type { DiscordAttachment, MessageAuthor } from "./message-body.server";
-import { findStored } from "./message-rows.server";
-import type { StoredMessage } from "./message-rows.server";
+import { DESCRIBE_MODEL, describeImage, isDescribable } from "./describe-image.server.ts";
+import type { ImageSource } from "./describe-image.server.ts";
+import { attachmentsOf, bodyOf, hasRichBody } from "./message-body.server.ts";
+import type { DiscordAttachment, MessageAuthor } from "./message-body.server.ts";
+import { findStored } from "./message-rows.server.ts";
+import type { StoredMessage } from "./message-rows.server.ts";
 
 const STORED_TYPES: ReadonlySet<number> = new Set([
   Discord.MessageType.DEFAULT,

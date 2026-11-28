@@ -1,6 +1,6 @@
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { channel, guild } from "./guild.table";
+import { channel, guild } from "./guild.table.ts";
 
 export const message = sqliteTable(
   "message",

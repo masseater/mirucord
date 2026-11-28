@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { MASCOT_NAME } from "#/shared/config";
 
-import { CipherRow } from "./cipher-row";
+import { CipherRow } from "./cipher-row.tsx";
 
 const ROWS = [
   { before: "カレー焦がさない", after: "q7Vb2…Xe9=" },

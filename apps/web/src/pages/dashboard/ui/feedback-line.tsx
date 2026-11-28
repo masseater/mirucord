@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import type { Feedback } from "#/pages/dashboard/lib/feedback";
 import { IconLine } from "#/shared/ui/icon-line";
 
-import { RefreshButton } from "./refresh-button";
-import { SignInAgain } from "./sign-in-again";
+import { RefreshButton } from "./refresh-button.tsx";
+import { SignInAgain } from "./sign-in-again.tsx";
 
 const ICON = { error: "alert", busy: "busy", done: "done" } as const;
 

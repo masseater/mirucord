@@ -4,11 +4,11 @@ import type { ReactNode } from "react";
 import type { GuildSettings, SettingsChannel } from "#/features/ingest-messages/index.server";
 import { groupByCategory } from "#/pages/dashboard/model/channel-groups";
 
-import { CategoryHeading } from "./category-heading";
-import { ChannelLabel } from "./channel-label";
-import { ForumPillToggle } from "./forum-pill-toggle";
-import { ForumPostPanel } from "./forum-post-panel";
-import { Pill } from "./pill";
+import { CategoryHeading } from "./category-heading.tsx";
+import { ChannelLabel } from "./channel-label.tsx";
+import { ForumPillToggle } from "./forum-pill-toggle.tsx";
+import { ForumPostPanel } from "./forum-post-panel.tsx";
+import { Pill } from "./pill.tsx";
 
 type Props = Readonly<{ settings: GuildSettings; channels: readonly SettingsChannel[] }>;
 

@@ -1,6 +1,6 @@
 import { MASCOT_NAME, SERVICE_NAME } from "#/shared/config";
 
-import type { NodeSpec } from "./flow-node";
+import type { NodeSpec } from "./flow-node.tsx";
 
 export const SERVER_NODE: NodeSpec = {
   shape: { height: 160, fill: "fill-lavender", shadow: true, radius: 40 },

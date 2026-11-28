@@ -6,11 +6,11 @@ import { Discord } from "dfx";
 import type { GatewayMessageDeleteDispatchData } from "discord-api-types/v10";
 import { Array, Match, Option, pipe, Schema } from "effect";
 
-import { ACTIVITY_JOBS, mergeActivityJobs } from "./activity-job";
-import { latestBy, mergeGrouped } from "./guild-batch";
-import { guildUpdateJob, joinJob, leaveJob, resyncJob, syncJob, syncJobOf } from "./guild-job";
-import { guildWideKeyOf } from "./guild-wide-key";
-import { departJob, membersJob, mergeMemberJobs } from "./member-job";
+import { ACTIVITY_JOBS, mergeActivityJobs } from "./activity-job.ts";
+import { latestBy, mergeGrouped } from "./guild-batch.ts";
+import { guildUpdateJob, joinJob, leaveJob, resyncJob, syncJob, syncJobOf } from "./guild-job.ts";
+import { guildWideKeyOf } from "./guild-wide-key.ts";
+import { departJob, membersJob, mergeMemberJobs } from "./member-job.ts";
 
 export type GatewayPayload = Readonly<{ op: Discord.GatewayOpcodes }>;
 

@@ -10,11 +10,11 @@ import {
 } from "#/entities/guild-message/model/guild-message.schema";
 import { TracedDurableObject } from "#/shared/observability/index.server";
 
-import { erasedAuthors } from "./erased-authors.server";
-import { migrateGuild, openGuild } from "./guild-migrations.server";
-import { messageQueries } from "./message-queries.server";
-import { latestPerId, writeMessages } from "./message-write.server";
-import { nextVersion, searchHooks } from "./search-hooks.server";
+import { erasedAuthors } from "./erased-authors.server.ts";
+import { migrateGuild, openGuild } from "./guild-migrations.server.ts";
+import { messageQueries } from "./message-queries.server.ts";
+import { latestPerId, writeMessages } from "./message-write.server.ts";
+import { nextVersion, searchHooks } from "./search-hooks.server.ts";
 import type {
   AuthoredMessage,
   AuthorPage,
@@ -29,7 +29,7 @@ import type {
   StoredState,
   TrackedRow,
   WriteMode,
-} from "./store-types";
+} from "./store-types.ts";
 
 const NO_MESSAGES = 0;
 

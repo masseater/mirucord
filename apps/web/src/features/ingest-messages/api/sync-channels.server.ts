@@ -6,10 +6,10 @@ import type { BotAccess } from "#/features/ingest-messages/model/bot-access";
 import { channel, db } from "#/shared/db/index.server";
 import type { DiscordChannel } from "#/shared/discord/index.server";
 
-import { accessOf, columnsOf } from "./bot-access.server";
-import type { ChannelSync } from "./channel-listing.server";
-import { refreshPendingIngest } from "./consent-scope.server";
-import { settleStoredChannels } from "./settle-channels.server";
+import { accessOf, columnsOf } from "./bot-access.server.ts";
+import type { ChannelSync } from "./channel-listing.server.ts";
+import { refreshPendingIngest } from "./consent-scope.server.ts";
+import { settleStoredChannels } from "./settle-channels.server.ts";
 
 type ChannelRow = typeof channel.$inferInsert;
 

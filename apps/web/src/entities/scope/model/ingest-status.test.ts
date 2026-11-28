@@ -1,8 +1,8 @@
 import { Array, Option, pipe } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { ingestStatus } from "./ingest-status";
-import type { ChannelProgress } from "./ingest-status";
+import { ingestStatus } from "./ingest-status.ts";
+import type { ChannelProgress } from "./ingest-status.ts";
 
 const STORED: ChannelProgress = { newest: Option.some("100"), backfill: "done" };
 const EMPTY: ChannelProgress = { newest: Option.none(), backfill: "done" };

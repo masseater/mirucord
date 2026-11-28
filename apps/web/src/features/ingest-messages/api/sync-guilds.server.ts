@@ -6,11 +6,11 @@ import { db, guild, listGuildIds, role } from "#/shared/db/index.server";
 import { getBotUserId, getGuild } from "#/shared/discord/index.server";
 import type { DiscordGuild, DiscordRequestError } from "#/shared/discord/index.server";
 
-import { listChannelsOf } from "./channel-listing.server";
-import { logDiscordFailure, reconcileMembership } from "./guild-membership.server";
-import { welcomeGuild } from "./guild-welcome.server";
-import { whenIngestEnabled } from "./ingest-flag.server";
-import { syncChannels } from "./sync-channels.server";
+import { listChannelsOf } from "./channel-listing.server.ts";
+import { logDiscordFailure, reconcileMembership } from "./guild-membership.server.ts";
+import { welcomeGuild } from "./guild-welcome.server.ts";
+import { whenIngestEnabled } from "./ingest-flag.server.ts";
+import { syncChannels } from "./sync-channels.server.ts";
 
 const syncedFields = ({
   name,

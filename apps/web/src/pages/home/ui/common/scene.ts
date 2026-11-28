@@ -5,7 +5,7 @@ import type { ChatLine } from "#/pages/home/ui/message/chat-line";
 import type { Heading } from "#/pages/home/ui/message/post-heading";
 import type { Reaction } from "#/pages/home/ui/message/reactions";
 
-import type { Channel } from "./channels";
+import type { Channel } from "./channels.ts";
 
 export type SceneEnding =
   | Readonly<{ kind: "none" }>

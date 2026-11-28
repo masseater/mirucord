@@ -3,8 +3,8 @@ import { Array, Option, pipe } from "effect";
 
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 
-import { rowChunks } from "./bound-chunks.server";
-import type { ExtractedPhrases, IndexedMessage, StoredRow, TrackedRow } from "./store-types";
+import { rowChunks } from "./bound-chunks.server.ts";
+import type { ExtractedPhrases, IndexedMessage, StoredRow, TrackedRow } from "./store-types.ts";
 
 type Versioned = StoredRow & Readonly<{ tokens: readonly number[]; version: number }>;
 

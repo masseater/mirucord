@@ -5,8 +5,8 @@ import { beforeAll, expect } from "vite-plus/test";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 
-import { storeGatewayVoice, storeVoiceSnapshot } from "./store-activity.server";
-import { seedMemberGuild } from "./stored-members.test.support";
+import { storeGatewayVoice, storeVoiceSnapshot } from "./store-activity.server.ts";
+import { seedMemberGuild } from "./stored-members.test.support.ts";
 
 const MOVING_GUILD = "830";
 const SNAPSHOT_GUILD = "840";

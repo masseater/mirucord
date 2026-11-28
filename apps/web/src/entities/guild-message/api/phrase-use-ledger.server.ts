@@ -5,8 +5,8 @@ import { Array, pipe } from "effect";
 import { BOUND_LIMIT } from "#/entities/guild-message/model/guild-message.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
-import { rowChunks } from "./bound-chunks.server";
-import type { ExtractedPhrases } from "./store-types";
+import { rowChunks } from "./bound-chunks.server.ts";
+import type { ExtractedPhrases } from "./store-types.ts";
 
 const rowsOf = ({
   message,

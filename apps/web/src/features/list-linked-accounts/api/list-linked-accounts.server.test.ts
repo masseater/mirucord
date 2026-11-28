@@ -13,9 +13,9 @@ import {
 import type { SeedMember } from "#/entities/guild-message/index.test.support";
 import { ListLinkedAccountsOutput } from "#/features/list-linked-accounts/model/linked-accounts-output";
 
-import { seedLinkedAccounts } from "./linked-seed.test.support";
-import type { SeedLink } from "./linked-seed.test.support";
-import { registerListLinkedAccounts } from "./list-linked-accounts.server";
+import { seedLinkedAccounts } from "./linked-seed.test.support.ts";
+import type { SeedLink } from "./linked-seed.test.support.ts";
+import { registerListLinkedAccounts } from "./list-linked-accounts.server.ts";
 
 const callTool = userToolCaller([registerListLinkedAccounts]);
 

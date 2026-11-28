@@ -1,8 +1,8 @@
 import { Array, Effect, Number, Option, pipe, Schema } from "effect";
 
-import { STAMP_BYTES } from "./search-layout";
-import { encodeShard, shardCountOf, shardOf } from "./search-shard";
-import type { Postings, TokenPostings } from "./search-shard";
+import { STAMP_BYTES } from "./search-layout.ts";
+import { encodeShard, shardCountOf, shardOf } from "./search-shard.ts";
+import type { Postings, TokenPostings } from "./search-shard.ts";
 
 export const CHUNK_SIZE = 128;
 const FIRST = 0;

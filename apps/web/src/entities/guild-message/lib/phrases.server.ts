@@ -2,7 +2,7 @@ import { Array, Effect, Option, pipe, String } from "effect";
 
 import type { MessageBody } from "#/shared/crypto/index.server";
 
-import { hmacToken } from "./hmac.server";
+import { hmacToken } from "./hmac.server.ts";
 
 const LONGEST_PHRASE = 15;
 export const PHRASE_WINDOW_DAYS = 30;

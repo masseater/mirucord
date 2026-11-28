@@ -12,9 +12,9 @@ import {
   storedCount,
   storedMessage,
   TEXT_CHANNEL,
-} from "./guild-messages.test.support";
-import { ingestDeliveries } from "./ingest-queue.server";
-import { requestWithdrawal, withdrawGuild } from "./withdraw-guild.server";
+} from "./guild-messages.test.support.ts";
+import { ingestDeliveries } from "./ingest-queue.server.ts";
+import { requestWithdrawal, withdrawGuild } from "./withdraw-guild.server.ts";
 
 const OWNER = "901";
 const STORED = 150;

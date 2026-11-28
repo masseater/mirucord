@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 
-import { DiscordSignIn } from "./discord-sign-in";
-import { SIGN_IN_TIP } from "./sign-in-tip";
+import { DiscordSignIn } from "./discord-sign-in.tsx";
+import { SIGN_IN_TIP } from "./sign-in-tip.ts";
 
 export const SignInPanel = ({
   title,

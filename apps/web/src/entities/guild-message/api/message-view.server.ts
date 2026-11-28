@@ -3,8 +3,8 @@ import { Array, DateTime, Effect, Option, pipe, Record, String } from "effect";
 import { openGuildKey, openMessage } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 
-import { guildStore } from "./store-stub.server";
-import type { SealedMessage } from "./store-types";
+import { guildStore } from "./store-stub.server.ts";
+import type { SealedMessage } from "./store-types.ts";
 
 export type MessageScope = Readonly<{
   guild: Readonly<{ guildId: string; wrappedKey: string; consent: string }>;

@@ -8,9 +8,9 @@ import type { ConsentResult, GuildSettings } from "#/features/ingest-messages/in
 import { saveConsent } from "#/pages/dashboard/api/dashboard";
 import type { ConsentInput } from "#/pages/dashboard/api/dashboard.server";
 
-import { NO_CHANNEL, noticeChannelOf, UNTOUCHED } from "./consent-draft";
-import type { ConsentDraft } from "./consent-draft";
-import { useReturnToDashboard } from "./use-return-to-dashboard";
+import { NO_CHANNEL, noticeChannelOf, UNTOUCHED } from "./consent-draft.ts";
+import type { ConsentDraft } from "./consent-draft.ts";
+import { useReturnToDashboard } from "./use-return-to-dashboard.ts";
 
 type ConsentForm = Readonly<{
   noticeChannelId: string;

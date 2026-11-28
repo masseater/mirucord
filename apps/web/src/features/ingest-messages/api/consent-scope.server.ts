@@ -5,9 +5,9 @@ import { MESSAGE_TYPES } from "#/features/ingest-messages/model/channel-kind";
 import type { ConsentScope } from "#/features/ingest-messages/model/consent-scope";
 import { channel, db } from "#/shared/db/index.server";
 
-import { enqueue, enqueueMembers } from "./enqueue.server";
-import { loadScope } from "./load-scope.server";
-import { purgeOutOfScope } from "./purge-channel.server";
+import { enqueue, enqueueMembers } from "./enqueue.server.ts";
+import { loadScope } from "./load-scope.server.ts";
+import { purgeOutOfScope } from "./purge-channel.server.ts";
 
 const READABLE_MESSAGES = and(
   eq(channel.botAccess, "readable"),

@@ -7,7 +7,7 @@ import type { IndexedMessage } from "#/entities/guild-message/index.server";
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { db, guild } from "#/shared/db/index.server";
 
-import { eraseOwnMessages } from "./erase-own-messages.server";
+import { eraseOwnMessages } from "./erase-own-messages.server.ts";
 
 const OWNER = "901";
 const AUTHOR = "701";

@@ -2,7 +2,7 @@ import { it } from "@effect/vitest";
 import { Effect, Option } from "effect";
 import { expect } from "vite-plus/test";
 
-import { mcpRejection } from "./throttle.server";
+import { mcpRejection } from "./throttle.server.ts";
 
 const NONE_ALLOWED = 0;
 const NEXT = 1;

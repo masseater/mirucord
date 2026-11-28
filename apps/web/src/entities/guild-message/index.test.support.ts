@@ -18,7 +18,7 @@ export {
   SEEDED,
   seedScenario,
   USER,
-} from "./api/scenario.test.support";
-export { seedMembers } from "./api/member-seed.test.support";
-export type { SeedMember } from "./api/member-seed.test.support";
-export { userToolCaller } from "./api/tool-caller.test.support";
+} from "./api/scenario.test.support.ts";
+export { seedMembers } from "./api/member-seed.test.support.ts";
+export type { SeedMember } from "./api/member-seed.test.support.ts";
+export { userToolCaller } from "./api/tool-caller.test.support.ts";

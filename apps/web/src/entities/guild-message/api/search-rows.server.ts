@@ -5,7 +5,7 @@ import { Array, Option, pipe } from "effect";
 import type { SealedEntry } from "#/entities/guild-message/lib/search-segment";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 
-import { inChunks } from "./bound-chunks.server";
+import { inChunks } from "./bound-chunks.server.ts";
 
 const sealedEntries = (
   db: DrizzleSqliteDODatabase,

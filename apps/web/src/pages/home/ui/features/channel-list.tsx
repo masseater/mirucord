@@ -1,7 +1,7 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import { ChannelRow } from "./channel-row";
+import { ChannelRow } from "./channel-row.tsx";
 
 const CHANNELS = [
   { name: "# ざつだん", mark: "◎", visible: true },

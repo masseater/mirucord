@@ -1,8 +1,8 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import { CATEGORIES } from "./sidebar-categories";
-import { SidebarGroup } from "./sidebar-group";
+import { CATEGORIES } from "./sidebar-categories.ts";
+import { SidebarGroup } from "./sidebar-group.tsx";
 
 const SERVER = "みんなのサーバー";
 const LABEL = "チャンネル";

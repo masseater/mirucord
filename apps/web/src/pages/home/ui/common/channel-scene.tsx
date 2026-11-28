@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 
-import { ChannelSection } from "./channel-section";
-import type { Scene } from "./scene";
-import { SceneChatter } from "./scene-chatter";
-import { SceneEnding } from "./scene-ending";
-import { SceneMessage } from "./scene-message";
+import { ChannelSection } from "./channel-section.tsx";
+import { SceneChatter } from "./scene-chatter.tsx";
+import { SceneEnding } from "./scene-ending.tsx";
+import { SceneMessage } from "./scene-message.tsx";
+import type { Scene } from "./scene.ts";
 
 export const ChannelScene = ({ scene }: Readonly<{ scene: Scene }>): ReactNode => (
   <ChannelSection channel={scene.channel}>

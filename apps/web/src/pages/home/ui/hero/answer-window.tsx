@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { AnswerBody } from "./answer-body";
-import { WindowBar } from "./window-bar";
+import { AnswerBody } from "./answer-body.tsx";
+import { WindowBar } from "./window-bar.tsx";
 
 const LABEL = "AI の画面";
 

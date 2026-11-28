@@ -5,11 +5,11 @@ import { nextStepsOf } from "#/pages/dashboard/model/next-steps";
 import type { NextSteps, ReadyDashboard } from "#/pages/dashboard/model/next-steps";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 
-import { AccountPanels } from "./account-panels";
-import { GuildList } from "./guild-list";
-import { McpUrlPanel } from "./mcp-url-panel";
-import { NextStepsPanel } from "./next-steps/next-steps-panel";
-import { ReadableGuildPanel } from "./readable-guild-panel";
+import { AccountPanels } from "./account-panels.tsx";
+import { GuildList } from "./guild-list.tsx";
+import { McpUrlPanel } from "./mcp-url-panel.tsx";
+import { NextStepsPanel } from "./next-steps/next-steps-panel.tsx";
+import { ReadableGuildPanel } from "./readable-guild-panel.tsx";
 
 const TITLE = "管理画面";
 const URL_TITLE = "ほかのアプリに登録する URL";

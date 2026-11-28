@@ -5,7 +5,7 @@ import type { Member } from "#/pages/home/ui/common/members";
 import { MASCOT_NAME } from "#/shared/config";
 import { cn } from "#/shared/lib/utils";
 
-import { ForumTag } from "./forum-tag";
+import { ForumTag } from "./forum-tag.tsx";
 
 const REPLIES = "💬";
 const REPLIES_LABEL = "返信";

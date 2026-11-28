@@ -7,9 +7,9 @@ import type {
   MessagePage,
 } from "#/shared/discord/index.server";
 
-import { loadScope } from "./load-scope.server";
-import { storeMessages } from "./store-messages.server";
-import type { StoreTarget } from "./store-messages.server";
+import { loadScope } from "./load-scope.server.ts";
+import { storeMessages } from "./store-messages.server.ts";
+import type { StoreTarget } from "./store-messages.server.ts";
 
 export type IngestError = DiscordRequestError;
 
@@ -61,4 +61,4 @@ export const fetchAndStore = ({
     Effect.tap((page) => storeConsented({ ...target, page })),
   );
 
-export type { StoreTarget } from "./store-messages.server";
+export type { StoreTarget } from "./store-messages.server.ts";

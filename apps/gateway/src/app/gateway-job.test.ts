@@ -3,8 +3,8 @@ import { Discord } from "dfx";
 import { Array, Option, pipe, Record } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { mergeJobs, toGatewayJobs } from "./gateway-job";
-import type { Received } from "./gateway-job";
+import { mergeJobs, toGatewayJobs } from "./gateway-job.ts";
+import type { Received } from "./gateway-job.ts";
 
 const BURST = 150;
 const FIRST_ID = 1000;

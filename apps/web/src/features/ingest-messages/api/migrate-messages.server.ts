@@ -6,8 +6,8 @@ import type { IndexedMessage, StoredRow } from "#/entities/guild-message/index.s
 import { openGuildKeys } from "#/shared/crypto/index.server";
 import { db, guild, message } from "#/shared/db/index.server";
 
-import { enqueueMigration } from "./enqueue.server";
-import { deleteMessagesByIds } from "./id-chunks.server";
+import { enqueueMigration } from "./enqueue.server.ts";
+import { deleteMessagesByIds } from "./id-chunks.server.ts";
 
 const MIGRATE_BATCH = 200;
 const ANY_ROW = 1;

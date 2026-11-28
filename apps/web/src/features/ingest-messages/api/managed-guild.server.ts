@@ -8,7 +8,7 @@ import { findMember } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 import { isGuildManager } from "#/shared/permissions";
 
-import { loadChannels } from "./settings-channels.server";
+import { loadChannels } from "./settings-channels.server.ts";
 
 const MEMBER_CONCURRENCY = 4;
 

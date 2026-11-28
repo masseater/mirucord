@@ -9,7 +9,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vite-plu
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild } from "#/shared/db/index.server";
 
-import { catchUpGuild, resyncGuilds } from "./resync.server";
+import { catchUpGuild, resyncGuilds } from "./resync.server.ts";
 
 const BOT = "900";
 const OWNER = "901";

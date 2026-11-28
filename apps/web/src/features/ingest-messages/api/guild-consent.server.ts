@@ -7,12 +7,12 @@ import { db, ingestConsent } from "#/shared/db/index.server";
 import { FORBIDDEN, NOT_FOUND, postChannelMessage } from "#/shared/discord/index.server";
 import type { DiscordRequestError, OutgoingMessage } from "#/shared/discord/index.server";
 
-import { refreshConsented } from "./consent-scope.server";
-import { loadConsentedChannels } from "./guild-settings.server";
-import type { SettingsChannel } from "./guild-settings.server";
-import { whenManaged } from "./managed-guild.server";
-import type { GuildMembership } from "./managed-guild.server";
-import { requestWithdrawal } from "./withdraw-guild.server";
+import { refreshConsented } from "./consent-scope.server.ts";
+import { loadConsentedChannels } from "./guild-settings.server.ts";
+import type { SettingsChannel } from "./guild-settings.server.ts";
+import { whenManaged } from "./managed-guild.server.ts";
+import type { GuildMembership } from "./managed-guild.server.ts";
+import { requestWithdrawal } from "./withdraw-guild.server.ts";
 
 export type ConsentRequest = Readonly<{
   guildId: string;

@@ -4,10 +4,10 @@ import { Array, Effect, Option, pipe, Schedule, Schema, String as Str } from "ef
 
 import { SERVICE_NAME } from "#/shared/config";
 
-import { settleNeurons, spendNeurons } from "./budget.server";
-import type { Priority } from "./budget.server";
-import { DIMENSIONS, quantize } from "./vector";
-import type { Quantized } from "./vector";
+import { settleNeurons, spendNeurons } from "./budget.server.ts";
+import type { Priority } from "./budget.server.ts";
+import { DIMENSIONS, quantize } from "./vector.ts";
+import type { Quantized } from "./vector.ts";
 
 const EMBED_MODEL = "@cf/baai/bge-m3";
 const NEURONS_PER_MILLION_TOKENS = 1075;

@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import type { GuildSettings, SettingsChannel } from "#/features/ingest-messages/index.server";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { BlindChannelNote } from "./blind-channel-note";
-import { ChannelGroups } from "./channel-groups";
+import { BlindChannelNote } from "./blind-channel-note.tsx";
+import { ChannelGroups } from "./channel-groups.tsx";
 
 const TITLE = `${MASCOT_NAME}が見られるチャンネル`;
 

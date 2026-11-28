@@ -4,7 +4,7 @@ import type { Scene } from "#/pages/home/ui/common/scene";
 import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
 import type { ChatLine } from "#/pages/home/ui/message/chat-line";
 
-import { StepList } from "./step-list";
+import { StepList } from "./step-list.tsx";
 
 const REGISTERED: ChatLine = {
   author: memberAuthor(MEMBERS.kenta),

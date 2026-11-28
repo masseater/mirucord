@@ -4,8 +4,8 @@ import { MEMBERS } from "#/pages/home/ui/common/members";
 import { memberAuthor } from "#/pages/home/ui/message/author";
 import { Message } from "#/pages/home/ui/message/message";
 
-import { MEMORY_ID } from "./memory";
-import { SeekMiru } from "./seek-miru";
+import { MEMORY_ID } from "./memory.ts";
+import { SeekMiru } from "./seek-miru.tsx";
 
 const EDITED = "(編集済)";
 

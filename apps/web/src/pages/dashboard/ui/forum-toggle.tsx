@@ -3,10 +3,10 @@ import type { ReactNode } from "react";
 import type { SettingsChannel } from "#/features/ingest-messages/index.server";
 import { countFormat } from "#/pages/dashboard/model/format";
 
-import { ChannelLabel } from "./channel-label";
-import { ForumDisclosureButton } from "./forum-disclosure-button";
-import { ForumPostPanel } from "./forum-post-panel";
-import { IngestPill } from "./ingest-pill";
+import { ChannelLabel } from "./channel-label.tsx";
+import { ForumDisclosureButton } from "./forum-disclosure-button.tsx";
+import { ForumPostPanel } from "./forum-post-panel.tsx";
+import { IngestPill } from "./ingest-pill.tsx";
 
 const POSTS = "投稿";
 const UNIT = "件";

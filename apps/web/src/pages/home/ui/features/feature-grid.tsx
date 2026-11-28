@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import { EmbedStack } from "#/pages/home/ui/message/embed-stack";
 import type { EmbedItem } from "#/pages/home/ui/message/embed-stack";
 
-import { ChannelList } from "./channel-list";
-import { CipherList } from "./cipher-list";
-import { OperationChips } from "./operation-chips";
+import { ChannelList } from "./channel-list.tsx";
+import { CipherList } from "./cipher-list.tsx";
+import { OperationChips } from "./operation-chips.tsx";
 
 const ITEMS: readonly EmbedItem[] = [
   { accent: "border-lavender-deep", title: "書きこまない", body: <OperationChips /> },

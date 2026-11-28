@@ -2,9 +2,9 @@ import { DiscordEmojiSchema, emojiKeyOf } from "@repo/shared-util-discord";
 import { Discord } from "dfx";
 import { Array, Effect, Match, Option, pipe, Schema } from "effect";
 
-import { decodeBody, withDiscord } from "./client.server";
-import type { DiscordRequestError } from "./client.server";
-import { NOT_FOUND } from "./discord.server";
+import { decodeBody, withDiscord } from "./client.server.ts";
+import type { DiscordRequestError } from "./client.server.ts";
+import { NOT_FOUND } from "./discord.server.ts";
 
 const USERS_PER_PAGE = 100;
 const MAX_EMOJIS = 20;

@@ -10,14 +10,14 @@ import {
 import type { IndexRow } from "#/entities/guild-message/lib/search-segment";
 import { searchSegment } from "#/entities/guild-message/model/search-segment.schema";
 
-import { searchChannels } from "./search-channels.server";
-import { chunkKey, recentKey, shardKey } from "./search-files.server";
-import type { StoredFile } from "./search-files.server";
-import { searchLedger } from "./search-ledger.server";
-import type { Range, Segment } from "./search-ledger.server";
-import type { PieceRow, PieceSpec } from "./search-plan.server";
-import type { Flush } from "./search-recent.server";
-import { searchRows } from "./search-rows.server";
+import { searchChannels } from "./search-channels.server.ts";
+import { chunkKey, recentKey, shardKey } from "./search-files.server.ts";
+import type { StoredFile } from "./search-files.server.ts";
+import { searchLedger } from "./search-ledger.server.ts";
+import type { Range, Segment } from "./search-ledger.server.ts";
+import type { PieceRow, PieceSpec } from "./search-plan.server.ts";
+import type { Flush } from "./search-recent.server.ts";
+import { searchRows } from "./search-rows.server.ts";
 
 const NO_CHANNEL = 0;
 

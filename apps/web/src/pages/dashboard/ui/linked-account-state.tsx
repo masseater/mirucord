@@ -5,8 +5,8 @@ import type { ReactNode } from "react";
 import type { LinkedAccountsPage } from "#/pages/dashboard/api/linked-accounts.server";
 import { fixable, progress } from "#/pages/dashboard/lib/feedback";
 
-import { FeedbackLine } from "./feedback-line";
-import { LinkedAccountBody } from "./linked-account-body";
+import { FeedbackLine } from "./feedback-line.tsx";
+import { LinkedAccountBody } from "./linked-account-body.tsx";
 
 const LOADING = progress("読み込んでいます");
 const UNAVAILABLE = fixable("refresh")("連携アカウントを読み込めませんでした");

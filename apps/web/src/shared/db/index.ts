@@ -1,1 +1,1 @@
-export type { Backfill, BotAccessStatus } from "./channel-state";
+export type { Backfill, BotAccessStatus } from "./channel-state.ts";

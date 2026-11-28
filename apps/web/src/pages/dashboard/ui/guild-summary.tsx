@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest-messages/index.server";
 
-import { IngestPill } from "./ingest-pill";
+import { IngestPill } from "./ingest-pill.tsx";
 
 export const GuildSummary = ({ guild }: Readonly<{ guild: ManagedGuild }>): ReactNode => (
   <span className="flex min-w-0 flex-col items-start gap-2">

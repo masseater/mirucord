@@ -1,7 +1,7 @@
 import { FAQ_CHANNEL } from "#/pages/home/ui/common/channels";
 import type { Scene } from "#/pages/home/ui/common/scene";
 
-import { FaqThread } from "./faq-thread";
+import { FaqThread } from "./faq-thread.tsx";
 
 export const FAQ_SCENE: Scene = {
   channel: FAQ_CHANNEL,

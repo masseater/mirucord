@@ -1,4 +1,4 @@
-export { MASCOT_NAME, SERVICE_NAME } from "./brand";
+export { MASCOT_NAME, SERVICE_NAME } from "./brand.ts";
 export {
   DASHBOARD_NAME,
   DASHBOARD_PATH,
@@ -11,9 +11,9 @@ export {
   SITE_ORIGIN,
   TECH_PATH,
   TERMS_PATH,
-} from "./site";
-export { FREE_GUILD_LIMIT } from "./plan";
-export { ONBOARDING_STEPS, SAMPLE_PROMPT } from "./onboarding";
-export { webAnalyticsBeacon } from "./web-analytics";
-export { OBJECT_GENERATION, OBJECT_LOCATION, WORKER_PLACEMENT } from "./japan";
-export { RESYNC_CRON } from "./resync";
+} from "./site.ts";
+export { FREE_GUILD_LIMIT } from "./plan.ts";
+export { ONBOARDING_STEPS, SAMPLE_PROMPT } from "./onboarding.ts";
+export { webAnalyticsBeacon } from "./web-analytics.ts";
+export { OBJECT_GENERATION, OBJECT_LOCATION, WORKER_PLACEMENT } from "./japan.ts";
+export { RESYNC_CRON } from "./resync.ts";

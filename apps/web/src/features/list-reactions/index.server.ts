@@ -1,1 +1,1 @@
-export { registerListReactions } from "./api/list-reactions.server";
+export { registerListReactions } from "./api/list-reactions.server.ts";

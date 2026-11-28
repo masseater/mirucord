@@ -9,8 +9,8 @@ import type { Backfill } from "#/shared/db/index.server";
 import { FORBIDDEN } from "#/shared/discord/index.server";
 import type { DiscordMessage } from "#/shared/discord/index.server";
 
-import { columnsOf } from "./bot-access.server";
-import { enqueue } from "./enqueue.server";
+import { columnsOf } from "./bot-access.server.ts";
+import { enqueue } from "./enqueue.server.ts";
 import {
   fetchAndStore,
   idsOf,
@@ -18,9 +18,9 @@ import {
   isNewerThan,
   newestId,
   oldestId,
-} from "./message-page.server";
-import type { IngestError, StoreTarget } from "./message-page.server";
-import { removeDeleted } from "./sweep-history.server";
+} from "./message-page.server.ts";
+import type { IngestError, StoreTarget } from "./message-page.server.ts";
+import { removeDeleted } from "./sweep-history.server.ts";
 
 const MAX_PAGES_PER_RUN = 5;
 const LAST_PAGE = 1;

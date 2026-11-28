@@ -5,8 +5,8 @@ import { Array, Number, Option, Order, pipe } from "effect";
 import { searchArchive } from "#/entities/guild-message/model/search-segment.schema";
 import type { ArchivePiece } from "#/entities/guild-message/model/search-segment.schema";
 
-import { sealedOf, searchLedger } from "./search-ledger.server";
-import type { Segment } from "./search-ledger.server";
+import { sealedOf, searchLedger } from "./search-ledger.server.ts";
+import type { Segment } from "./search-ledger.server.ts";
 
 const ARCHIVE_AFTER = 2;
 const FIRST_SHARD = 0;

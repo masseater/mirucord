@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { AppFooter } from "./app-footer";
-import { AppHeader } from "./app-header";
+import { AppFooter } from "./app-footer.tsx";
+import { AppHeader } from "./app-header.tsx";
 
 export const AppFrame = ({ children }: Readonly<{ children: ReactNode }>): ReactNode => (
   <div className="bg-dc-chat text-dc-text flex min-h-dvh flex-col font-sans antialiased scheme-dark">

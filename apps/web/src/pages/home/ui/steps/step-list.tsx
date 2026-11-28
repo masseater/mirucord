@@ -7,8 +7,8 @@ import { DASHBOARD_PATH, ONBOARDING_STEPS } from "#/shared/config";
 import { CopyBlock } from "#/shared/ui/copy-block";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { InviteChip } from "./invite-chip";
-import { PromptBox } from "./prompt-box";
+import { InviteChip } from "./invite-chip.tsx";
+import { PromptBox } from "./prompt-box.tsx";
 
 const CONSENT = "同意する";
 

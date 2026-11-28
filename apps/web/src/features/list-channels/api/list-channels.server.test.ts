@@ -12,7 +12,7 @@ import {
   userToolCaller,
 } from "#/entities/guild-message/index.test.support";
 
-import { registerListChannels } from "./list-channels.server";
+import { registerListChannels } from "./list-channels.server.ts";
 
 const callTool = userToolCaller([registerListChannels]);
 

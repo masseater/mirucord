@@ -1,7 +1,7 @@
 import { Array, Effect, pipe } from "effect";
 
-import { db } from "./client.server";
-import { guild } from "./guild.table";
+import { db } from "./client.server.ts";
+import { guild } from "./guild.table.ts";
 
 export const listGuildIds: Effect.Effect<readonly string[]> = Effect.promise(() =>
   db.select({ id: guild.id }).from(guild),

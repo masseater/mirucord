@@ -5,9 +5,9 @@ import type { Hit } from "#/entities/guild-message/lib/search-query";
 import { CHUNK_SIZE, chunkOf } from "#/entities/guild-message/lib/search-segment";
 import type { SealedEntry } from "#/entities/guild-message/lib/search-segment";
 
-import { cachedBytes } from "./search-cache.server";
-import type { FileGate, FileRead } from "./search-cache.server";
-import { chunkKey } from "./search-files.server";
+import { cachedBytes } from "./search-cache.server.ts";
+import type { FileGate, FileRead } from "./search-cache.server.ts";
+import { chunkKey } from "./search-files.server.ts";
 
 const taggedError = Schema.TaggedError;
 

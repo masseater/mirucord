@@ -5,14 +5,14 @@ import { Array, Option, Order, pipe } from "effect";
 
 import { voiceSession } from "#/entities/guild-message/model/voice-session.schema";
 
-import { inChunks } from "./bound-chunks.server";
+import { inChunks } from "./bound-chunks.server.ts";
 import type {
   StoredVoiceSession,
   VoiceChangeWrite,
   VoiceLookup,
   VoicePage,
   VoiceSnapshotWrite,
-} from "./voice-types";
+} from "./voice-types.ts";
 
 export type VoiceLedger = Readonly<{
   change: (changes: readonly VoiceChangeWrite[], erased: readonly string[]) => void;

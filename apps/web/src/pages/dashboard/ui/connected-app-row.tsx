@@ -8,7 +8,7 @@ import type { ConnectedApp } from "#/shared/auth/index.server";
 import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { ConnectedAppDates } from "./connected-app-dates";
+import { ConnectedAppDates } from "./connected-app-dates.tsx";
 
 const DISCONNECT = "接続を解除";
 const FAILED = "解除できませんでした";

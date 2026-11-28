@@ -7,9 +7,9 @@ import { useConsentForm } from "#/pages/dashboard/model/use-consent-form";
 import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { ConsentResultMessage } from "./consent-result-message";
-import { NoticeChannelPicker } from "./notice-channel-picker";
-import { ReadableChannelList } from "./readable-channel-list";
+import { ConsentResultMessage } from "./consent-result-message.tsx";
+import { NoticeChannelPicker } from "./notice-channel-picker.tsx";
+import { ReadableChannelList } from "./readable-channel-list.tsx";
 
 const SUBMIT = "取り込みに同意する";
 

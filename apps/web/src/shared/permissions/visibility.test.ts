@@ -2,8 +2,8 @@ import { ChannelType, OverwriteType, PermissionFlagsBits } from "discord-api-typ
 import { Option } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { postableChannelIds, visibleChannelIds } from "./visibility";
-import type { GuildChannel, GuildSnapshot, Member } from "./visibility";
+import { postableChannelIds, visibleChannelIds } from "./visibility.ts";
+import type { GuildChannel, GuildSnapshot, Member } from "./visibility.ts";
 
 const GUILD = "100";
 const OWNER = "200";

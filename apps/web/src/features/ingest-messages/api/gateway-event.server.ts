@@ -7,17 +7,17 @@ import type { GatewayJob } from "@repo/ingest-util-gateway-contract";
 import { env } from "cloudflare:workers";
 import { Effect, Match, Option, Schema } from "effect";
 
-import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server";
-import { forgetGuild } from "./guild-membership.server";
-import type { IngestError } from "./message-page.server";
-import { resyncGuilds } from "./resync.server";
+import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server.ts";
+import { forgetGuild } from "./guild-membership.server.ts";
+import type { IngestError } from "./message-page.server.ts";
+import { resyncGuilds } from "./resync.server.ts";
 import {
   storeGatewayReactions,
   storeGatewayVoice,
   storeVoiceSnapshot,
-} from "./store-activity.server";
-import { departGatewayMembers, storeGatewayMembers } from "./store-members.server";
-import { syncJoinedGuild, syncKnownGuild } from "./sync-guilds.server";
+} from "./store-activity.server.ts";
+import { departGatewayMembers, storeGatewayMembers } from "./store-members.server.ts";
+import { syncJoinedGuild, syncKnownGuild } from "./sync-guilds.server.ts";
 
 const PROCESSED = 200;
 const FAILED = 500;

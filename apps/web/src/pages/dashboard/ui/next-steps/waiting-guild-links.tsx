@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import type { ManagedGuild } from "#/features/ingest-messages/index.server";
 
-import { WaitingGuildLink } from "./waiting-guild-link";
+import { WaitingGuildLink } from "./waiting-guild-link.tsx";
 
 export const WaitingGuildLinks = ({
   guilds,

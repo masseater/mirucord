@@ -10,7 +10,7 @@ import { channel, db } from "#/shared/db/index.server";
 import { CATEGORY_TYPES } from "#/shared/discord";
 import type { ChannelKind } from "#/shared/discord";
 
-import { inDiscordOrder } from "./channel-order";
+import { inDiscordOrder } from "./channel-order.ts";
 
 const UNCATEGORIZED = "";
 

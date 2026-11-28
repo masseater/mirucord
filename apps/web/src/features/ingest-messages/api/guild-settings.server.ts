@@ -7,10 +7,10 @@ import { SCOPE_OF_CONSENT, guildIngestOf } from "#/features/ingest-messages/mode
 import type { GuildIngest } from "#/features/ingest-messages/model/channel-ingest";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { managedGuild } from "./managed-guild.server";
-import type { GuildMembership } from "./managed-guild.server";
-import { loadChannels } from "./settings-channels.server";
-import type { SettingsCategory, SettingsChannel } from "./settings-channels.server";
+import { managedGuild } from "./managed-guild.server.ts";
+import type { GuildMembership } from "./managed-guild.server.ts";
+import { loadChannels } from "./settings-channels.server.ts";
+import type { SettingsCategory, SettingsChannel } from "./settings-channels.server.ts";
 
 export type ConsentedChannels = Readonly<{
   categories: readonly SettingsCategory[];
@@ -73,4 +73,4 @@ export const guildSettings = (
     ),
   );
 
-export type { SettingsCategory, SettingsChannel } from "./settings-channels.server";
+export type { SettingsCategory, SettingsChannel } from "./settings-channels.server.ts";

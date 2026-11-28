@@ -4,10 +4,10 @@ import { Array, Boolean, Effect, Number, Option, Order, pipe } from "effect";
 import { encodeShard, rangeAt, tokensIn } from "#/entities/guild-message/lib/search-shard";
 import type { PostingView, TokenPostings } from "#/entities/guild-message/lib/search-shard";
 
-import { archiveLedger } from "./search-archive-ledger.server";
-import type { Archive } from "./search-archive-ledger.server";
-import { archiveKey, deleteKeys, shardKey, writeFiles } from "./search-files.server";
-import type { StoredFile } from "./search-files.server";
+import { archiveLedger } from "./search-archive-ledger.server.ts";
+import type { Archive } from "./search-archive-ledger.server.ts";
+import { archiveKey, deleteKeys, shardKey, writeFiles } from "./search-files.server.ts";
+import type { StoredFile } from "./search-files.server.ts";
 
 const ARCHIVE_BATCH = 64;
 const READ_CONCURRENCY = 4;

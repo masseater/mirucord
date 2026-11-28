@@ -6,7 +6,7 @@ import { vi } from "vite-plus/test";
 import { GUILD_A, userToolCaller } from "#/entities/guild-message/index.test.support";
 import { ListServerPhrasesOutput } from "#/features/list-server-phrases/model/server-phrases-output";
 
-import { registerListServerPhrases } from "./list-server-phrases.server";
+import { registerListServerPhrases } from "./list-server-phrases.server.ts";
 
 const callTool = userToolCaller([registerListServerPhrases]);
 

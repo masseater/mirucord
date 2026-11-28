@@ -2,7 +2,7 @@ import { ChannelType } from "discord-api-types/v10";
 import { Array, pipe } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { inDiscordOrder } from "./channel-order";
+import { inDiscordOrder } from "./channel-order.ts";
 
 it("puts voice channels after text channels, then follows the position", () => {
   const channels = [

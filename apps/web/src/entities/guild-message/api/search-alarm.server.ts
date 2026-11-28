@@ -3,11 +3,11 @@ import { Clock, Effect, Option } from "effect";
 
 import { FLUSH_DELAY_MS } from "#/entities/guild-message/lib/search-layout";
 
-import { reindexMissing } from "./reindex.server";
-import { searchLedger } from "./search-ledger.server";
-import { publishSearch } from "./search-publish.server";
-import type { Flush } from "./search-recent.server";
-import type { TrackedRow } from "./store-types";
+import { reindexMissing } from "./reindex.server.ts";
+import { searchLedger } from "./search-ledger.server.ts";
+import { publishSearch } from "./search-publish.server.ts";
+import type { Flush } from "./search-recent.server.ts";
+import type { TrackedRow } from "./store-types.ts";
 
 const NO_DELAY = 0;
 

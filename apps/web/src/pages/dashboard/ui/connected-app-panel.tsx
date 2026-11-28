@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import type { ConnectedApp } from "#/shared/auth/index.server";
 import { Panel } from "#/shared/ui/panel";
 
-import { ConnectedAppRow } from "./connected-app-row";
+import { ConnectedAppRow } from "./connected-app-row.tsx";
 
 const TITLE = "つないでいるアプリ";
 

@@ -7,9 +7,9 @@ import { BrandMark } from "#/pages/home/ui/common/brand-mark";
 import { mascotSrc } from "#/shared/brand";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { FlowCarry } from "./flow-carry";
-import { FlowNode } from "./flow-node";
-import { AI_NODE, MIRU_NODE, SERVER_NODE } from "./flow-nodes";
+import { FlowCarry } from "./flow-carry.tsx";
+import { FlowNode } from "./flow-node.tsx";
+import { AI_NODE, MIRU_NODE, SERVER_NODE } from "./flow-nodes.ts";
 
 const LABEL = `みんなのサーバーの会話を${MASCOT_NAME}が預かって AI に届ける図`;
 const PROTOCOL = "MCP";

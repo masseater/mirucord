@@ -13,7 +13,7 @@ import {
 import type { Feedback } from "#/pages/dashboard/lib/feedback";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { FeedbackLine } from "./feedback-line";
+import { FeedbackLine } from "./feedback-line.tsx";
 
 type Answer = ConsentResult | Readonly<{ status: "signedOut" }>;
 

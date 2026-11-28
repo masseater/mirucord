@@ -6,9 +6,9 @@ import { isPastRetention } from "#/features/ingest-messages/model/bot-access";
 import type { ConsentScope } from "#/features/ingest-messages/model/consent-scope";
 import { channel, db } from "#/shared/db/index.server";
 
-import { accessOf } from "./bot-access.server";
-import { forgetChannelMessages } from "./message-rows.server";
-import type { ChannelRef } from "./message-rows.server";
+import { accessOf } from "./bot-access.server.ts";
+import { forgetChannelMessages } from "./message-rows.server.ts";
+import type { ChannelRef } from "./message-rows.server.ts";
 
 const CLEARED = Option.getOrNull(Option.none<string>());
 

@@ -4,9 +4,9 @@ import { kmeans } from "ml-kmeans";
 import { dequantize, quantize } from "#/shared/ai";
 import type { Quantized } from "#/shared/ai";
 
-import { nearestRows } from "./nearest";
-import { blockOf } from "./vector-block";
-import type { VectorBlock, VectorEntry } from "./vector-block";
+import { nearestRows } from "./nearest.ts";
+import { blockOf } from "./vector-block.ts";
+import type { VectorBlock, VectorEntry } from "./vector-block.ts";
 
 const MAX_ITERATIONS = 20;
 const SEED = 1;

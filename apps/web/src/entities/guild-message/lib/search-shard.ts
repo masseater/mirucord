@@ -1,6 +1,6 @@
 import { Array, Boolean, Number, Option, pipe } from "effect";
 
-import { CHANNEL_BYTES, ORDINAL_BYTES, WORD_BYTES } from "./search-layout";
+import { CHANNEL_BYTES, ORDINAL_BYTES, WORD_BYTES } from "./search-layout.ts";
 
 const FIRST = 0;
 const NEXT = 1;

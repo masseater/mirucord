@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { MASCOT_NAME } from "#/shared/config";
 import { cn } from "#/shared/lib/utils";
 
-import type { Author } from "./author";
+import type { Author } from "./author.ts";
 
 const NAME = MASCOT_NAME;
 const BOT_TONE = "text-lavender-deep";

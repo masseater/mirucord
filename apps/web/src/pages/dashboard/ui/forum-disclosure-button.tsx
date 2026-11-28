@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { forumPostsId, useForumDisclosure } from "#/pages/dashboard/model/forum-disclosure";
 
-import { ForumChevron } from "./forum-chevron";
+import { ForumChevron } from "./forum-chevron.tsx";
 
 export const ForumDisclosureButton = ({
   channelId,

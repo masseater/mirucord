@@ -5,14 +5,14 @@ import { Schema } from "effect";
 
 import type { PublishResult } from "#/pages/dashboard/api/linked-account-store.server";
 
-import type { SignedOut } from "./dashboard.server";
+import type { SignedOut } from "./dashboard.server.ts";
 import {
   discardDraftFor,
   loadLinkedAccountsPage,
   publishFor,
   withdrawFor,
-} from "./linked-accounts.server";
-import type { DoneResult } from "./linked-accounts.server";
+} from "./linked-accounts.server.ts";
+import type { DoneResult } from "./linked-accounts.server.ts";
 
 const ConnectionKeySchema = Schema.Struct({ type: Schema.String, name: Schema.String });
 

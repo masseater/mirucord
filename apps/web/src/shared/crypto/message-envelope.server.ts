@@ -2,8 +2,8 @@ import { Effect, Schema } from "effect";
 
 import { MessageAttachment, MessageEmbed, MessagePoll } from "#/shared/discord";
 
-import { typedEnvelope } from "./typed-envelope.server";
-import type { Opener, Sealer } from "./typed-envelope.server";
+import { typedEnvelope } from "./typed-envelope.server.ts";
+import type { Opener, Sealer } from "./typed-envelope.server.ts";
 
 const nothingYet = Effect.succeed<readonly never[]>([]);
 

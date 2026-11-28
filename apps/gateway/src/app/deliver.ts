@@ -10,7 +10,7 @@ import type { Scope } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { jobKeyOf } from "./gateway-job";
+import { jobKeyOf } from "./gateway-job.ts";
 
 const GATEWAY_ENDPOINT = `https://mirucord.masseater.dev${GATEWAY_PATH}`;
 const RETRY_TIMES = 5;

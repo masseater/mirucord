@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { AnswerLinks } from "./answer-links";
-import { AnswerStatus } from "./answer-status";
+import { AnswerLinks } from "./answer-links.tsx";
+import { AnswerStatus } from "./answer-status.tsx";
 
 const QUESTION = "去年のキャンプでカレー焦がしたの誰だっけ？";
 const ANSWER_LEAD = "たなかさんです。その夜に「";

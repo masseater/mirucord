@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { ChannelItems } from "./channel-items";
+import { ChannelItems } from "./channel-items.tsx";
 
 const LABEL = "チャンネル";
 

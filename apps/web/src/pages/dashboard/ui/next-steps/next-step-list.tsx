@@ -4,9 +4,9 @@ import type { ConsentStep, RegisterStep } from "#/pages/dashboard/model/next-ste
 import { MCP_URL, ONBOARDING_STEPS, SAMPLE_PROMPT } from "#/shared/config";
 import { CopyBlock } from "#/shared/ui/copy-block";
 
-import { InviteGuide } from "./invite-guide";
-import { NextStep } from "./next-step";
-import { WaitingGuildLinks } from "./waiting-guild-links";
+import { InviteGuide } from "./invite-guide.tsx";
+import { NextStep } from "./next-step.tsx";
+import { WaitingGuildLinks } from "./waiting-guild-links.tsx";
 
 export const NextStepList = ({
   consent,

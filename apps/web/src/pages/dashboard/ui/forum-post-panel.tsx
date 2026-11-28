@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { forumPostsId, useForumDisclosure } from "#/pages/dashboard/model/forum-disclosure";
 
-import { ForumPostList } from "./forum-post-list";
+import { ForumPostList } from "./forum-post-list.tsx";
 
 export const ForumPostPanel = ({
   guildId,

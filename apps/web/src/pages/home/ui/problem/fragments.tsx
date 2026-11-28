@@ -7,7 +7,7 @@ import type { ChannelKind } from "#/shared/discord";
 import { cn } from "#/shared/lib/utils";
 import { ChannelIcon } from "#/shared/ui/channel-icon";
 
-import { FRAGMENTS } from "./fragment-rows";
+import { FRAGMENTS } from "./fragment-rows.ts";
 
 const THREAD = "·";
 

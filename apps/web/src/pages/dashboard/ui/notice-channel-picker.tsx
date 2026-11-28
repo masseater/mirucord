@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import type { SettingsChannel } from "#/features/ingest-messages/index.server";
 
-import { NoticeChannelOption } from "./notice-channel-option";
+import { NoticeChannelOption } from "./notice-channel-option.tsx";
 
 const LEGEND = "お知らせを投稿するチャンネル";
 

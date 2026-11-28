@@ -6,7 +6,14 @@ import type { StoredVoiceSession } from "#/entities/guild-message/index.server";
 import { ConsentOutput, SpanFilter } from "#/entities/scope";
 import { spanScopeOf, withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
-import { structuredResult, toolRegistration } from "#/shared/mcp";
+import {
+  BAD_CURSOR,
+  errorResult,
+  hasBadCursor,
+  nextCursorOf,
+  structuredResult,
+  toolRegistration,
+} from "#/shared/mcp";
 
 const ListVoiceSessionsInput = Schema.Struct(SpanFilter);
 
@@ -28,6 +35,11 @@ const VoiceSession = Schema.Struct({
 const ListVoiceSessionsOutput = Schema.Struct({
   ingest: ConsentOutput,
   total: Schema.Int,
+  nextCursor: Schema.optionalKey(
+    Schema.String.annotate({
+      description: "Pass it as cursor to read the next page. Absent on the last page",
+    }),
+  ),
   sessions: Schema.Array(VoiceSession).annotate({
     description:
       "One person's stay in one channel. Overlapping sessions in a channel mean those people were in the call together. Nothing before 2026-11",
@@ -64,6 +76,10 @@ const sessionsOf = (request: VoiceRequest): Effect.Effect<typeof ListVoiceSessio
     Effect.map(({ total, sessions }) => ({
       ingest: "consented" as const,
       total,
+      ...Option.match(nextCursorOf({ offset: lookup.offset, shown: sessions.length, total }), {
+        onNone: () => ({}),
+        onSome: (nextCursor) => ({ nextCursor }),
+      }),
       sessions: pipe(
         sessions,
         Array.map((session): SessionView => ({
@@ -85,6 +101,9 @@ const listVoiceSessions =
   (discordUserId: string) =>
   (input: typeof ListVoiceSessionsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: input.serverId, discordUserId })((scope) => {
+      if (hasBadCursor(input.cursor)) {
+        return Effect.succeed(errorResult(BAD_CURSOR));
+      }
       if (scope.guild.consent !== "consented") {
         return structuredResult({
           ingest: "notConsented",

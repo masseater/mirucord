@@ -11,11 +11,11 @@ import {
   userToolCaller,
 } from "#/entities/guild-message/index.test.support";
 import type { SeedMember } from "#/entities/guild-message/index.test.support";
-import { ListLinkedAccountsOutput } from "#/features/list-linked-accounts/model/linked-accounts-output";
+import { ListLinkedAccountsOutput } from "#/features/list-members/model/linked-accounts-output";
 
+import { registerListLinkedAccounts } from "./linked-accounts.server.ts";
 import { seedLinkedAccounts } from "./linked-seed.test.support.ts";
 import type { SeedLink } from "./linked-seed.test.support.ts";
-import { registerListLinkedAccounts } from "./list-linked-accounts.server.ts";
 
 const callTool = userToolCaller([registerListLinkedAccounts]);
 

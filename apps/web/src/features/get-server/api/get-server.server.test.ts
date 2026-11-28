@@ -12,9 +12,10 @@ import {
   userToolCaller,
 } from "#/entities/guild-message/index.test.support";
 
-import { registerListChannels } from "./list-channels.server.ts";
+import { registerListChannels } from "./deprecated.server.ts";
+import { registerGetServer } from "./get-server.server.ts";
 
-const callTool = userToolCaller([registerListChannels]);
+const callTool = userToolCaller([registerGetServer]);
 
 const StoredAt = Schema.NullOr(Schema.String);
 const OldestChannel = Schema.Struct({ id: Schema.String, oldestStoredAt: StoredAt });
@@ -36,7 +37,7 @@ afterAll(() => {
 it.effect("tells when the oldest stored message of each channel was posted", () =>
   Effect.gen(function* oldest() {
     const { channels } = yield* callTool({
-      name: "list_channels",
+      name: "get_server",
       args: { serverId: GUILD_A },
     }).pipe(
       Effect.map(({ structured }) => Option.getOrUndefined(structured)),
@@ -49,5 +50,24 @@ it.effect("tells when the oldest stored message of each channel was posted", () 
         Array.filter(({ id }) => id === A_OPEN),
       ),
     ).toStrictEqual([{ id: A_OPEN, oldestStoredAt: DateTime.formatIso(SEEDED) }]);
+  }),
+);
+
+it.effect("keeps the deprecated list_channels answering with the same channels", () =>
+  Effect.gen(function* deprecated() {
+    const { channels } = yield* userToolCaller([registerListChannels])({
+      name: "list_channels",
+      args: { serverId: GUILD_A },
+    }).pipe(
+      Effect.map(({ structured }) => Option.getOrUndefined(structured)),
+      Effect.flatMap(decodeOldest),
+      Effect.orDie,
+    );
+    expect(
+      pipe(
+        channels,
+        Array.map(({ id }) => id),
+      ),
+    ).toContain(A_OPEN);
   }),
 );

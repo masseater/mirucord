@@ -1,6 +1,14 @@
 import { DateTime, Option, Schema } from "effect";
 
-import { FIRST_OFFSET, Ids, MemberLimit, memberLimitOf, Offset } from "#/shared/mcp";
+import {
+  Cursor,
+  DeprecatedOffset,
+  FIRST_OFFSET,
+  Ids,
+  MemberLimit,
+  memberLimitOf,
+  offsetOfCursor,
+} from "#/shared/mcp";
 
 export const SpanFilter = {
   serverId: Schema.String,
@@ -9,14 +17,15 @@ export const SpanFilter = {
   since: Schema.optionalKey(Schema.DateTimeUtcFromString.annotate({ description: "ISO 8601" })),
   until: Schema.optionalKey(Schema.DateTimeUtcFromString.annotate({ description: "ISO 8601" })),
   limit: Schema.optionalKey(MemberLimit),
-  offset: Offset,
+  cursor: Cursor,
+  offset: DeprecatedOffset,
 };
 
 const SpanInputSchema = Schema.Struct(SpanFilter);
 
 export type SpanInput = Pick<
   typeof SpanInputSchema.Type,
-  "userIds" | "since" | "until" | "limit" | "offset"
+  "userIds" | "since" | "until" | "limit" | "offset" | "cursor"
 >;
 
 export type SpanLookup = Readonly<{
@@ -30,10 +39,17 @@ export type SpanLookup = Readonly<{
 const millisOf = (at: DateTime.Utc | undefined): number | null =>
   Option.getOrNull(Option.map(Option.fromUndefinedOr(at), DateTime.toEpochMillis));
 
+const offsetOf = (input: SpanInput): number =>
+  Option.fromUndefinedOr(input.cursor).pipe(
+    Option.flatMap(offsetOfCursor),
+    Option.orElse(() => Option.fromUndefinedOr(input.offset)),
+    Option.getOrElse(() => FIRST_OFFSET),
+  );
+
 export const spanLookupOf = (input: SpanInput): SpanLookup => ({
   userIds: Option.getOrNull(Option.fromUndefinedOr(input.userIds)),
   since: millisOf(input.since),
   until: millisOf(input.until),
   limit: memberLimitOf(input.limit),
-  offset: Option.getOrElse(Option.fromUndefinedOr(input.offset), () => FIRST_OFFSET),
+  offset: offsetOf(input),
 });

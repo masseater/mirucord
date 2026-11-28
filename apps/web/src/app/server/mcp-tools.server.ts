@@ -1,9 +1,15 @@
-import { registerFindMessages } from "#/features/find-messages/index.server";
-import { registerFindSimilarMessages } from "#/features/find-similar-messages/index.server";
-import { registerListChannels } from "#/features/list-channels/index.server";
-import { registerListServerPhrases } from "#/features/list-server-phrases/index.server";
+import {
+  registerGetServer,
+  registerListChannels,
+  registerListServerPhrases,
+} from "#/features/get-server/index.server";
 import { registerListServers } from "#/features/list-servers/index.server";
 import { registerReadMessages } from "#/features/read-messages/index.server";
+import {
+  registerFindMessages,
+  registerFindSimilarMessages,
+  registerSearchMessages,
+} from "#/features/search-messages/index.server";
 import { serverWith } from "#/shared/mcp";
 
 import { RELATION_TOOLS } from "./mcp-relation-tools.server.ts";
@@ -11,9 +17,11 @@ import { RELATION_TOOLS } from "./mcp-relation-tools.server.ts";
 export const buildServer = serverWith([
   ...RELATION_TOOLS,
   registerListServers,
+  registerGetServer,
+  registerSearchMessages,
+  registerReadMessages,
   registerListChannels,
   registerListServerPhrases,
   registerFindMessages,
   registerFindSimilarMessages,
-  registerReadMessages,
 ]);

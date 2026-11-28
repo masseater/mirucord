@@ -4,11 +4,11 @@ import { Array, Effect, Option, pipe, Schema, String as Str } from "effect";
 import { vi } from "vite-plus/test";
 
 import { GUILD_A, userToolCaller } from "#/entities/guild-message/index.test.support";
-import { ListServerPhrasesOutput } from "#/features/list-server-phrases/model/server-phrases-output";
+import { ListServerPhrasesOutput } from "#/features/get-server/model/server-phrases-output";
 
-import { registerListServerPhrases } from "./list-server-phrases.server.ts";
+import { registerGetServer } from "./get-server.server.ts";
 
-const callTool = userToolCaller([registerListServerPhrases]);
+const callTool = userToolCaller([registerGetServer]);
 
 export type ModelAnswers = Readonly<{ common: string; note: string }>;
 
@@ -17,7 +17,7 @@ export const prompts: string[] = [];
 const decodePhrases = Schema.decodeUnknownEffect(ListServerPhrasesOutput);
 
 export const listPhrases = callTool({
-  name: "list_server_phrases",
+  name: "get_server",
   args: { serverId: GUILD_A },
 }).pipe(
   Effect.flatMap(({ structured }) => structured.pipe(Option.getOrUndefined, decodePhrases)),

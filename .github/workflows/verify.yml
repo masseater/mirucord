@@ -21,7 +21,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: $/.github/actions/setup
-      - uses: masseater/typescript-template/.github/actions/verify@0aec18eb421e6fb6160d7342470e2a24fe61069a
+      - uses: masseater/typescript-template/.github/actions/verify@8d4f43b0f80f90cdd7fdf26a8a6f7e92bac29fb1
         with:
           github-token: ${{ github.token }}
 
@@ -56,7 +56,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - id: head
-        uses: masseater/typescript-template/.github/actions/latest-verified@0aec18eb421e6fb6160d7342470e2a24fe61069a
+        uses: masseater/typescript-template/.github/actions/latest-verified@8d4f43b0f80f90cdd7fdf26a8a6f7e92bac29fb1
         with:
           github-token: ${{ github.token }}
       - if: steps.head.outputs.latest == 'true'
@@ -66,7 +66,7 @@ jobs:
       - if: steps.head.outputs.latest == 'true'
         uses: $/.github/actions/setup
       - if: steps.head.outputs.latest == 'true'
-        uses: masseater/typescript-template/.github/actions/credentials@0aec18eb421e6fb6160d7342470e2a24fe61069a
+        uses: masseater/typescript-template/.github/actions/credentials@8d4f43b0f80f90cdd7fdf26a8a6f7e92bac29fb1
       - if: steps.head.outputs.latest == 'true'
         run: vp run -r --log labeled deploy:production
         env:
@@ -86,6 +86,6 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: masseater/typescript-template/.github/actions/ci-telemetry@0aec18eb421e6fb6160d7342470e2a24fe61069a
+      - uses: masseater/typescript-template/.github/actions/ci-telemetry@8d4f43b0f80f90cdd7fdf26a8a6f7e92bac29fb1
         with:
           github-token: ${{ github.token }}

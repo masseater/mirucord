@@ -41,6 +41,14 @@ type Feeding = Readonly<{ from: number; shard: number; shards: number }>;
 const shardsFeeding = ({ from, shard, shards }: Feeding): readonly number[] =>
   Array.makeBy(Math.max(from / shards, NEXT), (index) => (shard % from) + index * shards);
 
+type Feeders = Feeding & Readonly<{ keyOf: (feeding: number) => string; remap: Remap }>;
+
+const feedingSources = ({ from, shard, shards, keyOf, remap }: Feeders): readonly Source[] =>
+  pipe(
+    shardsFeeding({ from, shard, shards }),
+    Array.map((feeding): Source => ({ key: keyOf(feeding), remap })),
+  );
+
 const oldArchiveSources = ({
   merging: { guildId },
   target,
@@ -66,13 +74,13 @@ const oldArchiveSources = ({
           ),
           () => DROPPED,
         );
-      return pipe(
-        shardsFeeding({ from: archive.shards, shard, shards: target.shards }),
-        Array.map((feeding): Source => ({
-          key: archiveKey({ guildId, archive: archive.name, shard: feeding }),
-          remap,
-        })),
-      );
+      return feedingSources({
+        from: archive.shards,
+        shard,
+        shards: target.shards,
+        keyOf: (feeding) => archiveKey({ guildId, archive: archive.name, shard: feeding }),
+        remap,
+      });
     }),
   );
 };
@@ -99,13 +107,13 @@ const sourcesFor = (job: ShardJob): readonly Source[] => {
     target.pieces,
     Array.filter(({ name }) => !inOld.has(name)),
     Array.flatMap((piece) =>
-      pipe(
-        shardsFeeding({ from: piece.shards, shard, shards: target.shards }),
-        Array.map((feeding): Source => ({
-          key: shardKey({ guildId, segment: piece.name, shard: feeding }),
-          remap: (ordinal) => piece.offset + ordinal,
-        })),
-      ),
+      feedingSources({
+        from: piece.shards,
+        shard,
+        shards: target.shards,
+        keyOf: (feeding) => shardKey({ guildId, segment: piece.name, shard: feeding }),
+        remap: (ordinal) => piece.offset + ordinal,
+      }),
     ),
   );
   return [...oldArchiveSources(job), ...fromPieces];

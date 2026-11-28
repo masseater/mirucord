@@ -4,10 +4,9 @@ import type { SQL } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Match, Option, Order, pipe } from "effect";
 
-import { BOUND_LIMIT } from "#/entities/guild-message/model/guild-message.schema";
 import { pollVote, reaction } from "#/entities/guild-message/model/reaction.schema";
 
-import { inChunks } from "./bound-chunks.server.ts";
+import { deleteIn, inChunks } from "./bound-chunks.server.ts";
 import type { ReactionLookup, ReactionPage, StoredReaction, StoredVote } from "./reaction-types.ts";
 import { unlessErased } from "./unless-erased.ts";
 
@@ -220,14 +219,8 @@ export const reactionLedger = (db: DrizzleSqliteDODatabase): ReactionLedger => (
       .run();
   },
   forgetMessages: (messageIds) => {
-    for (const chunk of Array.chunksOf(messageIds, BOUND_LIMIT)) {
-      db.delete(reaction)
-        .where(inArray(reaction.messageId, [...chunk]))
-        .run();
-      db.delete(pollVote)
-        .where(inArray(pollVote.messageId, [...chunk]))
-        .run();
-    }
+    deleteIn({ db, table: reaction, column: reaction.messageId, values: messageIds });
+    deleteIn({ db, table: pollVote, column: pollVote.messageId, values: messageIds });
   },
   forgetChannel: (channelId) => {
     db.delete(reaction).where(eq(reaction.channelId, channelId)).run();

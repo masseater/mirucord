@@ -6,20 +6,13 @@ const TOKEN_BYTES = 8;
 
 const textEncoder = new TextEncoder();
 
-const signature = ({
+export const hmac = ({
   key,
   text,
 }: Readonly<{ key: CryptoKey; text: string }>): Effect.Effect<ArrayBuffer> =>
   Effect.promise(() => crypto.subtle.sign("HMAC", key, textEncoder.encode(text)));
 
-export const hmacToken = (
-  input: Readonly<{ key: CryptoKey; text: string }>,
-): Effect.Effect<string> =>
-  signature(input).pipe(
-    Effect.map((signed) => Hex.encode(new Uint8Array(signed, TOKEN_START, TOKEN_BYTES))),
-  );
+export const tokenOf = (signed: ArrayBuffer): string =>
+  Hex.encode(new Uint8Array(signed, TOKEN_START, TOKEN_BYTES));
 
-export const hmacWord = (
-  input: Readonly<{ key: CryptoKey; text: string }>,
-): Effect.Effect<number> =>
-  signature(input).pipe(Effect.map((signed) => new DataView(signed).getUint32(TOKEN_START)));
+export const wordOf = (signed: ArrayBuffer): number => new DataView(signed).getUint32(TOKEN_START);

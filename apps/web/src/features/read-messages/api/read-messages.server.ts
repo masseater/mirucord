@@ -46,20 +46,34 @@ const READ_MESSAGES_TOOL = {
 
 const NEEDS_CHANNEL_OR_AUTHOR = "Pass channelId, authorId or both";
 
+type Output = typeof ReadMessagesOutput.Type;
+
+type Reading = Readonly<{
+  scope: GuildScope;
+  channelId: Option.Option<string>;
+  read: (channelIds: readonly string[]) => Effect.Effect<Output["messages"]>;
+  progress: (channelIds: readonly string[]) => Omit<Output, "messages">;
+}>;
+
+const readWithin = ({ scope, channelId, read, progress }: Reading): Effect.Effect<CallToolResult> =>
+  withChannel({ scope, channelId })((channelIds) =>
+    read(channelIds).pipe(
+      Effect.flatMap((messages) =>
+        structuredResult({ ...progress(channelIds), messages } satisfies Output),
+      ),
+    ),
+  );
+
 const readChannel = (
   scope: GuildScope,
   request: Readonly<{ channelId: string; before: Option.Option<string>; limit: number }>,
 ): Effect.Effect<CallToolResult> =>
-  withChannel({ scope, channelId: Option.some(request.channelId) })(() =>
-    readMessages({ scope, ...request }).pipe(
-      Effect.flatMap((messages) =>
-        structuredResult({
-          ingest: ingestById({ scope, channelId: request.channelId }),
-          messages,
-        } satisfies typeof ReadMessagesOutput.Type),
-      ),
-    ),
-  );
+  readWithin({
+    scope,
+    channelId: Option.some(request.channelId),
+    read: () => readMessages({ scope, ...request }),
+    progress: () => ({ ingest: ingestById({ scope, channelId: request.channelId }) }),
+  });
 
 const readAuthor = (
   scope: GuildScope,
@@ -70,16 +84,12 @@ const readAuthor = (
     limit: number;
   }>,
 ): Effect.Effect<CallToolResult> =>
-  withChannel({ scope, channelId: request.channelId })((channelIds) =>
-    readAuthorMessages({ scope, ...request, channelIds }).pipe(
-      Effect.flatMap((messages) =>
-        structuredResult({
-          notFullyIngested: notFullyIngested({ scope, channelIds }),
-          messages,
-        } satisfies typeof ReadMessagesOutput.Type),
-      ),
-    ),
-  );
+  readWithin({
+    scope,
+    channelId: request.channelId,
+    read: (channelIds) => readAuthorMessages({ scope, ...request, channelIds }),
+    progress: (channelIds) => ({ notFullyIngested: notFullyIngested({ scope, channelIds }) }),
+  });
 
 const readTool =
   (discordUserId: string) =>

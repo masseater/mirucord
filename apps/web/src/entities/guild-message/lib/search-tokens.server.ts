@@ -3,7 +3,7 @@ import { Array, Effect, Number, Option, pipe, String } from "effect";
 import { openMessage } from "#/shared/crypto/index.server";
 import type { MessageAddress, MessageBody } from "#/shared/crypto/index.server";
 
-import { hmacWord } from "./hmac.server.ts";
+import { hmac, wordOf } from "./hmac.server.ts";
 
 const SHORTEST_GRAM = 1;
 const LONGEST_GRAM = 3;
@@ -17,7 +17,7 @@ const gramsOfSize = (chars: readonly string[], size: number): readonly string[] 
   );
 
 const tokensOf = (key: CryptoKey, grams: readonly string[]): Effect.Effect<readonly number[]> =>
-  Effect.forEach(Array.dedupe(grams), (gram) => hmacWord({ key, text: gram }), {
+  Effect.forEach(Array.dedupe(grams), (gram) => Effect.map(hmac({ key, text: gram }), wordOf), {
     concurrency: "unbounded",
   });
 

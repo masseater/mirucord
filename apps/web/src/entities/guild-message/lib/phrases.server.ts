@@ -2,7 +2,7 @@ import { Array, Effect, Option, pipe, String } from "effect";
 
 import type { MessageBody } from "#/shared/crypto/index.server";
 
-import { hmacToken } from "./hmac.server.ts";
+import { hmac, tokenOf } from "./hmac.server.ts";
 
 const LONGEST_PHRASE = 15;
 export const PHRASE_WINDOW_DAYS = 30;
@@ -90,8 +90,8 @@ export const phraseHashes = ({
     ({ key }) =>
       Effect.all(
         {
-          phrase: hmacToken({ key: searchKey, text: key }),
-          common: hmacToken({ key: commonKey, text: key }),
+          phrase: Effect.map(hmac({ key: searchKey, text: key }), tokenOf),
+          common: Effect.map(hmac({ key: commonKey, text: key }), tokenOf),
         },
         { concurrency: 1 },
       ),
@@ -104,7 +104,7 @@ export const labelOf = ({
   phrase,
 }: LabelRequest): Effect.Effect<Option.Option<Phrase>> =>
   Effect.findFirst(phrasesOf(source), (candidate) =>
-    hmacToken({ key: searchKey, text: candidate.key }).pipe(
-      Effect.map((token) => token === phrase),
+    hmac({ key: searchKey, text: candidate.key }).pipe(
+      Effect.map((signed) => tokenOf(signed) === phrase),
     ),
   );

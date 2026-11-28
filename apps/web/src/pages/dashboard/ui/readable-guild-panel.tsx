@@ -5,7 +5,8 @@ import type { GuildListing } from "#/pages/dashboard/api/dashboard.server";
 import { fixable } from "#/pages/dashboard/lib/feedback";
 
 import { FeedbackLine } from "./feedback-line.tsx";
-import { ReadableGuildList } from "./readable-guild-list.tsx";
+import { GuildItems } from "./guild-items.tsx";
+import { ReadableGuildRow } from "./readable-guild-row.tsx";
 import { ReadableGuildSection } from "./readable-guild-section.tsx";
 
 const UNAVAILABLE = fixable("refresh")("サーバーを読み込めませんでした");
@@ -21,7 +22,11 @@ export const ReadableGuildPanel = ({ listing }: Readonly<{ listing: GuildListing
       ready: ({ guilds }) =>
         Array.isReadonlyArrayNonEmpty(guilds) && (
           <ReadableGuildSection>
-            <ReadableGuildList guilds={guilds} />
+            <GuildItems
+              guilds={guilds}
+              className="grid items-start gap-3 sm:grid-cols-2"
+              item={ReadableGuildRow}
+            />
           </ReadableGuildSection>
         ),
     }),

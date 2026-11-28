@@ -1,3 +1,7 @@
+import { and, inArray } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
+import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
+import type { SQLiteColumn, SQLiteTable } from "drizzle-orm/sqlite-core";
 import { Array, Function, Option, pipe, Record } from "effect";
 
 import { BOUND_LIMIT } from "#/entities/guild-message/model/guild-message.schema";
@@ -30,4 +34,21 @@ export const rowChunks = <Row extends Readonly<Record<string, unknown>>>(
     Option.getOrElse(() => NO_COLUMNS),
   );
   return Array.chunksOf(rows, Math.max(MIN_ROWS, Math.floor(BOUND_LIMIT / columns)));
+};
+
+export type Deletion = Readonly<{
+  db: DrizzleSqliteDODatabase;
+  table: SQLiteTable;
+  column: SQLiteColumn;
+  values: readonly string[];
+  only?: SQL;
+}>;
+
+export const deleteIn = ({ db, table, column, values, only }: Deletion): void => {
+  const extra = Option.toArray(Option.fromUndefinedOr(only));
+  for (const chunk of Array.chunksOf(values, BOUND_LIMIT)) {
+    db.delete(table)
+      .where(and(inArray(column, [...chunk]), ...extra))
+      .run();
+  }
 };

@@ -6,6 +6,7 @@ import { phraseNote } from "#/entities/guild-message/model/phrase-note.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 import type { MessageSide } from "#/shared/discord/index.server";
 
+import { deleteIn, inChunks } from "./bound-chunks.server.ts";
 import { PhraseStore } from "./phrase-store.server.ts";
 import type {
   NoteClaim,
@@ -18,7 +19,6 @@ import type {
   SealedMessage,
 } from "./store-types.ts";
 
-const BOUND_LIMIT = 90;
 const EXAMPLE_SEPARATOR = ",";
 const NEVER = 0;
 const CLAIM_MINUTES = 3;
@@ -60,30 +60,27 @@ const settledOf = (status: NoteStatus): Option.Option<PhraseNote["status"]> =>
 
 export abstract class NoteStore extends PhraseStore {
   public phraseNotes(phrases: readonly string[]): readonly PhraseNote[] {
-    return pipe(
-      Array.chunksOf(phrases, BOUND_LIMIT),
-      Array.flatMap((chunk) => {
-        const rows = this.db
-          .select()
-          .from(phraseNote)
-          .where(and(inArray(phraseNote.phrase, [...chunk]), ne(phraseNote.status, "pending")))
-          .all();
-        return pipe(
-          rows,
-          Array.flatMap(({ phrase, status, sealed, examples }) =>
-            pipe(
-              Option.toArray(settledOf(status)),
-              Array.map((settled) => ({
-                phrase,
-                status: settled,
-                sealed,
-                examples: examplesOf(examples),
-              })),
-            ),
+    return inChunks(phrases, (chunk) => {
+      const rows = this.db
+        .select()
+        .from(phraseNote)
+        .where(and(inArray(phraseNote.phrase, [...chunk]), ne(phraseNote.status, "pending")))
+        .all();
+      return pipe(
+        rows,
+        Array.flatMap(({ phrase, status, sealed, examples }) =>
+          pipe(
+            Option.toArray(settledOf(status)),
+            Array.map((settled) => ({
+              phrase,
+              status: settled,
+              sealed,
+              examples: examplesOf(examples),
+            })),
           ),
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 
   public claimPhraseNotes({ phrases, now }: NoteClaim): readonly string[] {
@@ -92,20 +89,17 @@ export abstract class NoteStore extends PhraseStore {
       gte(phraseNote.updatedAt, now - CLAIM_MS),
     );
     const settled = new Set(
-      pipe(
-        Array.chunksOf(phrases, BOUND_LIMIT),
-        Array.flatMap((chunk) => {
-          const rows = this.db
-            .select({ phrase: phraseNote.phrase })
-            .from(phraseNote)
-            .where(and(inArray(phraseNote.phrase, [...chunk]), taken))
-            .all();
-          return pipe(
-            rows,
-            Array.map(({ phrase }) => phrase),
-          );
-        }),
-      ),
+      inChunks(phrases, (chunk) => {
+        const rows = this.db
+          .select({ phrase: phraseNote.phrase })
+          .from(phraseNote)
+          .where(and(inArray(phraseNote.phrase, [...chunk]), taken))
+          .all();
+        return pipe(
+          rows,
+          Array.map(({ phrase }) => phrase),
+        );
+      }),
     );
     const claimed = pipe(
       phrases,
@@ -163,12 +157,7 @@ export abstract class NoteStore extends PhraseStore {
       ),
       Array.map(({ phrase }) => phrase),
     );
-    for (const chunk of Array.chunksOf(stale, BOUND_LIMIT)) {
-      this.db
-        .delete(phraseNote)
-        .where(inArray(phraseNote.phrase, [...chunk]))
-        .run();
-    }
+    deleteIn({ db: this.db, table: phraseNote, column: phraseNote.phrase, values: stale });
   }
 
   public phraseSamples({ phrases, channelIds }: SampleRequest): readonly PhraseSamples[] {
@@ -231,11 +220,12 @@ export abstract class NoteStore extends PhraseStore {
   }
 
   public releasePhraseNotes(phrases: readonly string[]): void {
-    for (const chunk of Array.chunksOf(phrases, BOUND_LIMIT)) {
-      this.db
-        .delete(phraseNote)
-        .where(and(inArray(phraseNote.phrase, [...chunk]), eq(phraseNote.status, "pending")))
-        .run();
-    }
+    deleteIn({
+      db: this.db,
+      table: phraseNote,
+      column: phraseNote.phrase,
+      values: phrases,
+      only: eq(phraseNote.status, "pending"),
+    });
   }
 }

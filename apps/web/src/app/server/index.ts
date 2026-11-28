@@ -1,6 +1,5 @@
 import { Effect, Option, pipe, Record, String as Str } from "effect";
 
-import { moveLegacySearch } from "#/entities/guild-message/index.server";
 import { ingestDeliveries, resyncGuilds } from "#/features/ingest-messages/index.server";
 import { MCP_URL } from "#/shared/config";
 import { runTraced } from "#/shared/observability/index.server";
@@ -77,7 +76,7 @@ const unindexed = (request: Request): Promise<Response> =>
 const worker: ExportedHandler = {
   fetch: unindexed,
   queue: (batch): Promise<void> => runTraced(ingestDeliveries(batch.messages)),
-  scheduled: (): Promise<void> => runTraced(moveLegacySearch.pipe(Effect.andThen(resyncGuilds))),
+  scheduled: (): Promise<void> => runTraced(resyncGuilds),
 };
 
 export { GuildArchive } from "#/entities/guild-message/index.server";

@@ -35,7 +35,7 @@ export const Cursor = Schema.optionalKey(
 
 const CursorOffset = Schema.fromJsonString(Schema.Struct({ offset: Schema.Int }));
 
-export const cursorOf = (offset: number): string =>
+const cursorOf = (offset: number): string =>
   Schema.encodeOption(CursorOffset)({ offset }).pipe(
     Option.map(Base64Url.encode),
     Option.getOrElse(() => ""),

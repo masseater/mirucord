@@ -1,7 +1,6 @@
 export {
   BAD_CURSOR,
   Cursor,
-  cursorOf,
   DeprecatedOffset,
   FIRST_OFFSET,
   hasBadCursor,

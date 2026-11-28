@@ -29,7 +29,7 @@ const LIST_LINKED_ACCOUNTS_TOOL = {
   ),
 };
 
-type Output = typeof ListLinkedAccountsOutput.Type;
+export type Output = typeof ListLinkedAccountsOutput.Type;
 
 type LinkedRow = typeof linkedAccount.$inferSelect;
 

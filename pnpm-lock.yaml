@@ -380,8 +380,8 @@ catalogs:
       specifier: 3.48.0
       version: 3.48.0
     renovate:
-      specifier: 44.263.0
-      version: 44.263.0
+      specifier: 44.263.1
+      version: 44.263.1
     tailwindcss:
       specifier: 4.3.5
       version: 4.3.5
@@ -441,7 +441,7 @@ importers:
         version: 3.48.0(tsrs@7.1.0-beta.tsrs5)
       renovate:
         specifier: catalog:stack
-        version: 44.263.0(supports-color@7.2.0)(typanion@3.14.0)
+        version: 44.263.1(supports-color@7.2.0)(typanion@3.14.0)
       tsrs:
         specifier: catalog:stack
         version: 7.1.0-beta.tsrs5
@@ -1411,15 +1411,6 @@ packages:
   '@commitlint/types@21.2.3':
     resolution: {integrity: sha512-sGEA473TlCvhCGNoTBY9OXZVWdscIXdGt0dm8EpB+2MRfmt8LNh/X56P/T3nCtEB+eH5qGEa3odphSAoUxSfSQ==}
     engines: {node: '>=22.12.0'}
-
-  '@containerbase/base@14.69.3':
-    resolution: {integrity: sha512-i2z1U2IyUVe/rjU/fX1CH7fjkKyz8LytIs9oMOIjweMHPjWndxw5gdl4T4GL/jJqejoY/Wh5BakdAjYGEAfNtQ==}
-    engines: {node: '>=24.10.0'}
-    peerDependencies:
-      zod: ^4.0.0
-    peerDependenciesMeta:
-      zod:
-        optional: true
 
   '@containerbase/base@14.70.0':
     resolution: {integrity: sha512-2jgXI/w0+GRGcpONzxuHgbL2knEnImgNEd5Zflc7QapQY0TvEhaC4DKVv+Y1HNttCTph8eJ+PbU97Gv66r+JYg==}
@@ -5883,8 +5874,8 @@ packages:
     resolution: {integrity: sha512-ixNtAJndqh173VQ4KodSdJEI6nuioBWI0V1ITNKhZZsO0pEMoDxz539T4FTTbSZ/xIOSuDnzxLVRqBVSvPNE2g==}
     engines: {node: '>=18.0'}
 
-  cronstrue@3.41.0:
-    resolution: {integrity: sha512-1B5JJP3vsZbP4NOoz9OboFljpcc+aGg6WBQsyGr/Q0LS7ZYoSH9oimGpEglTGMS4ywwY1aYfr1So2GgfdeXj0w==}
+  cronstrue@3.42.0:
+    resolution: {integrity: sha512-uivzTlBRMFMGAfKIAy/yga0kV5TVdzlKR0ZkhAB2jax4VoVVje0WiLh6nzcnZ6GNdoFE3BtuuLiw+3wotq9g2Q==}
     hasBin: true
 
   cross-spawn@7.0.6:
@@ -8422,8 +8413,8 @@ packages:
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
 
-  renovate@44.263.0:
-    resolution: {integrity: sha512-Co5A5cu8EWPh+y4ZhFyqv8anJ94pneM0mvJEnjkcwVX88KMHkoyQxwJ/PdziiRLW0zZunn/AdAQ4XBtNpjZYvQ==}
+  renovate@44.263.1:
+    resolution: {integrity: sha512-YxKuAIY73OKMZjlA5fZ5IBWLYjg1H8l4ZPTA9UZ8yB8rfZV18CzVe4g4+HzdgfJwyj/Nb0Wude5mByzaeGEN8Q==}
     engines: {node: ^24.11.0 || ^26.13.0, pnpm: ^11.0.0}
     hasBin: true
 
@@ -10517,12 +10508,6 @@ snapshots:
       conventional-commits-parser: 7.1.2
       picocolors: 1.1.1
 
-  '@containerbase/base@14.69.3(zod@4.6.7)':
-    dependencies:
-      semver: 7.8.6
-    optionalDependencies:
-      zod: 4.6.7
-
   '@containerbase/base@14.70.0(zod@4.6.7)':
     dependencies:
       semver: 7.8.6
@@ -12462,7 +12447,7 @@ snapshots:
 
   '@renovatebot/osv-offline-db@4.5.10(supports-color@7.2.0)(zod@4.6.7)':
     dependencies:
-      '@containerbase/base': 14.69.3(zod@4.6.7)
+      '@containerbase/base': 14.70.0(zod@4.6.7)
       debug: 4.4.3(supports-color@7.2.0)
     transitivePeerDependencies:
       - supports-color
@@ -14583,7 +14568,7 @@ snapshots:
 
   croner@10.0.1: {}
 
-  cronstrue@3.41.0: {}
+  cronstrue@3.42.0: {}
 
   cross-spawn@7.0.6:
     dependencies:
@@ -17486,7 +17471,7 @@ snapshots:
 
   remove-accents@0.5.0: {}
 
-  renovate@44.263.0(supports-color@7.2.0)(typanion@3.14.0):
+  renovate@44.263.1(supports-color@7.2.0)(typanion@3.14.0):
     dependencies:
       '@aws-sdk/client-codecommit': 3.1139.0
       '@aws-sdk/client-ec2': 3.1139.0
@@ -17542,7 +17527,7 @@ snapshots:
       commander: 15.1.0
       common-tags: 1.8.2
       croner: 10.0.1
-      cronstrue: 3.41.0
+      cronstrue: 3.42.0
       deepmerge: 4.3.1
       dequal: 2.0.3
       detect-indent: 7.0.2

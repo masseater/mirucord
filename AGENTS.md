@@ -44,6 +44,7 @@ Base designs, load estimates and cost estimates on the next scale, not the curre
 
 - Take the per-server member counts, post counts, request counts, and DO row counts, sizes and wall time used in estimates from production through the Cloudflare GraphQL Analytics API and the Discord API, and write the values and the date into the estimate.
 - `作業配信` is the name of a server, not a streamer's server.
+- Caution: at 500 servers with 2,000 messages per server per day, the guild Durable Objects write about 14.8M rows per day, which costs about $13 per day beyond the included 50M rows per month (measured 2026-11-28). The cause is about 14.8 rows written per message, because Durable Object SQLite bills every index entry as a row written: a `message` insert writes about 10 rows (7 indexes plus the unique id index), and each `phrase_use` row writes a primary key plus 4 indexes. The owner accepted this on 2026-11-28 because nothing is released yet. Before the full release, bring it down by removing indexes (about 11 rows per message, about $9 per day) or by moving message bodies to R2 append files and keeping only a ledger in the Durable Object (about $1 per day), and re-measure the rows written per message first.
 
 ### Cloudflare and Alchemy
 

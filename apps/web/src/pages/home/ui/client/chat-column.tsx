@@ -1,9 +1,13 @@
 import type { ReactNode } from "react";
 
+import { SERVICE_NAME } from "#/shared/config";
+import { Footer } from "#/shared/ui/footer";
+
 import { ChatHeader } from "./chat-header.tsx";
 import { Composer } from "./composer.tsx";
 import { MobileChannels } from "./mobile-channels.tsx";
-import { SiteFooter } from "./site-footer.tsx";
+
+const NOTICE = `Discord は Discord Inc. の商標です。${SERVICE_NAME} は Discord Inc. とは関係ありません。`;
 
 export const ChatColumn = ({ children }: Readonly<{ children: ReactNode }>): ReactNode => (
   <div className="bg-dc-chat flex min-w-0 grow flex-col">
@@ -11,6 +15,8 @@ export const ChatColumn = ({ children }: Readonly<{ children: ReactNode }>): Rea
     <ChatHeader />
     <main className="grow">{children}</main>
     <Composer />
-    <SiteFooter />
+    <Footer layout="chat">
+      <span>{NOTICE}</span>
+    </Footer>
   </div>
 );

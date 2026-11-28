@@ -48,11 +48,17 @@ const pageFrom = (
     ),
   );
 
-const lookUpInPage = (
-  job: RefreshJob,
-  oldest: string,
-): Effect.Effect<readonly Lookup[], IngestError> =>
-  pageFrom(job.channelId, oldest).pipe(
+const listedPage = (job: RefreshJob): Effect.Effect<readonly DiscordMessage[], IngestError> =>
+  Option.match(
+    oldestId(job.messageIds).pipe(Option.filter(() => job.messageIds.length >= LISTED_LOOKUP_MIN)),
+    {
+      onNone: () => Effect.succeed([]),
+      onSome: (oldest) => pageFrom(job.channelId, oldest),
+    },
+  );
+
+const lookUp = (job: RefreshJob): Effect.Effect<readonly Lookup[], IngestError> =>
+  listedPage(job).pipe(
     Effect.flatMap((page) => {
       const listed = new Set(
         pipe(
@@ -76,15 +82,6 @@ const lookUpInPage = (
         ]),
       );
     }),
-  );
-
-const lookUp = (job: RefreshJob): Effect.Effect<readonly Lookup[], IngestError> =>
-  Option.match(
-    oldestId(job.messageIds).pipe(Option.filter(() => job.messageIds.length >= LISTED_LOOKUP_MIN)),
-    {
-      onNone: () => lookUpEach(job.channelId, job.messageIds),
-      onSome: (oldest) => lookUpInPage(job, oldest),
-    },
   );
 
 const refreshWith = (job: RefreshJob, wrappedKey: string): Effect.Effect<void, IngestError> =>

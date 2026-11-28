@@ -7,7 +7,7 @@ import { openGuildKeys } from "#/shared/crypto/index.server";
 import { db, guild, message } from "#/shared/db/index.server";
 
 import { enqueueMigration } from "./enqueue.server.ts";
-import { deleteMessagesByIds } from "./id-chunks.server.ts";
+import { deleteByIds } from "./id-chunks.server.ts";
 
 const MIGRATE_BATCH = 200;
 const ANY_ROW = 1;
@@ -75,12 +75,13 @@ export const migrateMessages: Effect.Effect<void> = loadBatch.pipe(
     }),
   ),
   Effect.tap((rows) =>
-    deleteMessagesByIds(
-      pipe(
+    deleteByIds({
+      table: message,
+      ids: pipe(
         rows,
         Array.map(({ id }) => id),
       ),
-    ),
+    }),
   ),
   Effect.flatMap((rows) => {
     if (rows.length < MIGRATE_BATCH) {

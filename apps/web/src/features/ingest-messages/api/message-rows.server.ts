@@ -4,7 +4,7 @@ import { Array, DateTime, Effect, Option, pipe } from "effect";
 import { guildStore } from "#/entities/guild-message/index.server";
 import { db, message } from "#/shared/db/index.server";
 
-import { deleteMessagesByIds } from "./id-chunks.server.ts";
+import { deleteByIds } from "./id-chunks.server.ts";
 
 export type StoredMessage = Readonly<{
   id: string;
@@ -66,7 +66,10 @@ export const forgetChannelMessages = ({ guildId, channelId }: ChannelRef): Effec
   );
 
 export const deleteMessages = ({ guildId, ids }: GuildMessages): Effect.Effect<void> =>
-  Effect.all([Effect.promise(() => guildStore(guildId).remove(ids)), deleteMessagesByIds(ids)], {
-    concurrency: 1,
-    discard: true,
-  });
+  Effect.all(
+    [Effect.promise(() => guildStore(guildId).remove(ids)), deleteByIds({ table: message, ids })],
+    {
+      concurrency: 1,
+      discard: true,
+    },
+  );

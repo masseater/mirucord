@@ -1,7 +1,8 @@
 import { inArray } from "drizzle-orm";
 import { Array, Effect } from "effect";
 
-import { channel, db, message } from "#/shared/db/index.server";
+import { db } from "#/shared/db/index.server";
+import type { channel, message } from "#/shared/db/index.server";
 
 const ID_CHUNK = 50;
 
@@ -16,14 +17,14 @@ export const inIdChunks = <Row>({
     concurrency: 1,
   });
 
-export const deleteChannelsByIds = (ids: readonly string[]): Effect.Effect<readonly unknown[]> =>
+export const deleteByIds = ({
+  table,
+  ids,
+}: Readonly<{
+  table: typeof channel | typeof message;
+  ids: readonly string[];
+}>): Effect.Effect<readonly unknown[]> =>
   inIdChunks({
     ids,
-    run: (chunk) => db.delete(channel).where(inArray(channel.id, [...chunk])),
-  });
-
-export const deleteMessagesByIds = (ids: readonly string[]): Effect.Effect<readonly unknown[]> =>
-  inIdChunks({
-    ids,
-    run: (chunk) => db.delete(message).where(inArray(message.id, [...chunk])),
+    run: (chunk) => db.delete(table).where(inArray(table.id, [...chunk])),
   });

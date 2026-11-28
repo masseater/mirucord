@@ -80,8 +80,16 @@ export const pendingCondition = (sealed: readonly Segment[]): SQL => {
   return and(indexed, or(...stale)) ?? indexed;
 };
 
-const countWhere = (db: DrizzleSqliteDODatabase, condition: SQL): number => {
-  const counted = db.select({ rows: count() }).from(guildMessage).where(condition).get();
+export type Counting = Readonly<{ condition: SQL; limit: number }>;
+
+const countWhere = (db: DrizzleSqliteDODatabase, { condition, limit }: Counting): number => {
+  const bounded = db
+    .select({ id: guildMessage.id })
+    .from(guildMessage)
+    .where(condition)
+    .limit(limit)
+    .as("bounded");
+  const counted = db.select({ rows: count() }).from(bounded).get();
   return Option.match(Option.fromUndefinedOr(counted), {
     onNone: () => NONE,
     onSome: ({ rows }) => rows,
@@ -189,7 +197,7 @@ const invalidSince = (
 
 export type SearchLedger = Readonly<{
   segments: () => readonly Segment[];
-  count: (condition: SQL) => number;
+  count: (counting: Counting) => number;
   latestVersion: () => number;
   nextVersion: () => number;
   latestPending: (sealed: readonly Segment[]) => number;
@@ -201,7 +209,7 @@ export type SearchLedger = Readonly<{
 
 export const searchLedger = (db: DrizzleSqliteDODatabase): SearchLedger => ({
   segments: (): readonly Segment[] => segmentsOf(db),
-  count: (condition: SQL): number => countWhere(db, condition),
+  count: (counting: Counting): number => countWhere(db, counting),
   latestVersion: (): number => latestVersionWhere(db, Option.none()),
   nextVersion: (): number => latestVersionWhere(db, Option.none()) + NEXT_VERSION,
   latestPending: (sealed: readonly Segment[]): number =>

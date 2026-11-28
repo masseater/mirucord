@@ -1,6 +1,6 @@
 # mirucord
 
-Follow `masseater-style`, a skill in masseater/skills that says which skills to load in each situation. `vp install` puts the skills in `.agents/skills/`.
+Follow `masseater-style`, a skill in [masseater/skills](github:masseater/skills) that says which skills to load in each situation. `vp install` puts the skills in `.agents/skills/`.
 
 mirucord is a hosted service providing read-only MCP servers for Discord servers. Production runs at `https://mirucord.masseater.dev`.
 
@@ -57,4 +57,4 @@ Base designs, load estimates and cost estimates on the next scale, not the curre
 ### Docs and template
 
 - Do not add new files under docs/. Update existing files and remove finished plans and history.
-- When you change the scaffolding (hooks, lint, CI), make the same change in masseater/typescript-template and release it there.
+- When you change the scaffolding (hooks, lint, CI), make the same change in [masseater/typescript-template](github:masseater/typescript-template) and release it there.

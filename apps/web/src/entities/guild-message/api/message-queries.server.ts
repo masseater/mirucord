@@ -3,7 +3,7 @@ import type { SQL } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, Option, pipe } from "effect";
 
-import { guildMessage, TRACKED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
+import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 
 import { authorQueries } from "./author-queries.server.ts";
 import { inChunks } from "./bound-chunks.server.ts";
@@ -24,29 +24,46 @@ const boundsOf = ({ from, upTo }: CreatedRange): readonly SQL[] => {
   return [...Option.toArray(lower), ...Option.toArray(upper)];
 };
 
-const trackedRows = (db: DrizzleSqliteDODatabase, ids: readonly string[]): readonly TrackedRow[] =>
+const LIGHT_COLUMNS = {
+  id: guildMessage.id,
+  authorId: guildMessage.authorId,
+  createdAt: guildMessage.createdAt,
+  editedAt: guildMessage.editedAt,
+  describedWith: guildMessage.describedWith,
+  version: guildMessage.version,
+};
+
+type LightRow = Readonly<{
+  id: string;
+  authorId: string;
+  createdAt: number;
+  editedAt: number | null;
+  describedWith: string | null;
+  version: number;
+}>;
+
+const lightRows = (db: DrizzleSqliteDODatabase, ids: readonly string[]): readonly LightRow[] =>
   inChunks(ids, (chunk) =>
     db
-      .select(TRACKED_COLUMNS)
+      .select(LIGHT_COLUMNS)
       .from(guildMessage)
       .where(inArray(guildMessage.id, [...chunk]))
       .all(),
+  );
+
+const trackedRows = (db: DrizzleSqliteDODatabase, ids: readonly string[]): readonly TrackedRow[] =>
+  pipe(
+    lightRows(db, ids),
+    Array.map(({ id, createdAt, version }) => ({ id, createdAt, version })),
   );
 
 const storedStates = (
   db: DrizzleSqliteDODatabase,
   ids: readonly string[],
 ): readonly StoredState[] =>
-  inChunks(ids, (chunk) =>
-    db
-      .select({
-        id: guildMessage.id,
-        editedAt: guildMessage.editedAt,
-        describedWith: guildMessage.describedWith,
-      })
-      .from(guildMessage)
-      .where(inArray(guildMessage.id, [...chunk]))
-      .all(),
+  pipe(
+    lightRows(db, ids),
+    Array.map(({ id, editedAt, describedWith }) => ({ id, editedAt, describedWith })),
   );
 
 const idsInChannelOf = (
@@ -121,12 +138,9 @@ const authorsOf = (
   db: DrizzleSqliteDODatabase,
   ids: readonly string[],
 ): readonly AuthoredMessage[] =>
-  inChunks(ids, (chunk) =>
-    db
-      .select({ id: guildMessage.id, authorId: guildMessage.authorId })
-      .from(guildMessage)
-      .where(inArray(guildMessage.id, [...chunk]))
-      .all(),
+  pipe(
+    lightRows(db, ids),
+    Array.map(({ id, authorId }) => ({ id, authorId })),
   );
 
 export type MessageQueries = Readonly<{

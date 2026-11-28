@@ -8,7 +8,15 @@ import { DISCORD_UNAVAILABLE, withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
 import { liveReactionsOf } from "#/shared/discord/index.server";
 import type { DiscordRequestError, LiveReactions } from "#/shared/discord/index.server";
-import { errorResult, Ids, structuredResult, toolRegistration } from "#/shared/mcp";
+import {
+  BAD_CURSOR,
+  errorResult,
+  hasBadCursor,
+  Ids,
+  nextCursorOf,
+  structuredResult,
+  toolRegistration,
+} from "#/shared/mcp";
 
 import { keptUserIdsOf } from "./kept-users.server.ts";
 
@@ -65,6 +73,11 @@ const LiveMessage = Schema.Struct({
 
 const ListReactionsOutput = Schema.Struct({
   ingest: ConsentOutput,
+  nextCursor: Schema.optionalKey(
+    Schema.String.annotate({
+      description: "Pass it as cursor to read the next page. Absent on the last page",
+    }),
+  ),
   reactionTotal: Schema.Int,
   reactions: Schema.Array(Reaction),
   voteTotal: Schema.Int,
@@ -124,6 +137,24 @@ const voteView = ({ votedAt, ...row }: StoredVote): Output["votes"][number] => (
   votedAt: isoOf(votedAt),
 });
 
+const nextOf = (
+  lookup: Readonly<{ offset: number }>,
+  page: Readonly<{
+    reactionTotal: number;
+    reactions: readonly unknown[];
+    voteTotal: number;
+    votes: readonly unknown[];
+  }>,
+): Pick<Output, "nextCursor"> =>
+  Option.match(
+    nextCursorOf({
+      offset: lookup.offset,
+      shown: Math.max(page.reactions.length, page.votes.length),
+      total: Math.max(page.reactionTotal, page.voteTotal),
+    }),
+    { onNone: () => ({}), onSome: (nextCursor) => ({ nextCursor }) },
+  );
+
 const storedOf = (request: ReactionRequest): Effect.Effect<Omit<Output, "live">> => {
   const { scope, input } = request;
   const lookup = {
@@ -137,6 +168,7 @@ const storedOf = (request: ReactionRequest): Effect.Effect<Omit<Output, "live">>
   return Effect.promise(() => guildStore(scope.guild.guildId).readReactions(lookup)).pipe(
     Effect.map((page) => ({
       ingest: "consented" as const,
+      ...nextOf(lookup, page),
       reactionTotal: page.reactionTotal,
       reactions: pipe(page.reactions, Array.map(reactionView)),
       voteTotal: page.voteTotal,
@@ -209,6 +241,9 @@ const listReactions =
   (discordUserId: string) =>
   (input: typeof ListReactionsInput.Type): Promise<CallToolResult> =>
     withScope({ guildId: input.serverId, discordUserId })((scope) => {
+      if (hasBadCursor(input.cursor)) {
+        return Effect.succeed(errorResult(BAD_CURSOR));
+      }
       if (isHidden({ scope, input })) {
         return Effect.succeed(errorResult(CHANNEL_NOT_FOUND));
       }

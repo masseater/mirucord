@@ -28,6 +28,15 @@ import {
   toolRegistration,
 } from "#/shared/mcp";
 
+import { linkedAccountsOf } from "./linked-accounts.server.ts";
+
+const LinkedAccount = Schema.Struct({
+  type: Schema.String,
+  name: Schema.String,
+  verified: Schema.Boolean.annotate({ description: "Discord checked they own it" }),
+  publishedAt: Schema.String,
+});
+
 const ListMembersInput = Schema.Struct({
   serverId: Schema.String,
   userIds: Schema.optionalKey(
@@ -55,6 +64,10 @@ const Member = Schema.Struct({
   bot: Schema.Boolean,
   joinedAt: Schema.NullOr(Schema.String),
   leftAt: Schema.NullOr(Schema.String),
+  linkedAccounts: Schema.Array(LinkedAccount).annotate({
+    description:
+      "Accounts on other services the member chose to show in the dashboard. Empty for people who left",
+  }),
 });
 
 const ListMembersOutput = Schema.Struct({
@@ -126,6 +139,7 @@ const viewsOf = (
             bot: member.bot,
             joinedAt: isoOf(member.joinedAt),
             leftAt: isoOf(member.leftAt),
+            linkedAccounts: [],
           })),
         ),
       { concurrency: 1 },
@@ -149,6 +163,25 @@ const storedMembers = ({ scope, input }: MemberRequest): Effect.Effect<readonly 
   ).pipe(Effect.map((members) => Array.sort(members, byJoined)));
 };
 
+const withLinkedAccounts = (members: readonly MemberView[]): Effect.Effect<readonly MemberView[]> =>
+  linkedAccountsOf(
+    pipe(
+      members,
+      Array.filter(({ leftAt }) => leftAt === null),
+      Array.map(({ id }) => id),
+    ),
+  ).pipe(
+    Effect.map((linked) =>
+      pipe(
+        members,
+        Array.map((member) => ({
+          ...member,
+          linkedAccounts: Option.getOrElse(Record.get(linked, member.id), () => []),
+        })),
+      ),
+    ),
+  );
+
 const membersOf = (request: MemberRequest): Effect.Effect<typeof ListMembersOutput.Type> =>
   storedMembers(request).pipe(
     Effect.flatMap((sorted) =>
@@ -166,7 +199,11 @@ const membersOf = (request: MemberRequest): Effect.Effect<typeof ListMembersOutp
           ),
       }),
     ),
-    Effect.map((found) => ({ ingest: "consented" as const, ...found })),
+    Effect.flatMap((found) =>
+      withLinkedAccounts(found.members).pipe(
+        Effect.map((members) => ({ ingest: "consented" as const, total: found.total, members })),
+      ),
+    ),
   );
 
 const listMembers =

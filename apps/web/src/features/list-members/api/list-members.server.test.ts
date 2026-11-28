@@ -13,6 +13,7 @@ import {
   userToolCaller,
 } from "#/entities/guild-message/index.test.support";
 
+import { seedLinkedAccounts } from "./linked-seed.test.support.ts";
 import { registerListMembers } from "./list-members.server.ts";
 
 const callTool = userToolCaller([registerListMembers]);
@@ -32,6 +33,7 @@ const Member = Schema.Struct({
   nick: Schema.NullOr(Schema.String),
   roles: Schema.Array(Schema.Struct({ id: Schema.String, name: Schema.String })),
   leftAt: Schema.NullOr(Schema.String),
+  linkedAccounts: Schema.Array(Schema.Struct({ type: Schema.String, name: Schema.String })),
 });
 const Members = Schema.Struct({
   ingest: Schema.String,
@@ -81,10 +83,22 @@ const seeded = seedMembers({
 
 const network = setupNetwork();
 
+const LINKED = [
+  {
+    discordUserId: ALICE,
+    type: "github",
+    name: "alice-dev",
+    verified: true,
+    publishedAt: 1,
+  },
+];
+
+const seedAll = seeded.pipe(Effect.andThen(seedLinkedAccounts(LINKED)));
+
 beforeAll(() => {
   network.enable();
   network.use(discordMembers);
-  return seedScenario().then(() => Effect.runPromise(seeded));
+  return seedScenario().then(() => Effect.runPromise(seedAll));
 });
 
 afterAll(() => {
@@ -134,5 +148,20 @@ it.effect("returns no members before the admin consents", () =>
   Effect.gen(function* notConsented() {
     const { ingest, members } = yield* listMembers({ serverId: GUILD_B });
     expect({ ingest, members }).toStrictEqual({ ingest: "notConsented", members: [] });
+  }),
+);
+
+it.effect("carries the accounts each current member chose to show", () =>
+  Effect.gen(function* linked() {
+    const { members } = yield* listMembers({ serverId: GUILD_A });
+    expect(
+      pipe(
+        members,
+        Array.map(({ id, linkedAccounts }) => ({ id, linkedAccounts })),
+      ),
+    ).toStrictEqual([
+      { id: ALICE, linkedAccounts: [{ type: "github", name: "alice-dev" }] },
+      { id: BOB, linkedAccounts: [] },
+    ]);
   }),
 );

@@ -6,16 +6,18 @@ import { afterAll, beforeAll, beforeEach, expect, vi } from "vite-plus/test";
 
 import {
   A_OPEN,
+  A_OPEN_MESSAGE,
   A_STAFF,
   discordMembers,
   GUILD_A,
+  SAME_WORDS,
   seedScenario,
   userToolCaller,
 } from "#/entities/guild-message/index.test.support";
-import { FindSimilarMessagesOutput } from "#/features/find-similar-messages/model/similar-messages-output";
+import { SearchMessagesOutput } from "#/features/search-messages/model/search-output";
 import { spendNeurons } from "#/shared/ai/index.server";
 
-import { registerFindSimilarMessages } from "./find-similar-messages.server.ts";
+import { registerSearchMessages } from "./search-messages.server.ts";
 import {
   answerEmbedding,
   drainAlarms,
@@ -23,7 +25,7 @@ import {
   writeMessages,
 } from "./similar-guild.test.support.ts";
 
-const callTool = userToolCaller([registerFindSimilarMessages]);
+const callTool = userToolCaller([registerSearchMessages]);
 
 const RAMEN = "81";
 const CAT = "82";
@@ -34,6 +36,7 @@ const HIGHEST_BIT = 15;
 const BINARY = 2;
 const ONCE = 1;
 const NOTHING = 0;
+const SECOND_PAGE = "eyJvZmZzZXQiOjF9";
 
 const spendWholeAllowance = Effect.forEach(
   Array.makeBy(ALLOWANCE_BITS, (step) => BINARY ** (HIGHEST_BIT - step)),
@@ -41,10 +44,10 @@ const spendWholeAllowance = Effect.forEach(
   { concurrency: 1, discard: true },
 );
 
-const decodeSimilar = Schema.decodeUnknownEffect(FindSimilarMessagesOutput);
+const decodeSimilar = Schema.decodeUnknownEffect(SearchMessagesOutput);
 
-const findSimilar = (query: string): Effect.Effect<typeof FindSimilarMessagesOutput.Type> =>
-  callTool({ name: "find_similar_messages", args: { serverId: GUILD_A, query } }).pipe(
+const findSimilar = (query: string): Effect.Effect<typeof SearchMessagesOutput.Type> =>
+  callTool({ name: "search_messages", args: { serverId: GUILD_A, query } }).pipe(
     Effect.flatMap(({ structured }) => structured.pipe(Option.getOrUndefined, decodeSimilar)),
     Effect.orDie,
   );
@@ -83,6 +86,7 @@ it.live("finds messages by meaning only in the channels the user can read", () =
     expect(ids).toContain(CAT);
     expect(ids).not.toContain(STAFF_RAMEN);
     expect(found.embedded).toBe(found.stored);
+    expect(found.meaning).toBe("included");
   }),
 );
 
@@ -103,13 +107,55 @@ it.live("reuses the vector of a query it has already embedded", () =>
 it.live("leaves embedding to the next day once the day's allowance is spent", () =>
   Effect.gen(function* overBudget() {
     yield* spendWholeAllowance;
-    const refused = yield* callTool({
-      name: "find_similar_messages",
-      args: { serverId: GUILD_A, query: "まだ聞いていない質問" },
-    });
-    expect(refused.isError).toBe(true);
+    const answered = yield* findSimilar("まだ聞いていない質問");
+    expect(answered.meaning).toBe("overBudget");
+    expect(answered.messages).toStrictEqual([]);
     yield* writeMessages([{ id: LATE, channelId: A_OPEN, content: "ラーメンの新店" }]);
     yield* drainAlarms;
     expect(embeddedTexts).toStrictEqual([]);
+  }),
+);
+
+it.live("lists an exact match once, first, and leaves it out of the meaning matches", () =>
+  Effect.gen(function* merged() {
+    const found = yield* findSimilar(SAME_WORDS);
+    const exact = pipe(
+      found.messages,
+      Array.filter(({ id }) => id === A_OPEN_MESSAGE),
+    );
+    expect(
+      pipe(
+        exact,
+        Array.map(({ match }) => match),
+      ),
+    ).toStrictEqual(["exact"]);
+    expect(Array.head(found.messages).pipe(Option.map(({ id }) => id))).toStrictEqual(
+      Option.some(A_OPEN_MESSAGE),
+    );
+    expect(found.nextCursor).toBeNull();
+  }),
+);
+
+it.live("refuses a cursor it did not hand out", () =>
+  Effect.gen(function* badCursor() {
+    const refused = yield* callTool({
+      name: "search_messages",
+      args: { serverId: GUILD_A, query: SAME_WORDS, cursor: "not-a-cursor" },
+    });
+    expect(refused.isError).toBe(true);
+  }),
+);
+
+it.live("leaves meaning matches to the first page", () =>
+  Effect.gen(function* laterPage() {
+    const later = yield* callTool({
+      name: "search_messages",
+      args: { serverId: GUILD_A, query: SAME_WORDS, cursor: SECOND_PAGE },
+    }).pipe(
+      Effect.flatMap(({ structured }) => structured.pipe(Option.getOrUndefined, decodeSimilar)),
+      Effect.orDie,
+    );
+    expect(later.meaning).toBe("firstPageOnly");
+    expect(later.embedded).toBeNull();
   }),
 );

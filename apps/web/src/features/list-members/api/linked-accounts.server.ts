@@ -5,7 +5,7 @@ import { Array, DateTime, Effect, pipe, Record, Schema } from "effect";
 import { guildStore } from "#/entities/guild-message/index.server";
 import { withScope } from "#/entities/scope/index.server";
 import type { GuildScope } from "#/entities/scope/index.server";
-import { ListLinkedAccountsOutput } from "#/features/list-linked-accounts/model/linked-accounts-output";
+import { ListLinkedAccountsOutput } from "#/features/list-members/model/linked-accounts-output";
 import { SERVICE_NAME } from "#/shared/config";
 import { db, linkedAccount } from "#/shared/db/index.server";
 import { Ids, structuredResult, toolRegistration } from "#/shared/mcp";
@@ -18,7 +18,7 @@ const ListLinkedAccountsInput = Schema.Struct({
 const LIST_LINKED_ACCOUNTS_TOOL = {
   name: "list_linked_accounts",
   title: "List linked accounts",
-  description: `List the accounts on other services that people chose to show through ${SERVICE_NAME}.`,
+  description: `Deprecated, removed in the next release: read linkedAccounts from list_members instead. Lists the accounts on other services that people chose to show through ${SERVICE_NAME}.`,
   outputSchema: ListLinkedAccountsOutput.pipe(
     Schema.toStandardSchemaV1,
     Schema.toStandardJSONSchemaV1,
@@ -29,9 +29,11 @@ const LIST_LINKED_ACCOUNTS_TOOL = {
   ),
 };
 
-type Output = typeof ListLinkedAccountsOutput.Type;
+export type Output = typeof ListLinkedAccountsOutput.Type;
 
 type LinkedRow = typeof linkedAccount.$inferSelect;
+
+const ROW_CHUNK = 90;
 
 const NOT_CONSENTED: Output = { ingest: "notConsented", people: [] };
 
@@ -64,7 +66,22 @@ const peopleOf = (rows: readonly LinkedRow[]): Output["people"] =>
     Array.map(([userId, owned]) => ({ userId, accounts: pipe(owned, Array.map(accountOf)) })),
   );
 
-const linkedAccountsOf = (
+export const linkedAccountsOf = (
+  userIds: readonly string[],
+): Effect.Effect<Readonly<Record<string, Output["people"][number]["accounts"]>>> =>
+  Effect.forEach(pipe(userIds, Array.chunksOf(ROW_CHUNK)), readRows, { concurrency: 1 }).pipe(
+    Effect.map(Array.flatten),
+    Effect.map((rows) =>
+      Record.fromEntries(
+        pipe(
+          peopleOf(rows),
+          Array.map(({ userId, accounts }) => [userId, accounts] as const),
+        ),
+      ),
+    ),
+  );
+
+const linkedPeopleOf = (
   scope: GuildScope,
   input: typeof ListLinkedAccountsInput.Type,
 ): Effect.Effect<Output> =>
@@ -89,7 +106,7 @@ const listLinkedAccounts =
       if (scope.guild.consent !== "consented") {
         return structuredResult(NOT_CONSENTED);
       }
-      return linkedAccountsOf(scope, input).pipe(Effect.flatMap(structuredResult));
+      return linkedPeopleOf(scope, input).pipe(Effect.flatMap(structuredResult));
     });
 
 export const registerListLinkedAccounts = toolRegistration({

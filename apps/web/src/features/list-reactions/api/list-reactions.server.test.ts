@@ -2,7 +2,7 @@ import { it } from "@effect/vitest";
 import { setupNetwork } from "@msw/cloudflare";
 import { runInDurableObject } from "cloudflare:test";
 import { RouteBases, Routes } from "discord-api-types/v10";
-import { DateTime, Effect, Option, Schema } from "effect";
+import { Array, DateTime, Effect, Option, pipe, Schema } from "effect";
 import { http, HttpResponse } from "msw";
 import { afterAll, beforeAll, expect } from "vite-plus/test";
 
@@ -48,6 +48,7 @@ const SEEDED_REACTIONS: readonly (readonly (string | number)[])[] = [
 
 const Page = Schema.Struct({
   ingest: Schema.String,
+  nextCursor: Schema.optionalKey(Schema.String),
   reactionTotal: Schema.Int,
   reactions: Schema.Array(
     Schema.Struct({ messageId: Schema.String, userId: Schema.String, emoji: Schema.String }),
@@ -63,6 +64,12 @@ const listReactions = (args: Readonly<Record<string, unknown>>): Effect.Effect<t
     Effect.map(({ structured }) => Option.getOrUndefined(structured)),
     Effect.flatMap(decodePage),
     Effect.orDie,
+  );
+
+const usersOf = (reactions: (typeof Page.Type)["reactions"]): readonly string[] =>
+  pipe(
+    reactions,
+    Array.map(({ userId }) => userId),
   );
 
 const seedReactions = (): Promise<void> =>
@@ -171,5 +178,24 @@ it.effect("returns nothing before the admin consents", () =>
   Effect.gen(function* notConsented() {
     const { ingest, reactionTotal } = yield* listReactions({ serverId: GUILD_B });
     expect({ ingest, reactionTotal }).toStrictEqual({ ingest: "notConsented", reactionTotal: 0 });
+  }),
+);
+
+it.effect("pages with the cursor it hands out and ends without one", () =>
+  Effect.gen(function* paged() {
+    const first = yield* listReactions({ serverId: GUILD_A, limit: 1 });
+    const second = yield* listReactions({
+      serverId: GUILD_A,
+      limit: 1,
+      cursor: first.nextCursor,
+    });
+    expect({
+      first: usersOf(first.reactions),
+      second: usersOf(second.reactions),
+      hasMore: [
+        Option.isSome(Option.fromUndefinedOr(first.nextCursor)),
+        Option.isSome(Option.fromUndefinedOr(second.nextCursor)),
+      ],
+    }).toStrictEqual({ first: [CAROL], second: [ALICE], hasMore: [true, false] });
   }),
 );

@@ -44,6 +44,7 @@ const Session = Schema.Struct({
 const Sessions = Schema.Struct({
   ingest: Schema.String,
   total: Schema.Int,
+  nextCursor: Schema.optionalKey(Schema.String),
   sessions: Schema.Array(Session),
 });
 const decodeSessions = Schema.decodeUnknownEffect(Sessions);
@@ -121,5 +122,30 @@ it.effect("returns no sessions before the admin consents", () =>
   Effect.gen(function* notConsented() {
     const { ingest, sessions } = yield* listVoice({ serverId: GUILD_B });
     expect({ ingest, sessions }).toStrictEqual({ ingest: "notConsented", sessions: [] });
+  }),
+);
+
+it.effect("pages with the nextCursor until the last page has none", () =>
+  Effect.gen(function* paged() {
+    const first = yield* listVoice({ serverId: GUILD_A, limit: 1 });
+    const second = yield* listVoice({ serverId: GUILD_A, limit: 1, cursor: first.nextCursor });
+    expect({
+      first: usersOf(first.sessions),
+      second: usersOf(second.sessions),
+      hasMore: [
+        Option.isSome(Option.fromUndefinedOr(first.nextCursor)),
+        Option.isSome(Option.fromUndefinedOr(second.nextCursor)),
+      ],
+    }).toStrictEqual({ first: [BOB], second: [ALICE], hasMore: [true, false] });
+  }),
+);
+
+it.effect("refuses a cursor that was not made by this tool", () =>
+  Effect.gen(function* forged() {
+    const { isError } = yield* callTool({
+      name: "list_voice_sessions",
+      args: { serverId: GUILD_A, cursor: "not-a-cursor" },
+    });
+    expect(isError).toBe(true);
   }),
 );

@@ -1,6 +1,6 @@
 # mirucord
 
-Follow `masseater-ecosystem`, a skill in masseater/skills that says which skills to load in each situation. `vp install` puts the skills in `.agents/skills/`.
+Follow `masseater-style`, a skill in masseater/skills that says which skills to load in each situation. `vp install` puts the skills in `.agents/skills/`.
 
 mirucord is a hosted service providing read-only MCP servers for Discord servers. Production runs at `https://mirucord.masseater.dev`.
 

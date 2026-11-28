@@ -28,3 +28,14 @@ export const deleteByIds = ({
     ids,
     run: (chunk) => db.delete(table).where(inArray(table.id, [...chunk])),
   });
+
+export const deleteAlong = ({
+  table,
+  ids,
+  forget,
+}: Readonly<{
+  table: typeof channel | typeof message;
+  ids: readonly string[];
+  forget: Effect.Effect<void>;
+}>): Effect.Effect<void> =>
+  Effect.all([forget, deleteByIds({ table, ids })], { concurrency: 1, discard: true });

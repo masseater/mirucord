@@ -2,13 +2,14 @@ import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
 import { DASHBOARD_PATH, SERVICE_NAME } from "#/shared/config";
+import { Header } from "#/shared/ui/header";
 
 const BRAND = SERVICE_NAME;
 const SIGN_IN = "ログイン";
 const UNOFFICIAL = "Discord 非公式";
 
 export const TitleBar = (): ReactNode => (
-  <header className="title-bar bg-dc-rail sticky top-0 flex h-10 items-center justify-between px-3">
+  <Header layout="chat">
     <a href="#top" className="text-dc-bright flex items-center gap-2 font-bold no-underline">
       <Mascot className="size-6" />
       {BRAND}
@@ -20,5 +21,5 @@ export const TitleBar = (): ReactNode => (
     >
       {SIGN_IN}
     </a>
-  </header>
+  </Header>
 );

@@ -6,7 +6,7 @@ import { channel, db } from "#/shared/db/index.server";
 
 import { columnsOf } from "./bot-access.server.ts";
 import type { ChannelSync } from "./channel-listing.server.ts";
-import { deleteByIds, inIdChunks } from "./id-chunks.server.ts";
+import { deleteAlong, inIdChunks } from "./id-chunks.server.ts";
 import { forgetChannelMessages } from "./message-rows.server.ts";
 
 type StoredRow = Readonly<{
@@ -56,10 +56,14 @@ const loadStored = (guildId: string): Effect.Effect<readonly StoredRow[]> =>
   );
 
 const removeChannels = (guildId: string, ids: readonly string[]): Effect.Effect<void> =>
-  Effect.forEach(ids, (channelId) => forgetChannelMessages({ guildId, channelId }), {
-    concurrency: 1,
-    discard: true,
-  }).pipe(Effect.andThen(deleteByIds({ table: channel, ids })), Effect.asVoid);
+  deleteAlong({
+    table: channel,
+    ids,
+    forget: Effect.forEach(ids, (channelId) => forgetChannelMessages({ guildId, channelId }), {
+      concurrency: 1,
+      discard: true,
+    }),
+  });
 
 const pauseChannels = (ids: readonly string[]): Effect.Effect<void> =>
   DateTime.now.pipe(

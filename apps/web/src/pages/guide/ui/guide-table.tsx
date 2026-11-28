@@ -17,24 +17,25 @@ const bodyCell = (column: string | undefined, cell: string): ReactNode => (
   </td>
 );
 
-const bodyRow = (head: Row, row: Row): ReactNode => (
-  <tr key={pipe(row, Array.join("|"))} className="border-dc-line text-dc-muted border-b align-top">
-    {pipe(
-      row,
-      Array.map((cell, column) => bodyCell(head[column], cell)),
-    )}
+const HEAD_LINE = "border-dc-line text-dc-bright border-b";
+const BODY_LINE = "border-dc-line text-dc-muted border-b align-top";
+
+type Line = Readonly<{
+  className: string;
+  cell: (text: string, column: number) => ReactNode;
+}>;
+
+const tableLine = (cells: Row, { className, cell }: Line): ReactNode => (
+  <tr key={pipe(cells, Array.join("|"))} className={className}>
+    {pipe(cells, Array.map(cell))}
   </tr>
 );
 
+const bodyRow = (head: Row, row: Row): ReactNode =>
+  tableLine(row, { className: BODY_LINE, cell: (text, column) => bodyCell(head[column], text) });
+
 const tableHead = (head: Row): ReactNode => (
-  <thead>
-    <tr className="border-dc-line text-dc-bright border-b">
-      {pipe(
-        head,
-        Array.map((cell) => headCell(cell)),
-      )}
-    </tr>
-  </thead>
+  <thead>{tableLine(head, { className: HEAD_LINE, cell: headCell })}</thead>
 );
 
 export const GuideTable = ({

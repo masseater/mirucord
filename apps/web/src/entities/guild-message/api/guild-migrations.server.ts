@@ -1,3 +1,4 @@
+import { drizzle } from "drizzle-orm/durable-sqlite";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { migrate } from "drizzle-orm/durable-sqlite/migrator";
 import { Array, pipe, Record, String as Str } from "effect";
@@ -18,4 +19,10 @@ const GUILD_MIGRATIONS: Readonly<Record<string, string>> = Record.fromEntries(
 
 export const migrateGuild = (db: DrizzleSqliteDODatabase): void => {
   migrate(db, { migrations: GUILD_MIGRATIONS });
+};
+
+export const openGuild = (storage: DurableObjectStorage): DrizzleSqliteDODatabase => {
+  const db = drizzle(storage);
+  migrateGuild(db);
+  return db;
 };

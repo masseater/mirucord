@@ -20,7 +20,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: masseater/typescript-template/.github/actions/update-branches@0aec18eb421e6fb6160d7342470e2a24fe61069a
+      - uses: masseater/typescript-template/.github/actions/update-branches@b74bee8855f746ffef345b440b371fa6667dc580
 
   ci-telemetry:
     needs: [update]

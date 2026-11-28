@@ -41,6 +41,7 @@ export const guildMessage = sqliteTable(
     index("message_version_idx").on(table.version),
     index("message_unembedded_idx").on(table.createdAt).where(isNull(table.vector)),
     index("message_vector_at_idx").on(table.vectorAt),
+    index("message_untokenized_idx").on(table.id).where(isNull(table.tokens)),
   ],
 );
 

@@ -187,7 +187,10 @@ const stalestTarget = (
   const ledger = searchLedger(db);
   const ranked = pipe(
     sealed,
-    Array.map((segment) => ({ segment, pending: ledger.count(staleCondition(segment)) })),
+    Array.map((segment) => ({
+      segment,
+      pending: ledger.count({ condition: staleCondition(segment), limit: RECENT_LIMIT }),
+    })),
     Array.filter(({ segment, pending }) => pending > NONE || overdue.has(segment.name)),
   );
   return Option.map(Array.head(Array.sort(ranked, byPendingDesc)), ({ segment }) => segment);
@@ -201,7 +204,10 @@ const rebuildOf = (db: DrizzleSqliteDODatabase, segment: Segment): Plan => ({
 
 const planOf = (db: DrizzleSqliteDODatabase, now: number): Plan => {
   const sealed = sealedOf(searchLedger(db).segments());
-  const pending = searchLedger(db).count(pendingCondition(sealed));
+  const pending = searchLedger(db).count({
+    condition: pendingCondition(sealed),
+    limit: RECENT_LIMIT + NEXT,
+  });
   if (pending <= RECENT_LIMIT && overdueNames(db, sealed, now).size === NONE) {
     return RECENT_ONLY;
   }

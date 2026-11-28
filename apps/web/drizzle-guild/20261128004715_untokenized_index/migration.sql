@@ -1,0 +1,1 @@
+CREATE INDEX `message_untokenized_idx` ON `message` (`id`) WHERE ("message"."tokens" is null);

@@ -19,7 +19,7 @@ jobs:
     steps:
       - id: lockfile
         if: github.event_name == 'pull_request'
-        uses: masseater/typescript-template/.github/actions/pr-changed@0aec18eb421e6fb6160d7342470e2a24fe61069a
+        uses: masseater/typescript-template/.github/actions/pr-changed@8d4f43b0f80f90cdd7fdf26a8a6f7e92bac29fb1
         with:
           file: pnpm-lock.yaml
           github-token: ${{ github.token }}

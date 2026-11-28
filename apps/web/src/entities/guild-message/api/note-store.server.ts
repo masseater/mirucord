@@ -3,11 +3,11 @@ import { Array, Duration, Option, pipe, String as Str } from "effect";
 
 import { guildMessage, SEALED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
 import { phraseNote } from "#/entities/guild-message/model/phrase-note.schema";
-import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 import type { MessageSide } from "#/shared/discord/index.server";
 
 import { deleteIn, inChunks } from "./bound-chunks.server.ts";
 import { PhraseStore } from "./phrase-store.server.ts";
+import type { PhraseUse } from "./phrase-use-ledger.server.ts";
 import type {
   NoteClaim,
   NoteSample,
@@ -29,9 +29,7 @@ const SAMPLE_SCAN = 60;
 const AROUND = 2;
 const SETTLED_NOTES = ["common", "server"] as const satisfies readonly NoteStatus[];
 
-type Use = Readonly<{ messageId: string; channelId: string; authorId: string }>;
-
-const spreadOf = (uses: readonly Use[]): readonly Use[] => {
+const spreadOf = (uses: readonly PhraseUse[]): readonly PhraseUse[] => {
   const distinct = Array.dedupeWith(uses, (left, right) => left.authorId === right.authorId);
   const picked = new Set(
     pipe(
@@ -161,24 +159,11 @@ export abstract class NoteStore extends PhraseStore {
   }
 
   public phraseSamples({ phrases, channelIds }: SampleRequest): readonly PhraseSamples[] {
-    const channels = new Set(channelIds);
     return pipe(
       phrases,
       Array.map((phrase) => {
-        const uses = this.db
-          .select({
-            messageId: phraseUse.messageId,
-            channelId: phraseUse.channelId,
-            authorId: phraseUse.authorId,
-          })
-          .from(phraseUse)
-          .where(eq(phraseUse.phrase, phrase))
-          .orderBy(desc(phraseUse.createdAt))
-          .limit(SAMPLE_SCAN)
-          .all();
         const samples = pipe(
-          uses,
-          Array.filter(({ channelId }) => channels.has(channelId)),
+          this.uses.recent({ phrase, channelIds, scan: SAMPLE_SCAN }),
           spreadOf,
           Array.flatMap(({ messageId }) => Option.toArray(this.sampleAround(messageId))),
         );

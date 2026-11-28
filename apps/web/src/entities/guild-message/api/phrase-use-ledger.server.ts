@@ -1,3 +1,4 @@
+import { desc, eq } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { Array, pipe } from "effect";
 
@@ -42,12 +43,43 @@ const record = (db: DrizzleSqliteDODatabase, written: readonly ExtractedPhrases[
   }
 };
 
+export type PhraseUse = Readonly<{ messageId: string; channelId: string; authorId: string }>;
+
+export type RecentUses = Readonly<{
+  phrase: string;
+  channelIds: readonly string[];
+  scan: number;
+}>;
+
+const recent = (
+  db: DrizzleSqliteDODatabase,
+  { phrase, channelIds, scan }: RecentUses,
+): readonly PhraseUse[] => {
+  const visible = new Set(channelIds);
+  return pipe(
+    db
+      .select({
+        messageId: phraseUse.messageId,
+        channelId: phraseUse.channelId,
+        authorId: phraseUse.authorId,
+      })
+      .from(phraseUse)
+      .where(eq(phraseUse.phrase, phrase))
+      .orderBy(desc(phraseUse.createdAt))
+      .limit(scan)
+      .all(),
+    Array.filter(({ channelId }) => visible.has(channelId)),
+  );
+};
+
 export type PhraseUseLedger = Readonly<{
+  recent: (request: RecentUses) => readonly PhraseUse[];
   record: (written: readonly ExtractedPhrases[]) => void;
   forget: (column: PhraseColumn, values: readonly string[]) => void;
 }>;
 
 export const phraseUseLedger = (db: DrizzleSqliteDODatabase): PhraseUseLedger => ({
+  recent: (request) => recent(db, request),
   record: (written) => {
     record(db, written);
   },

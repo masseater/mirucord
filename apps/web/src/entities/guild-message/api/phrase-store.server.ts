@@ -64,7 +64,7 @@ const EMPTY_LEDGER: Ledger = {
 const inWindow = (now: number): SQL => gte(guildMessage.createdAt, now - PHRASE_WINDOW_MS);
 
 export abstract class PhraseStore extends MessageStore {
-  readonly #uses = phraseUseLedger(this.db);
+  protected readonly uses = phraseUseLedger(this.db);
 
   protected ledgerOf(): Ledger {
     const found = this.db
@@ -94,7 +94,7 @@ export abstract class PhraseStore extends MessageStore {
   }
 
   protected override recordPhrases(written: readonly ExtractedPhrases[]): void {
-    this.#uses.record(written);
+    this.uses.record(written);
   }
 
   protected forgetStats(): void {
@@ -105,7 +105,7 @@ export abstract class PhraseStore extends MessageStore {
 
   protected override forgetPhrases(column: PhraseColumn, values: readonly string[]): void {
     this.forgetStats();
-    this.#uses.forget(column, values);
+    this.uses.forget(column, values);
   }
 
   public unphrased(now: number, limit: number): readonly UnphrasedMessage[] {
@@ -188,20 +188,11 @@ export abstract class PhraseStore extends MessageStore {
     phrases: readonly string[],
     channelIds: readonly string[],
   ): readonly PhraseExample[] {
-    const channels = new Set(channelIds);
     return pipe(
       phrases,
       Array.map((phrase) => {
-        const uses = this.db
-          .select({ messageId: phraseUse.messageId, channelId: phraseUse.channelId })
-          .from(phraseUse)
-          .where(eq(phraseUse.phrase, phrase))
-          .orderBy(desc(phraseUse.createdAt))
-          .limit(EXAMPLE_SCAN)
-          .all();
         const messageIds = pipe(
-          uses,
-          Array.filter(({ channelId }) => channels.has(channelId)),
+          this.uses.recent({ phrase, channelIds, scan: EXAMPLE_SCAN }),
           Array.take(EXAMPLES_PER_PHRASE),
           Array.map(({ messageId }) => messageId),
         );

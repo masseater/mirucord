@@ -23,6 +23,23 @@ export const inChunks: {
   ): readonly Row[];
 } = Function.dual(DATA_FIRST_ARITY, inChunksDataFirst);
 
+export const firstFound = <Row>({
+  options,
+  fallback,
+}: Readonly<{
+  options: readonly Option.Option<readonly Row[]>[];
+  fallback: () => readonly Row[];
+}>): readonly Row[] => pipe(Array.getSomes(options), Array.head, Option.getOrElse(fallback));
+
+export const inChunksOf = <Row>({
+  values,
+  query,
+}: Readonly<{
+  values: readonly string[] | null;
+  query: (chunk: readonly string[]) => readonly Row[];
+}>): Option.Option<readonly Row[]> =>
+  Option.map(Option.fromNullOr(values), (listed) => inChunks(listed, query));
+
 const NO_COLUMNS = 0;
 const MIN_ROWS = 1;
 

@@ -211,8 +211,8 @@ catalogs:
       specifier: 1.12.0
       version: 1.12.0
     '@r_masseater/msch':
-      specifier: 0.59.0
-      version: 0.59.0
+      specifier: 0.60.1
+      version: 0.60.1
     '@sapphire/bitfield':
       specifier: 2.0.0
       version: 2.0.0
@@ -417,7 +417,7 @@ importers:
         version: 0.73.7
       '@r_masseater/msch':
         specifier: 'catalog:'
-        version: 0.59.0(c17722e1e57a60213acb20e7858ed238)
+        version: 0.60.1(c17722e1e57a60213acb20e7858ed238)
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
         version: 0.6.1(e1f42f66439399a48e9dc87101747124)
@@ -3500,8 +3500,8 @@ packages:
       vite:
         optional: true
 
-  '@r_masseater/msch@0.59.0':
-    resolution: {integrity: sha512-kwjkPtBy7oh5O/wAr+xa3AtgHuE10jkb2Yo6acO63kGupBqEF2KqUBMob/tHsDysW6JquXvHlmKgm0gf2xrHnQ==}
+  '@r_masseater/msch@0.60.1':
+    resolution: {integrity: sha512-ZznoLSP0sdggF4NMcBMo3RFBHasD0OJ7EPCac9EN//tvzKrBQ+MyskUmY4CDahFJDwE+7Xkd4ELWz97kx4xhwA==}
     engines: {node: '>=26.13.1'}
     hasBin: true
     peerDependencies:
@@ -12234,7 +12234,7 @@ snapshots:
       - redis
       - utf-8-validate
 
-  '@r_masseater/msch@0.59.0(c17722e1e57a60213acb20e7858ed238)':
+  '@r_masseater/msch@0.60.1(c17722e1e57a60213acb20e7858ed238)':
     dependencies:
       '@commitlint/config-conventional': 21.2.4
       '@effect/platform-node': 4.1.5(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))

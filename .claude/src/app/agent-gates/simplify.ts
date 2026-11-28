@@ -73,4 +73,4 @@ const simplify = Effect.gen(function* simplify() {
   yield* report(worktree);
 });
 
-runHookWith(nodeServicesLayer)(simplify);
+runHookWith({ serviceName: "simplify", services: nodeServicesLayer })(simplify);

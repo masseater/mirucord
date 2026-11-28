@@ -9,7 +9,7 @@ const StopOutput = Schema.Struct({
   reason: Schema.String,
 });
 
-runHook(
+runHook("stop-gate")(
   Effect.gen(function* stopGate() {
     const vp = yield* localBin("vp");
     const verify = yield* runCommand(vp, ["run", "--log", "grouped", "verify"]);

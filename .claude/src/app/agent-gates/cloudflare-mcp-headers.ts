@@ -17,7 +17,7 @@ const cloudflareApi = CloudflareApiLive().pipe(
   Layer.provide(SecureRandom.layerWebCrypto),
 );
 
-runHookWith(cloudflareApi)(
+runHookWith({ serviceName: "cloudflare-mcp-headers", services: cloudflareApi })(
   Effect.gen(function* cloudflareMcpHeaders() {
     const resolve = yield* Credentials;
     const credentials = yield* resolve;

@@ -94,7 +94,7 @@ const reportDuplication = (
   });
 };
 
-runHook(
+runHook("post-edit")(
   Effect.gen(function* postEdit() {
     const input = yield* readHookInput(PostToolUseInput);
     const filePath = input.tool_input.file_path ?? "";

@@ -1,39 +1,36 @@
-import { runMain } from "@effect/platform-node/NodeRuntime";
-import { layer as nodeServicesLayer } from "@effect/platform-node/NodeServices";
+import { runMainWith } from "@r_masseater/node-main";
 import {
   Array as Arr,
-  Cause,
   Config,
   Effect,
-  Exit,
   FileSystem,
   Function as Fn,
   Layer,
-  Option,
   Path,
+  Runtime,
   Schema,
   Stdio,
   Stream,
 } from "effect";
-import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
+import type { Option } from "effect";
+import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import { ChildProcess, ChildProcessSpawner } from "effect/process";
 
 import { HookPlatform } from "./platform.ts";
 import type { CommandResult, Sink } from "./platform.ts";
 
+const EXIT_SUCCESS = 0;
+const EXIT_BLOCKING = 2;
+const DATA_FIRST_ARITY = 2;
+
 const taggedError = Schema.TaggedError;
 
 class HookBlocked extends taggedError<HookBlocked, { readonly brand: unique symbol }>()(
   "HookBlocked",
-  {
-    reason: Schema.String,
-  },
-) {}
-
-const EXIT_SUCCESS = 0;
-const EXIT_FAILURE = 1;
-const EXIT_BLOCKING = 2;
-const DATA_FIRST_ARITY = 2;
+  { message: Schema.String },
+) {
+  public override readonly [Runtime.errorExitCode] = EXIT_BLOCKING;
+}
 
 export const projectDir = Config.String("CLAUDE_PROJECT_DIR").pipe(Config.withDefault("."));
 
@@ -53,7 +50,7 @@ export const blockWhen = (reasons: readonly string[]): Effect.Effect<void, HookB
   if (!Arr.isReadonlyArrayNonEmpty(reasons)) {
     return Effect.void;
   }
-  return Effect.fail(HookBlocked.make({ reason: Arr.join(reasons, "\n") }));
+  return Effect.fail(HookBlocked.make({ message: Arr.join(reasons, "\n") }));
 };
 
 const writeTo = (sink: Sink, text: string): Effect.Effect<void, never, HookPlatform> =>
@@ -143,10 +140,6 @@ const platformLayer = Layer.effect(
   }),
 );
 
-const hookLayer = platformLayer.pipe(
-  Layer.provideMerge(Layer.mergeAll(nodeServicesLayer, FetchHttpClient.layer)),
-);
-
 export const runCommand: {
   (args: readonly string[]): (command: string) => Effect.Effect<CommandResult, never, HookPlatform>;
   (command: string, args: readonly string[]): Effect.Effect<CommandResult, never, HookPlatform>;
@@ -174,48 +167,20 @@ export const getJson: {
   }),
 );
 
-const findBlocked = <Failure>(cause: Cause.Cause<Failure>): Option.Option<HookBlocked> =>
-  Cause.findErrorOption(cause).pipe(
-    Option.filter((error): error is Failure & HookBlocked => Schema.is(HookBlocked)(error)),
-  );
+type RunHook<Provided> = <Value, Failure>(
+  program: Effect.Effect<Value, Failure, HookPlatform | Provided>,
+) => void;
 
-const exitCodeOf = <Value, Failure>(exit: Exit.Exit<Value, Failure>): number => {
-  if (Exit.isSuccess(exit)) {
-    return EXIT_SUCCESS;
-  }
-  if (exit.cause.pipe(findBlocked, Option.isSome)) {
-    return EXIT_BLOCKING;
-  }
-  return EXIT_FAILURE;
-};
+export const runHookWith = <Provided, LayerFailure>({
+  serviceName,
+  services,
+}: Readonly<{
+  serviceName: string;
+  services: Layer.Layer<Provided, LayerFailure, HookPlatform>;
+}>): RunHook<Provided> =>
+  runMainWith({ serviceName, services: Layer.provideMerge(services, platformLayer) });
 
-const reportFailure = <Failure>(
-  cause: Cause.Cause<Failure>,
-): Effect.Effect<void, never, HookPlatform> =>
-  writeTo(
-    "stderr",
-    `${Option.match(findBlocked(cause), {
-      onNone: () => Cause.pretty(cause),
-      onSome: (blocked) => blocked.reason,
-    })}\n`,
-  );
-
-export const runHookWith =
-  <Provided, LayerFailure>(layer: Layer.Layer<Provided, LayerFailure, HookPlatform>) =>
-  <Value, Failure>(program: Effect.Effect<Value, Failure, HookPlatform | Provided>): void => {
-    const reported = program.pipe(Effect.tapCause(reportFailure));
-    const main = Layer.build(Layer.provideMerge(layer, hookLayer)).pipe(
-      Effect.flatMap((context) => Effect.provideContext(reported, context)),
-      Effect.scoped,
-    );
-    runMain(main, {
-      disableErrorReporting: true,
-      teardown: (exit, onExit) => {
-        onExit(exitCodeOf(exit));
-      },
-    });
-  };
-
-export const runHook = runHookWith(Layer.empty);
+export const runHook = (serviceName: string): RunHook<never> =>
+  runHookWith({ serviceName, services: Layer.empty });
 
 export type { HookBlocked };

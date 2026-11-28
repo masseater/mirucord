@@ -57,7 +57,7 @@ const instructions = (current: string, release: typeof Release.Type): string => 
   );
 };
 
-runHook(
+runHook("template-release")(
   Effect.gen(function* templateRelease() {
     const dir = yield* projectDir;
     if (pipe(dir, Str.includes(WORKTREE_SEGMENT))) {

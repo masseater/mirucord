@@ -186,7 +186,7 @@ const simpleCommands = (line: Line): readonly Argv[] => {
   ];
 };
 
-runHook(
+runHook("block-pnpm")(
   Effect.gen(function* blockPnpm() {
     const input = yield* readHookInput(PreToolUseInput);
     const blocked = Option.exists(parse(input.tool_input.command ?? ""), (line) =>

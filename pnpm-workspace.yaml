@@ -55,6 +55,7 @@ catalog:
   "@types/react": 19.3.3
   "@types/react-dom": 19.3.0
   auth: 1.7.28
+  "@r_masseater/node-main": 0.2.1
 catalogs:
   stack:
     "@r_masseater/workers-tracing": 0.6.1

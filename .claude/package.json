@@ -11,6 +11,7 @@
     "@alchemy.run/cloudflare": "catalog:stack",
     "@distilled.cloud/cloudflare": "catalog:stack",
     "@effect/platform-node": "catalog:",
+    "@r_masseater/node-main": "catalog:",
     "@yarnpkg/parsers": "catalog:",
     "alchemy": "catalog:stack",
     "effect": "catalog:stack"

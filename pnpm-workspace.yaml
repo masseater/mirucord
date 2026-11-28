@@ -78,7 +78,7 @@ catalogs:
     fallow: 3.48.0
     fallow-similar-code: 3.48.0
     fallow-type-aware: 3.48.0
-    renovate: 44.263.1
+    renovate: 44.263.3
     tailwindcss: 4.3.5
     tsrs: 7.1.0-beta.tsrs5
     typescript: 7.1.0-beta

@@ -10,10 +10,10 @@ registry: https://npm.flatt.tech/
 catalogMode: prefer
 
 catalog:
-  "@r_masseater/msch": 0.57.1
-  "@cloudflare/workers-types": 5.20261124.1
+  "@r_masseater/msch": 0.58.0
+  "@cloudflare/workers-types": 5.20261124.2
   "@effect/platform-node": 4.1.5
-  "@types/node": 26.6.6
+  "@types/node": 26.6.7
   vite: npm:@voidzero-dev/vite-plus-core@8.3.8001
   "@tanstack/react-query-devtools": 5.108.4
   "@vitejs/plugin-react": 6.3.0
@@ -22,9 +22,9 @@ catalog:
   "@modelcontextprotocol/server": 2.4.0
   "@sapphire/bitfield": 2.0.0
   discord-api-types: 0.38.60
-  "@better-auth/mcp": 1.7.27
+  "@better-auth/mcp": 1.7.28
   jose: 6.2.18
-  "@better-auth/oauth-provider": 1.7.27
+  "@better-auth/oauth-provider": 1.7.28
   simple-icons: 16.38.1
   class-variance-authority: 0.7.1
   clsx: 2.1.1
@@ -54,7 +54,7 @@ catalogs:
     "@alchemy.run/fly": 2.0.0-beta.87
     "@alchemy.run/github": 2.0.0-beta.87
     alchemy: 2.0.0-beta.87
-    better-auth: 1.7.27
+    better-auth: 1.7.28
     drizzle-kit: 1.0.0-rc.5-ab785fc
     drizzle-orm: 1.0.0-rc.5-ab785fc
     effect: 4.1.5
@@ -62,7 +62,7 @@ catalogs:
     fallow: 3.48.0
     fallow-similar-code: 3.48.0
     fallow-type-aware: 3.48.0
-    renovate: 44.260.2
+    renovate: 44.261.2
     tailwindcss: 4.3.5
     tsrs: 7.1.0-beta.tsrs5
     typescript: 7.1.0-beta

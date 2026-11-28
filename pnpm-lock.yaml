@@ -205,8 +205,8 @@ catalogs:
       specifier: 0.2.0
       version: 0.2.0
     '@r_masseater/msch':
-      specifier: 0.58.0
-      version: 0.58.0
+      specifier: 0.58.1
+      version: 0.58.1
     '@sapphire/bitfield':
       specifier: 2.0.0
       version: 2.0.0
@@ -356,6 +356,7 @@ overrides:
   glob@>=9.0.0 <=14.0.1: ^14.0.2
   minimatch@<11.0.1: ^11.0.1
   katex@>=0.11.0 <0.18.2: ^0.19.0
+  '@r_masseater/vite-plus-adopt>@r_masseater/h56m': ^0.3.0
 
 importers:
 
@@ -372,7 +373,7 @@ importers:
         version: 0.73.7
       '@r_masseater/msch':
         specifier: 'catalog:'
-        version: 0.58.0(210833961883687ee76438cfc5937429)
+        version: 0.58.1(c17722e1e57a60213acb20e7858ed238)
       '@r_masseater/workers-tracing':
         specifier: catalog:stack
         version: 0.6.1(e1f42f66439399a48e9dc87101747124)
@@ -3430,13 +3431,6 @@ packages:
       vite: '*'
       vite-plus: '>=1.8.0'
 
-  '@r_masseater/h56m-linux-x64-gnu@0.2.0':
-    resolution: {integrity: sha512-G/IFAZetPuHc3UOE2ppaxtXLfNb5mqp4ZgdKAcRdruroreidwIIHvrXLSfUnkw7xkXTsCSqpjLmDbcQ7LDlhdA==}
-    engines: {node: v26.13.1}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
-
   '@r_masseater/h56m-linux-x64-gnu@0.3.0':
     resolution: {integrity: sha512-wINuFfR3+sQUN+fePy+F3cnULZ2VTN1nOIOmWKvDdFTp6ACzi8WePvmqNwf/SDoubqSD4eyapmRfME5TEpIujg==}
     engines: {node: '>=26.13.1'}
@@ -3444,31 +3438,11 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  '@r_masseater/h56m-win32-x64-msvc@0.2.0':
-    resolution: {integrity: sha512-MjvgOrdUw5Oa62jVFy5FAS3pDGLC/x0crGEyH6c6eI1OjYTdSJDA90bx+jtBf94m73Ndnwo5nwjDtXgvztjB8g==}
-    engines: {node: v26.13.1}
-    cpu: [x64]
-    os: [win32]
-
   '@r_masseater/h56m-win32-x64-msvc@0.3.0':
     resolution: {integrity: sha512-Q4XQaVc0v8Xl4PnH4eno1TOf2Y984usjDBnEbdyzj58+G4VoPWocc48kjCZo40Dz217Ki7kpIBMyGRbP/TeCRQ==}
     engines: {node: '>=26.13.1'}
     cpu: [x64]
     os: [win32]
-
-  '@r_masseater/h56m@0.2.0':
-    resolution: {integrity: sha512-22rMtXOBbJWFbNFlooXj6JEUca44886FscMWmJ/aQO5MinNw7jd+2g1Z8yD8pkIFj8J9gBSQsIvH4gHvDgqwzA==}
-    engines: {node: v26.13.1}
-    hasBin: true
-    peerDependencies:
-      effect: ^4.1.2
-      vite: '*'
-      vite-plus: '>=1.5.0'
-    peerDependenciesMeta:
-      vite:
-        optional: true
-      vite-plus:
-        optional: true
 
   '@r_masseater/h56m@0.3.0':
     resolution: {integrity: sha512-2W99Qih77K8KWVUfzKsquiItdnfxzuyciYnHziUfMwOUnI+tGgATENQGR1y2hRHU1kXsxfA6+OPo/oRNDqhfCQ==}
@@ -3482,8 +3456,8 @@ packages:
       vite:
         optional: true
 
-  '@r_masseater/msch@0.58.0':
-    resolution: {integrity: sha512-0MNf1UIRpkiA6T7VSNro0pOA0o4u45DS59NSSzToQpw7Uw133EyQ64hTIldNFQR++d24tQv1D2OjHaPir9V6DA==}
+  '@r_masseater/msch@0.58.1':
+    resolution: {integrity: sha512-3c9duUhU7tWGISN7WuyatY11cwIEgwZGNbiVdMOf/cSJc0avDmz9TIbx/tpmzQwlO5nDGqcwiGc2ucW3C15ipA==}
     engines: {node: '>=26.13.1'}
     hasBin: true
     peerDependencies:
@@ -3525,17 +3499,32 @@ packages:
       minimatch:
         optional: true
 
-  '@r_masseater/vite-plus-adopt@0.13.0':
-    resolution: {integrity: sha512-FN8SPAlomGO31syWeZChx0oOq8awbH1Va6E9ru19nQO2SnPST39ajwUS64Fe+1OGovaIAINvdmSRjdlnnTGkXg==}
+  '@r_masseater/vite-plus-adopt@0.14.0':
+    resolution: {integrity: sha512-NLX+2Ni1cEWkP6gjQ8yanLMQ0Rar54wGcJ6mW8gbcn2NjDxUoGag5mKksVyggt7wVM4V6FNbSEaQeES3d3g/9g==}
     engines: {node: '>=26.13.1'}
     hasBin: true
     peerDependencies:
+      '@andrewbranch/untar.js': '>=1.0.4'
+      '@loaderkit/resolve': '>=1.0.6'
+      cjs-module-lexer: '>=2.3.0'
       effect: ^4.1.0
+      fflate: '>=0.8.3'
       typescript: '>=7.1.0-beta'
+      validate-npm-package-name: '>=8.0.0'
       vite: '*'
       vite-plus: '>=1.8.0'
     peerDependenciesMeta:
+      '@andrewbranch/untar.js':
+        optional: true
+      '@loaderkit/resolve':
+        optional: true
+      cjs-module-lexer:
+        optional: true
+      fflate:
+        optional: true
       typescript:
+        optional: true
+      validate-npm-package-name:
         optional: true
 
   '@r_masseater/wism-linux-x64-gnu@0.4.0':
@@ -9724,7 +9713,8 @@ snapshots:
       effect: 4.1.5
     optional: true
 
-  '@andrewbranch/untar.js@1.0.4': {}
+  '@andrewbranch/untar.js@1.0.4':
+    optional: true
 
   '@arcanis/slice-ansi@1.1.1':
     dependencies:
@@ -10311,7 +10301,8 @@ snapshots:
 
   '@borewit/text-codec@0.2.2': {}
 
-  '@braidai/lang@1.1.2': {}
+  '@braidai/lang@1.1.2':
+    optional: true
 
   '@breejs/later@4.2.0': {}
 
@@ -11223,6 +11214,7 @@ snapshots:
   '@loaderkit/resolve@1.0.6':
     dependencies:
       '@braidai/lang': 1.1.2
+    optional: true
 
   '@modelcontextprotocol/core@2.4.0':
     dependencies:
@@ -12178,31 +12170,11 @@ snapshots:
       - redis
       - utf-8-validate
 
-  '@r_masseater/h56m-linux-x64-gnu@0.2.0':
-    optional: true
-
   '@r_masseater/h56m-linux-x64-gnu@0.3.0':
-    optional: true
-
-  '@r_masseater/h56m-win32-x64-msvc@0.2.0':
     optional: true
 
   '@r_masseater/h56m-win32-x64-msvc@0.3.0':
     optional: true
-
-  '@r_masseater/h56m@0.2.0(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))':
-    dependencies:
-      '@effect/platform-node': 4.1.5(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))
-      effect: 4.1.5
-    optionalDependencies:
-      '@r_masseater/h56m-linux-x64-gnu': 0.2.0
-      '@r_masseater/h56m-win32-x64-msvc': 0.2.0
-      vite: '@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1)'
-      vite-plus: 1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1)
-    transitivePeerDependencies:
-      - bufferutil
-      - redis
-      - utf-8-validate
 
   '@r_masseater/h56m@0.3.0(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))':
     dependencies:
@@ -12218,7 +12190,7 @@ snapshots:
       - redis
       - utf-8-validate
 
-  '@r_masseater/msch@0.58.0(210833961883687ee76438cfc5937429)':
+  '@r_masseater/msch@0.58.1(c17722e1e57a60213acb20e7858ed238)':
     dependencies:
       '@commitlint/config-conventional': 21.2.4
       '@effect/platform-node': 4.1.5(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))
@@ -12236,7 +12208,7 @@ snapshots:
       '@r_masseater/oxlint-plugin-decision': 0.8.0(@effect/platform-node-shared@4.1.5(effect@4.1.5))(effect@4.1.5)(oxlint@1.94.0(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1)))
       '@r_masseater/oxlint-typed-rules': 0.5.0(effect@4.1.5)(typescript@7.1.0-beta)
       '@r_masseater/textlint-rule-preset-ja': 0.2.1(@r_masseater/y8@0.4.0(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(markdownlint@0.42.1(supports-color@7.2.0))(minimatch@11.0.9)(redis@6.2.1(@opentelemetry/api@1.10.0))(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1)))(effect@4.1.5)(minimatch@11.0.9)
-      '@r_masseater/vite-plus-adopt': 0.13.0(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))
+      '@r_masseater/vite-plus-adopt': 0.14.0(@andrewbranch/untar.js@1.0.4)(@loaderkit/resolve@1.0.6)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(cjs-module-lexer@2.3.0)(effect@4.1.5)(fflate@0.8.3)(redis@6.2.1(@opentelemetry/api@1.10.0))(supports-color@7.2.0)(typescript@7.1.0-beta)(validate-npm-package-name@8.0.0)(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))
       '@r_masseater/wism': 0.4.0(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))
       '@r_masseater/y8': 0.4.0(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(markdownlint@0.42.1(supports-color@7.2.0))(minimatch@11.0.9)(redis@6.2.1(@opentelemetry/api@1.10.0))(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))
       '@shadcn/lint': 0.2.5(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))
@@ -12262,15 +12234,20 @@ snapshots:
       vite-plus: 1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1)
       yaml: 2.9.1
     transitivePeerDependencies:
+      - '@andrewbranch/untar.js'
+      - '@loaderkit/resolve'
       - '@typescript-eslint/parser'
       - bufferutil
+      - cjs-module-lexer
       - eslint
+      - fflate
       - markdownlint
       - minimatch
       - oxlint
       - redis
       - supports-color
       - utf-8-validate
+      - validate-npm-package-name
 
   '@r_masseater/node-main@0.1.0(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))':
     dependencies:
@@ -12301,34 +12278,34 @@ snapshots:
     optionalDependencies:
       minimatch: 11.0.9
 
-  '@r_masseater/vite-plus-adopt@0.13.0(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))(supports-color@7.2.0)(typescript@7.1.0-beta)(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))':
+  '@r_masseater/vite-plus-adopt@0.14.0(@andrewbranch/untar.js@1.0.4)(@loaderkit/resolve@1.0.6)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(cjs-module-lexer@2.3.0)(effect@4.1.5)(fflate@0.8.3)(redis@6.2.1(@opentelemetry/api@1.10.0))(supports-color@7.2.0)(typescript@7.1.0-beta)(validate-npm-package-name@8.0.0)(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))':
     dependencies:
-      '@andrewbranch/untar.js': 1.0.4
       '@commitlint/format': 21.2.3
       '@commitlint/lint': 21.2.4
       '@commitlint/load': 21.2.4(typescript@7.1.0-beta)
       '@commitlint/types': 21.2.3
-      '@loaderkit/resolve': 1.0.6
       '@pnpm/logger': 1100.0.0
       '@pnpm/workspace.projects-reader': 1101.1.9(@pnpm/logger@1100.0.0)
       '@pnpm/workspace.workspace-manifest-reader': 1100.3.4
-      '@r_masseater/h56m': 0.2.0(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))
+      '@r_masseater/h56m': 0.3.0(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))(vite-plus@1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))
       '@r_masseater/node-main': 0.1.0(effect@4.1.5)(redis@6.2.1(@opentelemetry/api@1.10.0))
       '@textlint/config-loader': 16.1.3(supports-color@7.2.0)
       '@textlint/kernel': 16.1.3(supports-color@7.2.0)
       '@textlint/utils': 16.1.3
-      cjs-module-lexer: 2.3.0
       effect: 4.1.5
-      fflate: 0.8.3
       minimatch: 11.0.9
       semver: 7.8.6
       textlint: 16.1.3(supports-color@7.2.0)
-      validate-npm-package-name: 8.0.0
       vite: '@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1)'
       vite-plus: 1.8.0(@opentelemetry/api@1.10.0)(@types/node@26.6.7)(@vitest/ui@5.1.1)(esbuild@0.28.2)(jiti@2.7.0)(msw@3.0.7(@types/node@26.6.7)(@voidzero-dev/vite-plus-core@8.3.8001(@types/node@26.6.7)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1))(graphql@16.11.0)(supports-color@7.2.0)(typescript@7.1.0-beta))(terser@5.51.2)(typescript@7.1.0-beta)(yaml@2.9.1)
       yaml: 2.9.1
     optionalDependencies:
+      '@andrewbranch/untar.js': 1.0.4
+      '@loaderkit/resolve': 1.0.6
+      cjs-module-lexer: 2.3.0
+      fflate: 0.8.3
       typescript: 7.1.0-beta
+      validate-npm-package-name: 8.0.0
     transitivePeerDependencies:
       - bufferutil
       - redis
@@ -18633,7 +18610,8 @@ snapshots:
 
   validate-npm-package-name@7.0.2: {}
 
-  validate-npm-package-name@8.0.0: {}
+  validate-npm-package-name@8.0.0:
+    optional: true
 
   vfile-message@2.0.4:
     dependencies:

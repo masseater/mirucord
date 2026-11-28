@@ -1,4 +1,4 @@
-export { isGuildManager } from "./permissions";
-export type { Overwrite } from "./permissions";
-export { postableChannelIds, visibleChannelIds } from "./visibility";
-export type { GuildChannel, GuildSnapshot } from "./visibility";
+export { isGuildManager } from "./permissions.ts";
+export type { Overwrite } from "./permissions.ts";
+export { postableChannelIds, visibleChannelIds } from "./visibility.ts";
+export type { GuildChannel, GuildSnapshot } from "./visibility.ts";

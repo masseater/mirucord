@@ -1,7 +1,7 @@
 import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
-import { InlineText } from "./inline-text";
+import { InlineText } from "./inline-text.tsx";
 
 type Row = readonly string[];
 

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Mascot } from "#/shared/brand";
 import { cn } from "#/shared/lib/utils";
 
-import type { Author } from "./author";
+import type { Author } from "./author.ts";
 
 const AVATAR_SIZE = {
   md: "size-10 text-sm",

@@ -4,10 +4,10 @@ import type { ReactNode } from "react";
 import type { LinkedAccounts } from "#/pages/dashboard/api/linked-account-store.server";
 import type { PublicConnection } from "#/shared/discord/index.server";
 
-import { LinkConnectionsButton } from "./link-connections-button";
-import { LinkedAccountChooser } from "./linked-account-chooser";
-import { LinkedAccountList } from "./linked-account-list";
-import { WithdrawLinkedAccounts } from "./withdraw-linked-accounts";
+import { LinkConnectionsButton } from "./link-connections-button.tsx";
+import { LinkedAccountChooser } from "./linked-account-chooser.tsx";
+import { LinkedAccountList } from "./linked-account-list.tsx";
+import { WithdrawLinkedAccounts } from "./withdraw-linked-accounts.tsx";
 
 const LOAD = "Discord から読み込む";
 const RELOAD = "選び直す";

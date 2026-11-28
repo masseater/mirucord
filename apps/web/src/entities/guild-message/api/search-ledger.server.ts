@@ -6,8 +6,8 @@ import { Array, Option, pipe } from "effect";
 import { guildMessage } from "#/entities/guild-message/model/guild-message.schema";
 import { searchInvalid, searchSegment } from "#/entities/guild-message/model/search-segment.schema";
 
-import { rowChunks } from "./bound-chunks.server";
-import type { TrackedRow } from "./store-types";
+import { rowChunks } from "./bound-chunks.server.ts";
+import type { TrackedRow } from "./store-types.ts";
 
 export const EARLIEST = 0;
 const NONE = 0;

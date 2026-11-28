@@ -4,7 +4,7 @@ import { Array, Option, pipe } from "effect";
 
 import { guildMessage, SEALED_COLUMNS } from "#/entities/guild-message/model/guild-message.schema";
 
-import type { AuthorPage, SealedMessage } from "./store-types";
+import type { AuthorPage, SealedMessage } from "./store-types.ts";
 
 const AUTHOR_PAGE = 200;
 

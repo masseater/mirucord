@@ -6,7 +6,7 @@ import { MASCOT_NAME } from "#/shared/config";
 import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { GuildCard } from "./guild-card";
+import { GuildCard } from "./guild-card.tsx";
 
 const TITLE = "あなたが管理しているサーバー";
 const INVITE = `${MASCOT_NAME}をサーバーに招待`;

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { Mascot } from "#/shared/brand";
 
-import { SpeechBubble } from "./speech-bubble";
+import { SpeechBubble } from "./speech-bubble.tsx";
 
 export const MascotTip = ({ children }: Readonly<{ children: ReactNode }>): ReactNode => (
   <div className="flex items-end gap-3">

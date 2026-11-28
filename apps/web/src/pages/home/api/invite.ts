@@ -3,8 +3,8 @@ import { queryOptions } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 
-import { invite } from "./invite.server";
-import type { Invite } from "./invite.server";
+import { invite } from "./invite.server.ts";
+import type { Invite } from "./invite.server.ts";
 
 const getInvite = createServerFn({ method: "GET" }).handler(() => run(invite));
 

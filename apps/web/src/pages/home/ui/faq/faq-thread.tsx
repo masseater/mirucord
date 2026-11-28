@@ -6,8 +6,8 @@ import { SETUP_PROMPT } from "#/pages/home/ui/common/setup-prompt";
 import { memberAuthor } from "#/pages/home/ui/message/author";
 import { FREE_GUILD_LIMIT, MASCOT_NAME } from "#/shared/config";
 
-import { Closing } from "./closing";
-import { FaqPair } from "./faq-pair";
+import { Closing } from "./closing.tsx";
+import { FaqPair } from "./faq-pair.tsx";
 
 const NEW = "新着";
 

@@ -4,7 +4,7 @@ import type { Scene } from "#/pages/home/ui/common/scene";
 import { memberAuthor } from "#/pages/home/ui/message/author";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { SpecList } from "./spec-list";
+import { SpecList } from "./spec-list.tsx";
 
 export const SAFETY_SCENE: Scene = {
   channel: SAFETY_CHANNEL,

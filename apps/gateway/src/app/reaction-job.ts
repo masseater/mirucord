@@ -4,7 +4,7 @@ import { Discord } from "dfx";
 import type { GatewayMessagePollVoteDispatchData } from "discord-api-types/v10";
 import { Array, Match, Option, Schema } from "effect";
 
-import { mergeByGuild } from "./guild-batch";
+import { mergeByGuild } from "./guild-batch.ts";
 
 const Target = {
   guild_id: Schema.optionalKey(Schema.String),

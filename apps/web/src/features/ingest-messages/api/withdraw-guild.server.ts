@@ -4,8 +4,8 @@ import { Effect, Schema } from "effect";
 import { guildStore } from "#/entities/guild-message/index.server";
 import { channel, db, ingestConsent } from "#/shared/db/index.server";
 
-import { enqueueWithdrawal } from "./enqueue.server";
-import { purgeChannel } from "./purge-channel.server";
+import { enqueueWithdrawal } from "./enqueue.server.ts";
+import { purgeChannel } from "./purge-channel.server.ts";
 
 const taggedError = Schema.TaggedError;
 

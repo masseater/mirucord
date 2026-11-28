@@ -5,7 +5,7 @@ import { Message } from "#/pages/home/ui/message/message";
 import { PostHeading } from "#/pages/home/ui/message/post-heading";
 import { Reactions } from "#/pages/home/ui/message/reactions";
 
-import type { Scene } from "./scene";
+import type { Scene } from "./scene.ts";
 
 export const SceneMessage = ({ scene }: Readonly<{ scene: Scene }>): ReactNode => (
   <Message author={scene.author ?? BOT} time={scene.time}>

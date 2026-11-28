@@ -4,7 +4,7 @@ import { DiscordMemberSchema } from "@repo/shared-util-discord";
 import type { DiscordMember } from "@repo/shared-util-discord";
 import { Array, Option, pipe, Schema } from "effect";
 
-import { latestBy, mergeGrouped } from "./guild-batch";
+import { latestBy, mergeGrouped } from "./guild-batch.ts";
 
 const MEMBERS_PER_JOB = 100;
 

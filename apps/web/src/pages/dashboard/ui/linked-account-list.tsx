@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import type { PublicConnection } from "#/shared/discord/index.server";
 
-import { LinkedAccountLine } from "./linked-account-line";
+import { LinkedAccountLine } from "./linked-account-line.tsx";
 
 export const LinkedAccountList = ({
   connections,

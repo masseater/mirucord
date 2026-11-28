@@ -5,8 +5,8 @@ import { Effect, Option, Record, Schema } from "effect";
 import { sealMember } from "#/shared/crypto/index.server";
 import { db, role } from "#/shared/db/index.server";
 
-import { guildKeys } from "./scenario.test.support";
-import { guildStore } from "./store-stub.server";
+import { guildKeys } from "./scenario.test.support.ts";
+import { guildStore } from "./store-stub.server.ts";
 
 export type SeedMember = Readonly<{
   userId: string;

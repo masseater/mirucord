@@ -13,9 +13,9 @@ import {
   JOBS_OUTSIDE_SCOPE,
   READABLE,
   seedScenario,
-} from "./consent-scenario.test.support";
-import { refreshIngest, refreshPendingIngest } from "./consent-scope.server";
-import { ingestChannel } from "./ingest-channel.server";
+} from "./consent-scenario.test.support.ts";
+import { refreshIngest, refreshPendingIngest } from "./consent-scope.server.ts";
+import { ingestChannel } from "./ingest-channel.server.ts";
 
 const queuedBy = (
   guildId: string,

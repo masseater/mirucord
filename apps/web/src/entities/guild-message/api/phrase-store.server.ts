@@ -8,8 +8,8 @@ import { guildMessage, SEALED_COLUMNS } from "#/entities/guild-message/model/gui
 import { phraseLedger, phraseStats } from "#/entities/guild-message/model/phrase-stats.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 
-import { MessageStore } from "./message-store.server";
-import { phraseUseLedger } from "./phrase-use-ledger.server";
+import { MessageStore } from "./message-store.server.ts";
+import { phraseUseLedger } from "./phrase-use-ledger.server.ts";
 import type {
   ExtractedPhrases,
   PhraseColumn,
@@ -20,7 +20,7 @@ import type {
   SavedStats,
   SealedMessage,
   UnphrasedMessage,
-} from "./store-types";
+} from "./store-types.ts";
 
 export type Ledger = Readonly<{
   guildId: string | null;

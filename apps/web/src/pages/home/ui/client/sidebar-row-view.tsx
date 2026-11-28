@@ -4,9 +4,9 @@ import type { ReactNode } from "react";
 import { PLACES } from "#/pages/home/ui/common/places";
 import { Mascot } from "#/shared/brand";
 
-import { ChannelLink } from "./channel-link";
-import { PlainRow } from "./plain-row";
-import type { SidebarRow } from "./sidebar-categories";
+import { ChannelLink } from "./channel-link.tsx";
+import { PlainRow } from "./plain-row.tsx";
+import type { SidebarRow } from "./sidebar-categories.ts";
 
 export const SidebarRowView = ({ row }: Readonly<{ row: SidebarRow }>): ReactNode =>
   Match.value(row).pipe(

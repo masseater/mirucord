@@ -4,11 +4,11 @@ import { FLUSH_DELAY_MS } from "#/entities/guild-message/lib/search-layout";
 import { openGuildKey } from "#/shared/crypto/index.server";
 import { wrappedKeyOf } from "#/shared/db/index.server";
 
-import { scheduleSearch } from "./search-alarm.server";
-import type { Published } from "./search-alarm.server";
-import { embedPending } from "./vector-embed.server";
-import type { EmbedOutcome } from "./vector-embed.server";
-import { publishVectors } from "./vector-publish.server";
+import { scheduleSearch } from "./search-alarm.server.ts";
+import type { Published } from "./search-alarm.server.ts";
+import { embedPending } from "./vector-embed.server.ts";
+import type { EmbedOutcome } from "./vector-embed.server.ts";
+import { publishVectors } from "./vector-publish.server.ts";
 
 const NO_DELAY = 0;
 

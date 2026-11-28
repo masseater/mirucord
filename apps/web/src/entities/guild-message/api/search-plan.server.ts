@@ -15,8 +15,8 @@ import {
   staleCondition,
   uncoveredCondition,
   uncoveredFrom,
-} from "./search-ledger.server";
-import type { Range, Segment } from "./search-ledger.server";
+} from "./search-ledger.server.ts";
+import type { Range, Segment } from "./search-ledger.server.ts";
 
 const RECENT_LIMIT = 500;
 const RECENT_MAX = 2000;

@@ -1,7 +1,7 @@
 import type { GuideSection } from "#/pages/guide/model/guide-block";
 import { MASCOT_NAME, SERVICE_NAME } from "#/shared/config";
 
-import { guidePage } from "./guide-page";
+import { guidePage } from "./guide-page.tsx";
 
 const TITLE = "技術の話";
 const TIP = `${MASCOT_NAME}の中身を見せちゃうよ`;

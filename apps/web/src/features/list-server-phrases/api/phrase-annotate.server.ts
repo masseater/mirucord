@@ -15,7 +15,7 @@ import { SERVICE_NAME } from "#/shared/config";
 import type { MessageBody } from "#/shared/crypto/index.server";
 import { fetchBase64 } from "#/shared/http/index.server";
 
-import { narrowNote } from "./phrase-narrow.server";
+import { narrowNote } from "./phrase-narrow.server.ts";
 
 const MAX_TOKENS = 240;
 const RESERVED_INPUT_TOKENS = 3000;

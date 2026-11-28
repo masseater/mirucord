@@ -7,8 +7,8 @@ import { CATEGORY_TYPES, FORUM_TYPES } from "#/shared/discord";
 import { errorResult } from "#/shared/mcp";
 import { runTraced } from "#/shared/observability/index.server";
 
-import { resolveScope } from "./scope.server";
-import type { GuildScope, StoredChannel } from "./scope.server";
+import { resolveScope } from "./scope.server.ts";
+import type { GuildScope, StoredChannel } from "./scope.server.ts";
 
 const SERVER_NOT_FOUND = "Server not found";
 export const DISCORD_UNAVAILABLE = "Discord did not answer; try again later";

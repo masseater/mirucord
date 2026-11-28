@@ -6,7 +6,7 @@ import { expect } from "vite-plus/test";
 
 import { SITE_ORIGIN } from "#/shared/config";
 
-import { api } from "./api.server";
+import { api } from "./api.server.ts";
 
 const BAD_REQUEST = 400;
 

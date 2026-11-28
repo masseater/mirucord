@@ -6,11 +6,11 @@ import type { GuildScope } from "#/entities/scope/index.server";
 import { openGuildKey, openMessage, openSearchKey } from "#/shared/crypto/index.server";
 import type { MessageBody } from "#/shared/crypto/index.server";
 
-import { excerptOf } from "./phrase-annotate.server";
-import type { Note, NoteSubject } from "./phrase-annotate.server";
-import { phraseNotesOf } from "./phrase-notes.server";
-import { phraseStatsOf } from "./phrase-stats.server";
-import type { StoredPhrase, StoredStats } from "./phrase-stats.server";
+import { excerptOf } from "./phrase-annotate.server.ts";
+import type { Note, NoteSubject } from "./phrase-annotate.server.ts";
+import { phraseNotesOf } from "./phrase-notes.server.ts";
+import { phraseStatsOf } from "./phrase-stats.server.ts";
+import type { StoredPhrase, StoredStats } from "./phrase-stats.server.ts";
 
 export type PhraseView = Readonly<{
   kind: PhraseKind;

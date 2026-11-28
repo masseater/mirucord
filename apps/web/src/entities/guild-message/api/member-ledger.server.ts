@@ -5,8 +5,8 @@ import { Array, Option, pipe } from "effect";
 import { guildMember } from "#/entities/guild-message/model/guild-member.schema";
 import { BOUND_LIMIT } from "#/entities/guild-message/model/guild-message.schema";
 
-import { inChunks } from "./bound-chunks.server";
-import type { MemberLookup, MemberWrite, StoredMember } from "./member-types";
+import { inChunks } from "./bound-chunks.server.ts";
+import type { MemberLookup, MemberWrite, StoredMember } from "./member-types.ts";
 
 const STILL_HERE = Option.getOrNull(Option.none<number>());
 

@@ -12,7 +12,7 @@ import {
 import type { GuildScope } from "#/entities/scope/index.server";
 import { errorResult, Limit, limitOf, structuredResult, toolRegistration } from "#/shared/mcp";
 
-import { readAuthorMessages, readMessages } from "./stored-messages.server";
+import { readAuthorMessages, readMessages } from "./stored-messages.server.ts";
 
 const ReadMessagesInput = Schema.Struct({
   serverId: Schema.String,

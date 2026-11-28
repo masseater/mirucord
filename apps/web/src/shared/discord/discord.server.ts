@@ -4,8 +4,8 @@ import { ChannelType, OverwriteType } from "discord-api-types/v10";
 import type { APIOverwrite, APIRole } from "discord-api-types/v10";
 import { Array, Effect, Function, Option, pipe, Schema } from "effect";
 
-import { decodeBody, withDiscord } from "./client.server";
-import type { DiscordRequestError } from "./client.server";
+import { decodeBody, withDiscord } from "./client.server.ts";
+import type { DiscordRequestError } from "./client.server.ts";
 
 const DATA_FIRST_ARITY = 2;
 

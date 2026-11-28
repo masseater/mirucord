@@ -16,7 +16,7 @@ import {
 } from "#/entities/guild-message/index.test.support";
 import { sealMessage } from "#/shared/crypto/index.server";
 
-import { listPhrases, mockPhraseModel, prompts } from "./phrase-model.test.support";
+import { listPhrases, mockPhraseModel, prompts } from "./phrase-model.test.support.ts";
 
 const ERASED_AUTHOR = "501";
 const PEOPLE = [ERASED_AUTHOR, "502", "503", ERASED_AUTHOR, "502"];

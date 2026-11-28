@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import { ChannelSection } from "#/pages/home/ui/common/channel-section";
 import { TOP_CHANNEL } from "#/pages/home/ui/common/channels";
 
-import { AnswerWindow } from "./answer-window";
-import { ChannelWelcome } from "./channel-welcome";
-import { ChatLog } from "./chat-log";
+import { AnswerWindow } from "./answer-window.tsx";
+import { ChannelWelcome } from "./channel-welcome.tsx";
+import { ChatLog } from "./chat-log.tsx";
 
 const DATE = "2024年8月12日";
 

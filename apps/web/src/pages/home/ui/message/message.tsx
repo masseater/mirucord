@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-import type { Author } from "./author";
-import { AuthorAvatar } from "./author-avatar";
-import { AuthorName } from "./author-name";
-import { MessageBody } from "./message-body";
+import { AuthorAvatar } from "./author-avatar.tsx";
+import { AuthorName } from "./author-name.tsx";
+import type { Author } from "./author.ts";
+import { MessageBody } from "./message-body.tsx";
 
 export type Reply = Readonly<{ author: Author; text: string }>;
 

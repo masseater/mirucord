@@ -4,7 +4,7 @@ import { Array, DateTime, Effect, Option, pipe } from "effect";
 import { guildStore } from "#/entities/guild-message/index.server";
 import { db, message } from "#/shared/db/index.server";
 
-import { deleteMessagesByIds } from "./id-chunks.server";
+import { deleteMessagesByIds } from "./id-chunks.server.ts";
 
 export type StoredMessage = Readonly<{
   id: string;

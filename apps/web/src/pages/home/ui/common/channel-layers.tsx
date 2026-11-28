@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-import { CHANNELS } from "./channels";
-import type { Channel } from "./channels";
+import { CHANNELS } from "./channels.ts";
+import type { Channel } from "./channels.ts";
 
 export const ChannelLayers = ({
   className,

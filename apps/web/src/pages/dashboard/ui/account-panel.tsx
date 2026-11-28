@@ -8,7 +8,7 @@ import { IconLine } from "#/shared/ui/icon-line";
 import { Panel } from "#/shared/ui/panel";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { DeleteAccount } from "./delete-account";
+import { DeleteAccount } from "./delete-account.tsx";
 
 const TITLE = "アカウント";
 const SIGN_OUT = "ログアウト";

@@ -3,7 +3,7 @@ import { Array, Order, pipe } from "effect";
 import { DIMENSIONS } from "#/shared/ai";
 import type { Quantized } from "#/shared/ai";
 
-import type { VectorBlock } from "./vector-block";
+import type { VectorBlock } from "./vector-block.ts";
 
 export type Scored = Readonly<{ row: number; score: number }>;
 

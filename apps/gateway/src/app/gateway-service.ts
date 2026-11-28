@@ -7,8 +7,8 @@ import { DiscordGateway, DiscordLive } from "dfx/gateway";
 import { Clock, Config, Effect, Layer, Redacted, Stream } from "effect";
 import { FetchHttpClient } from "effect/http";
 
-import { makeDeliver } from "./deliver";
-import { mergeJobs, toGatewayJobs } from "./gateway-job";
+import { makeDeliver } from "./deliver.ts";
+import { mergeJobs, toGatewayJobs } from "./gateway-job.ts";
 
 export const GatewayApp = App("MirucordGatewayApp", { name: `${PREFIX}gateway-app` });
 

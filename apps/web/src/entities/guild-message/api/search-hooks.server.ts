@@ -3,13 +3,13 @@ import { Clock, Effect, Option, Semaphore } from "effect";
 
 import { FLUSH_DELAY_MS } from "#/entities/guild-message/lib/search-layout";
 
-import { forgetRows, publishGuild, scheduleSearch } from "./search-alarm.server";
-import type { Alarms } from "./search-alarm.server";
-import { deletePrefix } from "./search-files.server";
-import { writeSearchHead } from "./search-head.server";
-import type { Flush } from "./search-recent.server";
-import type { TrackedRow } from "./store-types";
-import { publishGuildVectors } from "./vector-alarm.server";
+import { forgetRows, publishGuild, scheduleSearch } from "./search-alarm.server.ts";
+import type { Alarms } from "./search-alarm.server.ts";
+import { deletePrefix } from "./search-files.server.ts";
+import { writeSearchHead } from "./search-head.server.ts";
+import type { Flush } from "./search-recent.server.ts";
+import type { TrackedRow } from "./store-types.ts";
+import { publishGuildVectors } from "./vector-alarm.server.ts";
 
 const ONE_PUBLISH = 1;
 const NO_DELAY = 0;
@@ -61,4 +61,4 @@ export const searchHooks = ({ db, alarms, bucket, guildId }: HookTarget): Search
   };
 };
 
-export { nextVersion } from "./search-alarm.server";
+export { nextVersion } from "./search-alarm.server.ts";

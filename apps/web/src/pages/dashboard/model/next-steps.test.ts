@@ -1,8 +1,8 @@
 import { Option } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import type { ReadyDashboard } from "./next-steps";
-import { nextStepsOf } from "./next-steps";
+import type { ReadyDashboard } from "./next-steps.ts";
+import { nextStepsOf } from "./next-steps.ts";
 
 const BASE: ReadyDashboard = {
   status: "ready",

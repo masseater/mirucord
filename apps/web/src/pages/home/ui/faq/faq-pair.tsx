@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { BOT } from "#/pages/home/ui/message/author";
 import { Message } from "#/pages/home/ui/message/message";
 
-import { FaqAnswer } from "./faq-answer";
-import type { Question } from "./question";
+import { FaqAnswer } from "./faq-answer.tsx";
+import type { Question } from "./question.ts";
 
 export const FaqPair = ({ question }: Readonly<{ question: Question }>): ReactNode => (
   <>

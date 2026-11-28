@@ -5,11 +5,11 @@ import type { Filter } from "#/entities/guild-message/lib/search-query";
 import { postingsIn, shardOf } from "#/entities/guild-message/lib/search-shard";
 import type { PostingView } from "#/entities/guild-message/lib/search-shard";
 
-import { cachedBytes } from "./search-cache.server";
-import type { FileGate, FileRead } from "./search-cache.server";
-import type { SearchHead } from "./search-files.server";
-import { required } from "./search-page.server";
-import type { MissingFile } from "./search-page.server";
+import { cachedBytes } from "./search-cache.server.ts";
+import type { FileGate, FileRead } from "./search-cache.server.ts";
+import type { SearchHead } from "./search-files.server.ts";
+import { required } from "./search-page.server.ts";
+import type { MissingFile } from "./search-page.server.ts";
 
 export const invalidOf = ({
   head,

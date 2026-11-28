@@ -6,7 +6,7 @@ import { phraseNote } from "#/entities/guild-message/model/phrase-note.schema";
 import { phraseUse } from "#/entities/guild-message/model/phrase-use.schema";
 import type { MessageSide } from "#/shared/discord/index.server";
 
-import { PhraseStore } from "./phrase-store.server";
+import { PhraseStore } from "./phrase-store.server.ts";
 import type {
   NoteClaim,
   NoteSample,
@@ -16,7 +16,7 @@ import type {
   PhraseSamples,
   SampleRequest,
   SealedMessage,
-} from "./store-types";
+} from "./store-types.ts";
 
 const BOUND_LIMIT = 90;
 const EXAMPLE_SEPARATOR = ",";

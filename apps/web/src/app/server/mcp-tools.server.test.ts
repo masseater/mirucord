@@ -23,7 +23,7 @@ import {
 import { idsOf, readIngestOf, toolCaller } from "#/shared/mcp/index.test.support";
 import type { ToolOutcome } from "#/shared/mcp/index.test.support";
 
-import { buildServer } from "./mcp-tools.server";
+import { buildServer } from "./mcp-tools.server.ts";
 
 const callTool = toolCaller(() => buildServer(USER));
 

@@ -1,7 +1,7 @@
 import { Schema } from "effect";
 
-import { typedEnvelope } from "./typed-envelope.server";
-import type { Opener, Sealer } from "./typed-envelope.server";
+import { typedEnvelope } from "./typed-envelope.server.ts";
+import type { Opener, Sealer } from "./typed-envelope.server.ts";
 
 const MemberProfileSchema = Schema.Struct({
   username: Schema.String,

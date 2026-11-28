@@ -2,8 +2,8 @@ import { Array, Boolean, Function, Option, pipe } from "effect";
 
 import type { ChannelKind } from "#/shared/discord";
 
-import type { BotAccess } from "./bot-access";
-import type { ConsentScope } from "./consent-scope";
+import type { BotAccess } from "./bot-access.ts";
+import type { ConsentScope } from "./consent-scope.ts";
 
 const DATA_FIRST_ARITY = 2;
 const BACKFILL_INGEST = { pending: "backfilling", done: "done" } as const;

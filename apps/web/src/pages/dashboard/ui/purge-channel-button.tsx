@@ -8,7 +8,7 @@ import { FORBIDDEN, mutationFeedback, SIGNED_OUT, success } from "#/pages/dashbo
 import { useReturnToDashboard } from "#/pages/dashboard/model/use-return-to-dashboard";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { FeedbackLine } from "./feedback-line";
+import { FeedbackLine } from "./feedback-line.tsx";
 
 const LABEL = "今すぐ削除";
 const RESULTS = {

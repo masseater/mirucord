@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { Array, Effect, pipe, Record } from "effect";
 
-import { db } from "./client.server";
-import { role } from "./guild.table";
+import { db } from "./client.server.ts";
+import { role } from "./guild.table.ts";
 
 export const loadRoleField = ({
   guildId,

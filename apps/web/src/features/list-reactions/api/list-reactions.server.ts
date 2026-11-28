@@ -10,7 +10,7 @@ import { liveReactionsOf } from "#/shared/discord/index.server";
 import type { DiscordRequestError, LiveReactions } from "#/shared/discord/index.server";
 import { errorResult, Ids, structuredResult, toolRegistration } from "#/shared/mcp";
 
-import { keptUserIdsOf } from "./kept-users.server";
+import { keptUserIdsOf } from "./kept-users.server.ts";
 
 const MessageRef = Schema.Struct({ channelId: Schema.String, messageId: Schema.String });
 

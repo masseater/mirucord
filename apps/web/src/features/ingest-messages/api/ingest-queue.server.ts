@@ -3,13 +3,13 @@ import { Cause, Effect, Exit, Option, Schema } from "effect";
 import { INGEST_MAX_RETRIES, QueueJobSchema } from "#/features/ingest-messages/model/ingest-job";
 import type { QueueJob } from "#/features/ingest-messages/model/ingest-job";
 
-import { alertOperators } from "./alert-operators.server";
-import { ingestChannel } from "./ingest-channel.server";
-import { migrateMessages } from "./migrate-messages.server";
-import { catchUpGuild } from "./resync.server";
-import { syncMembers } from "./store-members.server";
-import { abandonWithdrawal, withdrawGuild } from "./withdraw-guild.server";
-import type { GuildDataRemainsError } from "./withdraw-guild.server";
+import { alertOperators } from "./alert-operators.server.ts";
+import { ingestChannel } from "./ingest-channel.server.ts";
+import { migrateMessages } from "./migrate-messages.server.ts";
+import { catchUpGuild } from "./resync.server.ts";
+import { syncMembers } from "./store-members.server.ts";
+import { abandonWithdrawal, withdrawGuild } from "./withdraw-guild.server.ts";
+import type { GuildDataRemainsError } from "./withdraw-guild.server.ts";
 
 export type QueueDelivery = Readonly<{
   body: unknown;

@@ -5,7 +5,7 @@ import { DASHBOARD_PATH, MASCOT_NAME, SITE_ORIGIN } from "#/shared/config";
 import { findBotAdder, postChannelMessage, sendDirectMessage } from "#/shared/discord/index.server";
 import type { DiscordChannel, DiscordGuild, OutgoingMessage } from "#/shared/discord/index.server";
 
-import type { ChannelListing } from "./channel-listing.server";
+import type { ChannelListing } from "./channel-listing.server.ts";
 
 export type Welcome = Readonly<{
   botUserId: string;

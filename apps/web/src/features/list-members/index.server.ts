@@ -1,1 +1,1 @@
-export { registerListMembers } from "./api/list-members.server";
+export { registerListMembers } from "./api/list-members.server.ts";

@@ -15,7 +15,7 @@ import {
   userToolCaller,
 } from "#/entities/guild-message/index.test.support";
 
-import { registerListVoiceSessions } from "./list-voice-sessions.server";
+import { registerListVoiceSessions } from "./list-voice-sessions.server.ts";
 
 const callTool = userToolCaller([registerListVoiceSessions]);
 

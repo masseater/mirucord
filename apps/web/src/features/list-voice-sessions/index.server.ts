@@ -1,1 +1,1 @@
-export { registerListVoiceSessions } from "./api/list-voice-sessions.server";
+export { registerListVoiceSessions } from "./api/list-voice-sessions.server.ts";

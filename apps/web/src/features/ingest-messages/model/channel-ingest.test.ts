@@ -1,9 +1,9 @@
 import { Array, Option, pipe } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { forumRowOf, guildIngestOf, ingestOf } from "./channel-ingest";
-import type { ChannelIngest, IngestRow } from "./channel-ingest";
-import type { ConsentScope } from "./consent-scope";
+import { forumRowOf, guildIngestOf, ingestOf } from "./channel-ingest.ts";
+import type { ChannelIngest, IngestRow } from "./channel-ingest.ts";
+import type { ConsentScope } from "./consent-scope.ts";
 
 const CHANNEL = "100";
 const GRANTED: ConsentScope = { status: "granted" };

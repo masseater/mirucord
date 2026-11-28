@@ -7,7 +7,7 @@ import { db, guild, listGuildIds } from "#/shared/db/index.server";
 import { getBotUserId, leaveGuild, listBotGuilds } from "#/shared/discord/index.server";
 import type { DiscordRequestError } from "#/shared/discord/index.server";
 
-import { forgetGuildMessages } from "./message-rows.server";
+import { forgetGuildMessages } from "./message-rows.server.ts";
 
 export const logDiscordFailure = (status: Option.Option<number>): Effect.Effect<void> =>
   Effect.logWarning("Discord request failed").pipe(

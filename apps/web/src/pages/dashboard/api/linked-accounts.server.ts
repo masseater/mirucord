@@ -12,8 +12,8 @@ import type {
   PublishResult,
 } from "#/pages/dashboard/api/linked-account-store.server";
 
-import { withSignedInAccount } from "./dashboard.server";
-import type { SignedOut } from "./dashboard.server";
+import { withSignedInAccount } from "./dashboard.server.ts";
+import type { SignedOut } from "./dashboard.server.ts";
 
 export type LinkedAccountsPage = LinkedAccounts | SignedOut;
 

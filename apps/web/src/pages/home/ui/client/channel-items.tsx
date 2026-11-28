@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-import { LINK_ROWS, PAGE_ROWS, rowKey } from "./sidebar-categories";
-import { SidebarItem } from "./sidebar-item";
+import { LINK_ROWS, PAGE_ROWS, rowKey } from "./sidebar-categories.ts";
+import { SidebarItem } from "./sidebar-item.tsx";
 
 export const ChannelItems = ({ className }: Readonly<{ className: string }>): ReactNode => (
   <ul className={cn("gap-0.5", className)}>

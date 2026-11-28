@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "#/shared/lib/utils";
 
-import type { SidebarCategory } from "./sidebar-categories";
+import type { SidebarCategory } from "./sidebar-categories.ts";
 
 const COLLAPSED_LABEL = "(たたまれています)";
 

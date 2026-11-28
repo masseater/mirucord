@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { SystemMessage } from "#/pages/home/ui/message/system-message";
 
-import type { Scene } from "./scene";
+import type { Scene } from "./scene.ts";
 
 export const SceneEnding = ({ scene }: Readonly<{ scene: Scene }>): ReactNode =>
   Match.value(scene.ending).pipe(

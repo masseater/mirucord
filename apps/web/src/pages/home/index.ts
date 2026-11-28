@@ -1,2 +1,2 @@
-export { loadHomePage } from "./api/invite";
-export { HomePage } from "./ui/home-page";
+export { loadHomePage } from "./api/invite.ts";
+export { HomePage } from "./ui/home-page.tsx";

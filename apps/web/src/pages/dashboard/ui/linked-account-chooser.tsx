@@ -8,7 +8,7 @@ import { SERVICE_NAME } from "#/shared/config";
 import { IconLine } from "#/shared/ui/icon-line";
 import { PopButton } from "#/shared/ui/pop-button";
 
-import { LinkedAccountChoiceRow } from "./linked-account-choice-row";
+import { LinkedAccountChoiceRow } from "./linked-account-choice-row.tsx";
 
 const PICK = `${SERVICE_NAME} で見せるものを選んでください`;
 const NONE = "Discord のプロフィールで全員に公開している連携アカウントがありません";

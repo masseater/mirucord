@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { MEMBERS } from "#/pages/home/ui/common/members";
 import { Mascot } from "#/shared/brand";
 
-import { ForumPost } from "./forum-post";
+import { ForumPost } from "./forum-post.tsx";
 
 const POSTS = [
   {

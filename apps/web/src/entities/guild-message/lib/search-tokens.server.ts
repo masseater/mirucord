@@ -3,7 +3,7 @@ import { Array, Effect, Number, Option, pipe, String } from "effect";
 import { openMessage } from "#/shared/crypto/index.server";
 import type { MessageAddress, MessageBody } from "#/shared/crypto/index.server";
 
-import { hmacWord } from "./hmac.server";
+import { hmacWord } from "./hmac.server.ts";
 
 const SHORTEST_GRAM = 1;
 const LONGEST_GRAM = 3;

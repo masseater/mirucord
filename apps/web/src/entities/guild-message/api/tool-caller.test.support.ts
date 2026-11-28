@@ -4,7 +4,7 @@ import { serverWith } from "#/shared/mcp";
 import { toolCaller } from "#/shared/mcp/index.test.support";
 import type { CallTool } from "#/shared/mcp/index.test.support";
 
-import { USER } from "./scenario.test.support";
+import { USER } from "./scenario.test.support.ts";
 
 export const userToolCaller = (
   registrations: readonly ((discordUserId: string) => (server: McpServer) => void)[],

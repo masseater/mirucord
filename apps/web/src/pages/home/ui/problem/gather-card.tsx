@@ -2,10 +2,10 @@ import { Array, pipe } from "effect";
 import type { ReactNode } from "react";
 
 import cutinMiru from "./cutin-miru.svg";
-import { FinaleCount } from "./finale-count";
-import { FinaleTitle } from "./finale-title";
-import { FragmentCard } from "./fragment-card";
-import { FRAGMENTS } from "./fragment-rows";
+import { FinaleCount } from "./finale-count.tsx";
+import { FinaleTitle } from "./finale-title.tsx";
+import { FragmentCard } from "./fragment-card.tsx";
+import { FRAGMENTS } from "./fragment-rows.ts";
 
 const SPARKS = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
 const SPARK = "✦";

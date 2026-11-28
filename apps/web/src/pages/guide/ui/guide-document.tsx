@@ -8,7 +8,7 @@ import { AppFrame } from "#/shared/ui/app-frame";
 import { MascotTip } from "#/shared/ui/mascot-tip";
 import { Panel } from "#/shared/ui/panel";
 
-import { GuideBlockView } from "./guide-block-view";
+import { GuideBlockView } from "./guide-block-view.tsx";
 
 const SOURCE = "ソースコードは GitHub で公開しています。";
 

@@ -4,15 +4,15 @@ import { decodeRecent, orderedHits } from "#/entities/guild-message/lib/search-q
 import type { RecentHits, SealedHits } from "#/entities/guild-message/lib/search-query";
 import type { SealedEntry } from "#/entities/guild-message/lib/search-segment";
 
-import { archivedHits } from "./search-archive-hits.server";
-import { cachedBytes, withFileGate } from "./search-cache.server";
-import type { FileGate, FileRead } from "./search-cache.server";
-import { archiveKey, readHead, recentKey, shardKey } from "./search-files.server";
-import type { SearchHead, SegmentEntry } from "./search-files.server";
-import { loadPage, required } from "./search-page.server";
-import type { MissingFile } from "./search-page.server";
-import { allViews, invalidOf, matched, readShardSet } from "./search-shard-set.server";
-import type { ShardSet } from "./search-shard-set.server";
+import { archivedHits } from "./search-archive-hits.server.ts";
+import { cachedBytes, withFileGate } from "./search-cache.server.ts";
+import type { FileGate, FileRead } from "./search-cache.server.ts";
+import { archiveKey, readHead, recentKey, shardKey } from "./search-files.server.ts";
+import type { SearchHead, SegmentEntry } from "./search-files.server.ts";
+import { loadPage, required } from "./search-page.server.ts";
+import type { MissingFile } from "./search-page.server.ts";
+import { allViews, invalidOf, matched, readShardSet } from "./search-shard-set.server.ts";
+import type { ShardSet } from "./search-shard-set.server.ts";
 
 const NONE = 0;
 const ONE_SHARD = 1;

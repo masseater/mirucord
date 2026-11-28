@@ -15,13 +15,13 @@ import {
 import { FindSimilarMessagesOutput } from "#/features/find-similar-messages/model/similar-messages-output";
 import { spendNeurons } from "#/shared/ai/index.server";
 
-import { registerFindSimilarMessages } from "./find-similar-messages.server";
+import { registerFindSimilarMessages } from "./find-similar-messages.server.ts";
 import {
   answerEmbedding,
   drainAlarms,
   embeddedTexts,
   writeMessages,
-} from "./similar-guild.test.support";
+} from "./similar-guild.test.support.ts";
 
 const callTool = userToolCaller([registerFindSimilarMessages]);
 

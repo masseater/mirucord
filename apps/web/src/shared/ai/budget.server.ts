@@ -3,7 +3,7 @@ import { DateTime, Effect } from "effect";
 
 import { OBJECT_GENERATION, OBJECT_LOCATION } from "#/shared/config";
 
-import type { Spending } from "./neuron-budget.server";
+import type { Spending } from "./neuron-budget.server.ts";
 
 const BUDGET_NAME = `account${OBJECT_GENERATION}`;
 const QUERY_LIMIT = 9000;

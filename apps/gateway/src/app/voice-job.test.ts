@@ -3,7 +3,7 @@ import { Discord } from "dfx";
 import { Option, Record } from "effect";
 import { expect, it } from "vite-plus/test";
 
-import { mergeJobs, toGatewayJobs } from "./gateway-job";
+import { mergeJobs, toGatewayJobs } from "./gateway-job.ts";
 
 const JOINED_AT = 1000;
 const MOVED_AT = 2000;

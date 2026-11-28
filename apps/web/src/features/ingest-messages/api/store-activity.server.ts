@@ -3,7 +3,7 @@ import { Effect } from "effect";
 
 import { guildStore } from "#/entities/guild-message/index.server";
 
-import { whenConsented } from "./consented.server";
+import { whenConsented } from "./consented.server.ts";
 
 const logged = ({
   guildId,

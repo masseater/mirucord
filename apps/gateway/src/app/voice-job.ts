@@ -8,7 +8,7 @@ import type {
 import { Discord } from "dfx";
 import { Array, Match, Option, pipe, Schema } from "effect";
 
-import { mergeGrouped } from "./guild-batch";
+import { mergeGrouped } from "./guild-batch.ts";
 
 const CHANGES_PER_JOB = 100;
 

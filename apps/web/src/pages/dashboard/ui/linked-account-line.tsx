@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { PublicConnection } from "#/shared/discord/index.server";
 import { IconLine } from "#/shared/ui/icon-line";
 
-import { Pill } from "./pill";
+import { Pill } from "./pill.tsx";
 
 const VERIFIED = "確認済み";
 

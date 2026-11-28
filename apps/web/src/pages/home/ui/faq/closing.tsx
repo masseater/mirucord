@@ -5,7 +5,7 @@ import { BOT } from "#/pages/home/ui/message/author";
 import { Message } from "#/pages/home/ui/message/message";
 import { MASCOT_NAME, REPOSITORY_URL } from "#/shared/config";
 
-import { ProudMiru } from "./proud-miru";
+import { ProudMiru } from "./proud-miru.tsx";
 
 const GUIDE = `${MASCOT_NAME}におまかせ！`;
 const TIME = "今日 21:12";

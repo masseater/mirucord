@@ -6,7 +6,7 @@ import { FindSimilarMessagesOutput } from "#/features/find-similar-messages/mode
 import { SERVICE_NAME } from "#/shared/config";
 import { errorResult, Limit, structuredResult, toolRegistration } from "#/shared/mcp";
 
-import { findSimilar } from "./similar.server";
+import { findSimilar } from "./similar.server.ts";
 
 const FindSimilarMessagesInput = Schema.Struct({
   serverId: Schema.String,

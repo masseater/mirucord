@@ -4,10 +4,10 @@ import { ingestDeliveries, resyncGuilds } from "#/features/ingest-messages/index
 import { MCP_URL } from "#/shared/config";
 import { runTraced } from "#/shared/observability/index.server";
 
-import { api } from "./api.server";
-import { serveMcp } from "./mcp.server";
-import { authRejection, mcpRejection } from "./throttle.server";
-import { withWebAnalytics } from "./web-analytics.server";
+import { api } from "./api.server.ts";
+import { serveMcp } from "./mcp.server.ts";
+import { authRejection, mcpRejection } from "./throttle.server.ts";
+import { withWebAnalytics } from "./web-analytics.server.ts";
 
 const handleApi = api.handle;
 
@@ -81,5 +81,5 @@ const worker: ExportedHandler = {
 
 export { GuildArchive } from "#/entities/guild-message/index.server";
 export { NeuronBudget } from "#/shared/ai/index.server";
-export { RequestCounter } from "./request-counter.server";
+export { RequestCounter } from "./request-counter.server.ts";
 export default worker;

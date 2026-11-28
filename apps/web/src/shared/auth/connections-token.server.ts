@@ -4,8 +4,8 @@ import { Array, Effect, Option, pipe, String as Str } from "effect";
 
 import { account, db } from "#/shared/db/index.server";
 
-import { getAuth } from "./auth.server";
-import type { SignedInUser } from "./discord-user.server";
+import { getAuth } from "./auth.server.ts";
+import type { SignedInUser } from "./discord-user.server.ts";
 
 const DISCORD_PROVIDER = "discord";
 const CONNECTIONS_SCOPE = "connections";

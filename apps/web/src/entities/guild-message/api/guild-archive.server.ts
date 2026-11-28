@@ -1,11 +1,11 @@
 import { Array, Clock, Effect, Option, pipe } from "effect";
 
-import { erasedAuthors } from "./erased-authors.server";
-import { backfillPhrases } from "./phrase-backfill.server";
-import { RelationStore } from "./relation-store.server";
-import type { ExtractedPhrases, PhraseRequest, PhraseStatsLookup } from "./store-types";
-import { vectorLedger } from "./vector-ledger.server";
-import type { Coverage } from "./vector-ledger.server";
+import { erasedAuthors } from "./erased-authors.server.ts";
+import { backfillPhrases } from "./phrase-backfill.server.ts";
+import { RelationStore } from "./relation-store.server.ts";
+import type { ExtractedPhrases, PhraseRequest, PhraseStatsLookup } from "./store-types.ts";
+import { vectorLedger } from "./vector-ledger.server.ts";
+import type { Coverage } from "./vector-ledger.server.ts";
 
 export class GuildArchive extends RelationStore {
   public phraseStats({

@@ -13,7 +13,7 @@ import { afterAll, afterEach, beforeAll, expect } from "vite-plus/test";
 
 import { db, guild } from "#/shared/db/index.server";
 
-import { syncJoinedGuild } from "./sync-guilds.server";
+import { syncJoinedGuild } from "./sync-guilds.server.ts";
 
 const BOT = "900";
 const OWNER = "901";

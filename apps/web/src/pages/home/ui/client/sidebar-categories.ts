@@ -15,7 +15,7 @@ import type { Channel } from "#/pages/home/ui/common/channels";
 import type { Place, PlaceId } from "#/pages/home/ui/common/places";
 import { SERVICE_NAME } from "#/shared/config";
 
-import { GUIDE_CHANNELS } from "./guide-channels";
+import { GUIDE_CHANNELS } from "./guide-channels.ts";
 
 export type Activity =
   | Readonly<{ status: "read" }>

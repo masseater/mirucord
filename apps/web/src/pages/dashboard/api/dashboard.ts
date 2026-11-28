@@ -21,7 +21,7 @@ import {
   loadGuildPage,
   purgeFor,
   revokeFor,
-} from "./dashboard.server";
+} from "./dashboard.server.ts";
 import type {
   ChannelTarget,
   ConsentInput,
@@ -30,7 +30,7 @@ import type {
   EraseResult,
   GuildPage,
   SignedOut,
-} from "./dashboard.server";
+} from "./dashboard.server.ts";
 
 type GuildPageKey = readonly ["dashboard", string];
 

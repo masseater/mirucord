@@ -1,7 +1,7 @@
 import type { GuideSection } from "#/pages/guide/model/guide-block";
 import { FREE_GUILD_LIMIT, MASCOT_NAME, REPOSITORY_URL, SERVICE_NAME } from "#/shared/config";
 
-import { guidePage } from "./guide-page";
+import { guidePage } from "./guide-page.tsx";
 
 const TITLE = "セルフホスト";
 const TIP = `自分のおうちでも${MASCOT_NAME}は働けるよ`;

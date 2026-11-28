@@ -5,7 +5,7 @@ import { BOT, memberAuthor } from "#/pages/home/ui/message/author";
 import type { ChatLine } from "#/pages/home/ui/message/chat-line";
 import { MASCOT_NAME } from "#/shared/config";
 
-import { ForumPosts } from "./forum-posts";
+import { ForumPosts } from "./forum-posts.tsx";
 
 const RECIPE: ChatLine = {
   author: memberAuthor(MEMBERS.miho),

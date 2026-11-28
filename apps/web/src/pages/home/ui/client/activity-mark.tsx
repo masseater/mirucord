@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { Activity } from "./sidebar-categories";
+import type { Activity } from "./sidebar-categories.ts";
 
 const MARK: Readonly<Record<Exclude<Activity["status"], "read">, string>> = {
   unread: "bg-dc-bright absolute -left-2 h-2 w-1 rounded-r-full",

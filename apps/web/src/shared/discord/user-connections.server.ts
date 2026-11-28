@@ -5,8 +5,8 @@ import { Array, Effect, Layer, Option, pipe, Schema } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import type { HttpClientError } from "effect/http";
 
-import { requestErrorOf } from "./client.server";
-import type { DiscordRequestError } from "./client.server";
+import { requestErrorOf } from "./client.server.ts";
+import type { DiscordRequestError } from "./client.server.ts";
 
 export type PublicConnection = Readonly<{ type: string; name: string; verified: boolean }>;
 

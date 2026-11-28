@@ -1,6 +1,6 @@
 import { index, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { guild } from "./guild.table";
+import { guild } from "./guild.table.ts";
 
 export const commonPhrase = sqliteTable(
   "common_phrase",

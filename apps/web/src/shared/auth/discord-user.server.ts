@@ -3,7 +3,7 @@ import { Array, Effect, Option } from "effect";
 
 import { account, db } from "#/shared/db/index.server";
 
-import { getAuth } from "./auth.server";
+import { getAuth } from "./auth.server.ts";
 
 const DISCORD_PROVIDER = "discord";
 

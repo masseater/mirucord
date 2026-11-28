@@ -1,6 +1,6 @@
 import { Effect, Function } from "effect";
 
-import { seal, unseal } from "./text-envelope.server";
+import { seal, unseal } from "./text-envelope.server.ts";
 
 const DATA_FIRST_ARITY = 3;
 

@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 
 import { ChannelScene } from "#/pages/home/ui/common/channel-scene";
 
-import { ClientFrame } from "./client/client-frame";
-import { Hero } from "./hero/hero";
-import { SCENES } from "./scenes";
+import { ClientFrame } from "./client/client-frame.tsx";
+import { Hero } from "./hero/hero.tsx";
+import { SCENES } from "./scenes.ts";
 
 export const HomePage = (): ReactNode => (
   <ClientFrame>

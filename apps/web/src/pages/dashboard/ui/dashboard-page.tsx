@@ -8,8 +8,8 @@ import { landingOf } from "#/pages/dashboard/model/sign-in-landing";
 import { DASHBOARD_NAME, SIGN_IN_LANDING } from "#/shared/config";
 import { AppFrame } from "#/shared/ui/app-frame";
 
-import { DashboardView } from "./dashboard-view";
-import { LandingRedirect } from "./landing-redirect";
+import { DashboardView } from "./dashboard-view.tsx";
+import { LandingRedirect } from "./landing-redirect.tsx";
 
 export const DashboardPage = (): ReactNode => {
   const { data } = useSuspenseQuery(dashboardQuery);

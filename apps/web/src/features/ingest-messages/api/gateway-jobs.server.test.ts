@@ -8,13 +8,13 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect } from "vite-plus/te
 import { createGuildKey } from "#/shared/crypto/index.server";
 import { channel, db, guild, ingestConsent } from "#/shared/db/index.server";
 
-import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server";
+import { forgetMessages, refreshMessages, storeGatewayMessages } from "./gateway-jobs.server.ts";
 import {
   putMessages,
   storedIdsIn,
   storedMessage,
   TEXT_CHANNEL,
-} from "./guild-messages.test.support";
+} from "./guild-messages.test.support.ts";
 
 const OWNER = "901";
 const GUILD = "700";

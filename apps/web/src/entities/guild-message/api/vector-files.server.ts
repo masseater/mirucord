@@ -6,12 +6,12 @@ import type { VectorEntry } from "#/entities/guild-message/lib/vector-block";
 import { decodeVector } from "#/shared/ai";
 import { openBytes, sealBytes } from "#/shared/crypto/index.server";
 
-import { vectorFileKey } from "./search-files.server";
-import type { StoredFile } from "./search-files.server";
-import type { Segment } from "./search-ledger.server";
-import { vectorContext } from "./vector-embed.server";
-import type { Keys } from "./vector-embed.server";
-import type { StoredVector } from "./vector-ledger.server";
+import { vectorFileKey } from "./search-files.server.ts";
+import type { StoredFile } from "./search-files.server.ts";
+import type { Segment } from "./search-ledger.server.ts";
+import { vectorContext } from "./vector-embed.server.ts";
+import type { Keys } from "./vector-embed.server.ts";
+import type { StoredVector } from "./vector-ledger.server.ts";
 
 const EMPTY = 0;
 

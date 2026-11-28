@@ -6,7 +6,7 @@ import { expect } from "vite-plus/test";
 import { guildStore } from "#/entities/guild-message/index.server";
 import type { IndexedMessage } from "#/entities/guild-message/index.server";
 
-import { readHead } from "./search-files.server";
+import { readHead } from "./search-files.server.ts";
 import {
   BATCH,
   CHANNEL,
@@ -18,7 +18,7 @@ import {
   idOf,
   messageAt,
   totalOf,
-} from "./search-publish.test.support";
+} from "./search-publish.test.support.ts";
 
 const OTHER_CHANNEL = "601";
 const OTHER_WORD = 8;

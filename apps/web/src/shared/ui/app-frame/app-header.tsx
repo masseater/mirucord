@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { DASHBOARD_NAME, DASHBOARD_PATH } from "#/shared/config";
 
-import { BrandLink } from "./brand-link";
+import { BrandLink } from "./brand-link.tsx";
 
 export const AppHeader = (): ReactNode => (
   <header className="bg-dc-rail">

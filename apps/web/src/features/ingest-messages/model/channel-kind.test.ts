@@ -1,7 +1,7 @@
 import { ChannelType } from "discord-api-types/v10";
 import { expect, it } from "vite-plus/test";
 
-import { kindOf, LISTED_TYPES, MESSAGE_TYPES, STORED_TYPES } from "./channel-kind";
+import { kindOf, LISTED_TYPES, MESSAGE_TYPES, STORED_TYPES } from "./channel-kind.ts";
 
 it("names each kind of channel", () => {
   expect(kindOf(ChannelType.GuildText)).toBe("text");

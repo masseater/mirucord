@@ -15,10 +15,10 @@ import {
 } from "#/entities/guild-message/model/guild-message.schema";
 import { openBytes, sealBytes } from "#/shared/crypto/index.server";
 
-import { centroidsKey, deleteKeys, writeFiles } from "./search-files.server";
-import { searchLedger } from "./search-ledger.server";
-import type { Segment } from "./search-ledger.server";
-import type { Keys } from "./vector-embed.server";
+import { centroidsKey, deleteKeys, writeFiles } from "./search-files.server.ts";
+import { searchLedger } from "./search-ledger.server.ts";
+import type { Segment } from "./search-ledger.server.ts";
+import type { Keys } from "./vector-embed.server.ts";
 
 const FILE_ROW = 1;
 const SINGLE_CLUSTER = 1;
